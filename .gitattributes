@@ -1,0 +1,35 @@
+# =========================================================================
+# CALPHADHEACalc - .gitattributes
+# Line Ending and Binary Asset Handling
+# =========================================================================
+
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Code and Documentation
+*.m text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Windows Batch & VBS Scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary Files
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.docx binary
+*.xlsx binary
+*.exe binary
+*.dll binary
