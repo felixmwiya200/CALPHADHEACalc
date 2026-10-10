@@ -1,0 +1,16 @@
+================================================================================
+VARVENNE-LUQUE-CURTIN SOLID SOLUTION STRENGTHENING MODEL
+================================================================================
+Bibliographic Reference:
+C. Varvenne, A. Luque, and W.A. Curtin,
+"Theory of strengthening in concentrated alloys",
+Acta Materialia, Vol. 118, pp. 164-176 (2016).
+DOI: https://doi.org/10.1016/j.actamat.2016.07.040
+
+Implementation Notice:
+The temperature-dependent yield strength formulations and solute volume misfit
+strengthening equations implemented in CALPHADHEACalc's mechanical engine are
+derived from the dislocation-solute interaction theory developed by Varvenne, Luque,
+and Curtin (2016). Formulas represent published scientific principles used for
+computational alloy design and educational prediction.
+================================================================================

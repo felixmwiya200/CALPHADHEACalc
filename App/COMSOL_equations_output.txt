@@ -1,0 +1,231 @@
+﻿========================================================================
+MATERIAL: AlCo | DETECTED MELTING POINT (Tm): 1910.0 K
+========================================================================
+
+>> Property: Density (kg/m^3)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.291646*T + 6025.48                        
+1910.0     2500.0     -0.729389*T + 5931.92                        
+
+>> Property: Coefficient of thermal expansion (%)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     4.4035e-07*T^2 + 8.0490e-04*T - 2.4951e-01   
+1910.0     2500.0     1.5231e-06*T^2 + 9.9349e-04*T + 2.6894e+00   
+
+>> Property: Thermal conductivity (W/(m*K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0105761*T + 82.6323                       
+1910.0     2500.0     0.01865*T + 17                               
+
+>> Property: Young's modulus (Pa)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -4.4168e+07*T + 2.0331e+11                   
+1910.0     2500.0     0 (No liquid stiffness)                      
+
+>> Property: Poisson's ratio-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     2.24569e-05*T + 0.328873                     
+1910.0     2500.0     0.5 (Incompressible fluid)                   
+
+>> Property: Dynamic viscosity (Pa*s)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     1e5 (Rigid solid penalty)                    
+1910.0     2500.0     1.6065e-04 * exp(5138.74 / T)                
+
+>> Property: Surface Tension (N/m)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0 (No solid surface tension)                 
+1910.0     2500.0     -0.000496008*T + 2.23611                     
+
+>> Property: Specific heat (J/(mole K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0.0545702*T - 15.0507                        
+1910.0     2500.0     1.84103e-08*T + 37.4241                      
+
+========================================================================
+MATERIAL: AlNi | DETECTED MELTING POINT (Tm): 1910.0 K
+========================================================================
+
+>> Property: Phases at%-LIQUID
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     4.17158*T - 7950.99                          
+1910.0     2500.0     -2.41462e-17*T + 100                         
+
+>> Property: Phases at%-NIAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.000366733*T + 100.303                     
+1910.0     2500.0     N/A                                          
+
+>> Property: Density (kg/m^3)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.291646*T + 6025.48                        
+1910.0     2500.0     -0.729389*T + 5931.92                        
+
+>> Property: Molar volume (cm^3)-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0.000386089*T + 7.08899                      
+1910.0     2500.0     0.0016745*T + 6.22397                        
+
+>> Property: Average expansion coeff. (10e-6 1/K)-
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     8.2792e-07*T^2 + 1.6008e-03*T + 1.1900e+01   
+1910.0     2500.0     4.5949e-06*T^2 - 1.3745e-02*T + 7.2395e+01   
+
+>> Property: Linear expansion (%)-
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     4.4035e-07*T^2 + 8.0490e-04*T - 2.4951e-01   
+1910.0     2500.0     1.5231e-06*T^2 + 9.9349e-04*T + 2.6894e+00   
+
+>> Property: Thermal conductivity (W/(m*K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0105761*T + 82.6323                       
+1910.0     2500.0     0.01865*T + 17                               
+
+>> Property: Electrical resistivity (10e-6 Ohm*m)-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0.000411009*T - 0.0586454                    
+1910.0     2500.0     0.000123956*T + 0.654932                     
+
+>> Property: Electrical conductivity (10e6 1/(Ohm*m))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.00426457*T + 8.19703                      
+1910.0     2500.0     -0.000144286*T + 1.39602                     
+
+>> Property: Young's modulus (Pa)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -4.4168e+07*T + 2.0331e+11                   
+1910.0     2500.0     0 (No liquid stiffness)                      
+
+>> Property: Bulk modulus (GPa)-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0227245*T + 200.566                       
+1910.0     2500.0     -0.01917*T + 121.72                          
+
+>> Property: Shear modulus(GPa)-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0172378*T + 76.1812                       
+1910.0     2500.0     -0*T - 0                                     
+
+>> Property: Poisson's ratio-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     2.24569e-05*T + 0.328873                     
+1910.0     2500.0     0.5 (Incompressible fluid)                   
+
+>> Property: Dynamic viscosity (Pa*s)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     1e5 (Rigid solid penalty)                    
+1910.0     2500.0     1.6065e-04 * exp(5138.74 / T)                
+
+>> Property: Liquid diffusivity (10e-9 (m^2)/s)-
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0119401*T + 26.8549                       
+1910.0     2500.0     0.00982201*T - 15.034                        
+
+>> Property: Total diffusivity (10e-9 (m^2)/s)-
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     -0.0119401*T + 26.8549                       
+1910.0     2500.0     0.00982201*T - 15.034                        
+
+>> Property: Surface Tension (N/m)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0 (No solid surface tension)                 
+1910.0     2500.0     -0.000496008*T + 2.23611                     
+
+>> Property: Enthalpy (J/mole)-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     32.6373*T - 75741.3                          
+1910.0     2500.0     37.4241*T - 53985.6                          
+
+>> Property: Specific heat (J/(mole K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1910.0     0.0545702*T - 15.0507                        
+1910.0     2500.0     1.84103e-08*T + 37.4241                      
+
+========================================================================
+MATERIAL: Aluminum thermodynamic properties | DETECTED MELTING POINT (Tm): 932.2 K
+========================================================================
+
+>> Property: Density (kg/m^3)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      -0.224209*T + 2769.97                        
+932.2      1000.0     -0.328079*T + 2695.89                        
+
+>> Property: Coefficient of thermal expansion (%)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      1.0994e-06*T^2 + 1.5655e-03*T - 5.6373e-01   
+932.2      1000.0     1.3761e-06*T^2 + 2.5549e-03*T + 7.2957e-01   
+
+>> Property: Thermal conductivity (W/(m*K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      -0.0546775*T + 260.991                       
+932.2      1000.0     0.0332708*T + 59.1178                        
+
+>> Property: Young's modulus (Pa)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      -4.6052e+07*T + 8.2530e+10                   
+932.2      1000.0     0 (No liquid stiffness)                      
+
+>> Property: Poisson's ratio-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      6.32609e-05*T + 0.318594                     
+932.2      1000.0     0.5 (Incompressible fluid)                   
+
+>> Property: Dynamic viscosity (Pa*s)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      1e5 (Rigid solid penalty)                    
+932.2      1000.0     1.5454e-04 * exp(1987.64 / T)                
+
+>> Property: Surface Tension (N/m)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      0 (No solid surface tension)                 
+932.2      1000.0     -0.000349958*T + 1.24042                     
+
+>> Property: Specific heat (J/(mole K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      932.2      0.0136807*T + 20.1221                        
+932.2      1000.0     -5.35714e-07*T + 31.7482                     
+
+========================================================================
+MATERIAL: Co | DETECTED MELTING POINT (Tm): 1768.0 K
+========================================================================
+
+>> Property: Density (kg/m^3)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     -0.450684*T + 9037.1                         
+1768.0     2500.0     -0.989853*T + 9514.66                        
+
+>> Property: Coefficient of thermal expansion (%)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     7.6605e-07*T^2 + 2.5102e-04*T - 2.7977e-02   
+1768.0     2500.0     1.2546e-06*T^2 + 6.2328e-08*T + 8.8332e-01   
+
+>> Property: Thermal conductivity (W/(m*K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     0.0150881*T + 20.2076                        
+1768.0     2500.0     0.0146998*T + 9.99959                        
+
+>> Property: Young's modulus (Pa)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     -1.0283e+08*T + 2.5711e+11                   
+1768.0     2500.0     0 (No liquid stiffness)                      
+
+>> Property: Poisson's ratio-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     4.94004e-05*T + 0.300801                     
+1768.0     2500.0     0.5 (Incompressible fluid)                   
+
+>> Property: Dynamic viscosity (Pa*s)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     1e5 (Rigid solid penalty)                    
+1768.0     2500.0     2.0390e-04 * exp(5340.16 / T)                
+
+>> Property: Surface Tension (N/m)
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     0 (No solid surface tension)                 
+1768.0     2500.0     -0.000490024*T + 2.73935                     
+
+>> Property: Specific heat (J/(mole K))-TOTAL
+Start (K)  End (K)    Function (COMSOL Definition)                 
+298.1      1768.0     4.42772*T - 3406.19                          
+1768.0     2500.0     3.88148e-18*T + 40.4999                      
+

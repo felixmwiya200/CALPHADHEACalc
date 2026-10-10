@@ -1,0 +1,37 @@
+================================================================================
+GNU GENERAL PUBLIC LICENSE, VERSION 2 WITH CLASSPATH EXCEPTION
+================================================================================
+Applicable to:
+1. OpenJDK Platform (Version 25.0.3)
+2. OpenJFX Desktop Framework (Version 21.0.11)
+
+The GNU General Public License (GPL) Version 2, June 1991
+Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+--------------------------------------------------------------------------------
+"CLASSPATH" EXCEPTION TO THE GPL VERSION 2
+--------------------------------------------------------------------------------
+Certain source files distributed by Oracle America, Inc. and/or its affiliates
+are subject to the following clarification and special exception to the GPL, but
+only where Oracle has expressly included in the particular source file's header
+the words "Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the LICENSE file that accompanied this code."
+
+Linking this library statically or dynamically with other modules is making a
+combined work based on the library. Thus, the terms and conditions of the GNU
+General Public License cover the whole combination.
+
+As a special exception, the copyright holders of this library give you permission
+to link this library with independent modules to produce an executable, regardless
+of the license terms of these independent modules, and to copy and distribute the
+resulting executable under terms of your choice, provided that you also meet, for
+each linked independent module, the terms and conditions of the license of that
+module. An independent module is a module which is not derived from or based on
+this library. If you modify this library, you may extend this exception to your
+version of the library, but you are not obligated to do so. If you do not wish to
+do so, delete this exception statement from your version.
+================================================================================

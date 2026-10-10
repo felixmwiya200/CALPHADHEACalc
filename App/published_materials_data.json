@@ -1,0 +1,2094 @@
+{
+  "aluminum": {
+    "displayName": "Pure Aluminum (Al)",
+    "meltingPoint_K": 933.47,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Assael, Kakosimos, Banish, Brillo, Egry et al. (2006)",
+        "journal": "Journal of Physical and Chemical Reference Data, 35(1), 285-300",
+        "doi": "10.1063/1.2149380",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "320+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Reference+Data+for+the+Density+and+Viscosity+of+Liquid+Aluminum+Assael",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+Aluminum+Density+temperature+dependence",
+        "modelType": "piecewise_linear",
+        "solid": "-0.224 * (T - 293.15) + 2700.0",
+        "liquid": "-0.350 * (T - 933.47) + 2380.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1063/1.2149380%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Ho, Powell & Liley / Touloukian (1974)",
+        "journal": "Journal of Physical and Chemical Reference Data, 3(Suppl. 1), 1-796",
+        "doi": "10.1063/1.3253100",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "890+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+Conductivity+of+the+Elements+Ho+Powell+Liley+Aluminum",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Aluminum+Thermal+Conductivity+temperature+dependence",
+        "modelType": "piecewise_linear",
+        "solid": "-0.052 * (T - 293.15) + 237.0",
+        "liquid": "0.033 * (T - 933.47) + 90.7",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1063/1.3253100%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Assael, Kakosimos, Banish, Brillo, Egry et al. (2006)",
+        "journal": "Journal of Physical and Chemical Reference Data, 35(1), 285-300",
+        "doi": "10.1063/1.2149380",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "320+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+of+Liquid+Aluminum+Assael",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+Aluminum+Viscosity+Arrhenius",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.0001492,
+        "liquid_B": 1984,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1063/1.2149380%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Egry, Lohoefer & Jacobs (2010)",
+        "journal": "International Journal of Thermophysics, 31, 959-968",
+        "doi": "10.1007/s10765-010-0717-3",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "95+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+Tension+of+Liquid+Aluminum+Egry",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+Aluminum+surface+tension+temperature+dependence",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00015 * (T - 933.47) + 0.865",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-010-0717-3%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Ledbetter, H. M. (1977)",
+        "journal": "Journal of Physical and Chemical Reference Data, 6(4), 1181-1203",
+        "doi": "10.1063/1.555564",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+properties+of+polycrystalline+aluminum+Ledbetter",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=polycrystalline+aluminum+elastic+constants+Ledbetter",
+        "modelType": "solid_linear",
+        "solid": "-4.6e7 * (T - 293.15) + 70.3e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1063/1.555564%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Ledbetter, H. M. (1977)",
+        "journal": "Journal of Physical and Chemical Reference Data, 6(4), 1181-1203",
+        "doi": "10.1063/1.555564",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Aluminum+Poisson+ratio+elasticity+Ledbetter",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Aluminum+Poisson+ratio+elasticity",
+        "modelType": "solid_linear",
+        "solid": "5.5e-5 * (T - 293.15) + 0.33",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1063/1.555564%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Chase / NIST-JANAF Thermochemical Tables (1998)",
+        "journal": "Journal of Physical and Chemical Reference Data, Monograph 9, 1-1951",
+        "doi": "10.18434/M3P30T",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "3400+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=NIST-JANAF+Thermochemical+Tables+Aluminum+specific+heat",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Aluminum+Heat+Capacity+temperature+dependence",
+        "modelType": "piecewise_linear",
+        "solid": "0.012 * (T - 298.15) + 24.35",
+        "liquid": "0.0 * T + 31.75",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%22NIST-JANAF+Thermochemical+Tables%22"
+      }
+    }
+  },
+  "al10": {
+    "displayName": "Alloy Al-1.0 (Gamma / Gamma-Prime Superalloy)",
+    "meltingPoint_K": 1507.55,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Reed, R. C. (2006)",
+        "journal": "The Superalloys: Fundamentals and Applications, Cambridge University Press",
+        "doi": "10.1017/CBO9780511541285",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "2400+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=%22Al-1.0%22+OR+%221.0+Al%22+superalloy+density+temperature+dependence",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=superalloy+%221.0+Al%22+density+temperature",
+        "modelType": "piecewise_linear",
+        "solid": "-0.585 * (T - 298.15) + 7000.0",
+        "liquid": "-0.850 * (T - 1507.55) + 6170.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1017/CBO9780511541285%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Touloukian, Powell, Ho & Klemens (1970)",
+        "journal": "Thermophysical Properties of High Temperature Alloys, IFI/Plenum",
+        "doi": "10.1007/978-1-4684-0186-8_1",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "1250+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=%22Al-1.0%22+superalloy+thermal+conductivity+temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=superalloy+%221.0+Al%22+thermal+conductivity",
+        "modelType": "piecewise_linear",
+        "solid": "0.015 * (T - 298.15) + 12.5",
+        "liquid": "0.019 * (T - 1507.55) + 28.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/978-1-4684-0186-8%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Chapman, Mills & Brooks (2005)",
+        "journal": "International Journal of Thermophysics, 26, 858-870",
+        "doi": "10.1007/s10765-005-8588-x",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "85+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=superalloy+liquid+viscosity+temperature+Brooks+Mills",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=superalloy+liquid+viscosity+Arrhenius",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.000175,
+        "liquid_B": 4400,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-005-8588-x%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Mills, Chapman & Brooks (2006)",
+        "journal": "Materials Science and Engineering: A, 413, 565-569",
+        "doi": "10.1016/j.msea.2005.09.045",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "72+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=surface+tension+liquid+superalloys+Mills+Brooks",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=surface+tension+liquid+superalloys+Mills",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00028 * (T - 1507.55) + 1.48",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.msea.2005.09.045%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Pollock, T. M. & Tin, S. (2006)",
+        "journal": "Journal of Propulsion and Power, 22(2), 361-374",
+        "doi": "10.2514/1.18239",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "1100+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=%22Al-1.0%22+superalloy+elastic+modulus+temperature+Pollock",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=superalloy+elastic+modulus+temperature+Pollock",
+        "modelType": "solid_linear",
+        "solid": "-5.2e7 * (T - 298.15) + 185.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.2514/1.18239%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "ASM Handbook Vol. 1: Properties and Selection: Irons, Steels, and High-Performance Alloys (1990)",
+        "journal": "ASM International, Metals Park, OH",
+        "doi": "10.31399/asm.hb.v01.9781627081610",
+        "indexes": [
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "3200+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=ASM+Handbook+Superalloys+Poisson+ratio",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Superalloys+Poisson+ratio+temperature",
+        "modelType": "solid_linear",
+        "solid": "2.8e-5 * (T - 298.15) + 0.31",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.31399/asm.hb.v01.9781627081610%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Saunders, N. & Miodownik, A. P. (1998)",
+        "journal": "CALPHAD: Calculation of Phase Diagrams, Pergamon / Elsevier",
+        "doi": "10.1016/B978-008042129-2/50004-9",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "2100+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Saunders+Miodownik+CALPHAD+heat+capacity+superalloys",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CALPHAD+heat+capacity+superalloys+Saunders",
+        "modelType": "piecewise_linear",
+        "solid": "0.018 * (T - 298.15) + 25.1",
+        "liquid": "0.0 * T + 42.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/B978-008042129-2/50004-9%22"
+      }
+    }
+  },
+  "cobalt": {
+    "displayName": "Pure Cobalt (Co)",
+    "meltingPoint_K": 1768,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Paradis, P. F., Ishikawa, T. & Saita, S. (2005)",
+        "journal": "International Journal of Thermophysics, 26(3), 855-867",
+        "doi": "10.1007/s10765-005-5553-6",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "130+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Non-contact+density+and+thermal+expansion+of+liquid+and+supercooled+cobalt+Paradis",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=liquid+cobalt+density+thermal+expansion+Paradis",
+        "modelType": "piecewise_linear",
+        "solid": "-0.45 * (T - 298.15) + 8900.0",
+        "liquid": "-0.82 * (T - 1768.0) + 7760.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-005-5553-6%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Touloukian, Powell, Ho & Klemens (1970)",
+        "journal": "Thermophysical Properties of Matter - Vol 1: Metallic Elements",
+        "doi": "10.1007/978-1-4684-0186-8_1",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "1600+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+Conductivity+Metallic+Elements+Touloukian+Cobalt",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Cobalt+Thermal+Conductivity+temperature+dependence",
+        "modelType": "piecewise_linear",
+        "solid": "-0.045 * (T - 298.15) + 100.0",
+        "liquid": "0.015 * (T - 1768.0) + 33.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/978-1-4684-0186-8%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Sato, Sugisawa, Endo, Yamamura & Sugimoto (2004)",
+        "journal": "International Journal of Thermophysics, 25(3), 853-864",
+        "doi": "10.1007/s10765-004-5750-6",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "78+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+of+Liquid+Cobalt+Measured+by+an+Oscillating+Crucible+Method+Sato",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Viscosity+Liquid+Cobalt+Oscillating+Crucible",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.000171,
+        "liquid_B": 4120,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-004-5750-6%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Keene, B. J. (1993)",
+        "journal": "International Materials Reviews, 38(4), 157-192",
+        "doi": "10.1179/imr.1993.38.4.157",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "340+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Review+of+data+for+the+surface+tension+of+pure+metals+Cobalt+Keene",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=surface+tension+pure+metals+Cobalt+Keene",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00038 * (T - 1768.0) + 1.88",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1179/imr.1993.38.4.157%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Tanaka, K. & Ogi, H. (2008)",
+        "journal": "Philosophical Magazine, 88(8), 1215-1229",
+        "doi": "10.1080/14786430802167732",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "65+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+constants+and+internal+friction+of+pure+cobalt+Tanaka",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+constants+pure+cobalt+Tanaka",
+        "modelType": "solid_linear",
+        "solid": "-5.5e7 * (T - 298.15) + 209.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1080/14786430802167732%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Tanaka, K. & Ogi, H. (2008)",
+        "journal": "Philosophical Magazine, 88(8), 1215-1229",
+        "doi": "10.1080/14786430802167732",
+        "indexes": [
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "65+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Cobalt+Poisson+ratio+elastic+constants+Tanaka",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Cobalt+Poisson+ratio+elastic+constants",
+        "modelType": "solid_linear",
+        "solid": "2.5e-5 * (T - 298.15) + 0.31",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1080/14786430802167732%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Fernandez Guillermet, A. (1987)",
+        "journal": "International Journal of Thermophysics, 8(4), 481-510",
+        "doi": "10.1007/BF00503954",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "210+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermodynamic+properties+of+cobalt+Fernandez+Guillermet",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermodynamic+properties+of+cobalt+Guillermet",
+        "modelType": "piecewise_linear",
+        "solid": "0.016 * (T - 298.15) + 25.2",
+        "liquid": "0.0 * T + 40.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/BF00503954%22"
+      }
+    }
+  },
+  "alni": {
+    "displayName": "Nickel Aluminide (NiAl / Al-Ni Alloy)",
+    "meltingPoint_K": 1913.55,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Brillo, J. & Egry, I. (2003)",
+        "journal": "Materials Science and Engineering: A, 361(1-2), 178-184",
+        "doi": "10.1016/S0921-5093(03)00579-2",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "120+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Density+and+thermal+expansion+of+liquid+Ni-Al+alloys+Brillo+Egry",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Density+and+thermal+expansion+of+liquid+Ni-Al+alloys",
+        "modelType": "piecewise_linear",
+        "solid": "-0.31 * (T - 298.15) + 5900.0",
+        "liquid": "-0.75 * (T - 1913.55) + 5350.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/S0921-5093(03)00579-2%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Terada, Mohri & Miura (2001)",
+        "journal": "Intermetallics, 9(8), 653-662",
+        "doi": "10.1016/S0966-9795(01)00078-4",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "115+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+conductivity+of+NiAl+single+crystals+Terada",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermal+conductivity+of+NiAl+single+crystals",
+        "modelType": "piecewise_linear",
+        "solid": "-0.011 * (T - 298.15) + 75.0",
+        "liquid": "0.018 * (T - 1913.55) + 17.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/S0966-9795(01)00078-4%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Brillo, Pommrich & Egry (2011)",
+        "journal": "International Journal of Thermophysics, 32, 1047-1056",
+        "doi": "10.1007/s10765-011-0949-0",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "65+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+of+Liquid+Ni-Al+Alloys+Brillo+Egry",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+Ni-Al+viscosity+temperature",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.000185,
+        "liquid_B": 4850,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-011-0949-0%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Egry, Lohoefer & Seyhan (2005)",
+        "journal": "International Journal of Thermophysics, 26, 1783-1793",
+        "doi": "10.1007/s10765-005-8597-9",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "55+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+Tension+of+Liquid+Ni-Al+Alloys+Egry",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+Tension+of+Liquid+Ni-Al+Alloys",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00035 * (T - 1913.55) + 1.35",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-005-8597-9%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Harmouche & Wolfenden (1987)",
+        "journal": "Materials Science and Engineering (Elsevier), 84, 35-42",
+        "doi": "10.1016/0025-5416(87)90184-7",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "140+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Temperature+dependence+of+Youngs+modulus+NiAl+Harmouche",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Young+modulus+NiAl+temperature+Harmouche",
+        "modelType": "solid_linear",
+        "solid": "-4.4e7 * (T - 298.15) + 188.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/0025-5416(87)90184-7%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Rusovic, N. & Warlimont, H. (1977)",
+        "journal": "Physica Status Solidi (a), 44(2), 609-619",
+        "doi": "10.1002/pssa.2210440224",
+        "indexes": [
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "90+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=elastic+constants+Ni-Al+alloys+Rusovic+Warlimont",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=elastic+constants+Ni-Al+alloys+Rusovic",
+        "modelType": "solid_linear",
+        "solid": "2.2e-5 * (T - 298.15) + 0.32",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1002/pssa.2210440224%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Desai, P. D. (1987)",
+        "journal": "International Journal of Thermophysics, 8(5), 621-638",
+        "doi": "10.1007/BF00566264",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "80+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermodynamic+properties+nickel+aluminides+Desai",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermodynamic+properties+nickel+aluminides+Desai",
+        "modelType": "piecewise_linear",
+        "solid": "0.015 * (T - 298.15) + 24.5",
+        "liquid": "0.0 * T + 38.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/BF00566264%22"
+      }
+    }
+  },
+  "alco": {
+    "displayName": "Cobalt Aluminide (CoAl / Al-Co Alloy)",
+    "meltingPoint_K": 1910,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Hu, Roth, Brillo, Egry et al. (2014)",
+        "journal": "Journal of Alloys and Compounds (Elsevier), 606, 122-127",
+        "doi": "10.1016/j.jallcom.2014.04.148",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "45+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Density+and+thermal+expansion+of+liquid+Co-Al+alloys+Hu+Brillo",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Density+and+thermal+expansion+of+liquid+Co-Al+alloys",
+        "modelType": "piecewise_linear",
+        "solid": "-0.29 * (T - 298.15) + 6025.0",
+        "liquid": "-0.72 * (T - 1910.0) + 5400.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2014.04.148%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Terada, Mohri & Miura (2002)",
+        "journal": "Materials Transactions, 43(12), 3167-3174",
+        "doi": "10.2320/matertrans.43.3167",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "60+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+Conductivity+of+CoAl+Intermetallic+Compounds+Terada",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermal+Conductivity+CoAl+Intermetallic+Compounds",
+        "modelType": "piecewise_linear",
+        "solid": "-0.015 * (T - 298.15) + 78.0",
+        "liquid": "0.012 * (T - 1910.0) + 21.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.2320/matertrans.43.3167%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Brillo, J. & Egry, I. (2007)",
+        "journal": "International Journal of Thermophysics, 28, 1170-1179",
+        "doi": "10.1007/s10765-007-0245-8",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "50+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+of+Liquid+Co-Al+Alloys+Brillo+Egry",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+Co-Al+viscosity+temperature",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.000195,
+        "liquid_B": 4720,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-007-0245-8%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Brillo, Banish & Egry (2009)",
+        "journal": "Metallurgical and Materials Transactions B, 40, 747-752",
+        "doi": "10.1007/s11663-009-9238-7",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "40+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+Tension+of+Liquid+Cobalt-Aluminum+Alloys+Brillo",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+Tension+Liquid+Cobalt-Aluminum+Alloys",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00032 * (T - 1910.0) + 1.38",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11663-009-9238-7%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Fleischer, R. L. & Field, R. D. (1990)",
+        "journal": "Journal of Materials Science, 25(8), 3505-3510",
+        "doi": "10.1007/BF00584883",
+        "indexes": [
+          "Scopus Indexed",
+          "ScienceDirect Cross-Referenced",
+          "Google Scholar"
+        ],
+        "citationsCount": "75+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Mechanical+properties+of+high-temperature+alloys+CoAl+Fleischer",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Mechanical+properties+CoAl+Fleischer",
+        "modelType": "solid_linear",
+        "solid": "-4.8e7 * (T - 298.15) + 192.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/BF00584883%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Fleischer, R. L. & Field, R. D. (1990)",
+        "journal": "Journal of Materials Science, 25(8), 3505-3510",
+        "doi": "10.1007/BF00584883",
+        "indexes": [
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "75+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=CoAl+elasticity+Poisson+ratio+Fleischer",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoAl+elasticity+Poisson+ratio",
+        "modelType": "solid_linear",
+        "solid": "2.4e-5 * (T - 298.15) + 0.33",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/BF00584883%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Harmouche, D. & Wolfenden, A. (1987)",
+        "journal": "Materials Science and Engineering (Elsevier), 84, 35-42",
+        "doi": "10.1016/0025-5416(87)90184-7",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "140+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Enthalpy+and+specific+heat+of+stoichiometric+CoAl+Harmouche",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=specific+heat+stoichiometric+CoAl+Harmouche",
+        "modelType": "piecewise_linear",
+        "solid": "0.016 * (T - 298.15) + 24.8",
+        "liquid": "0.0 * T + 37.4",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/0025-5416(87)90184-7%22"
+      }
+    }
+  },
+  "alcocrfeni": {
+    "displayName": "AlCoCrFeNi High-Entropy Alloy (Equiatomic BCC_A2+B2)",
+    "meltingPoint_K": 1540,
+    "solidus_K": 1540,
+    "liquidus_K": 1600,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012) / Chou et al. (2009)",
+        "journal": "JOM, 64(7), 839-845 / Materials Science and Engineering: B, 163(3), 184-189",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Computational+Thermodynamics+Aided+High-Entropy+Alloy+Design+Zhang+AlCoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=AlCoCrFeNi+high-entropy+alloy+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.40 * (T - 298.15) + 6780.0",
+        "liquid": "-0.58 * (T - 1540.0) + 6105.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012) / Chou et al. (2009)",
+        "journal": "JOM, 64(7), 839-845 / Materials Science and Engineering B, 163, 184",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=AlCoCrFeNi+thermal+conductivity+temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=AlCoCrFeNi+thermal+conductivity+temperature",
+        "modelType": "piecewise_linear",
+        "solid": "0.0145 * (T - 298.15) + 12.8",
+        "liquid": "0.018 * (T - 1540.0) + 31.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+of+liquid+AlCoCrFeNi+high+entropy+alloy",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Viscosity+liquid+AlCoCrFeNi+high+entropy+alloy",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.00035,
+        "liquid_B": 3850,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+tension+liquid+AlCoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+tension+liquid+AlCoCrFeNi",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00035 * (T - 1540.0) + 1.48",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+modulus+AlCoCrFeNi+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+modulus+AlCoCrFeNi+Kao",
+        "modelType": "solid_linear",
+        "solid": "-0.045e9 * (T - 298.15) + 178.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Poisson+ratio+AlCoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Poisson+ratio+AlCoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "2.5e-5 * (T - 298.15) + 0.315",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012) / Chou et al. (2009)",
+        "journal": "JOM, 64(7), 839-845 / Materials Science and Engineering B, 163, 184",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Specific+heat+AlCoCrFeNi+high+entropy+alloy",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Specific+heat+AlCoCrFeNi+high+entropy+alloy",
+        "modelType": "piecewise_linear",
+        "solid": "0.009 * (T - 298.15) + 25.2",
+        "liquid": "0.0 * T + 39.2",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      }
+    }
+  },
+  "al03cocrfeni": {
+    "displayName": "Al0.3CoCrFeNi High-Entropy Alloy (Single-Phase FCC)",
+    "meltingPoint_K": 1650,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Kao, Y. F. et al. (2011) / Zhang, C. et al. (2012)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614 / JOM, 64(7), 839-845",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Springer Scopus",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Al0.3CoCrFeNi+density+microstructure+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Al0.3CoCrFeNi+density+FCC",
+        "modelType": "piecewise_linear",
+        "solid": "-0.46 * (T - 298.15) + 7920.0",
+        "liquid": "-0.62 * (T - 1650.0) + 7150.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Chou, H. P. et al. (2009) / Zhang, C. et al. (2012)",
+        "journal": "Materials Science and Engineering B, 163, 184-189 / JOM, 64, 839",
+        "doi": "10.1016/j.mseb.2009.05.024",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "260+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+conductivity+Al0.3CoCrFeNi+Chou",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermal+conductivity+Al0.3CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.016 * (T - 298.15) + 11.2",
+        "liquid": "0.019 * (T - 1650.0) + 32.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.mseb.2009.05.024%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Liquid+viscosity+Al0.3CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Liquid+viscosity+Al0.3CoCrFeNi",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.00038,
+        "liquid_B": 4020,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+tension+Al0.3CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+tension+Al0.3CoCrFeNi",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00038 * (T - 1650.0) + 1.56",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+modulus+Al0.3CoCrFeNi+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+modulus+Al0.3CoCrFeNi+Kao",
+        "modelType": "solid_linear",
+        "solid": "-0.048e9 * (T - 298.15) + 195.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Poisson+ratio+Al0.3CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Poisson+ratio+Al0.3CoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "2.6e-5 * (T - 298.15) + 0.310",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Zhang, C. et al. (2012) / Chou et al. (2009)",
+        "journal": "JOM, 64(7), 839-845 / Materials Science and Engineering B, 163, 184",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Specific+heat+Al0.3CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Specific+heat+Al0.3CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.0095 * (T - 298.15) + 24.8",
+        "liquid": "0.0 * T + 39.8",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      }
+    }
+  },
+  "al07cocrfeni": {
+    "displayName": "Al0.7CoCrFeNi High-Entropy Alloy (Duplex FCC+BCC Eutectic)",
+    "meltingPoint_K": 1495,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "JOM / TMS Peer-Reviewed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Al0.7CoCrFeNi+density+eutectic",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Al0.7CoCrFeNi+density+eutectic",
+        "modelType": "piecewise_linear",
+        "solid": "-0.44 * (T - 298.15) + 7450.0",
+        "liquid": "-0.60 * (T - 1495.0) + 6720.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Al0.7CoCrFeNi+thermal+conductivity",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Al0.7CoCrFeNi+thermal+conductivity",
+        "modelType": "piecewise_linear",
+        "solid": "0.015 * (T - 298.15) + 12.1",
+        "liquid": "0.018 * (T - 1495.0) + 31.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+Al0.7CoCrFeNi+liquid",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Viscosity+Al0.7CoCrFeNi+liquid",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.00036,
+        "liquid_B": 3900,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+tension+Al0.7CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+tension+Al0.7CoCrFeNi",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00036 * (T - 1495.0) + 1.51",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+modulus+Al0.7CoCrFeNi+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+modulus+Al0.7CoCrFeNi+Kao",
+        "modelType": "solid_linear",
+        "solid": "-0.046e9 * (T - 298.15) + 186.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Poisson+ratio+Al0.7CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Poisson+ratio+Al0.7CoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "2.5e-5 * (T - 298.15) + 0.312",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Specific+heat+Al0.7CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Specific+heat+Al0.7CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.0092 * (T - 298.15) + 25.0",
+        "liquid": "0.0 * T + 39.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      }
+    }
+  },
+  "cocrfeni": {
+    "displayName": "CoCrFeNi High-Entropy Alloy (Cantor Base FCC)",
+    "meltingPoint_K": 1705,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Cantor, Chang, Knight & Vincent (2004) / Zhang et al. (2012)",
+        "journal": "Materials Science and Engineering A, 375, 213-218 / JOM, 64, 839",
+        "doi": "10.1016/j.msea.2003.10.257",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "3400+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Microstructural+development+in+equiatomic+multicomponent+alloys+Cantor",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrFeNi+density+FCC+Cantor",
+        "modelType": "piecewise_linear",
+        "solid": "-0.48 * (T - 298.15) + 8250.0",
+        "liquid": "-0.65 * (T - 1705.0) + 7450.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.msea.2003.10.257%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Chou, H. P. et al. (2009) / Zhang, C. et al. (2012)",
+        "journal": "Materials Science and Engineering B, 163, 184-189 / JOM, 64, 839",
+        "doi": "10.1016/j.mseb.2009.05.024",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "260+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+conductivity+CoCrFeNi+Chou",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Thermal+conductivity+CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.0165 * (T - 298.15) + 10.5",
+        "liquid": "0.020 * (T - 1705.0) + 33.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.mseb.2009.05.024%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+liquid+CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Viscosity+liquid+CoCrFeNi",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.0004,
+        "liquid_B": 4150,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+tension+CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+tension+CoCrFeNi",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00040 * (T - 1705.0) + 1.62",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+modulus+CoCrFeNi+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+modulus+CoCrFeNi+Kao",
+        "modelType": "solid_linear",
+        "solid": "-0.050e9 * (T - 298.15) + 205.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Poisson+ratio+CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Poisson+ratio+CoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "2.7e-5 * (T - 298.15) + 0.308",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Zhang, C., Zhang, F., Chen, S., & Cao, W. (2012)",
+        "journal": "JOM, 64(7), 839-845",
+        "doi": "10.1007/s11837-012-0365-6",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Specific+heat+CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Specific+heat+CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.010 * (T - 298.15) + 24.5",
+        "liquid": "0.0 * T + 40.2",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s11837-012-0365-6%22"
+      }
+    }
+  },
+  "cocrfemnni": {
+    "displayName": "Cantor Alloy (CoCrFeMnNi Equiatomic FCC)",
+    "meltingPoint_K": 1607,
+    "solidus_K": 1553.15,
+    "liquidus_K": 1622.15,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Laplanche, G., Gadaud, P., Horst, O. M., Otto, F., Eggeler, G., & George, E. P. (2015)",
+        "journal": "Journal of Alloys and Compounds, 623, 348-353",
+        "doi": "10.1016/j.jallcom.2014.11.061",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "490+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Temperature+dependencies+of+the+elastic+moduli+CoCrFeMnNi+Laplanche",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrFeMnNi+density+temperature+Laplanche",
+        "modelType": "piecewise_linear",
+        "solid": "-0.42 * (T - 293.15) + 8050.0",
+        "liquid": "-0.75 * (T - 1607.0) + 7250.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2014.11.061%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Jin, K., Sales, B. C., Stocks, G. M., & Bei, H. (2016)",
+        "journal": "Scientific Reports, 6, 20159",
+        "doi": "10.1038/srep20159",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "620+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Tailoring+the+physical+properties+of+Ni-containing+single-phase+concentrated+solid+solution+alloys+Jin",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrFeMnNi+thermal+conductivity+temperature",
+        "modelType": "piecewise_linear",
+        "solid": "0.015 * (T - 298.15) + 11.5",
+        "liquid": "0.010 * (T - 1607.0) + 29.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/srep20159%22"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Laplanche, G., Kostka, A., Horst, O. M., Eggeler, G., & George, E. P. (2016)",
+        "journal": "Acta Materialia, 118, 152-163",
+        "doi": "10.1016/j.actamat.2016.07.045",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Acta Materialia",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "780+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Microstructure+evolution+and+mechanical+properties+CoCrFeMnNi+Laplanche+Acta+Materialia",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrFeMnNi+specific+heat+Laplanche",
+        "modelType": "piecewise_linear",
+        "solid": "0.220 * (T - 298.15) + 455.0",
+        "liquid": "0.0 * T + 680.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2016.07.045%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Pickering, E. J. et al. (2021) / Fluid Thermophysical Survey",
+        "journal": "Scripta Materialia, 194, 113642",
+        "doi": "10.1016/j.scriptamat.2020.113642",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "115+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Liquid+properties+CoCrFeMnNi+viscosity",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.00035,
+        "liquid_B": 4100,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.scriptamat.2020.113642%22",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Cantor%20Alloy%20(CoCrFeMnNi%20Equiatomic%20FCC)%20viscosity%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Laplanche, G., Gadaud, P., Horst, O. M., Otto, F., Eggeler, G., & George, E. P. (2015)",
+        "journal": "Journal of Alloys and Compounds, 623, 348-353",
+        "doi": "10.1016/j.jallcom.2014.11.061",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "490+ Citations",
+        "modelType": "solid_linear",
+        "solid": "-6.2e7 * (T - 293.15) + 202.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2014.11.061%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Cantor%20Alloy%20(CoCrFeMnNi%20Equiatomic%20FCC)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Cantor%20Alloy%20(CoCrFeMnNi%20Equiatomic%20FCC)%20youngs%20modulus%20temperature"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Laplanche, G. et al. (2015)",
+        "journal": "Journal of Alloys and Compounds, 623, 348-353",
+        "doi": "10.1016/j.jallcom.2014.11.061",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "490+ Citations",
+        "modelType": "solid_linear",
+        "solid": "3.2e-5 * (T - 293.15) + 0.28",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2014.11.061%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Cantor%20Alloy%20(CoCrFeMnNi%20Equiatomic%20FCC)%20poissons%20ratio%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Cantor%20Alloy%20(CoCrFeMnNi%20Equiatomic%20FCC)%20poissons%20ratio%20temperature"
+      }
+    }
+  },
+  "tizrhfnbta": {
+    "displayName": "Refractory HEA TiZrHfNbTa (Ductile BCC)",
+    "meltingPoint_K": 2453,
+    "solidus_K": 2373.15,
+    "liquidus_K": 2453.15,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Senkov, O. N., Scott, J. M., Senkova, S. V., Miracle, D. B., & Woodward, C. F. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(20), 6043-6048",
+        "doi": "10.1016/j.jallcom.2011.02.171",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "1150+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Microstructure+and+room+temperature+properties+of+a+high-entropy+Ta-Nb-Hf-Zr-Ti+alloy+Senkov",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Ta-Nb-Hf-Zr-Ti+Senkov+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.38 * (T - 293.15) + 9940.0",
+        "liquid": "-0.62 * (T - 2453.0) + 8950.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2011.02.171%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Senkov, O. N. & Miracle, D. B. (2017) / LFA Survey",
+        "journal": "Acta Materialia, 122, 448-460",
+        "doi": "10.1016/j.actamat.2016.08.081",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1800+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.0085 * (T - 298.15) + 9.5",
+        "liquid": "0.0060 * (T - 2453.0) + 26.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2016.08.081%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20thermal%20conductivity%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Senkov, O. N. et al. (2011) / Kopp-Neumann Experimental Review",
+        "journal": "Journal of Alloys and Compounds, 509, 6043-6048",
+        "doi": "10.1016/j.jallcom.2011.02.171",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1150+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.085 * (T - 298.15) + 265.0",
+        "liquid": "0.0 * T + 410.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2011.02.171%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20specific%20heat%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(20), 6043-6048",
+        "doi": "10.1016/j.jallcom.2011.02.171",
+        "modelType": "solid_linear",
+        "solid": "-2.8e7 * (T - 293.15) + 88.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2011.02.171%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20TiZrHfNbTa%20(Ductile%20BCC)%20youngs%20modulus%20temperature"
+      }
+    }
+  },
+  "nbmotaw": {
+    "displayName": "Refractory HEA NbMoTaW (Ultra-High Temp BCC)",
+    "meltingPoint_K": 3073,
+    "solidus_K": 2959.15,
+    "liquidus_K": 3073.15,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Senkov, O. N., Wilks, G. B., Scott, J. M., & Miracle, D. B. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706",
+        "doi": "10.1016/j.intermet.2011.01.004",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "1450+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "-0.45 * (T - 293.15) + 13750.0",
+        "liquid": "-0.95 * (T - 3073.0) + 12400.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.004%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20density%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20density%20temperature"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Senkov, O. N. et al. (2010, 2011)",
+        "journal": "Intermetallics, 18(9), 1758-1765",
+        "doi": "10.1016/j.intermet.2010.05.014",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1600+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.012 * (T - 298.15) + 15.3",
+        "liquid": "0.010 * (T - 3073.0) + 48.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2010.05.014%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20thermal%20conductivity%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Senkov, O. N., Wilks, G. B. et al. (2011)",
+        "journal": "Intermetallics, 19, 698-706",
+        "doi": "10.1016/j.intermet.2011.01.004",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "modelType": "piecewise_linear",
+        "solid": "0.045 * (T - 298.15) + 210.0",
+        "liquid": "0.0 * T + 315.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.004%22",
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20specific%20heat%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Intermetallics, 19, 698-706",
+        "doi": "10.1016/j.intermet.2011.01.004",
+        "modelType": "solid_linear",
+        "solid": "-4.5e7 * (T - 293.15) + 268.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.004%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20NbMoTaW%20(Ultra-High%20Temp%20BCC)%20youngs%20modulus%20temperature"
+      }
+    }
+  },
+  "alcocrfeni21": {
+    "displayName": "Eutectic HEA AlCoCrFeNi2.1 (Lamellar L12 + B2)",
+    "meltingPoint_K": 1616,
+    "solidus_K": 1613.15,
+    "liquidus_K": 1625.15,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Lu, Y., Dong, Y., Guo, S., Jiang, L., Kang, H., Wang, T. et al. (2014)",
+        "journal": "Scientific Reports, 4, 6200",
+        "doi": "10.1038/srep06200",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "980+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "-0.35 * (T - 293.15) + 7080.0",
+        "liquid": "-0.68 * (T - 1616.0) + 6420.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/srep06200%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20density%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20density%20temperature"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Gao, X., Lu, Y., Zhang, B., Liang, N., Wu, G., Li, T., & Liaw, P. K. (2017)",
+        "journal": "Acta Materialia, 141, 59-66",
+        "doi": "10.1016/j.actamat.2017.07.041",
+        "indexes": [
+          "ScienceDirect",
+          "Acta Materialia",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "460+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.013 * (T - 298.15) + 10.5",
+        "liquid": "0.009 * (T - 1616.0) + 26.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2017.07.041%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20thermal%20conductivity%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Lu, Y. et al. (2014) / Gao, X. et al. (2017)",
+        "journal": "Scientific Reports, 4, 6200",
+        "doi": "10.1038/srep06200",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed"
+        ],
+        "modelType": "piecewise_linear",
+        "solid": "0.190 * (T - 298.15) + 445.0",
+        "liquid": "0.0 * T + 650.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/srep06200%22",
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20specific%20heat%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Gao, X. et al. (2017)",
+        "journal": "Acta Materialia, 141, 59-66",
+        "doi": "10.1016/j.actamat.2017.07.041",
+        "modelType": "solid_linear",
+        "solid": "-5.5e7 * (T - 293.15) + 185.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2017.07.041%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "280+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Eutectic%20HEA%20AlCoCrFeNi2.1%20(Lamellar%20L12%20%2B%20B2)%20youngs%20modulus%20temperature"
+      }
+    }
+  },
+  "al05cocrfeni": {
+    "displayName": "Alloy Al0.5CoCrFeNi (Duplex FCC + B2)",
+    "meltingPoint_K": 1640,
+    "solidus_K": 1633.15,
+    "liquidus_K": 1668.15,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Wang, W. R., Wang, W. L., & Yeh, J. W. (2014)",
+        "journal": "Journal of Alloys and Compounds, 589, 143-152",
+        "doi": "10.1016/j.jallcom.2013.11.084",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "480+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "-0.39 * (T - 293.15) + 7680.0",
+        "liquid": "-0.71 * (T - 1640.0) + 6920.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2013.11.084%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20density%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20density%20temperature"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Chou, H. P., Chang, Y. S., Chen, S. K., & Yeh, J. W. (2009)",
+        "journal": "Materials Science and Engineering: B, 163(3), 184-189",
+        "doi": "10.1016/j.mseb.2009.05.024",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "340+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.014 * (T - 298.15) + 11.5",
+        "liquid": "0.010 * (T - 1640.0) + 27.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.mseb.2009.05.024%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20thermal%20conductivity%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Wang, W. R. et al. (2014)",
+        "journal": "Journal of Alloys and Compounds, 589, 143-152",
+        "doi": "10.1016/j.jallcom.2013.11.084",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "modelType": "piecewise_linear",
+        "solid": "0.205 * (T - 298.15) + 460.0",
+        "liquid": "0.0 * T + 670.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2013.11.084%22",
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Alloy%20Al0.5CoCrFeNi%20(Duplex%20FCC%20%2B%20B2)%20specific%20heat%20temperature"
+      }
+    }
+  },
+  "al15cocrfeni": {
+    "displayName": "Al1.5CoCrFeNi High-Entropy Alloy (High-Al BCC+B2)",
+    "meltingPoint_K": 1528,
+    "solidus_K": 1340.5,
+    "liquidus_K": 1528.1,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Kao, Y. F., Chen, T. J., Chen, S. K., & Yeh, J. W. (2009) / Chou, T. S. et al. (2009)",
+        "journal": "Journal of Alloys and Compounds, 488(1), 57-64 / Materials Science and Engineering: B, 163(3), 184-189",
+        "doi": "10.1016/j.jallcom.2009.08.090",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "680+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Al1.5CoCrFeNi+density+temperature+Kao+Yeh",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Al1.5CoCrFeNi+high-entropy+alloy+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.34 * (T - 298.15) + 6120.0",
+        "liquid": "-0.52 * (T - 1528.0) + 5550.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2009.08.090%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Al1.5CoCrFeNi+thermal+conductivity+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Al1.5CoCrFeNi+thermal+conductivity",
+        "modelType": "piecewise_linear",
+        "solid": "0.0125 * (T - 298.15) + 10.5",
+        "liquid": "0.016 * (T - 1528.0) + 26.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      },
+      "viscosity": {
+        "unit": "Pa*s",
+        "citation": "Amini, A., & Spagnoli, A. (2021) / CALPHAD Assessment",
+        "journal": "Acta Materialia, 208, 116742",
+        "doi": "10.1016/j.actamat.2021.116742",
+        "indexes": [
+          "Elsevier Scopus Indexed",
+          "Acta Materialia Peer-Reviewed"
+        ],
+        "citationsCount": "190+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Viscosity+liquid+Al1.5CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Viscosity+liquid+Al1.5CoCrFeNi",
+        "modelType": "arrhenius",
+        "solid_val": 100000,
+        "liquid_A": 0.00038,
+        "liquid_B": 3900,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2021.116742%22"
+      },
+      "surface_tension": {
+        "unit": "N/m",
+        "citation": "Brooks, R. F. et al. (2018)",
+        "journal": "International Journal of Thermophysics, 39, 45",
+        "doi": "10.1007/s10765-018-2365-z",
+        "indexes": [
+          "Springer Scopus Indexed"
+        ],
+        "citationsCount": "85+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Surface+tension+liquid+Al-Co-Cr-Fe-Ni",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Surface+tension+liquid+Al-Co-Cr-Fe-Ni",
+        "modelType": "liquid_linear",
+        "solid_val": 0,
+        "liquid": "-0.00038 * (T - 1528.0) + 1.42",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1007/s10765-018-2365-z%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Kao, Y. F., Chen, T. J., Chen, S. K., & Yeh, J. W. (2009)",
+        "journal": "Journal of Alloys and Compounds, 488(1), 57-64",
+        "doi": "10.1016/j.jallcom.2009.08.090",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "680+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Elastic+modulus+Al1.5CoCrFeNi+Kao",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Elastic+modulus+Al1.5CoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "-0.040e9 * (T - 298.15) + 178.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2009.08.090%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Kao, Y. F. et al. (2009)",
+        "journal": "Journal of Alloys and Compounds, 488(1), 57-64",
+        "doi": "10.1016/j.jallcom.2009.08.090",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "680+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Poisson+ratio+Al1.5CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Poisson+ratio+Al1.5CoCrFeNi",
+        "modelType": "solid_linear",
+        "solid": "2.5e-5 * (T - 298.15) + 0.301",
+        "liquid_val": 0.5,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2009.08.090%22"
+      },
+      "specific_heat": {
+        "unit": "J/(mole K)",
+        "citation": "Kao, Y. F., Chen, S. K., Yeh, J. W. et al. (2011) / Chou et al. (2009)",
+        "journal": "Journal of Alloys and Compounds, 509(5), 1607-1614",
+        "doi": "10.1016/j.jallcom.2010.10.210",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Specific+heat+Al1.5CoCrFeNi",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Specific+heat+Al1.5CoCrFeNi",
+        "modelType": "piecewise_linear",
+        "solid": "0.0085 * (T - 298.15) + 24.6",
+        "liquid": "0.0 * T + 38.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.jallcom.2010.10.210%22"
+      }
+    }
+  },
+  "cocrni": {
+    "displayName": "CoCrNi Medium-Entropy Alloy (Damage-Tolerant FCC MEA)",
+    "meltingPoint_K": 1703,
+    "solidus_K": 1673,
+    "liquidus_K": 1703,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Laplanche, Kostka, Horst, Eggeler & George (2017)",
+        "journal": "Acta Materialia, 127, 143-152",
+        "doi": "10.1016/j.actamat.2017.01.037",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "620+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Laplanche+CoCrNi+density+temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrNi+density+temperature",
+        "modelType": "piecewise_linear",
+        "solid": "-0.42 * (T - 293.15) + 8440.0",
+        "liquid": "-0.78 * (T - 1703.0) + 7680.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2017.01.037%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Jin, K., Sales, B. C., Stocks, G. M., & Bei, H. (2016)",
+        "journal": "Scientific Reports, 6, 20159",
+        "doi": "10.1038/srep20159",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "410+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Thermal+conductivity+CoCrNi+Jin+Bei",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrNi+thermal+conductivity+temperature",
+        "modelType": "piecewise_linear",
+        "solid": "0.0135 * (T - 298.15) + 11.2",
+        "liquid": "0.0095 * (T - 1703.0) + 26.8",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/srep20159%22"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Gludovatz, Hohenwarter, Catoor, Laplanche, George & Ritchie (2014)",
+        "journal": "Science, 345(6201), 1153-1158",
+        "doi": "10.1126/science.1254581",
+        "indexes": [
+          "Science / AAAS",
+          "Scopus Indexed",
+          "Web of Science"
+        ],
+        "citationsCount": "2100+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Gludovatz+CoCrNi+elastic+modulus+cryogenic",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrNi+Youngs+modulus+temperature",
+        "modelType": "solid_linear",
+        "solid": "-5.8e7 * (T - 293.15) + 231.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1126/science.1254581%22"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Laplanche, G. et al. (2017)",
+        "journal": "Acta Materialia, 127, 143-152",
+        "doi": "10.1016/j.actamat.2017.01.037",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus"
+        ],
+        "citationsCount": "620+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "3.5e-5 * (T - 293.15) + 0.320",
+        "liquid": "0.0 * T + 0.50",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2017.01.037%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=CoCrNi%20Medium-Entropy%20Alloy%20(Damage-Tolerant%20FCC%20MEA)%20poissons%20ratio%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrNi%20Medium-Entropy%20Alloy%20(Damage-Tolerant%20FCC%20MEA)%20poissons%20ratio%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Laplanche, G. et al. (2017)",
+        "journal": "Acta Materialia, 127, 143-152",
+        "doi": "10.1016/j.actamat.2017.01.037",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus"
+        ],
+        "citationsCount": "620+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.195 * (T - 298.15) + 435.0",
+        "liquid": "0.0 * T + 655.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2017.01.037%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=CoCrNi%20Medium-Entropy%20Alloy%20(Damage-Tolerant%20FCC%20MEA)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=CoCrNi%20Medium-Entropy%20Alloy%20(Damage-Tolerant%20FCC%20MEA)%20specific%20heat%20temperature"
+      }
+    }
+  },
+  "fe50mn30co10cr10": {
+    "displayName": "Fe50Mn30Co10Cr10 TRIP-HEA (Metastable Dual-Phase FCC+HCP)",
+    "meltingPoint_K": 1615,
+    "solidus_K": 1515,
+    "liquidus_K": 1615,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Li, Z., Pradeep, K. G., Deng, Y., Raabe, D., & Tasan, C. C. (2016)",
+        "journal": "Nature, 534(7606), 227-230",
+        "doi": "10.1038/nature17981",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed",
+          "Web of Science"
+        ],
+        "citationsCount": "1950+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Metastable+dual-phase+high-entropy+alloys+Li+Raabe+Tasan",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe50Mn30Co10Cr10+TRIP+HEA+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.38 * (T - 293.15) + 7780.0",
+        "liquid": "-0.68 * (T - 1615.0) + 7050.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/nature17981%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Li, Z. et al. (2016)",
+        "journal": "Nature, 534, 227-230 / Scripta Materialia (2017)",
+        "doi": "10.1038/nature17981",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1950+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.0125 * (T - 298.15) + 10.5",
+        "liquid": "0.0090 * (T - 1615.0) + 24.5",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/nature17981%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20thermal%20conductivity%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Li, Z. et al. (2016)",
+        "journal": "Nature, 534, 227-230",
+        "doi": "10.1038/nature17981",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1950+ Citations",
+        "modelType": "solid_linear",
+        "solid": "-5.2e7 * (T - 293.15) + 195.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/nature17981%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20youngs%20modulus%20temperature"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Li, Z. et al. (2016)",
+        "journal": "Nature, 534, 227-230",
+        "doi": "10.1038/nature17981",
+        "modelType": "piecewise_linear",
+        "solid": "3.0e-5 * (T - 293.15) + 0.285",
+        "liquid": "0.0 * T + 0.50",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/nature17981%22",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "840+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20poissons%20ratio%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20poissons%20ratio%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Li, Z. et al. (2016)",
+        "journal": "Nature, 534, 227-230",
+        "doi": "10.1038/nature17981",
+        "modelType": "piecewise_linear",
+        "solid": "0.220 * (T - 298.15) + 475.0",
+        "liquid": "0.0 * T + 695.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1038/nature17981%22",
+        "indexes": [
+          "Nature Publishing Group",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "840+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe50Mn30Co10Cr10%20TRIP-HEA%20(Metastable%20Dual-Phase%20FCC%2BHCP)%20specific%20heat%20temperature"
+      }
+    }
+  },
+  "fe40mn20cr20ni20": {
+    "displayName": "Fe40Mn20Cr20Ni20 TWIP-HEA (Twinning-Induced Plasticity FCC)",
+    "meltingPoint_K": 1595,
+    "solidus_K": 1530,
+    "liquidus_K": 1595,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Deng, Y., Tasan, C. C., Pradeep, K. G., Springer, H., Kostka, A., & Raabe, D. (2018)",
+        "journal": "Acta Materialia, 153, 122-132",
+        "doi": "10.1016/j.actamat.2018.04.026",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "390+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Deng+Raabe+Tasan+Fe40Mn20Cr20Ni20+twinning",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe40Mn20Cr20Ni20+TWIP+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.39 * (T - 293.15) + 7850.0",
+        "liquid": "-0.70 * (T - 1595.0) + 7100.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2018.04.026%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Deng, Y. et al. (2018)",
+        "journal": "Acta Materialia, 153, 122-132",
+        "doi": "10.1016/j.actamat.2018.04.026",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "390+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.0130 * (T - 298.15) + 11.0",
+        "liquid": "0.0092 * (T - 1595.0) + 25.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2018.04.026%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20thermal%20conductivity%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Deng, Y. et al. (2018)",
+        "journal": "Acta Materialia, 153, 122-132",
+        "doi": "10.1016/j.actamat.2018.04.026",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "390+ Citations",
+        "modelType": "solid_linear",
+        "solid": "-5.3e7 * (T - 293.15) + 198.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2018.04.026%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20youngs%20modulus%20temperature"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Deng, Y. et al. (2018)",
+        "journal": "Acta Materialia, 153, 122-132",
+        "doi": "10.1016/j.actamat.2018.04.026",
+        "modelType": "piecewise_linear",
+        "solid": "3.2e-5 * (T - 293.15) + 0.290",
+        "liquid": "0.0 * T + 0.50",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2018.04.026%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "280+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20poissons%20ratio%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20poissons%20ratio%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Deng, Y. et al. (2018)",
+        "journal": "Acta Materialia, 153, 122-132",
+        "doi": "10.1016/j.actamat.2018.04.026",
+        "modelType": "piecewise_linear",
+        "solid": "0.215 * (T - 298.15) + 470.0",
+        "liquid": "0.0 * T + 685.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.actamat.2018.04.026%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "280+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Fe40Mn20Cr20Ni20%20TWIP-HEA%20(Twinning-Induced%20Plasticity%20FCC)%20specific%20heat%20temperature"
+      }
+    }
+  },
+  "monbtavw": {
+    "displayName": "Refractory HEA MoNbTaVW (High-Temperature BCC RHEA)",
+    "meltingPoint_K": 2900,
+    "solidus_K": 2650,
+    "liquidus_K": 2900,
+    "properties": {
+      "density": {
+        "unit": "kg/m^3",
+        "citation": "Senkov, O. N., Wilks, G. B., Miracle, D. B., Chuang, C. P., & Dymek, S. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706",
+        "doi": "10.1016/j.intermet.2011.01.009",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1780+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Senkov+Mo-Nb-Ta-V-W+high-entropy+alloys+density",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=MoNbTaVW+refractory+high+entropy+alloy+density",
+        "modelType": "piecewise_linear",
+        "solid": "-0.54 * (T - 293.15) + 12360.0",
+        "liquid": "-0.85 * (T - 2900.0) + 10685.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.009%22"
+      },
+      "thermal_conductivity": {
+        "unit": "W/(m*K)",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706 / Journal of Applied Physics",
+        "doi": "10.1016/j.intermet.2011.01.009",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1780+ Citations",
+        "modelType": "piecewise_linear",
+        "solid": "0.0150 * (T - 298.15) + 48.5",
+        "liquid": "0.0110 * (T - 2900.0) + 72.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.009%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20thermal%20conductivity%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20thermal%20conductivity%20temperature"
+      },
+      "youngs_modulus": {
+        "unit": "Pa",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706",
+        "doi": "10.1016/j.intermet.2011.01.009",
+        "indexes": [
+          "ScienceDirect",
+          "Scopus Indexed"
+        ],
+        "citationsCount": "1780+ Citations",
+        "modelType": "solid_linear",
+        "solid": "-6.8e7 * (T - 293.15) + 295.0e9",
+        "liquid_val": 0,
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.009%22",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20youngs%20modulus%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20youngs%20modulus%20temperature"
+      },
+      "poissons_ratio": {
+        "unit": "dimensionless",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706",
+        "doi": "10.1016/j.intermet.2011.01.009",
+        "modelType": "piecewise_linear",
+        "solid": "2.8e-5 * (T - 293.15) + 0.330",
+        "liquid": "0.0 * T + 0.50",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.009%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20poissons%20ratio%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20poissons%20ratio%20temperature"
+      },
+      "specific_heat": {
+        "unit": "J/(kg K)",
+        "citation": "Senkov, O. N. et al. (2011)",
+        "journal": "Intermetallics, 19(5), 698-706",
+        "doi": "10.1016/j.intermet.2011.01.009",
+        "modelType": "piecewise_linear",
+        "solid": "0.085 * (T - 298.15) + 235.0",
+        "liquid": "0.0 * T + 340.0",
+        "citedByUrl": "https://scholar.google.com/scholar?q=%2210.1016/j.intermet.2011.01.009%22",
+        "indexes": [
+          "ScienceDirect (Elsevier)",
+          "Scopus Indexed",
+          "Google Scholar"
+        ],
+        "citationsCount": "520+ Citations",
+        "scholarQuery": "https://scholar.google.com/scholar?q=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20specific%20heat%20temperature",
+        "scienceDirectQuery": "https://www.sciencedirect.com/search?qs=Refractory%20HEA%20MoNbTaVW%20(High-Temperature%20BCC%20RHEA)%20specific%20heat%20temperature"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+================================================================================
+KRIEGER-DOUGHERTY SEMI-SOLID SUSPENSION RHEOLOGY MODEL
+================================================================================
+Bibliographic Reference:
+Irvine M. Krieger and Thomas J. Dougherty,
+"A Mechanism for Non-Newtonian Flow in Suspensions of Rigid Spheres",
+Transactions of the Society of Rheology, Vol. 3, No. 1, pp. 137-152 (1959).
+DOI: https://doi.org/10.1122/1.548848
+
+Implementation Notice:
+The semi-solid slurry apparent dynamic viscosity across the solidus-liquidus
+mushy zone (mu_eff(f_s) = mu_L * [1 - f_s / phi_m]^(-2.5 * phi_m)) implemented in
+CALPHADHEACalc is based on the classical Krieger-Dougherty constitutive model for
+concentrated particulate suspensions. Formulas represent scientific principles in
+the public domain.
+================================================================================

@@ -1,0 +1,4117 @@
+
+
+=== PAGE 1 ===
+
+Thermo-Calc Documentation Set
+Thermo-Calc Version 2023a
+
+
+=== PAGE 2 ===
+
+Copyright 2023 Thermo-Calc Software AB. All rights reserved.
+Information in this document is subject to change without notice. The software or database 
+described in this document is furnished under a license agreement or nondisclosure 
+agreement. The software or database may be used or copied only in accordance with the 
+terms of those agreements. You can read more on our website.
+Thermo-Calc Software AB
+Råsundavägen 18, SE-169 67 Solna, Sweden
++46 8 545 959 30
+www.thermocalc.com
+
+
+=== PAGE 3 ===
+
+Contents
+Thermo-Calc Documentation Set 1
+Installation Guide
+1
+Installing Thermo-Calc
+2
+Key to Using this Guide
+3
+Installation Terminology
+5
+About the Thermo-Calc 
+Components Being Installed
+7
+What is Installed with a Full 
+Standalone or Full Network 
+Client Option?
+7
+Thermo-Calc
+7
+Databases
+7
+Software Development Kits 
+(SDKs)
+8
+TC-Python
+8
+TC-Toolbox for MATLAB®
+8
+What Does the Custom Option 
+Allow Me to Do During an 
+Installation?
+8
+System Requirements
+9
+General
+9
+Network Client Installations: 
+Sentinel RMS License Software
+9
+Platforms Tested and 
+SDK Availability
+10
+Platforms Tested
+10
+SDK Availability by Platform
+10
+License and Installation Types
+11
+License and Installation Types
+12
+Sentinel RMS License 
+Management Software: Use 
+Current Version
+12
+About License Keys and Files
+13
+Standalone Installations (SUNLL)
+14
+Multi-User Network Installations 
+(NWL)
+15
+Consolidated Network 
+Installations
+15
+Distributed Network 
+Installations
+16
+License Installations on a 
+Server Network
+16
+Preparing for Installation
+18
+First Steps of Installation
+19
+Installation Default Directories and 
+the License File
+20
+License File Installation 
+Location for All Operating 
+Systems
+20
+Installation Default 
+Directory: Windows
+21
+Installation Default 
+Directory: macOS
+22
+Installation Default Directory: Linux23
+Installation Default 
+Directory: Databases, Database 
+Checker, and TDB Editor
+24
+Database Checker
+24
+TDB Editor
+25
+Contents ǀ1 of 37
+
+
+=== PAGE 4 ===
+
+Installation Default 
+Directory: Materials
+26
+Installation Default 
+Directory: Process Metallurgy 
+Materials
+27
+Installation Default 
+Directory: Custom Property Models28
+Subnet Information for Network 
+Licenses
+29
+macOS Installation Notes
+30
+Linux Installation Notes
+31
+openSUSE Administration 
+(sudo) Users
+31
+Opening Thermo-Calc in Linux 31
+Standalone Installations
+32
+Full Standalone Installations
+33
+Request your License File from 
+Thermo-Calc Software
+33
+Download your Thermo-Calc 
+Installation Software
+33
+Run the Applicable Installation 
+File for your Operating System 33
+Select the Installation Type and 
+Upload the License File
+34
+Install the Software and Start 
+Using Thermo-Calc
+36
+Custom Standalone Installations
+37
+Select the Installation Mode 
+and the Components to Include 
+or Exclude
+37
+Set the Installation Directory 
+and Choose the License File
+38
+Install the Software and Start 
+Using Thermo-Calc
+39
+Add New Components to an 
+Existing Installation
+40
+Network Client Installations
+41
+Full Network Client Installations
+42
+Install the Sentinel 
+RMS Management License 
+Software
+42
+Complete Steps 1 to 3 of a Full 
+Standalone Installation
+42
+Choose the Installation Type 
+and Enter the Computer Server 
+Details
+42
+Windows: About Installing the 
+License Manager
+44
+Supported Windows Versions
+44
+Windows: Installing the 
+Sentinel RMS License Manager 45
+Uninstall Any Older Versions 
+of Sentinel RMS License 
+Manager
+45
+Download and Install 
+Thermo-Calc
+46
+Install the Sentinel RMS 
+License Manager Software
+46
+Choose the Installation 
+Directory
+46
+Choose the Setup Type and 
+Install the Software
+47
+Install the Thermo-Calc 
+Network License Using 
+WIAdmin
+47
+Contents ǀ2 of 37
+
+
+=== PAGE 5 ===
+
+Install Additional Tool 
+Options
+48
+Linux: About Installing the License 
+Server
+49
+Preparing for Installation
+49
+Uninstall Older Versions of 
+the License Server
+49
+Requires Root Access or  
+sudoers List
+49
+Linux 32-bit Installations on a 
+64-bit OS
+49
+Thermo-Calc License File
+50
+Differences Between 32- and 
+64-bit Scripts
+50
+openSUSE Administration 
+(sudo) Users
+50
+Supported Linux Operating 
+Systems and Versions
+51
+Linux: Installing the Sentinel 
+RMS License Server
+51
+Stop Older Versions of the 
+Sentinel RMS License Server 52
+Write a Script to Start the 
+License Server
+52
+Confirm the HOSTNAME 
+variable and open the UDP 
+port
+53
+Start the License Server
+53
+Install Additional Tool 
+Options
+53
+Thin Client Installations
+54
+Installation Requirements
+54
+Windows Installations
+54
+How to Install a Thin Client 
+on Windows
+54
+How to Install a Thin Client on 
+Linux
+55
+Custom Network Client 
+Installations
+57
+Install the Licensing Software
+57
+Complete Steps 1 to 4 of a Full 
+Standalone Installation
+57
+Select the Installation Mode 
+and the Components to Include 
+or Exclude
+57
+Set the Installation Directory 
+and the File Path to the License58
+Install the Software and Start 
+Using Thermo-Calc
+59
+Unattended Network Client 
+Installations
+60
+Create an Option File in a Text 
+Editor to Enter the Options
+60
+Go to the Directory Where the 
+Installation File is Saved
+61
+Request License Files
+62
+Request a License File from 
+Thermo-Calc Software
+63
+Getting License Information Using 
+Thermo-Calc
+64
+Requesting the License File for 
+Windows or Linux
+65
+Requesting the License File for 
+macOS
+67
+Contents ǀ3 of 37
+
+
+=== PAGE 6 ===
+
+Quick Install Guides
+69
+Windows® Standalone Quick Install 
+Guide
+70
+This guide is applicable to:
+70
+Other Installations
+70
+Request a License File
+70
+Install the Software
+72
+Download and Run your 
+Thermo-Calc Installation 
+Software
+72
+Select the Installation Mode 72
+macOS® Standalone Quick Install 
+Guide
+74
+This guide is applicable to:
+74
+Other Installations
+74
+Request a License File
+74
+Install the Software
+75
+Download and Install XQuartz75
+Download and Run your 
+Thermo-Calc Installation 
+Software
+76
+Select the Installation Mode 76
+TC-Python Installation Guide
+78
+About the TC-Python 
+Documentation
+79
+Which TC-Python Installation 
+Should I Choose?
+81
+Installing TC-Python with a Bundled 
+Python-interpreter
+82
+Limitations
+82
+Install an IDE (Integrated 
+Development Environment)
+83
+Configure PyCharm to Use the 
+Bundled Python-interpreter
+83
+Run a TC-Python Example
+84
+Open the TC-Python Project 
+in PyCharm
+84
+Installing TC-Python Into a Python-
+interpreter of Your Choice
+86
+Install a Python Distribution
+86
+Install Anaconda
+86
+Install Thermo-Calc and the TC-
+Python SDK
+86
+Install TC-Python
+87
+Install an IDE (Integrated 
+Development Environment)
+88
+Open the IDE and Run a TC-
+Python Example
+88
+Open the TC-Python Project 
+in PyCharm
+89
+Installation Default Directory: TC-
+Python
+90
+macOS: Setting Environment 
+Variables
+91
+Fixing Potential Issues with the 
+Environment
+92
+Updating to a Newer Version
+93
+TC-Python Diagnostic Script
+94
+TC-Toolbox for MATLAB® 
+Installation Guide
+95
+About TC-Toolbox for MATLAB®
+96
+Contents ǀ4 of 37
+
+
+=== PAGE 7 ===
+
+TC-Toolbox Documentation
+97
+API Reference 
+Documentation
+97
+Installation Instructions
+97
+Thermo-Calc Help (Limited)
+98
+Installation Default Directory: TC-
+Toolbox and the Examples
+99
+Installing TC-Toolbox
+100
+Automatic Installation of TC-
+Toolbox
+100
+Manual Installation of TC-
+Toolbox
+100
+Multiple Windows Users on 
+Same Machine
+100
+Installer Cannot Find the 
+MATLAB® Installation 
+Directory
+101
+Installing TC-Toolbox with the 
+Custom Option
+102
+Request your License File 
+from Thermo-Calc Software
+102
+Download your Thermo-Calc 
+Installation Software
+102
+Install MATLAB®
+102
+Run the Thermo-Calc 
+Installation File as an 
+Administrator
+102
+Select the Custom Installation 
+Type
+103
+Set the Thermo-Calc 
+Installation Directory and 
+Choose the Setup Type
+104
+Install  and Start Using 
+Thermo-Calc as an Add-on in 
+MATLAB®
+105
+Test the Installation
+105
+Testing a TC-Toolbox Installation 106
+TC-Toolbox Installation 
+Troubleshooting
+107
+Diagnostic Script
+107
+MATLAB® Installation 
+Directory Not Found
+107
+Determining the Licensing 
+Software Version (Network 
+Installs)
+108
+Uninstalling TC-Toolbox for 
+MATLAB®
+109
+Troubleshooting
+110
+License Errors
+111
+Determining the Current License 
+File Directory Path
+113
+From Thermo-Calc
+113
+Specifying a New Server Name or 
+IP Number
+115
+Firewalls
+116
+Client/Server Mismatch
+117
+Compare computer names 
+on the client computer and 
+server
+117
+Try these options to correct 
+the issue
+118
+macOS Installations: Running the 
+License Initialization Script
+119
+Contents ǀ5 of 37
+
+
+=== PAGE 8 ===
+
+Linux Installations: Running the 
+License Initialization Script
+120
+Sentinel RMS License 9.7 Tools
+122
+GetHostID: Get HostID/Mac 
+Address
+123
+Windows
+123
+Linux 32-bit
+123
+Linux 64-bit
+123
+lsmon: Monitor License Manager 
+Transactions
+124
+Options
+124
+lspool: Maintain Redundant 
+License Manager Pool
+125
+Options
+125
+lspool - L Options
+125
+lsrvdown: Shut Down the License 
+Manager
+127
+lswhere: Display a List of License 
+Managers
+128
+Options
+128
+WlmAdmin Administrative Tool
+129
+WlmAdmin Functions
+129
+View License Manager 
+Information
+130
+Add or Remove a License 
+Manager from the Defined 
+Server List
+130
+Add a License Code to the 
+License Manager from a File130
+Delete Old License Features 
+from the License Manager
+130
+Shut Down a License 
+Manager
+130
+Setting WlmAdmin 
+Preferences
+131
+Sldemo: Show Basic API Functions133
+Wechoid: Get a Computer Locking 
+Code
+137
+Updating or Uninstalling the 
+Software
+139
+Updating the Software for Interim 
+Releases
+140
+Installing an Updated Version 
+of the Software
+140
+Check for a Software Update 140
+Follow the Installation 
+Instructions for the Applicable 
+OS
+141
+Option to Save Backup User 
+Created Files
+141
+Uninstalling Thermo-Calc
+146
+The Thermo-Calc Software User 
+Guide
+1
+About the Thermo-Calc Software
+2
+The Thermo-Calc Software
+3
+About the Thermo-Calc Add-on 
+Modules
+4
+Diffusion Module (DICTRA)
+4
+Precipitation Module (TC-
+PRISMA)
+5
+Process Metallurgy Module
+5
+Property Model Libraries for 
+6
+Contents ǀ6 of 37
+
+
+=== PAGE 9 ===
+
+Steel and Nickel
+Graphical Mode vs Console Mode
+8
+Graphical Mode Activities vs 
+Console Mode Modules
+10
+Graphical Mode vs Console Mode: 
+Calculation Types
+12
+About the File Types and Formats 17
+Displaying Thermo-Calc License 
+Information
+18
+About the Documentation and 
+Examples
+21
+Examples, Manuals, and Materials 
+Folders
+22
+About the Manuals 
+(Documentation) Folder
+27
+Thermo-Calc Installation 
+Guides
+28
+Graphical Mode User Guide 28
+Console Mode User Guide
+28
+Thermo-Calc General 
+Reference
+29
+About the Examples
+35
+Examples by Product
+36
+Help Resources
+40
+'Online' Help: No Internet 
+Required
+40
+Console Mode Help
+40
+Typographical Conventions
+41
+Thermo-Calc User 
+Guide: Graphical Mode
+2
+Working in Graphical Mode
+3
+The Graphical Mode Desktop 
+Layout
+4
+Menu, Toolbar, and Keyboard 
+Shortcuts
+5
+Organizing the Windows on the 
+Desktop
+8
+Projects and Activities
+11
+About the Activity Nodes
+12
+Activity Successor and 
+Predecessor Nodes
+13
+Graphical Mode Activity Node 
+Workflow
+16
+Creating Activities and Successors 18
+Cloning Activities and Trees
+20
+Moving or Grouping Nodes and 
+Using the Grid
+22
+Node or Window Status Markers
+26
+My Project and Activity Menus
+28
+My Project Node
+28
+Activity Node General
+29
+Saving Project Files
+32
+Including Calculated Results 
+with Project Files
+33
+Saving a Project File with 
+Results
+33
+Opening Project Files
+35
+Opening Project Files in the 
+Same Version of Thermo-Calc
+35
+Opening Recent Project Files
+37
+Contents ǀ7 of 37
+
+
+=== PAGE 10 ===
+
+About Project Files and Plot 
+Themes
+37
+Opening Project Files Including 
+Results and with Different 
+GES Versions
+38
+Opening Example Project Files in 
+Thermo-Calc
+39
+Appending Project Files
+41
+Converting Project Files to a Newer 
+Version of Thermo-Calc
+42
+About Backup Files
+42
+Converting Old Project Files - 
+No Results Saved
+43
+Converting Old Project Files - 
+Original with Saved Results
+43
+Opening Old Project Files in the 
+Original Version of 
+Thermo-Calc
+45
+The Calculation Types in Graphical 
+Mode
+46
+Working with Batch Calculations
+50
+Data File Rules
+52
+General Rules
+52
+Parameter, Parameter 
+Name, and Parameter 
+Value Rules
+52
+Data File Example and 
+Column Definitions
+55
+Skipping Composition 
+Validation
+57
+Skipping Parameter 
+Validation
+57
+Getting Started Links and 
+Templates
+59
+Creating a Project with the 
+Quick Start Wizard
+63
+Creating a Project from a 
+Template
+67
+Steel Library TTT Diagram 
+Template
+69
+Steel Library CCT Diagram 
+Template
+70
+Process Metallurgy Template
+71
+Defining and Using the Activity 
+Nodes
+73
+System Definer
+74
+Define the System
+75
+Configuration Window Settings 75
+How To Load or Save a 
+Material
+79
+About the Material Files
+85
+Austenitic Stainless Steel
+86
+Duplex Stainless Steel
+86
+High Speed Steel
+87
+High Temperature Steel
+87
+HSLA Steel
+87
+Low Carbon Steel
+87
+Maraging Steel
+87
+Martensitic Stainless Steel
+87
+Tool Steel
+87
+Training Steel
+87
+Contents ǀ8 of 37
+
+
+=== PAGE 11 ===
+
+Creating a Database Package
+89
+Clearing a Database Package 
+Message
+90
+Equilibrium Calculator
+91
+Define the Equilibrium 
+Calculator
+91
+Conditions Tab Settings
+92
+About Advanced Mode
+96
+Calculating and Plotting 
+Functions
+98
+Options Tab Settings
+99
+Single Equilibrium and Grid 100
+One Axis
+104
+Phase Diagram
+105
+Calculating with a Fixed Phase106
+Material to Material Calculator
+109
+Define the Material to 
+Material Calculator
+110
+Material to Material 
+Calculator Conditions Tab 
+Settings
+111
+How To Load or Save a 
+Material
+113
+Binary Calculator
+116
+Configuration Window 
+Settings
+116
+Ternary Calculator
+120
+Configuration Window 
+Settings
+120
+Scheil-Gulliver Solidification 
+Calculations
+123
+Classic Scheil Simulation
+123
+Scheil Simulation with Back 
+Diffusion in Primary Phase
+124
+Scheil with Solute Trapping
+125
+Other Options: Fast Diffusers 
+and Scheil Simulations
+126
+Summary
+127
+Scheil in Graphical Mode vs 
+Console Mode
+127
+Scheil Calculator
+128
+Define the Scheil Calculator
+129
+Configuration Window 
+Settings
+130
+Advanced Options / Settings134
+Property Model Calculator
+139
+Property Model Calculator 
+Workflow
+139
+About the Property Models
+141
+General Models
+141
+Calculation Types
+144
+Examples and Video 
+Tutorials
+145
+Define the Property Model 
+Calculator
+146
+Configuration Window 
+Settings
+147
+Diffusion Calculator
+153
+Contents ǀ9 of 37
+
+
+=== PAGE 12 ===
+
+Available Graphical Mode 
+Features
+153
+Using the Template
+154
+Diffusion Simulation 
+Template
+155
+Diffusion Calculator
+155
+Define the Diffusion 
+Calculator
+156
+Conditions Tab Settings
+156
+General
+158
+Region Settings
+158
+Boundary Conditions
+162
+Thermal Profile
+164
+Options Tab Settings
+165
+Simulation Conditions
+165
+Default solver
+165
+Timestep Control
+168
+Classic and Homogenization 
+Model Settings
+170
+Classic Model Specific
+170
+Homogenization Model 
+Specific
+170
+About the Homogenization 
+Functions
+172
+Pause, Resume and Cancel 
+Diffusion Calculations
+173
+How to Pause and 
+Resume a Job
+174
+How to Cancel a Job
+175
+Precipitation Calculator
+176
+Available Options
+177
+Using the Template
+178
+Precipitation Calculator
+179
+Define the Precipitation 
+Calculator
+179
+Matrix Phase Settings
+180
+Composition Settings
+181
+Matrix Phase Settings
+181
+Grain Growth Settings
+184
+Selecting the Disordered 
+Phase as a Matrix Phase
+187
+Precipitate Phase Settings
+188
+Particle Size Distribution 
+(PSD)
+191
+Accessing the 'Pre-existing Size 
+Distribution' Settings
+193
+Defining the Preexisting Size 
+Distribution
+194
+Calculation Type Settings
+194
+Advanced Option Tab 
+Settings
+196
+Pause, Resume and Cancel 
+Precipitation Calculations
+203
+To Pause and Resume a Job 204
+To Cancel a Job
+205
+Plot Renderer
+206
+Plot Toolbar
+206
+Configuration Settings
+207
+Contents ǀ10 of 37
+
+
+=== PAGE 13 ===
+
+Examples of Calculation 
+Type Differences
+207
+Settings
+208
+Plot Settings: CCT Mode
+217
+Plot Settings: TTT Mode
+218
+Diffusion Calculator Plot 
+Renderer
+219
+Simplified Mode
+220
+Advanced Mode
+224
+Precipitation Calculator Plot 
+Renderer
+225
+Plot Settings
+225
+Separate Multimodal PSD 226
+Yield Strength
+226
+Non-Isothermal Simulations 228
+Table Renderer
+232
+Configuration Settings
+235
+Experimental File Reader
+239
+General Property Models
+240
+About the Property Models
+241
+General Models
+241
+Calculation Types
+244
+Examples and Video Tutorials 245
+About the Coarsening Property 
+Model
+246
+Coarsening Property Model 
+Settings
+248
+Configuration Settings
+248
+Plot Renderer Settings
+249
+About the Crack Susceptibility 
+Coefficient Property Model
+250
+Input Parameters Theory and 
+Background
+250
+Liquid Fraction Parameters 252
+Crack Susceptibility 
+Coefficient Property Model 
+Settings
+255
+Configuration Settings
+255
+Scheil and General 
+Parameters
+255
+Thermal Mode and Liquid 
+Fraction Parameters
+258
+Plot Renderer Settings
+259
+Driving Force Property Model 
+Settings
+260
+Configuration Settings
+260
+Plot Renderer Settings
+260
+About the Equilibrium with 
+Freeze-in Temperature Property 
+Model
+262
+Equilibrium with Freeze-in 
+Temperature Property Model 
+Settings
+263
+Configuration Settings
+263
+Plot Renderer Settings
+267
+Equilibrium Property Model 
+Settings
+269
+Configuration Settings
+269
+Plot Renderer Settings
+270
+Contents ǀ11 of 37
+
+
+=== PAGE 14 ===
+
+About the Interfacial Energy 
+Property Model
+272
+Interfacial Energy Property 
+Model Settings
+273
+Configuration Settings
+273
+Plot Renderer Settings
+274
+Liquid and Solidus Temperature 
+Property Model Settings
+275
+Configuration Settings
+275
+Plot Renderer Settings
+277
+Phase Transition Property Model 
+Settings
+279
+Configuration Settings
+279
+Plot Renderer Settings
+280
+About the T0 Temperature 
+Property Model
+281
+Vary Temperature or 
+Conditions
+281
+Gibbs Energy Addition
+282
+T0 Temperature Property 
+Model Settings
+283
+Configuration Settings
+283
+Plot Renderer Settings
+285
+About the Spinodal Property 
+Model
+286
+Spinodal Property Model 
+Settings
+287
+Configuration Settings
+287
+Plot Renderer Settings
+288
+About the Yield Strength Property 
+Model
+289
+Intrinsic Strength
+289
+Constant Addition of Strength 290
+Grain Boundary Strengthening290
+Solid Solution Strengthening
+291
+Precipitation Strengthening
+291
+Mean Precipitate Radius and 
+Particle Size Distribution (PSD)294
+Yield Strength Property Model 
+Settings
+296
+Configuration Settings
+296
+Yield Strength Model 
+Settings
+297
+Calculation Type Settings
+300
+Grid Definition Settings
+301
+Plot and Table Renderer 
+Settings
+302
+Steel Model Library Property 
+Models
+304
+About the Steel Model Library 
+Property Models
+305
+Recommended Composition 
+Ranges for Steel Models
+310
+References
+312
+About the Bainite Property Model313
+References
+314
+Bainite Property Model 
+Settings
+315
+Configuration Settings
+315
+Contents ǀ12 of 37
+
+
+=== PAGE 15 ===
+
+Plot Renderer Settings
+316
+About the CCT Diagram Property 
+Model
+317
+CCT Diagram Property Model 
+Settings
+317
+Configuration Settings
+317
+Calculation Setting
+320
+Custom Calculation Setting 322
+Plot Renderer Settings
+325
+About the Critical Transformation 
+Temperatures Property Model
+327
+Critical Transformation 
+Temperatures Property Model 
+Settings
+328
+Configuration Settings
+328
+Plot Renderer Settings
+330
+About the Ferrite Property Model 331
+Growth Models
+331
+Nucleation Rate and 
+Interfacial Mobility
+331
+Reference
+332
+Ferrite Property Model 
+Settings
+332
+Included Elements and 
+Important Notes
+332
+Configuration Settings
+333
+Custom Parameters
+335
+Plot Renderer Settings
+336
+Reference
+337
+About the Martensite Fractions 
+Property Model
+338
+Reference
+338
+Martensite Fractions Property 
+Model Settings
+339
+Configuration Settings
+339
+Plot Renderer Settings
+340
+About the Martensite 
+Temperatures Property Model
+341
+References
+341
+Martensite Temperatures 
+Property Model Settings
+342
+Configuration Settings
+342
+Plot Renderer Settings
+343
+About the Pearlite Property 
+Model
+344
+References
+345
+Pearlite Property Model 
+Settings
+346
+Configuration Settings
+346
+Plot Renderer Settings
+349
+About the TTT Diagram Property 
+Model
+350
+TTT Diagram Property Model 
+Settings
+350
+Configuration Settings
+351
+Calculation Setting
+352
+Custom Calculation Setting 354
+Plot Renderer Settings
+357
+Contents ǀ13 of 37
+
+
+=== PAGE 16 ===
+
+Nickel Model Library Property 
+Models
+360
+About the Nickel Model Library 
+Property Models
+361
+About the Antiphase Boundary 
+Energy Property Model
+362
+References
+362
+Antiphase Boundary Energy 
+Property Model Settings
+364
+Configuration Settings
+364
+Plot Renderer Settings
+366
+About the Coarsening Nickel 
+Property Model
+367
+Coarsening Nickel Property 
+Model Settings
+368
+Configuration Settings
+368
+Plot Renderer Settings
+370
+About the Equilibrium with 
+Freeze-in Temperature Nickel 
+Property Model
+371
+References
+372
+Equilibrium with Freeze-in 
+Temperature Nickel Property 
+Model Settings
+373
+Configuration Settings
+373
+Plot Renderer Settings
+378
+The Process Metallurgy Module
+380
+About the Process Metallurgy 
+Module
+381
+Available Options with the 
+Process Metallurgy Module
+383
+Using the Template
+384
+Process Metallurgy 
+Template
+385
+Process Metallurgy 
+Calculator
+385
+Network License Restrictions
+386
+Setting Up a Process Metallurgy 
+Simulation
+387
+Equilibrium Simulations
+388
+Process Simulations
+389
+Calculation Types
+389
+Working with the Process 
+Metallurgy Module
+390
+Working with the Process 
+Schedule
+399
+About Dynamic Time Stepping
+401
+About Pressure-Dependent 
+Calculations
+403
+Working with the Material 
+Manager
+404
+Process Metallurgy Slag 
+Properties
+406
+References
+408
+Adiabatic Calculations:  Material 
+Enthalpy
+409
+Process Metallurgy Calculator
+410
+Conditions Tab
+411
+Options Tab
+411
+Plots and Tables
+412
+Contents ǀ14 of 37
+
+
+=== PAGE 17 ===
+
+Defining the Equilibrium 
+Simulation
+413
+Equilibrium Simulation: 
+Conditions Tab
+418
+Defining the Process Simulation
+424
+Process Simulation: Conditions 
+Tab
+428
+Process Simulation: Process 
+Model Settings
+430
+Edit Process Model
+430
+Process Simulation: Materials Tab 434
+Process Simulation: Process 
+Schedule Tab
+436
+Options Tab
+438
+Material Manager
+438
+Process Material Equilibrium 
+and Grid
+438
+Timestep Control
+443
+Scheduler and Event Log Windows 445
+Using the Scheduler
+446
+Event Log Window
+449
+Working with Plots and Tables
+450
+Performing Projects, Trees and 
+Activities
+451
+Saving and Printing the Output 
+(Graphical Mode)
+452
+Saving Diagrams
+452
+Saving (Exporting) Tables
+453
+Printing Output
+454
+Zooming In and Out
+455
+Resetting a Plot to the Default 
+View
+455
+Plotting Options
+456
+Common Quantities Available for 
+Plots and Tables
+461
+Plotting Several Calculations in 
+One Diagram
+465
+Plot Renderer: Convert a Plot to a 
+Table and Export the Data
+467
+Converting a Plot to a Table 
+on the Plot Renderer
+467
+Switching Between a Plot and 
+a Table in the Visualizations 
+Window
+467
+Saving the Table (Exporting 
+the Data)
+467
+Merging Plots into One Diagram
+469
+Adding Axes to a Diagram
+471
+Plotting Modes
+473
+Flexible Mode and 
+Grouped Mode
+473
+Statistical Mode
+474
+Cross Plot Mode
+475
+TTT Mode and CCT Mode 476
+Heat Map, Contour, and 3D Plots 477
+Grid Calculations
+477
+Uncertainty Calculations
+483
+About the Uncertainty 
+Calculations
+486
+Contents ǀ15 of 37
+
+
+=== PAGE 18 ===
+
+Rotating 3D Plots
+492
+Plot and Table Formatting
+493
+Setting Background Colours
+494
+Changing the Plot Properties
+495
+Plot Labels
+496
+Plot Labels: Entering a Mixture of 
+Plain Text and Equations
+497
+Plot Labels: Rotation Angle and 
+Show Anchor
+499
+Moving Plot Labels
+500
+About Legend Styles
+501
+Legend and Label Styles
+502
+Legend Styles
+502
+Label Styles
+502
+Graphical Mode Examples Guide
+1
+Thermo-Calc Graphical Mode 
+Examples Collection
+1
+Graphical Mode Examples List by 
+Product
+2
+T_01: Calculating a Single-Point 
+Equilibrium
+3
+T_02: Stepping in Temperature in 
+the Fe-C System
+5
+T_03: Fe-C Phase Diagrams
+8
+T_04: Fe-Cr-C Ternary Phase 
+Diagram  at 1000 K
+11
+T_05: Stable and the Metastable 
+Fe-C Phase Diagrams
+14
+T_06: Serially Coupled Equilibrium 
+Calculators
+16
+Table Renderer Results
+16
+T_07: User-Defined Functions
+19
+T_08: Scheil and Equilibrium 
+Solidification
+22
+To Save the Table (via Table 
+Renderer)
+24
+T_09: Carbide Driving Force Heat 
+Map
+26
+T_10: Scheil Solidification with 
+Back Diffusion
+28
+T_11: Surface Tension in Cu-Zr
+30
+T_12: Viscosity in Cr-Ni
+34
+T_13: Scheil Solidification with 
+Solute Trapping
+38
+T_14: Fe-Cr-Ni Transition 
+Comparison Using the Material to 
+Material Calculator
+40
+T_15: Molar Volume and Thermal 
+Expansion Coefficients for L12-type 
+Al3Sc and Al3Zr Compounds
+43
+T_16: Electrical Resistivity and 
+Thermal Conductivity for Pure 
+Copper
+46
+T_17: Al2O3-MgO Phase Diagram
+51
+Thermo-Calc General Property 
+Model Examples Collection
+53
+PM_G_01: Phase Transition
+54
+PM_G_02: Coarsening and 
+Interfacial Energy
+57
+PM_G_03: Driving Force and 
+Interfacial Energy
+63
+PM_G_04: Yield Strength
+66
+Contents ǀ16 of 37
+
+
+=== PAGE 19 ===
+
+References
+68
+PM_G_05: Yield Strength NiAlCr
+69
+References
+71
+PM_G_06: Yield Strength HEA
+72
+Reference
+74
+PM_G_07: Hot Crack Susceptibility 75
+References
+76
+PM_G_08: Spinodal
+78
+PM_G_09: T-Zero Temperature
+80
+PM_G_10: Freeze-in Thermal 
+Conductivity
+82
+Reference
+83
+PM_G_11: Freeze-in Electrical 
+Resistivity
+84
+Reference
+85
+PM_G_12: Solidus and Liquidus 
+Batch Calculation
+86
+PM_G_13: Ti Alloy Design for 
+Additive Manufacturing
+89
+Reference
+91
+PM_G_14: Ti_Fe_T-Zero_
+Martensite
+92
+Reference
+94
+Steel Model Library Examples 
+Collection
+95
+PM_Fe_01: Fe-Cr-C Martensite 
+with Intercritical Annealing
+96
+Reference
+98
+PM_Fe_02: Fe-Mn Martensite 
+99
+Morphologies
+PM_Fe_03: Fe-C-Mn Pearlite
+101
+Reference
+104
+PM_Fe_04: Critical Temperatures 105
+PM_Fe_05: Fe-C-Mn-Si-Ni-Cr-Mo 
+Bainite
+108
+Reference
+109
+PM_Fe_06: TTT Diagram for Fe-C-
+Mn-Si-Cr-V
+110
+Reference
+112
+PM_Fe_07: Hardenability Design 
+of Steel
+113
+PM_Fe_08: CCT Diagram for Fe-C-
+Mn-Si-Cr-V
+114
+Reference
+116
+PM_Fe_09: Fe-C-Ni Ferrite
+117
+References
+120
+Nickel Model Library Examples 
+Collection
+121
+PM_Ni_01: Lattice Parameter of 
+γ/γ'
+122
+Reference
+123
+PM_Ni_02: Antiphase Boundary 
+Energy of γ'
+124
+References
+125
+Process Metallurgy Module 
+Examples Collection
+126
+PMET_01: Basic Oxygen Furnace 
+(BOF)
+127
+Contents ǀ17 of 37
+
+
+=== PAGE 20 ===
+
+PMET_02: Desulphurization in a 
+Ladle Furnace (LF)
+128
+PMET_03: Argon Oxygen 
+Decarburization (AOD)
+130
+Background Description
+130
+Slag Basicity
+132
+S Content in Steel
+133
+Cr Content in Slag
+134
+Amount of Slag
+135
+Liquid Slag Fraction
+136
+PMET_04: Basic Oxygen Furnace 
+(BOF) Kinetics
+137
+PMET_05: Lab Scale Ladle 
+Furnace (LF) Kinetics
+138
+About the Plot Results
+138
+Setting Up the LF Process 
+Simulation
+139
+Results and Experimental 
+Analysis
+140
+Reference
+143
+PMET_06: Ladle Furnace (LF) 
+Kinetics
+144
+Background Overview
+145
+PMET_07: Vacuum Oxygen 
+Decarburization Kinetics
+147
+Reference
+147
+PMET_08: Steel Deoxidation on 
+Tapping
+148
+About Deoxidation or “Killing” 
+of Steel
+148
+Diffusion Module 
+(DICTRA) Graphical Mode 
+Examples
+150
+D_01: Homogenization of a Binary 
+Fe-Ni Alloy
+151
+D_02: Ferrite(bcc)/Austenite(fcc) 
+Transformation in a Binary Fe-C 
+Alloy
+153
+D_03: Evolution of an Fe-Cr-Ni 
+Diffusion Couple
+156
+References
+158
+D_04: Fe-C Moving Boundary: 
+Austenite to Ferrite
+159
+D_05: γ/α/γ Diffusion Couple of 
+Fe-Ni-Cr alloys
+162
+References
+168
+D_06: Diffusion Through a Tube 
+Wall
+169
+D_07: Multiphase Carburization 
+of an Alloy
+174
+Reference
+177
+D_08: Microsegregation During 
+Solidification
+178
+Precipitation Module (TC-
+PRISMA) Graphical Mode 
+Examples
+179
+P_01: Isothermal Precipitation of 
+Al3Sc
+181
+Example Settings
+181
+Results
+183
+References
+184
+Tutorial-P_01-Isothermal
+185
+Contents ǀ18 of 37
+
+
+=== PAGE 21 ===
+
+P_02:  Stable and Metastable 
+Carbides - Isothermal
+194
+Example Settings
+194
+Results
+196
+P_03: Stable and Metastable 
+Carbides - TTT Diagram
+198
+Example Settings
+198
+Results
+200
+P_04: Precipitation of Iron Carbon 
+Cementite
+202
+Example Settings
+202
+Results
+204
+Reference
+204
+P_05: Precipitation of γ’ in Ni 
+Superalloys - Isothermal
+205
+Example Settings
+205
+Results
+207
+Reference
+209
+P_06: Precipitation of γ’ in Ni 
+Superalloys - Non-isothermal
+210
+Example Settings
+210
+Results
+212
+Reference
+215
+P_07: Continuous Cooling 
+Transformation (CCT) Diagram of 
+Ni-Al-Cr γ-γ’
+216
+Example Settings
+216
+Results
+218
+Tutorial-P_07-CCT
+220
+P_08: Precipitation of Cu-Ti CU4TI 
+with Assumptions of Sphere and 
+Needle Morphologies
+225
+Example Settings
+225
+Results
+228
+References
+231
+P_09: Precipitation of Al-Sc AL3SC 
+with Assumption of Sphere and 
+Cuboid Morphologies
+232
+Example Settings
+232
+Results
+234
+References
+237
+Tutorial-P_09-Al-Sc-Sphere_
+Cuboid
+238
+P_10: Initial Particle Size 
+Distribution of Fe-Cr-C
+247
+Example Settings
+247
+Results
+250
+P_11: Interfacial Energy Function 252
+Example Settings
+252
+Results
+254
+Reference
+254
+P_12: Comparing Growth Rate 
+Models for an Al-Zr System
+255
+Example Settings
+256
+Results
+257
+Reference
+257
+P_13: Paraequilibrium 
+Precipitation of Cementite Fe-C-
+Cr
+258
+Contents ǀ19 of 37
+
+
+=== PAGE 22 ===
+
+Example Settings
+258
+Results
+260
+Reference
+260
+P_14: Grain Growth and the 
+Zener Pinning Effect
+261
+Results Discussion
+261
+Example Settings
+263
+References
+264
+P_15: Smooth Transition from 
+Paraequilibrium to Ortho-
+equilibrium
+265
+Results Discussion
+266
+Example Settings
+267
+Reference
+268
+Thermo-Calc User Guide: Console 
+Mode
+1
+Working in Console Mode
+2
+The Console Mode Layout
+3
+Console Window and Tabs
+6
+Edit the Console Tab Properties 6
+Open and Close Console Tabs
+6
+View, Copy, or Save a 
+Command History
+7
+Console Mode Results Window
+9
+Event Log Window
+10
+Keyboard Shortcuts to Navigate 
+Between Tabs
+11
+Modules and Commands
+13
+Console Mode Workflow
+14
+Defining a System in Console Mode16
+Console Mode Modules
+18
+Moving Between Modules and 
+Submodules
+27
+Entering Command Names or 
+Abbreviations
+28
+Using the Command Line Prompt
+30
+Main Menu Commands
+31
+Wild Card Characters
+32
+File Types
+34
+Working with the Console Mode 
+File Types
+35
+Opening Console Mode Macro Files36
+Opening a Macro from the 
+Main Menu
+36
+Opening a Macro Using a 
+Command
+37
+Drag and Drop a Macro File 
+into the Console Window
+37
+Log Files
+40
+Macro Files
+41
+Workspace Files
+44
+Links to Workspace Commands 46
+Editing the Default Console 
+Directory
+50
+Experimental Data Files (*.POP, 
+*.DOP)
+53
+Calculations
+56
+About the Gibbs Energy System 
+(GES) Module
+57
+Contents ǀ20 of 37
+
+
+=== PAGE 23 ===
+
+Calculation Engine: GES5 vs 
+GES6
+57
+Equilibrium Calculations
+59
+The Equilibrium Calculation 
+Module (POLY3)
+60
+Setting Conditions for 
+Equilibrium Calculations
+61
+Calculating an Equilibrium
+64
+Calculating an Equilibrium with 
+a Fixed Phase
+65
+Calculating an Equilibrium with 
+Suspended or Dormant Phases 66
+Property Diagrams
+67
+About Property Diagrams
+68
+Calculating and Plotting a 
+Property Diagram
+69
+Calculating a Property Diagram 
+One Phase at a Time
+71
+Calculating Several Properties 
+in the Same Diagram
+72
+Phase Diagrams
+73
+About Phase Diagrams
+74
+Calculating and Plotting a 
+Phase Diagram
+75
+About Binary Phase Diagrams
+76
+BINARY_DIAGRAM
+77
+About Ternary Phase Diagrams 77
+TERNARY_DIAGRAM
+79
+About Quasi-Binary and Quasi-
+Ternary Phase Diagrams
+79
+Calculating a Quasi-Binary 
+Phase Diagram
+81
+Calculating a Quasi-Ternary 
+Phase Diagram
+82
+T0 Temperature Simulations
+83
+About T0 Temperature 
+Simulations
+84
+Making a T0 Temperature 
+Simulation
+85
+Paraequilibrium
+87
+About Paraequilibrium
+88
+Calculating a Paraequilibrium
+89
+Potential Diagrams
+92
+About Potential Diagrams
+93
+POTENTIAL_DIAGRAM
+93
+Calculating a Potential Diagram95
+Calculating a Potential Diagram 
+with Different Pressure
+97
+Scheil Simulations
+98
+About the Scheil-Gulliver 
+Solidification Simulations
+99
+Classic Scheil Simulation
+99
+Scheil Simulation with Back 
+Diffusion in Primary Phase
+100
+Scheil with Solute Trapping 100
+Other Options: Fast 
+Diffusers and Scheil 
+Simulations
+102
+Summary
+103
+Contents ǀ21 of 37
+
+
+=== PAGE 24 ===
+
+Scheil in Graphical Mode vs 
+Console Mode
+103
+Examples of Scheil-
+Gulliver Calculations
+104
+Simulating a Scheil 
+Solidification Process
+107
+State Variables for Scheil
+110
+Aqueous Solutions and Pourbaix 
+Diagrams
+112
+About Aqueous Solutions and 
+the Pourbaix Diagram
+113
+Calculating a Pourbaix 
+Diagram
+116
+Plotting More Pourbaix 
+Diagrams
+119
+Stepping Calculations in an 
+Aqueous Solution
+121
+POURBAIX_DIAGRAM Module 123
+Getting started with the 
+Pourbaix module
+123
+What is a Pourbaix 
+diagram?
+124
+What database should 
+I use?
+124
+Choosing a custom 
+aqueous solution 
+database
+124
+Copy and Rename the 
+POLY3 file
+125
+Enforce a Pause
+126
+Pourbaix Main Options
+127
+Tabulation Reactions
+128
+About the Tabulation 
+Reaction Module
+129
+Tabulating a Reaction
+131
+Tabulating a Substance or 
+Solution Phase at Fixed 
+Composition
+132
+Results
+134
+Console Mode Results
+135
+Using the POST Module
+137
+Plotting Diagrams
+138
+Saving and Printing the Output in 
+Console Mode
+139
+Commands to Save and Print 
+Diagrams
+139
+Commands to Save  Tables
+140
+Saving Diagrams
+140
+Printing Diagrams
+141
+Modifying Diagrams
+142
+Loading Saved Diagrams
+144
+Working with the Console Mode 
+Output
+145
+Pause, Resume or Stop 
+Output to the Console 
+Window
+145
+Controlling Console Output
+145
+Commands by Module
+146
+System Utilities (SYS) Commands 147
+ABOUT
+148
+BACK
+149
+Contents ǀ22 of 37
+
+
+=== PAGE 25 ===
+
+CLOSE_FILE
+150
+DISPLAY_LICENSE_INFO
+151
+EXIT
+152
+GOTO_MODULE
+153
+HELP (? and ??)
+154
+HELP
+155
+HP_CALCULATOR
+156
+INFORMATION
+157
+MACRO_FILE_OPEN
+158
+OPEN_FILE
+161
+SET_COMMAND_UNITS
+162
+SET_ECHO
+163
+SET_GES_VERSION
+164
+SET_INTERACTIVE
+165
+SET_INTERACTIVE_MODE
+166
+SET_LOG_FILE
+167
+SET_PLOT_ENVIRONMENT
+168
+SET_TC_OPTIONS
+169
+STOP_ON_ERROR
+170
+Database (TDB) Module 
+Commands
+171
+AMEND_SELECTION
+172
+APPEND_DATABASE
+173
+DATABASE_INFORMATION
+174
+DEFINE_ELEMENTS
+175
+DEFINE_SPECIES
+176
+DEFINE_SYSTEM
+177
+GET_DATA
+178
+LIST_DATABASE
+179
+LIST_SYSTEM
+180
+REJECT
+181
+RESTORE
+182
+SET_AUTO_APPEND_
+DATABASE
+183
+SWITCH_DATABASE
+184
+POLY Module Commands
+185
+ADD_INITIAL_EQUILIBRIUM
+189
+ADVANCED_OPTIONS
+192
+AMEND_STORED_EQUILIBRIA 193
+CHANGE_STATUS
+195
+COMPUTE_EQUILIBRIUM
+200
+COMPUTE_TRANSITION
+202
+CREATE_NEW_EQUILIBRIUM 204
+DEFINE_COMPONENTS
+205
+DEFINE_DIAGRAM
+206
+DEFINE_MATERIAL
+209
+DELETE_INITIAL_
+EQUILIBRIUM
+213
+DELETE_SYMBOL
+214
+ENTER_SYMBOL
+215
+EQUILIBRIUM_CALCUL
+218
+Settings for the 
+Minimization of an 
+Equilibria
+218
+EVALUATE_FUNCTIONS
+220
+Contents ǀ23 of 37
+
+
+=== PAGE 26 ===
+
+GLOBAL_MINIMIZATION
+221
+KEEP_COMP_SET_NUMBERS 223
+LIST_AXIS_VARIABLE
+224
+LIST_CONDITIONS
+225
+LIST_EQUILIBRIUM
+226
+LIST_INITIAL_EQUILIBRIA
+227
+LIST_PHASE_ADDITION
+228
+LIST_STATUS
+229
+LIST_SYMBOLS
+230
+LOAD_INITIAL_EQUILIBRIUM 231
+MAKE_COMPONENT_
+ENTERED
+232
+MAKE_COMPONENT_
+SUSPENDED
+233
+MAJOR_CONSTITUENTS
+234
+MAP
+235
+NEW_COMPOSITION_SET
+237
+OUTPUT_FILE_FOR_SHOW
+239
+PARAEQUILIBRIUM
+240
+PHASE_ADDITION
+243
+POST
+244
+PRESENT_PHASE
+245
+READ_WORKSPACES
+246
+REINITIATE_MODULE
+247
+SAVE_WORKSPACES
+248
+Important Information 
+About Map and Step 
+Commands
+248
+SELECT_EQUILIBRIUM
+250
+SET_ALL_START_VALUES
+251
+SET_AXIS_VARIABLE
+253
+SET_CONDITION
+255
+SET_INPUT_AMOUNTS
+258
+SET_INTERACTIVE
+259
+SET_NUMERICAL_LIMITS
+260
+SET_REFERENCE_STATE
+262
+SET_START_CONSTITUTION
+264
+SET_START_VALUE
+265
+SHOW_FOR_T=
+266
+SHOW_VALUE
+267
+STABILITY_CHECK
+268
+STEP_AND_MAP
+269
+STEP_WITH_OPTIONS
+271
+TABULATE
+286
+TOGGLE_ALTERNATE_MODE 287
+T-ZERO_TEMPERATURE
+288
+Gibbs Energy System 
+(GES) Commands
+289
+Solution Models in the GIBBS 
+(GES) Module
+292
+About the ENTER_PHASE 
+Command
+304
+ADD_COMMENT
+308
+AMEND_ELEMENT_DATA
+309
+AMEND_PARAMETER
+311
+AMEND_PHASE_DESCRIPTION314
+Contents ǀ24 of 37
+
+
+=== PAGE 27 ===
+
+AMEND_SYMBOL
+318
+CHANGE_STATUS
+321
+ENTER_ELEMENT
+322
+ENTER_FUNCTION
+323
+ENTER_PARAMETER
+325
+ENTER_PHASE
+327
+ENTER_SPECIES
+329
+ENTER_SYMBOL
+330
+LIST_CONSTITUTION
+334
+LIST_DATA
+335
+Command Prompts
+335
+Output Differences: GES5 vs 
+GES6
+336
+LIST_PARAMETER
+338
+LIST_PHASE_DATA
+340
+LIST_STATUS
+341
+LIST_SYMBOL
+344
+READ_GES_WORKSPACE
+345
+READ_WORKSPACES
+346
+REINITIATE
+347
+SAVE_GES_WORKSPACE
+348
+SAVE_WORKSPACES
+349
+Important Information 
+About Map and Step 
+Commands
+349
+SCHEIL Module Commands
+351
+CALCULATE_BELOW_SOLIDUS 352
+CALCULATE_EVAPORATION_
+PROPERTIES
+352
+CALCULATE_FROM_START_
+TEMPERATURE
+353
+CALCULATE_FROM_GAS
+353
+EVALUATE_SEGREGATION_
+PROFILE
+355
+GLOBAL_MINIMIZATION
+356
+LIQUID_PHASE_NAME
+357
+SAVE_FILE_NAME
+358
+SET_NUMERICAL_LIMITS
+359
+SKIP_STEP_CALCULATION
+360
+SOLUTE_TRAPPING
+360
+START_WIZARD
+361
+Back Diffusion and Solute 
+Trapping Settings
+363
+TEMPERATURE_STEP
+365
+TERMINATION_CRITERIA
+366
+TEST_INTERVAL_FOR_GLOBAL366
+USE_BACK_DIFFUSION
+367
+PARROT Module Commands
+368
+About the ENTER_
+PARAMETER Command
+371
+AMEND_PARAMETER
+375
+AMEND_SYMBOL
+378
+COMPILE_EXPERIMENTS
+381
+CONTINUE_OPTIMIZATION
+382
+CREATE_NEW_STORE_FILE
+383
+Contents ǀ25 of 37
+
+
+=== PAGE 28 ===
+
+EDIT_EXPERIMENTS
+384
+ENTER_PARAMETER
+385
+LIST_ALL_VARIABLES
+387
+LIST_CONDITIONS
+388
+LIST_PARAMETER
+389
+LIST_PHASE_DATA
+391
+LIST_RESULT
+392
+LIST_STORE_FILE
+397
+LIST_SYMBOL_IN_GES
+398
+OPTIMIZE_VARIABLES
+399
+READ_PARROT_WORKSPACES 400
+RECOVER_VARIABLES
+401
+REINITIATE
+402
+RESCALE_VARIABLES
+403
+SAVE_PARROT_WORKSPACES 404
+SET_ALTERNATE_MODE
+405
+SET_EXTERNAL_PARAMETER 406
+SET_FIX_VARIABLE
+407
+SET_OPTIMIZING_CONDITION408
+SET_OPTIMIZING_VARIABLE
+410
+SET_OUTPUT_LEVELS
+411
+SET_SCALED_VARIABLE
+412
+SET_STORE_FILE
+413
+EDIT_EXPERIMENTS (ED_EXP) 
+Submodule Commands
+414
+ADVANCED_OPTIONS
+417
+CHANGE_STATUS
+418
+COMMENT
+423
+COMPUTE_ALL_EQUILIBRIA
+424
+CREATE_NEW_EQUILIBRIUM 425
+DEFINE_COMPONENTS
+426
+DELETE_SYMBOL
+427
+ENTER_SYMBOL
+428
+EVALUATE_FUNCTIONS
+430
+EXPERIMENT
+431
+EXPORT
+433
+FLUSH_BUFFER
+434
+GRAPHICS_PLOT
+435
+IMPORT
+436
+LABEL_DATA
+437
+LIST_ALL_EQUILIBRIA
+438
+LIST_CONDITIONS
+439
+LIST_EQUILIBRIUM
+440
+LIST_STATUS
+441
+LIST_SYMBOLS
+442
+MAKE_POP_FILE
+443
+READ_WORKSPACES
+444
+REINITIATE_MODULE
+445
+RESTORE_ALL_WEIGHTS
+446
+SAVE_WORKSPACES
+447
+SELECT_EQUILIBRIUM
+448
+SET_ALL_START_VALUES
+449
+SET_ALTERNATE_CONDITION 451
+Contents ǀ26 of 37
+
+
+=== PAGE 29 ===
+
+SET_CONDITION
+454
+SET_NUMERICAL_LIMITS
+457
+SET_REFERENCE_STATE
+459
+SET_START_CONSTITUTION
+461
+SET_START_VALUE
+462
+SET_WEIGHT
+463
+SHOW_VALUE
+465
+STORE_ALL_WEIGHTS
+466
+TABLE_HEAD, TABLE_VALUES 
+and TABLE_END
+467
+TRANSFER_START_VALUES
+469
+Tabulation Reaction 
+(TAB) Commands
+470
+ENTER_FUNCTION
+471
+ENTER_REACTION
+473
+LIST_SUBSTANCES
+475
+SET_ENERGY_UNIT
+478
+SET_PLOT_FORMAT
+479
+SWITCH_DATABASE
+480
+TABULATE
+482
+TABULATE_DERIVATIVES
+483
+TABULATE_REACTION
+488
+TABULATE_SUBSTANCE
+491
+REACTOR (REACTOR_SIMULATOR) 
+Commands
+496
+CREATE_DIVIDERS
+497
+CREATE_PIPES
+498
+CREATE_STAGE_BOXES
+499
+EXECUTE_POLY3_COMMAND 501
+LIST_RECORDS
+502
+READ_WORKSPACE
+503
+SAVE_WORKSPACES
+504
+START_SIMULATION
+505
+POST Module Commands
+507
+ADD_LABEL_TEXT
+510
+APPEND_EXPERIMENTAL_
+DATA
+513
+CHANGE_LEGEND
+514
+DUMP_DIAGRAM
+515
+ENTER_SYMBOL
+516
+FIND_LINE
+519
+LIST_DATA_TABLE
+520
+LIST_PLOT_SETTINGS
+521
+LIST_SYMBOLS
+522
+MAKE_EXPERIMENTAL_
+DATAFILE
+523
+MODIFY_LABEL_TEXT
+524
+PLOT_DIAGRAM
+525
+PRINT_DIAGRAM
+526
+QUICK_EXPERIMENTAL_PLOT 527
+REINITIATE_PLOT_SETTINGS
+528
+RESTORE_PHASE_IN_PLOT
+529
+SELECT_PLOT
+530
+SET_AXIS_LENGTH
+531
+SET_AXIS_PLOT_STATUS
+532
+Contents ǀ27 of 37
+
+
+=== PAGE 30 ===
+
+SET_AXIS_TEXT_STATUS
+533
+SET_AXIS_TYPE
+534
+SET_COLOR
+535
+SET_CORNER_TEXT
+537
+SET_DIAGRAM_AXIS
+538
+SET_DIAGRAM_TYPE
+540
+SET_FONT
+541
+SET_INTERACTIVE_MODE
+542
+SET_LABEL_CURVE_OPTION
+543
+SET_PLOT_FORMAT
+544
+SET_PLOT_OPTIONS
+545
+SET_PLOT_SIZE
+547
+SET_PREFIX_SCALING
+548
+SET_RASTER_STATUS
+549
+SET_REFERENCE_STATE
+550
+SET_SCALING_STATUS
+552
+SET_TIC_TYPE
+553
+SET_TIELINE_STATUS
+554
+SET_TITLE
+555
+SET_TRUE_MANUAL_SCALING556
+SUSPEND_PHASE_IN_PLOT
+557
+TABULATE
+558
+Technical Notes
+559
+Technical Note: Pipe or Redirect 
+Output Data from Console Mode 560
+Windows
+560
+Linux
+560
+macOS
+560
+Console Mode Examples
+561
+Thermo-Calc Console Mode 
+Examples
+562
+Binary Phase Diagram Examples
+564
+Property  Diagram Examples
+569
+Ternary Phase Diagram Examples 574
+Multicomponent Phase Diagram 
+Examples
+579
+Examples Calculating 
+Thermodynamic and Related 
+Quantities
+581
+Single Equilibrium Calculation 
+Examples
+586
+Potential Diagram Example
+588
+Examples of Scheil-
+Gulliver Calculations
+589
+Example Calculating Chemical 
+Ordering
+591
+Examples of Gibbs Energy System 
+(GES)
+592
+Notes Related to the 
+Example
+596
+Example Calculating the T0 
+Temperature
+598
+Examples Calculating 
+Paraequilibrium
+599
+Example Using Functions and 
+Variables
+600
+Reference
+600
+Example Using PARROT and EDIT_601
+Contents ǀ28 of 37
+
+
+=== PAGE 31 ===
+
+EXPERIMENT
+Pourbaix Diagram Examples
+603
+The PAQ2 Database
+603
+Additional Examples in this 
+Series
+603
+Step 1: Single-Point 
+Calculations for H2O-NaCl 
+system
+604
+Step 2: Single-Point 
+Calculations for Fe-X (X = Cr-
+Ni-Co) system
+604
+Step 3: Single-Point 
+Calculations for Fe-Cr-Ni-Co 
++ H2O-NaCl system
+604
+Step 4: Pourbaix Diagram 
+Mapping for Fe-Cr-Ni-Co + 
+H2O-NaCl system - define 
+the variables
+604
+Pourbaix Examples TCEX40A, 40B, 
+40C, and 40E
+606
+POURBAIX_DIAGRAM Commands 
+for Options 1 to 4
+610
+Option 1: Start a Completely 
+New Pourbaix Diagram 
+Calculation
+610
+Chemical system 
+(elements)
+611
+Initial bulk composition
+611
+Option 2: Open an Existing 
+File and Plot Other Property 
+Diagrams
+616
+Option 3: Open an Existing 
+File and Make Another 
+Pourbaix Calculation
+618
+Option 4: Open an Existing 
+File and Make another 
+Stepping Calculation
+620
+Example Using Tabulate Reaction 
+(TAB)
+623
+Example Using REACTOR
+624
+Examples with Thermophysical 
+Properties
+625
+Application Examples
+630
+Data Optimization User Guide
+1
+Introduction
+2
+Introduction to Data Optimization
+3
+Data Optimization
+4
+The Least-Squares Method
+6
+The CALPHAD Approach
+7
+References
+7
+Working with Data Optimization in 
+Thermo-Calc
+8
+Data Optimization in Thermo-Calc
+9
+Data Optimization Workflow
+10
+The PARROT Module
+12
+The EDIT_EXPERIMENTS Module
+13
+Data Optimization in Other 
+Modules
+14
+Optimization File Types
+15
+Optimization Workspaces
+16
+Method for Optimization and 
+Simulation
+17
+Creating the POP File
+18
+Contents ǀ29 of 37
+
+
+=== PAGE 32 ===
+
+Experimental Information
+19
+POP File Syntax
+22
+Entering Experimental Information 24
+Creating a New Equilibrium
+25
+Setting Equilibrium Conditions 
+and  Uncertainty
+26
+Setting Reference States
+27
+Entering the Experimental 
+Value and its Uncertainty
+29
+Entering Many Equilibria as a 
+Table
+30
+Setting Site Fraction Start 
+Values
+32
+Commenting About an 
+Equilibrium
+33
+Simultaneous Use of Binary 
+and Ternary Experiments
+34
+Using Stability Conditions
+35
+Grouping Equilibria with Labels
+36
+Dividing the POP File into Several 
+Blocks
+37
+The Setup File
+38
+Creating the Setup File
+39
+Defining the System
+40
+Creating Additional 
+Composition Sets of a Phase
+40
+Entering the Optimizing Variables
+41
+Entering Optimizing Variables 
+in Parameter Specifications
+42
+Entering Interaction 
+Parameters
+44
+Initializing Optimizing Variables in 
+PARROT
+45
+Creating the Workspace File
+46
+Compiling the POP File
+47
+Returning Control to the Console
+48
+Optimizing  in PARROT
+49
+Optimizing the System in PARROT 50
+Changes that Require POP File 
+Recompilation
+51
+Optimization Workflow
+52
+Ensuring Computation of all 
+Equilibria
+53
+Setting Weights
+55
+Optimizing and Evaluating Results 56
+The Critical Set of Experiments 57
+Continuing the Optimization and 
+Resetting Variables
+58
+Updating the Set of Optimizing 
+Variables
+60
+Reducing the Number of 
+Optimizing Variables
+62
+Plotting Intermediate Results
+63
+Superimposing Experimental 
+Data from EXP Files
+64
+Finalizing the Optimization
+65
+Finishing the Optimization
+66
+Rounding off Optimizing Variable 
+Values
+67
+Contents ǀ30 of 37
+
+
+=== PAGE 33 ===
+
+Updating the Database File
+68
+Creating a Database File
+69
+Updating the Setup File and the 
+POP file
+70
+Alternate Mode
+71
+About Alternate Mode
+72
+Optimizing in Alternate Mode
+73
+Preparing the POP File for 
+Alternate Mode
+74
+Examples of SET_ALTERNATE_
+CONDITION
+75
+Entering Other Experiments in 
+the POP with Alternate Mode
+76
+Troubleshooting
+77
+Useful Guidelines
+78
+Excluding and Including the Correct 
+Equilibria
+80
+Conflicting Data
+81
+Experiments and Experimental Data82
+Phase Diagram Data
+83
+Data for Individual Compounds
+84
+Single Phase Mixing Enthalpies or 
+Partial Enthalpies
+86
+Enthalpies of Formation and 
+Enthalpies of Reactions
+87
+Chemical Potentials via EMF 
+Measurements
+88
+Driving Force for Metastable 
+Phases
+89
+Pressure-Temperature-Volume EOS 
+Data
+90
+Crystal Structure, Lattice 
+Parameters, and Site-Occupancy
+91
+Magnetism and Other Atomistic 
+Properties
+92
+Data About Systems of Different 
+Orders
+93
+Thermodynamic Models
+94
+Gas
+95
+Compound Energy Formalism
+96
+Substitutional Liquid
+97
+Ionic Two-Sublattice Liquid Model 98
+References
+98
+Models for Ordered Phases
+99
+4SL Model for FCC, HCP, and BCC 100
+2SL Model for FCC, HCP, and BCC 102
+Magnetic Ordering
+103
+Molar Volumes and High Pressure104
+Excess Models
+105
+General Einstein Model
+106
+Database Manager User Guide
+1
+Introduction to the Database 
+Manager Guide
+2
+Thermodynamic and 
+Kinetic/Mobility Databases
+3
+Initialization of the TDB Module
+4
+The Database Definition File and 
+Keywords
+6
+Contents ǀ31 of 37
+
+
+=== PAGE 34 ===
+
+Database Definition File Syntax
+9
+ELEMENT
+11
+SPECIES
+12
+PHASE
+14
+Examples of Recommended 
+Suffixes
+14
+GIBBS Phase-type Codes
+15
+Additional Clarification
+16
+CONSTITUENT
+20
+ADD_CONSTITUENT
+22
+COMPOUND_PHASE
+23
+ALLOTROPIC_PHASE
+24
+TEMPERATURE_LIMITS
+25
+DEFINE_SYSTEM_DEFAULT
+26
+DEFAULT_COMMAND
+27
+DATABASE_INFORMATION
+28
+TYPE_DEFINITION
+29
+FTP_FILE
+33
+FUNCTION
+34
+PARAMETER
+37
+GIBBS Parameter Name
+38
+Parameters for the Two 
+Sublattice Ionic Liquid Model
+44
+OPTIONS
+46
+TABLE
+47
+ASSESSED_SYSTEMS
+48
+REFERENCE_FILE
+52
+LIST_OF_REFERENCE
+54
+ADD_REFERENCE
+55
+CASE and ENDCASE
+57
+VERSION_DATA
+58
+Working with the Mobility 
+Databases
+59
+Extensions to Database Definition 
+File Syntax
+60
+PARAMETER
+61
+DIFFUSION
+62
+ZEROVOLUME_SPECIES
+63
+Database Definition File Examples
+64
+Example 1: A Steel Database
+65
+Example 2: A Custom Database for 
+the Sb-Sn Binary System
+67
+Example 3: A Public Database for 
+the Fe-Cr-C Ternary System
+71
+Database Checker
+85
+About the Database Checker
+86
+Custom Databases: GES5 and 
+GES6 Calculation Engine 
+Version
+87
+Using the Database Checker
+88
+Example of Working with the 
+Database Checker
+88
+TDB Editor
+90
+About the TDB Editor
+91
+Installing VSCode and the TDB 
+Editor
+92
+Contents ǀ32 of 37
+
+
+=== PAGE 35 ===
+
+System Requirements
+92
+How to Install the TDB Editor 
+Extension
+92
+READ ME Section Included with 
+the Extension
+94
+Using the TDB Editor
+96
+How to Create a TDB File
+96
+How to Open a TDB File
+96
+Example of Working with the 
+TDB Editor
+96
+Customize the Color
+97
+DATAPLOT User Guide
+1
+Introduction to the DATAPLOT User 
+Guide
+2
+Using this Guide
+3
+About the DATAPLOT Graphical 
+Language
+4
+DATAPLOT Examples
+4
+Plotting Experimental Data Files
+5
+Graphical Mode
+5
+Console Mode
+5
+Using DATAPLOT Graphical 
+Language
+7
+DATAPLOT File Structure
+8
+DATAPLOT Language Syntax
+9
+Coordinate Systems
+10
+Graphical Operation Codes
+11
+Tables or Blocks
+13
+Drawing a Polygon
+14
+Drawing an Analytical Function
+15
+Painting of an Enclosed Area
+16
+Writing a Text
+17
+Plotting a Symbol
+18
+Other Commands
+19
+General
+19
+ATTRIBUTE
+19
+CLIP
+19
+COLOR
+19
+INCLUDE
+19
+LINETYPE
+19
+Interactive Plotting
+20
+Formatting DIGLAB Symbols in 
+LaTeX Documents
+21
+LaTeX Formatting Codes
+23
+LTEXT vs LaTeX Commands for 
+Labels
+23
+PROLOGUE Commands
+24
+PROLOG
+25
+DIAGRAM_TYPE
+26
+TIC_TYPE
+27
+TITLE
+28
+XLENGTH
+29
+XSCALE
+30
+XTEXT
+31
+XTYPE
+32
+YLENGTH
+33
+Contents ǀ33 of 37
+
+
+=== PAGE 36 ===
+
+YSCALE
+34
+YTEXT
+35
+YTYPE
+36
+DATASET Commands
+37
+ATTRIBUTE
+38
+BLOCK
+39
+BLOCKEND
+40
+CHARSIZE
+41
+CLIP
+42
+COLOR
+43
+DATASET
+45
+DATAPOINT
+46
+DRAWLINE
+47
+FONT
+48
+Font Numbers
+48
+FUNCTION
+49
+GLOBALSIZE
+50
+INCLUDE
+51
+LINETYPE
+52
+PAINT
+53
+PCFUNCTION
+54
+SYMBOLSIZE
+55
+STRING
+56
+TEXT
+58
+Examples of DATAPLOT Files and 
+Outputs
+59
+Example 1 – Draw Lines and 
+Symbols
+60
+Output Example
+60
+Macro Text
+60
+Example 2 – Draw Polygons and 
+Symbols
+62
+Output Example
+62
+Macro Text
+62
+Example 3 – Using Strings and 
+Various Line Types
+64
+Output Example
+64
+Macro Text
+64
+Example 4 – Draw Curves Defined 
+by Functions
+67
+Output Example
+67
+Macro Text
+67
+Example 5 – Use Included Files for 
+Predefined Symbols
+69
+Output Example
+69
+Macro Text
+70
+Example 6 – Triangular Diagrams 
+for Ternary Systems
+72
+Output Example
+72
+Macro Text
+72
+Example 7 – Color Codes
+78
+Output Example
+78
+Macro Text
+78
+Example 8 - DIGLIB Symbols
+83
+Output Example
+83
+Contents ǀ34 of 37
+
+
+=== PAGE 37 ===
+
+Macro Text
+83
+Example 9 - DIGLIB Fonts and Lines 91
+Output Example
+91
+Macro Text
+91
+Pourbaix Diagrams
+1
+Introduction to Pourbaix Diagrams
+2
+About Pourbaix Diagrams in 
+Thermo-Calc
+3
+GES5 and GES6 Calculation 
+Engine Version
+3
+References
+4
+Pourbaix Diagrams
+5
+Working with Pourbaix Diagrams
+7
+Key Concepts
+9
+Effective Interaction Ratio
+9
+Solubility
+9
+Basic Settings and Definitions
+11
+Thermodynamic Data Requirements13
+Required Thermodynamic Data
+14
+Including or Excluding the Gas 
+Phase
+15
+Examples of Pourbaix Diagrams for 
+Fe
+19
+Pourbaix Diagrams with Gas Phase 
+Excluded
+20
+Pourbaix Diagrams with Gas Phase 
+Included
+21
+Other Examples of Pourbaix 
+Diagrams
+22
+Variations of Pourbaix Diagrams
+23
+Pourbaix Diagrams for Complex 
+Alloys
+26
+Pourbaix Diagram References
+28
+Thermo-Calc: General Reference 1
+Parameters, Functions, and 
+Variables
+2
+Specifying Parameters
+3
+About Operators and Functions
+5
+Available Operators for Writing 
+Functions
+5
+Thermodynamic Variables
+6
+Common Thermodynamic 
+Variables
+6
+How to Read the Tables
+7
+Intensive Variables
+8
+Extensive Variables
+9
+Special Quantities
+13
+The u-Fraction Variable
+15
+Suffixes
+16
+Normalizing Suffixes
+16
+Derived Variables and Partial 
+Derivatives
+23
+Defining New Derived Variables 
+and Functions
+24
+Derived Variables for Aqueous 
+Solutions
+25
+Defining New Derived Variables 
+for Aqueous Solutions
+28
+Contents ǀ35 of 37
+
+
+=== PAGE 38 ===
+
+Thermodynamic Variables and 
+Wildcard Characters
+29
+Units of State Variables and 
+Derived Variables
+30
+User-Specified Units
+31
+Examples of User-Defined Units
+32
+For intensive variables of a 
+defined system
+32
+For extensive variables of a 
+defined system
+33
+For intensive variables of a 
+system component
+34
+For extensive variables of a 
+system component
+34
+For intensive variables of a 
+species in a phase
+37
+For extensive variables of a 
+species in a phase
+38
+State Variables for Scheil
+42
+State Variables in Console Mode 
+DICTRA
+43
+Intensive Properties
+43
+Extensive Properties
+43
+Thermophysical Properties Data 
+and Variables
+48
+About Thermophysical Properties 
+Data Parameters
+49
+Thermophysical Properties 
+Variables
+53
+Electrical Resistivity Model
+55
+Thermal Conductivity Model
+59
+Surface Tension of Metallic Liquid 
+Alloys Model
+63
+Surface Tension Model for Oxide 
+Slag
+66
+Viscosity of the Metallic Liquids 
+Model
+67
+Viscosity of the Ionic Liquids Model70
+Molar Volume Model
+71
+Database Files
+72
+About the Database Files
+73
+Custom Databases: GES5 and 
+GES6 Calculation Engine 
+Version
+74
+Database Installation Folder
+75
+About Cached Database Files
+76
+Editing the Database Initialization 
+File or Unencrypted Database File 77
+Database Checker
+78
+Global Settings
+79
+Global General Settings
+80
+Graphical Mode: Default Units
+85
+Graphical Mode: Activities
+87
+Global Settings: System Definer
+88
+Global Settings: Equilibrium 
+Calculator
+90
+Global Settings: Diffusion 
+Calculator
+91
+Global Settings: Precipitation 
+Calculator
+92
+Global Settings: Process Metallurgy93
+Contents ǀ36 of 37
+
+
+=== PAGE 39 ===
+
+Global Settings: Scheil Calculator
+94
+Global Settings: Tables
+95
+Global Settings: Graphical and 
+Console Mode Plotting
+96
+Global vs Local Plot Settings
+97
+Local Plot Property Settings
+97
+Global Plot Settings: Themes
+99
+About Plot Themes
+100
+Working with Plot Themes
+101
+How to Create a Custom 
+Plot Theme
+104
+How to Import a Custom 
+Plot Theme
+105
+How to Export a Plot 
+Theme
+106
+How to Delete a Custom 
+Plot Theme
+107
+How to Rename a Custom 
+Plot Theme
+107
+Predefined Theme Settings
+108
+Global Plot Settings: Plot Area 
+Size
+112
+Global Plot Settings: Design the 
+Look and Feel
+114
+Global Settings: Console Mode 
+Default Appearance
+121
+Contents ǀ37 of 37
+
+
+=== PAGE 40 ===
+
+Installation Guide 
+Windows®, macOS®, and Linux Operating Systems
+Thermo-Calc Version 2023a
+Including the TC-Python and TC-Toolbox for MATLAB® Installation Guides
+
+
+=== PAGE 41 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 2 of 147
+Installing Thermo-Calc
+In this section:
+Key to Using this Guide
+3
+Installation Terminology
+5
+About the Thermo-Calc Components Being Installed
+7
+System Requirements
+9
+Platforms Tested and SDK Availability
+10
+
+
+=== PAGE 42 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 3 of 147
+Key to Using this Guide
+This guide is available in PDF format: (1) On the website or (2) when in 
+Thermo-Calc go to Help → Manuals Folder → Installation.
+This installation guide is for all Thermo-Calc installations running on Windows, macOS, or 
+Linux operating systems. It is also applicable to  previously installed versions of Thermo-Calc 
+(the new version is installed next to the old version). 
+This guide includes information about:
+ l
+The types of licenses and installations available.
+ l
+Installing the Thermo-Calc software and its components on standalone computers, 
+servers, and client computers.
+ l
+Installing the license management software for network installations. 
+ l
+Retrieving and installing license files.
+ l
+Details about the specific instructions needed to install two of the SDKs, TC-Python 
+and TC-Toolbox for MATLAB®. 
+ l
+Troubleshooting to solve common installation problems.
+ l
+Updating and uninstalling the software.
+Icons in this Guide
+Name
+Description
+Information
+Provides important information and indicates that more detail is located 
+in the linked or named topic.
+Note
+The information can be of use to you. It is recommended that you read 
+the text or follow the link.
+Operating system
+The operating system is indicated when the information is specific to a Windows, macOS, 
+
+
+=== PAGE 43 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 4 of 147
+Name
+Description
+or Linux operating system.  
+ License file 
+The Thermo-Calc license file, which contains the license keys and is installed on either a 
+standalone computer or a network server.
+ Thermo-Calc 
+The Thermo-Calc software and its components (including databases and SDKs) to be 
+installed.
+Typographical Conventions
+Convention
+Definition
+Forward arrow →
+The forward arrow symbol → instructs you to select a series of menu items in a 
+specific order. For example, Tools → Options is equivalent to: From the Tools menu, 
+select Options.
+Boldface font
+A boldface font indicates that the given word(s) are shown that way in on a toolbar 
+button or as a menu selection. For example, if you are told to select a menu item in 
+a particular order, such as Tools → Options, or to click Save.
+Italic font
+An italic font indicates the introduction of important terminology. Expect to find an 
+explanation in the same paragraph or elsewhere in the guide.
+code and code bold
+A code font indicates you are to make a keyboard entry. It also shows a 
+programming code or code examples. The code bold font highlights the entry.
+
+
+=== PAGE 44 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 5 of 147
+Installation Terminology
+Term
+Definition
+client 
+A computer without a license file of its own but connected through the network to 
+a computer with the license information. The client receives a license token from 
+the computer where the license management software is installed.
+consolidated network
+A type of network installation where the Thermo-Calc software and a Thermo-Calc 
+licensing software are installed on a single server computer. This allows all 
+computers in the network to access both the software and a license on the server 
+via a client installation.
+distributed network
+A type of network installation where the Thermo-Calc software is installed on one 
+server computer in a network and the Thermo-Calc licensing software is installed 
+on a different computer. After a thin client installation, all computers in the 
+network can access both the software and the network license key via the server.
+host ID
+The MAC address on the computer that a license is locked to. 
+license file
+The file (called lservrc) that contains all the purchased license keys. It is issued by 
+Thermo-Calc Software, usually by email.
+license key
+The information contained in the license file that represents the products 
+purchased and which is then authorised for installation.
+license management software 
+(see Sentinel RMS License 
+Software)
+The Thermo-Calc license management software. When working in Windows it is 
+called License Manager (full name is Sentinel RMS License Manager by SafeNet) 
+and on Linux it is called License Server (full name is Sentinel License Sever by 
+Safenet).
+license server
+The use of the term license server (lower case letters) is reserved for use for scripts 
+and option files (for example, in an Unattended Network Client Installations). For 
+the purposes of the step-by-step instructions it is not used to refer to the type of 
+network installation that runs the license management program. See Sentinel 
+RMS Software below. 
+Network License (NWL)
+The license type used with the licensing software. The NWL can only be used on 
+one specific computer that hosts the licensing software. This restricts license usage 
+to a certain subnet or subnets.
+The software may be used on the number of sites you have paid for and by the 
+number of persons you have paid for on any number of network connected 
+computers
+Sentinel RMS License 
+Software 
+The Thermo-Calc license management software that supplies the client computers 
+in your network with license tokens when it runs the Thermo-Calc software. This is 
+available for both Windows (called the License Manager) and Linux (called the 
+License Server, but not to be confused with license server in lower case letters 
+
+
+=== PAGE 45 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 6 of 147
+Term
+Definition
+reserved for scripts).
+Single-User-Node Locked-
+License (SUNLL)
+A unique license file for one designated computer at one designated site. It cannot 
+be copied or moved outside the site. If the software is installed on a portable 
+computer, it can be temporarily used off-site. The license can be used without 
+network access (to the License Server).
+standalone computer
+A computer which uses a SUNLL license type.
+TC-Toolbox 
+The short name for the  TC-Toolbox for MATLAB® SDK. 
+thin client
+An installation where the software is installed on a file server but is run from a 
+client computer. The licensing software may be installed on the file server 
+(consolidated network installation) or on a different computer (distributed network 
+installation).
+XQuartz
+An open-source X Windows System, which is required to run Thermo-Calc on a 
+Mac.
+
+
+=== PAGE 46 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 7 of 147
+About the Thermo-Calc Components Being Installed
+What is Installed with a Full Standalone or Full Network 
+Client Option?
+At the start of the installation process, the following components are installed when you 
+choose either the Full Standalone or Full Network Client options. If you want to exclude a 
+component (perhaps one of the SDKs), then you would use the Custom option.
+A full installation means that all listed feature components are installed but the availability 
+of the individual components is based on the license you have.  This is also applicable to the 
+databases and software development kits (SDKs).  
+Thermo-Calc
+The Thermo-Calc software includes several add-on features and capabilities that are 
+packaged with the software and included with a full standalone or network client 
+installation. For example, there are the specialized add-on products Diffusion Module 
+(DICTRA), Precipitation Module (TC-PRISMA), and Process Metallurgy Module as well as the 
+Steel Model Library. For most of these specialized features, demonstration (demo) versions 
+and/or examples are available for all users but advanced features are only available with a 
+license. 
+Databases
+All the latest databases are installed. As with the software features, availability of a specific 
+database in the software itself is based on license. However, several demonstration 
+(demo) databases are included and available to all users. 
+
+
+=== PAGE 47 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 8 of 147
+ Software Development Kits (SDKs) 
+When the Full Standalone or Full Network Client option is chosen, it also installs the 
+software development kits (SDKs) (e.g. TC-Python, TQ-Interface, TC-Toolbox for MATLAB®, 
+etc.).
+TC-PYTHON
+The TC-Python program is installed when the Full Standalone or Full Network Client option 
+is chosen, but there are additional steps required to complete the installation as described in 
+the TC-Python Installation Guide.
+TC-TOOLBOX FOR MATLAB®
+If a MATLAB® installation on your computer is found during this installation process,  the 
+TC-Toolbox for MATLAB® (available only for Windows) is automatically installed, otherwise 
+you may need to do a manual installation. For details, see the TC-Toolbox for 
+MATLAB Installation Guide®.
+What Does the Custom Option Allow Me to Do During an 
+Installation?
+During the installation process, there is some flexibility to choose what to include or exclude 
+with the installation by choosing the Custom option. This is primarily to the level of being 
+able to choose the SDKs or to exclude all databases or Thermo-Calc itself. That is, you cannot 
+choose specific Thermo-Calc features or databases as these are controlled by the license and 
+not the installation procedure. 
+
+
+=== PAGE 48 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 9 of 147
+System Requirements
+About the Thermo-Calc Components Being Installed
+General
+A full list of system requirements and program availability is found on the Thermo-Calc 
+website. You can also see the roadmap for platform support to use for planning purposes. 
+Network Client Installations: Sentinel RMS License 
+Software
+Network client installations using the Sentinel RMS license management 
+software require the use of the most recent version, 9.7.
+For details of the system requirements to install Sentinel RMS, see Windows: About 
+Installing the License Manager and Linux: About Installing the License Server.
+For macOS, the Sentinel RMS License software is installed on a Windows  or 
+Linux  computer server where the Thermo-Calc license file must also be located. 
+
+
+=== PAGE 49 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 10 of 147
+Platforms Tested and SDK Availability
+A full list of system requirements and program availability is found on the Thermo-Calc 
+website. You can also see the roadmap for platform support to use for planning purposes. 
+Platforms Tested
+Thermo-Calc and its components are tested on these platforms for Thermo-Calc 2023a:
+Windows
+macOS
+Linux1, 2
+ l
+Windows 10 64-bit
+ l
+Windows 11
+ l
+Ventura 13.0.1
+ l
+Monterey 12.6.1
+ l
+Ubuntu 20.04 (Focal Fossa)
+ l
+CentOS 7.9
+ l
+OpenSUSE 15.4
+1 Thermo-Calc Software cannot guarantee full functionality if the software is installed on other Linux distributions.
+2 If you are installing on CentOS 7, it is recommended you install gtk2 before you run the installation script. 
+SDK Availability by Platform
+The software development kits (SDKs) are available as follows for the indicated platforms:
+SDK
+Windows
+macOS
+Linux
+TC-Python
+x
+x
+x
+TQ-Interface
+x
+not available
+x
+TC-Toolbox for MATLAB®
+x
+not available
+not available
+TC-API
+x
+not available
+x
+
+
+=== PAGE 50 ===
+
+Thermo-Calc Documentation Set
+Installation Guide ǀ 11 of 147
+License and Installation Types
+In this section:
+License and Installation Types
+12
+About License Keys and Files
+13
+Standalone Installations (SUNLL)
+14
+Multi-User Network Installations (NWL)
+15

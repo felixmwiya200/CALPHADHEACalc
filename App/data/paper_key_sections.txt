@@ -1,0 +1,1867 @@
+
+
+==================== PAGE 1 ====================
+
+1 ===
+
+High entropy oxides-exploring a paradigm of promising catalysts:
+A review
+Shaima H. Albedwawi a,b, Asala AlJaberi a, Gregory N. Haidemenopoulos a,c, Kyriaki Polychronopoulou a,b,⁎
+a Mechanical Engineering Department, Khalifa University of Science and Technology, Abu Dhabi 127788, UAE
+b Center for Catalysis and Separations, Khalifa University of Science and Technology, Abu Dhabi 127788, UAE
+c Department of Mechanical Engineering, University of Thessaly, Greece
+H I G H L I G H T S
+• High Entropy Oxides exploration of
+their catalytic properties withholds
+great potential.
+• Experimental and computational stud-
+ies showed that enthalpy and entropy
+are among important design criteria.
+• High Entropy Oxides possess high lattice
+distortion, leading to high oxygen mo-
+bility. Parameters such as method of
+synthesis, element type and content
+are very important for the formation of
+the single phase
+• High Entropy Oxides have great poten-
+tial for photo-, electro- and thermal
+catalysis.
+G R A P H I C A L
+A B S T R A C T
+a b s t r a c t
+a r t i c l e
+i n f o
+Article history:
+Received 2 October 2020
+Received in revised form 17 January 2021
+Accepted 25 January 2021
+Available online 29 January 2021
+Keywords:
+Ceramics
+High entropy
+Metal oxides
+Catalysis
+DFT
+Oxygen mobility
+This review presents the structural elements and discusses the great potential of high entropy oxides (HEO) as
+promising catalysts. A critical comparison is provided with the medium and low entropy metal oxides in terms
+of the important functionality of HEO to exhibit higher oxygen mobility and withhold high population of oxygen
+vacancies as well as leading to high metal dispersion. This review study critically compares the performance of
+the thermal, electro- and photo- high entropy oxides catalysts with the conventional metal oxides and demon-
+strates their superiority over them while discussing the governing characteristics of HEO. The HEO complex
+structure is highlighted using ab initio calculations on understanding and tuning their electronic/structural prop-
+erties. Catalysts’ design criteria and direction in the studies of the HEO as catalysts for energy and sustainability
+are proposed.
+© 2021 The Authors. Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license (http://
+creativecommons.org/licenses/by-nc-nd/4.0/).
+Materials and Design 202 (2021) 109534
+Abbreviations: HEO, high entropy oxide; ESO, entropy stabilized oxide; DFT, density functional theory; ME-REO, multicomponent equiatomic rare earth oxides.
+⁎ Corresponding author at: Center for Catalysis and Separations, Khalifa University of Science and Technology, Abu Dhabi 127788, UAE.
+E-mail address: kyriaki.polychrono@ku.ac.ae (K. Polychronopoulou).
+https://doi.org/10.1016/j.matdes.2021.109534
+0264-1275/© 2021 The Authors. Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license (http://creativecommons.org/licenses/by-nc-nd/4.0/).
+Contents lists available at ScienceDirect
+Materials and Design
+journal homepage: www.elsevier.com/locate/matdes
+
+
+
+
+==================== PAGE 2 ====================
+
+2 ===
+
+Contents
+1.
+Introduction. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2.
+Entropy stabilization and distinction between HEA and HEO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+3.
+High entropy stabilization: Concepts and terminologies . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+3.1.
+High entropy alloys vs. high entropy oxides . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+3.2.
+Entropy stabilized oxides (ESO) vs. high entropy oxides (HEO)
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.3.
+Reversibility
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+3.4.
+High vs. medium vs. low entropy oxides . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.
+High entropy oxides synthesis methods . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.1.
+HEO selection rules . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.2.
+Reported synthetic techniques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4.3.
+Use of descriptors for evaluating the synthesizability of the HEO . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+5.
+Entropy stabilized oxides: Unveiling the ‘real’ structure towards understanding the properties. . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+5.1.
+Unveiling the not-so-perfect but real structure/microstructure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+5.2.
+Discrepancies in the crystallite size . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+5.3.
+Textural analysis
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+5.4.
+Morphology-elements distribution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+5.5.
+Oxidation states . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+5.6.
+Transient techniques
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+5.7.
+Surface acidity/basicity. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+5.8.
+What type of information are in the scope of interest and to be extracted from such complex oxide structures?
+. . . . . . . . . . . . . .
+17
+6.
+High entropy oxides as catalysts. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+6.1.
+Maximized disorder as a descriptor for catalytic activity. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+17
+6.2.
+Thermal catalysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+6.3.
+CO oxidation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+6.4.
+Critical comparison; HEO vs. their non-HEO analogues in CO oxidation reaction . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+6.5.
+CO2 hydrogenation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+6.6.
+Oxidative desulfurization. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+6.7.
+Critical comparison; HEO vs. their non HEO analogues in oxidative desulfurization reaction. . . . . . . . . . . .
+
+==================== PAGE 3 ====================
+
+3 ===
+
+HEAs, the opportunity to investigate the central regions of the phase di-
+agrams arose [18].
+Entropy stabilized materials attracted the attention of the scientiﬁc
+community as it is reﬂected in the review papers on the HEOs [19–22]
+and the High Entropy Ceramics (HEC) (e.g.: borides, nitrides, oxides, sil-
+icides, sulﬁdes and carbides) [23–25] already published in the open lit-
+erature. It should be mentioned that the present work scope is the
+correlation of the high entropy oxides (HEO) to their catalytic perfor-
+mance in the ﬁelds of thermal, electro- and photo- catalysis. Compari-
+son of the HEO with the conventional metal oxides is herein presented
+and their potential superiority over the ﬁrst is demonstrated and criti-
+cally discussed in terms of their structural features. In the herein
+study, only a short coverage of the synthesis methods is presented, as
+it has been the subject of other critical review articles [20,23,25]. The
+existing literature covers mostly the synthesis aspects and challenges
+as well as properties such as magnetic, optical, thermoelectric
+[20,23,25].
+From a catalytic application point of view, designing high entropy
+oxide-based materials is a ﬁeld which is not yet fully developed. To-
+wards expanding the HEO engineering space a strategic design is re-
+quired, where some important parameters are accounted, as explained
+in what follows: (a) during the formation of HEO the enthalpy of mixing
+and the conﬁgurational entropy dictate the potential of a real HEO for-
+mation; high enthalpy implies potential segregation (or clustering)
+whereas going to higher number of cations increases the entropy stabi-
+lization of these structures. The entropy stabilization phenomenon can
+be checked by performing calcination treatment of the material at low
+and high temperatures and validate the presence or not of a single
+phase [26]. This type of experiment has been proposed for both rock-
+salt structures (R-HEO) and ﬂuorite (F-HEO) ones. (b) In the selection
+of the constituent elements two important parameters are the valence
+of the cations and their coordination environment compatibility. By co-
+ordination environment compatibility, it is meant that the size of the
+cations should be appropriate for the oxygen sub-lattice whereas the
+structural tolerance factor should also be fulﬁlled [7,27].At the same
+time, the valence of the constituent cations should be such as that
+charge balance is maintained. Along these lines, there is a lot of litera-
+ture exploration, despite that HEO is a new family of materials, on com-
+bining cations with the same valence. Expanding towards the direction
+of combining cations with valence difference can really take us to new
+materials with unexplored so far properties and catalytic performance
+due to the so called ‘charge distortion’. The latter is a phenomenon
+due to the uneven electron cloud distribution between the metals
+with the different valence and the oxygen. Such an electron cloud dis-
+tortion is anticipated to impact different catalytic reactions, through dif-
+ferent pathways, such as H2S removal [28], CO2 reduction to different
+hydrocarbons [29,30], hydrocarbon reforming. In the above mentioned
+reactions, HEO can be used as standalone catalysts or catalytic supports
+(decorated with active metal) due to their intrinsic lattice distortion.
+The major focus on the existing open literature on the HEO is placed
+on the magnetic [31–34] and electrical [35–37] properties so far.
+This review report focuses on the high entropy oxides (HEO) and is
+structured in such a way so to navigate the reader through preparation,
+structural features and analysis as well as applications in ﬁelds of catal-
+ysis through the lenses of experimental studies and ab initio calcula-
+tions. In particular, it is composed by nine (9) sections that include the
+introduction on the high entropy oxides fundamentals (Section 1), the
+distinction between the HEO and the HEA, the basic terminologies and
+thermodynamic p
+
+==================== PAGE 4 ====================
+
+4 ===
+
+In HEO, there is a somewhat different situation. The presence of the
+anion lattice (oxygen lattice) interferes and breaks the ﬁrst neighbor in-
+teractions of the atoms in the cation sub-lattice [7]. Each cation being
+surrounded by oxygen atoms, feels the same environment. To a ﬁrst ap-
+proximation this leads to ΔHmix=0, leaving only the entropic term (en-
+tropy of mixing) in Eq. (1) for single phase stabilization [7]. This is the
+principle of entropy-stabilized oxides (ESO).
+Since in this case
+ΔGmix ¼ −TΔSmix
+ð5Þ
+it can be considered that the entropy acts as the driving force for single-
+phase stabilization.
+Also, and as generalized by Rost et al. [7], in an ideal solution, the sta-
+bilization is reached due to the contribution of the mixing entropy pa-
+rameter (ΔSmix) to the Gibbs free energy, which is given by the
+following Eq. (6):
+ΔGmix ¼ ΔHmix−TΔSmix ¼ ΔHmix þ RT ∑
+n
+i¼1
+Xi ln Xi
+ð
+Þ
+ð6Þ
+where T is the absolute temperature, ΔGmix the free energy, ΔHmix the
+enthalpy of mixing, R the ideal gas constant and Xi the molar concentra-
+tion of the component. It should be recalled that entropy is always a
+positive quantity and thus the stability will increase with temperature.
+For Rost et al. system (NiCoCuMgZnO) [7], slow cooling of the solid so-
+lution below 875 °C caused phase separation but when it was quenched
+it retained its entropy stability at room temperature.
+To determine the composition dependence of conﬁgurational en-
+tropy the following derivation is used:
+S ¼ −kB ∑
+N
+i¼1
+Xi ln Xi
+ð
+Þ
+ð7Þ
+For the case of only having one of the components changed (X1 = X),
+while the others N – 1 are at equal-composition:
+Xi≠1 ¼ 1−X
+N−1
+ð8Þ
+Therefore, the expression of entropy (S) in the ideal solution yields:
+S ¼ −kB
+Xln X
+ð Þ þ N−1
+ð
+Þ 1−X
+N−1 ln
+1−X
+N−1
+
+
+
+
+¼ −kB
+Xln X
+ð Þ þ 1−X
+ð
+Þ ln
+1−X
+N−1
+
+
+
+
+ð9Þ
+Changing the elemental composition or combination directly affects
+the structural properties of the material such as: the appearance of
+minor phases in the major crystal structure. Sarkar et al. [22] re-
+explained the dominant role of the conﬁgurational entropy through tak-
+ing the example of NiMgCoCuZnO, which is a rock-salt high entropy
+oxide, that consists of ﬁve (5) cations where Cu and Zn are responsible
+for increasing the endothermicity of the system [26] and at the same
+time discarding any of the other cations will take back the system to a
+lower conﬁgurational entropy (1.39R) which will be evident from the
+phase separations that will take place in the material [7]. To summarize
+the above example, entropy has more inﬂuence on the entropy stabi-
+lized system and it is agreed that maximizing the conﬁgurational en-
+tropy of the system by using equimolar amounts of each cation in
+most of the cases overcomes the Gibbs free energy of formation and
+this eventually compensates any positive enthalpic contributions as
+the total disorder of the oxygen anions is counted zero [10,17,44].
+After the analysis and research on high entropy metals, many high-
+entropy ceramics have been discovered with different crystal structures
+as summarized in Fig. 5 (e.g.: oxides [45], borides [46], nitrides [47] and
+carbides [9]) [48].
+Fig. 2. Conﬁgurational entropy as a function of the composition of a binary system.
+Adapted with permission. [10] Copyright (2019), Elsevier.
+Fig. 3. The relation of mixing entropy with a variation of the number of components.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+4
+
+
+
+
+==================== PAGE 5 ====================
+
+5 ===
+
+Based on the previous concept, Rost et al. [7] synthesized a non-
+metallic system, (NiMgCuCoZn)O, and reported its crystallinity as
+rock-salt structure single phase. The ceramic was synthesized by milling
+equimolar amounts of metal oxides, and subjecting it to heat treatments
+followed by quenching. The study established the basis of ESOs as they
+found that entropy-driven oxides’ single phase could be reverted back
+to multiple phases by applying heat treatments at low temperatures.
+Besides, the ability to retain back the single phase again could be
+attained by high temperature treatments as shown brieﬂy in Fig. 4.
+Among the elements of the periodic table, Co, Cu, Mg, Ni, and Zn are con-
+sidered as qualiﬁed candidates to be blended in a uniform high entropy
+oxide system. However, Cu and Zn have lower compatibility, relative to
+the others (different crystal structures) which limits their stability. And
+as the stabilizing effect of entropy is dominant at high temperature, this
+might be viewed as an obstacle for potential applications, especially the
+ones at low to moderate temperature ranges. In HEA, systems are stable
+in a wide temperature range, not only by entropy but also compatible
+chemical composition [49]. The new class of oxides grasped the
+attention to unravel their thermal behavior [50], electrical conductivi-
+ties [51], band gaps [52], as well as their catalytic activity [44,53,54].
+3. High entropy stabilization: Concepts and terminologies
+3.1. High entropy alloys vs. high entropy oxides
+Building a comparison between metal-oxides (HEO) and alloys
+(HEA), based on the concepts of alloys, reveals outstanding properties
+of the counterpart oxides. As discussed by Rost et al. [7], considering
+one atom in HEO system shows that it has less total entropy compared
+to HEA system due to the existence of arranged arrays of oxygen atoms.
+To further understand the concept of entropy acting as a driving force,
+let’s assume a binary metallic system as start point which consists of A
+and B components in an ideal solution. The interaction energy between
+the atoms will be given by the following equation: EA−B ¼ EA−AþEB−B
+2
+where the enthalpy change of mixing is zero and therefore all the
+Fig. 4. The formation concept of Entropy Stabilized Oxides (ESO) on commonly reported systems following different preparation pathways. *Reproduced under the terms of the Creative
+Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [55]. Copyright (2013), published by the American Institute of Physics.
+Fig. 5. Sub-families of high entropy ceramics.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+5
+
+
+
+
+==================== PAGE 6 ====================
+
+6 ===
+
+atoms are contributing to the solution equally while being driven by the
+maximum entropy. On the other hand, the structure of metal-oxides is
+featured by having oxygen anions that are surrounding the cations by
+a speciﬁc co-ordination number (CN), therefore there is no direct inter-
+action between any two adjacent cations since they are separated by
+anion layers. In this case, all the cations are considered to contribute
+to the lattice equally, therefore, by recalling the basic thermodynamics
+concepts, the whole system will be driven to its maximum entropy.
+3.2. Entropy stabilized oxides (ESO) vs. high entropy oxides (HEO)
+Also, it is important to draw the attention that even though “high-
+entropy and entropy-stabilization are often used interchangeably, they
+are fundamentally different” [17]. The concept of high entropy reﬂects
+that the system simply has high conﬁgurational entropy without any
+consideration to the endothermicity or exothermicity of the system
+[7,17,19]. However, entropy stabilization indicates that the system
+needs to possess both high conﬁgurational entropy and positive en-
+thalpy of formation (+ΔH) which means that the entropy drives the
+thermodynamic state of stability [17]. It should also be noted that
+many studies reported did not verify the entropic stabilization of their
+materials since the reversibility tests and the Differential Scanning Cal-
+orimetry (DSC) characterization were not discussed [45,56]. Overall,
+conﬁgurational disorder gives a way to discover new different phases
+of crystalline matter and ﬁnd new opportunities for property
+engineering.
+3.3. Reversibility
+Based on Rost et al. [7] study, reversibility of the ESO was deﬁned by
+subjecting the material’s pellets to calcination in air (~ 700–1100 °C)
+and following it by quenching at room temperature. The sample was
+characterized by X-ray diffraction as shown in Fig. 6 where the detected
+peaks demonstrated the existence of minor phases at lower tempera-
+tures of the heat treatment. Multi-phases of rocksalt and tenorite were
+observed after 700 °C, as the tenorite peaks intensity decreased with
+the signiﬁcant increase of temperature to crystalize into rocksalt single
+phase between 850 and 900 °C. Since reversibility is a requirement for
+entropy driven transitions, low temperature should transform the pel-
+lets back to multi-phase state, as demonstrated in Fig. 4.
+3.4. High vs. medium vs. low entropy oxides
+In Section 2, Fig. 3 shows the three classiﬁcations of the metal-oxide
+systems as Cantor et al. [11] and Yeh at al. [12] had established. Low en-
+tropy oxides are deﬁned to be composed out of less than 3 different
+cations, where their conﬁgurational entropy values are less than 1 R
+[41]. Similarly, for the medium entropy oxides systems, the conﬁgura-
+tional disorder values usually range between 1 R up to 1.5 R which indi-
+cates that they consist of 3 to 4 different cations [10,41]. While the high
+entropy oxides are distinguished by being composed from 5 or more
+different cations and as a result, their mixing entropy will be greater
+than 1.5 R. (R=8.314 J/K.mol) [10]. Rost et al. [7] and Djenadic et al.
+[48] studied the effect of changing the composition and the number of
+components in the HEO system from two different perspectives which
+were the change in entropy that affected the phases and the structure,
+respectively. Starting by Rost et al. [7] composition test on the MgO,
+CoO, NiO, CuO and ZnO system is conducted to further check the
+phase transition. If the entropy is the driving force then changing the
+cation ratios will alter the transition temperature, and equi-molarity
+will lead to the lowest transformation temperature. When there is a de-
+viation from equi-molarity, number of the conﬁgurational microstates
+(Ω) are reduced according to Sconf = kB log (Ω) and this will therefore
+increase the transition temperature as Sconf(xi) is linked logarithmically
+to the mole fraction. The study showed that conﬁgurational entropy for
+the s
+
+==================== PAGE 7 ====================
+
+7 ===
+
+4.2. Reported synthetic techniques
+Studies have developed the methods of HEO synthesis starting from
+solid state and thermal treatment at high temperatures, and as recently
+published by ambient temperature conditions, without the need for
+calcination [53]. Among the different synthetic approaches reported in
+the literature for achieving HEO systems, wet chemical methods [57],
+sono-chemical method [56], nebulized (NSP) [48] and ﬂame spray
+[58] pyrolysis (FSP), pulse-laser ablation, solid-state method [7], sol
+−gel auto-combustion [59] and epitaxial growth [25,60] were the
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+7
+
+
+
+
+==================== PAGE 8 ====================
+
+8 ===
+
+leading in the ﬁeld. Table 1 lists the high entropy oxide systems based
+on their synthetic technique along with the crystal structure obtained:
+Summarizing the main ﬁndings from the previous references, the
+following remarks can be done:
+Sono- and mechano-chemical methods succeeded in stabilizing the
+entropy without the need of the high temperature as in the solid state
+synthesis with metal salts precursors. The structures of the HEO re-
+ported so far are rock-salt, ﬂuorite, spinel, perovskites, aurivillius,
+pyrochlores, monoclinic, bixbyite, rutile and garnet.
+The harsh solid-state synthesis conditions enable the materials to
+gain outstanding properties such as: withstanding high temperature
+in the different applications compared to the conventional oxides. In
+other words, high entropy oxides are usually formed after being sub-
+jected to high temperatures that could reach up to 900 °C. Therefore,
+they can be the perfect candidates for excessive temperature applica-
+tions without losing their main properties.
+Morphology of different HEO materials varied with changing the
+synthesis method and the composition. As shown in Fig. 7(A–C), the
+same composition of the transition metal oxides (CoCuMgNiZn)O was
+synthesized using NSP, FSP and reverse co-precipitation (RCP) [17].
+The study had reported important observations on the SEM micro-
+graphs, the morphology was varying in size and distribution, where
+the shape was approximately uniﬁed for the different methods (spher-
+ical). RCP method yielded in having spherical agglomerates, with a con-
+siderably greater diameter (~50–150 nm) compared to FSP and NSP.
+NSP particles exhibited a wide spectrum of sizes (nano-microparticles)
+and a variation between spheres and cuboidals. Fig. 7(E) depicts the
+same composition of HEO which was synthesized by the same method
+(NSP), the morphology also varies between the cuboidal and the spher-
+ical with a broad size distribution [111]. In the Fig. 7(D), the
+(CeZrYLaGd)O material was synthesized by hydrothermal methods
+and clearly exhibited a homogeneous distribution of particles with the
+creation of pores due to the selected components [125]. SEM image
+over the (CoCuFeMnNi)O is shown in Fig. 7(F), and clearly its morphol-
+ogy deviates compared to the one in Fig. 7(C) although they share the
+same synthesis method (RCP) due to the change in the composition
+(addition of Fe and Mn instead of Mg and Zn) [104]. Fig. 7(J) depicts a
+clear Ce decomposition and the possible reasons were the following:
+the miscibility gap between the liquid and solid phase that was formed
+upon sintering at high temperatures, or the composed solid solution is
+deviating from ideality and considered to be sub-regular, where the
+Gibbs free energy curve is asymmetric [17]. Having the material devi-
+ant from the homogeneous phase (phase impurities) can cause draw-
+backs on the catalytic performance by deactivating the catalyst under
+stream. Fig. 7(G–I) and (K–M) demonstrate the different morphol-
+ogies that HEO systems can possess through reactive spark plasma
+sintering, precipitation, solid state and the oxidation of high entropy
+alloys as precursors and should be studied thoroughly to explain the
+role of the particles size and distribution in the catalytic applications
+[74,82,104,123,129,150].
+A direct link between the synthesis methods and the textural prop-
+erties of the catalysts was noticed. For instance, ball milling of
+NiCoMgZnCuO achieved a BET surface area of 2 m2/g [44], while
+coprecipitation (using precipitating agent NaOH and CTAB) of the
+same system of transition metals recorded higher BET surface area
+(28 m2/g) [44]. Another observation should be raised, generally high en-
+tropy oxides basic preparation (solid state) methods depend on high
+temperature to crystallize the material that also tend to limit the size
+of the powder particles (sintering cannot be avoided) and prevent it
+from forming nanoparticles [22]. However, NSP and FSP methods are
+suggested semi-effec
+
+==================== PAGE 9 ====================
+
+9 ===
+
+5. Entropy stabilized oxides: Unveiling the ‘real’ structure towards
+understanding the properties
+This section provides an overview of the analytical tools, as reported
+in the open literature towards investigating structural, morphological,
+and textural features of the HEO along with important surface proper-
+ties in their role as catalysts. All the published studies reported similar
+analytical tools of characterization for exploring high entropy oxides
+and entropy stabilized oxides as shown in Fig. 8. The insights of the au-
+thors are provided for unveiling more characteristics and functionalities
+of such complex structures as HEO. In addition, from the catalysis point
+of view, a full understanding of the microstructure/chemical bonding is
+needed so to establish the structure-performance correlation. Towards
+this, the following suite of analysis is highlighted.
+5.1. Unveiling the not-so-perfect but real structure/microstructure
+X-Ray Diffraction veriﬁes the crystallinity, and the existence of a sin-
+gle phase, whereas it allows a ﬁrst calculation of the primary crystallite
+size and of the lattice strain (caused by the dopants presence) using
+Scherrer equation [154] and Hall-Williamson method [155], respec-
+tively. Though, it has to be mentioned that XRD provides information
+only for the average long-range periodicity, whereas local order coordi-
+nation can be obtained using X-ray absorption spectroscopy (XAFS,
+XANES). XAFS is element speciﬁc and thus coordination and defects
+can be probed [156]. Both, XRD and EXAFS try to analyze the M-O
+bond environment; for instance in the case of a rare earth HEO contain-
+ing Ce, the focus is on the Ce-O and dopant (D)-O, where D: Gd, Sm, La, Y
+or Pr -O , interatomic distances with the assumption of the ﬂuorite space
+group symmetry. Though, this is valid only for <20 at.% doping level. So,
+in the case of HEO it is challenging to explore the distortions introduced
+to the ﬂuorite cell. There are many reported cases of double ﬂuorite
+structure with intense angular distortions (bond buckling phenomena),
+as traced by EXAFS, where XRD failed to detect it (single F phase was
+detected).
+From another aspect, by applying in situ EXAFS with a simultaneous
+monitoring of the reduction of the cations, important information can
+be extracted. For example, in the case of transition metal HEO
+Fig. 8. Procedure of exploring HEO and ESO systems. *Reproduced under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [55]. Copyright
+(2013), the authors, published by the American Institute of Physics. * Adapted under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/)
+[170]. Copyright (2020), the authors, published by APL Materials.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+9
+
+
+
+
+==================== PAGE 10 ====================
+
+10 ===
+
+Fig. 9. (A) SEM image of the mapped area (CeZrHfTiSn)O2 sintered at 1500 °C for 6 h, (B) elemental mapping of CeO2, (CeZrHfTiSn)O2 sintered at 1500 °C for 6 h, (C) HR-TEM images of
+(CeZrHfTiSn)O2 sintered at 1500 °C and (D) the corresponding SAED pattern. (E) XPS 3d spectra of Ce in (CeLaPrSmY)O and (F) XPS 3d spectra of Pr in (CeLaPrSmY)O. (G) TEM micrograph
+of (CeLaPrSmY)O, (H) its corresponding SAED pattern, (I) XRD, (J) EELS spectra and (K) HR-TEM images with its corresponding SAED patterns of as-synthesized, vacuum heat treated and
+air re-heat treated (CeLaPrSmY)O2- δ. (A–D) Adapted with permission. [17] Copyright (2018), Elsevier. (E-H) Reproduced under the terms of the Creative Commons CC-BY license (https://
+creativecommons.org/licenses/by/4.0/) [48]. Copyright (2017), the authors, published by Taylor & Francis Online. (I-L) Reproduced under the terms of the Creative Commons CC-BY
+license (https://creativecommons.org/licenses/by/4.0/) [170]. Copyright (2020), the authors, published by APL Materials.
+Fig. 10. (A) X-Ray Diffraction patterns of the as-prepared Ce containing rare earth oxides, and (B) X-Ray Diffraction patterns of the non-containing Ce as-prepared rare earth oxides. (A,B)
+Adapted under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [48]. Copyright (2017), the authors, published by Taylor & Francis Online.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+10
+
+
+
+
+==================== PAGE 11 ====================
+
+11 ===
+
+(TM-HEO) (e.g. CuNiZnCoO) a stepwise reduction is expected to take
+place among the Cu(II),Ni(II), and Co(II) thus leading to the formation
+of a metal (M) and metal oxide (MO) mixture depending on the reduc-
+ing environment conditions. The M/MO ratio is expected to have a sig-
+niﬁcant impact on the catalytic application, whereas it can be tuned
+with variations in temperature and duration of reduction. Performing
+oxidation/reduction cycles and monitoring the evolution of the coordi-
+nation number and oxidation state using EXAFS, can lead to a thorough
+evaluation of the redox cycles stability of the HEO; this piece of informa-
+tion is really important in catalytic reactions such as reforming reactions
+[157], Water Gas Shift Reaction (WGSR) [158], and CO2 methanation
+[159]. From the M-O bond length calculations using EXAFS it is also pos-
+sible someone to speculate which of the M-O bonds are more prone
+(longer M-O bonds) towards formation of oxygen vacancy. This type
+of information can also be evaluated performing DFT calculations for
+the different types of oxygen vacant sites (surface, subsurface, dimer,
+trimer, and cluster vacancies). This way the elements in a HEO structure
+can be categorized based on their potential to accommodate oxygen va-
+cant sites in the nearest neighbor (NN) or next nearest neighbor (NNN).
+Also, Raman spectroscopy is a powerful tool for the structural studies
+of metal oxides and totally complimentary to the XRD technique. In ad-
+dition, Raman Spectroscopy helps to investigate the oxygen vacancies in
+the lattice and differentiate contributions from intrinsic and extrinsic
+defects (defect region 250 cm-1 and 500–600 cm-1, particularly for the
+rare earths HEO) including oxygen vacancies and dopant hetero-
+phases (e.g. MO8). Furthermore, the Raman bands blue/red shift are
+linked to increase/decrease in the lattice induced by the presence
+of larger/smaller cations in the HEO lattice structure. Lattice distortion
+is indicative of the M-O bond environment/distance and thus it can be
+correlated to the oxygen vacancies (Ov) formation. Calculation of the
+energy of the Ov formation (Evf) can be performed using DFT calcula-
+tions. The Evf values can subsequently be linked to the Ov population
+(Raman spectroscopy studies). There are many reports in the literature
+where the Evf has been used as catalytic activity descriptor [160].
+High Resolution Transmission Electron Microscopy (HRTEM) is used
+to detect the presence of any micro/nano domains and their interface
+giving thus insights of the microstructure of the material. Selected
+Area Electron Diffraction (SAED) is complimentary to the XRD tech-
+nique towards evaluating the crystalline phases in the HEO.
+5.2. Discrepancies in the crystallite size
+Correlation of the crystallite size, as derived from XRD, with the real
+crystallite size as derived from SEM and TEM studies, requires caution as
+mentioned by Uvarov and Popov [161,162]. Direct comparison is valid
+in the case of homogeneous samples, crystallite shape and size of the
+materials. Especially for lamellar morphology samples (e.g. ﬂower-
+like, ﬂakes, rods, belts-like) then the size, as estimated by XRD, can be
+taken as the plates diameter or ﬂakes thickness but not as their length.
+As mentioned by Uvarov and Popov [161,162], in some cases the XRD
+size is an average size and does not reﬂect the shape and real size or
+in other cases it can lack information about ‘large’ crystals in the sample
+Fig. 11. Suggested model for oxygen mobility in low (CeO2), medium (CeSmCu)O and high entropy (CeLaSmYPr)O oxides systems. Adapted with permission. [172] Copyright (2019),
+Elsevier.
+Fig. 12. (A) Raman spectra of pure CeO2 and the different CeO2-based rare earth oxides, (B) Oxygen vacancies population related to the number of cations/system, 1C=CeO2, 2C = (CePr)
+O2-δ, 3C = (CeLaPr)O2-δ, 4C = (CeLaPrSm)O2-δ, 5C=(CeLaPrSmY)O2- δ, 6C= (CeLaNdPrSmY)O2-δ and 7C=(CeGdLaNdPrSmY)O2-δ. (A,B) Adapted and reproduced with permission.
+
+==================== PAGE 12 ====================
+
+12 ===
+
+(represents only the small ones). This can be more complex in the case
+of HEO multi-elemental systems, where different shapes /phases can be
+formed from the different participant elements [163]
+5.3. Textural analysis
+Brunauer–Emmett–Teller (BET) surface area analysis offers a way for
+investigating the pores size, volume and total surface area that play crucial
+roles in facilitating the catalytic properties/reactions. From the fundamen-
+tal point of view is interesting to explore different aspects, such as:
+(a) how the surface area is developed as the materials move from low
+to medium to high entropy oxides, (b) how the different methods of syn-
+thesis help on achieving medium to high porosity in HEO, and (c) the pos-
+sibility of getting organized porosity in a HEO system.
+5.4. Morphology-elements distribution
+In addition to structure, morphological studies along with elemental
+analysis are also important for the thorough understanding of the HEO.
+For this reason, Scanning Electron Microscopy (SEM) and Energy
+Fig. 13. (A) Catalytic performance of the reduced and the as-prepared (0.3 wt%PtNiMgCuCoZn)Ox for CO oxidation. (B) N2 adsorption–desorption isotherms of (NiMgCuZnCo)Ox
+synthesized by ball milling and co-precipitation. (C) Pt at CeO2 core-shell particle for the CO oxidation reaction. (A-B) Reproduced with permission [44]. Copyright (2018), The Royal
+Society of Chemistry. (C) Adapted with permission [177]. Copyright (2013), The Royal Society of Chemistry.
+Fig. 14. Catalytic performance of (A) MoNiCuZnCoOx calcined at 800, 900 and 1000 °C and (B) MoNiCuZnCoOx calcined at 900 °C, MoCo, NiCuZn and MoNiCuZnCoOx-physically mixed
+systems for removing sulfur. (A–B) Adapted with permission [54]. Copyright (2020), Elsevier.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+12
+
+
+
+
+==================== PAGE 13 ====================
+
+13 ===
+
+Fig. 15. Critical Comparison of the performance of the High entropy oxides and their conventional analogue oxides for (A) CO oxidation, T at 50% and 100% CO conversion to CO2, catalysts:
+(1) (PtNiMgCuCoZn)Ox, (2) PtSnO2, (3) Cu20CeOx-(NiMgCuZnCo)O, (4) (Ce-Sm-20Cu)O,(5) Ru/BaSrBi(ZrHfTiFe)O3, (6) BaRuO3, (7) (CuNiFeCoMg)Ox- Al2O3, and (8) Co3O4-Al2O3.
+(B) Oxidative desulfurization: Time for 100% sulfur removal at 120 °C for the catalysts: (1) MoNiCuZnCoOx, (2) MIL-101(Cr), (3) H5PV2Mo10O40 /SiO2 and (4) Cu NPs/ g-BN.
+(C) Alcohol Oxidation: Catalytic conversion of Benzyl alcohol for the catalysts: (1) Holey Lamellar (CoNiCuMgZnO), (2) 2.5%Au2.5%Pd/TiO2, (3) Au8%/U3O8 and (4) Au/CeO2.
+Fig. 16. Photocatalysis: performance comparative results for water splitting, catalysts:
+(1) TiHfZrNbTaO11, (2) TiO2, (3) Sb2Ti1.0 O5 and (4) RuO2/n-MgFe2O4/ CaFe2O4/Pt.
+Fig. 17. Electrocatalysis: performance comparative results for water oxidation, catalysts:
+(1) (CoCuFeMnNi)3O4 /MWCNT, (2), CoFe2O4@Co–Fe–Bi nano-array (3) Cu/CuO, and
+(4) Fe1.1Co1.9O4.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+13
+
+
+
+
+==================== PAGE 14 ====================
+
+14 ===
+
+Dispersive X-Ray Spectroscopy (EDX) are used for examining the mor-
+phology and long-range elements distribution (chemical homogeneity
+in long range). Scanning Tunneling Electron Microscopy (STEM) along
+with High-Angle Annular Dark-Field (HAADF) imaging can provide in-
+formation on the morphology with the advantage of the Z-contrast
+which allows for elements distribution analysis in a more local order
+(short range). This information allows us to evaluate the presence of
+any segregation or clustering and elemental homogeneity.
+5.5. Oxidation states
+X-Ray photoelectron spectroscopy (XPS) is a beneﬁcial tool to reveal
+the existing oxidations states of all the elements in the material’s surface
+and evaluate if the dopant is iso-valent (IVD), lower valent (LVD) or
+higher valent (HVD) in the material. In addition, the surface atomic
+composition (at.%) as received using XPS is very useful information to
+evaluate any element preference to reside on the surface (selective sur-
+face enrichment). Such type of materials behavior is anticipated to have
+a signiﬁcant impact on the catalytic performance, as the surface compo-
+sition of the HEO will be different to the one in the bulk.
+5.6. Transient techniques
+Transient techniques is a wide family of techniques where changing
+the probing gas can provide a plethora of information. For instance, H2-
+Temperature Programmed Reduction (H2-TPR) can be employed to
+study the redox properties of the material, a very important property
+as the oxygen mobility is of pivotal importance for many catalytic reac-
+tions. In addition, transient isotopic isothermal exchange experiments
+(TIIE) using 18O can be a unique way to probe the changes in the surface
+and bulk of the oxygen sub-lattice(s) of the HEO. Through this type of
+experiment, analysis of the transient kinetic rates of 16O/18O exchange is
+performed and the 18O2, 16O18O and 16O2 species evolution signal is moni-
+tored giving ultimately crucial information about the oxygen mobility
+on the surface/subsurface and bulk [164]. The reactions that describe
+the exchange are the following:
+16OL þ 16OL ! 2Vo
+18O2 g
+ð Þ þ 2Vo−L ! 218O−L
+Where L denotes the lattice site and g the gas phase.
+In the HEO due to their complex structure is of high importance to
+understand how the sequential addition of elements/cations and the
+transition from low to medium to high entropy oxide affects the oxygen
+mobility. Oxygen mobility is an important feature in an oxide material;
+both in oxidation catalysis where the oxide is used as a standalone cat-
+alyst as well as in the reforming catalysis and green fuels production re-
+actions where the oxide is used as support for the active metal.
+Fig. 18. DFT model of the (A) high entropy oxide surface, and (B) the holey lamellar high
+entropy oxide surface. (A,B) Adapted with permission [151]. Copyright (2020), John Wiley
+and Sons.
+Fig. 19. (A) Optimized unit cell and (B) total and per element density of states for the optimized unit cell. Adapted with permission [124]. Copyright (2020) American Chemical Society.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+14
+
+
+
+
+==================== PAGE 15 ====================
+
+15 ===
+
+Table 1
+Up to date reported high entropy oxides systems synthesized using different methods.
+HEO system components
+Crystal structure
+Ref.
+Solid state synthesis-milling
+(Mg0.2Co0.2Cu0.2Ni0.2Zn0.2)Oa
+Rock salt (Fm-3m)
+[7,31,44,54,61–69]
+Ba(Mg0.2Zn0.2Ti0.2W0.2Mo0.2)Oa
+Perovskite (Pm-3m)
+[27]
+(CoMgMnNiZn)(AlCoCrFeMn)2O4
+Spinel (Fd-3m)
+[70]
+(Mg0.2Co0.2Ni0.2Cu0.2Zn0.2)Al2O4
+Spinel (Fd-3m)
+[71]
+Zr0.2Sn0.2Ti0.2Hf0.2Ce0.2O3−δ
+a
+Perovskite (Pm-3m)
+[72]
+(Mg0.2Ti0.2Zn0.2Cu0.2Fe0.2)3O4
+Spinel (Fd-3m)
+[73]
+(Mg0.2Co0.2Cu0.2Ni0.2Zn0.2)O
+*Followed by conventional Sintering and Spark Plasma Sintering
+Rock salt (Fm-3m)
+[74]
+La0.4Pr0.3Ca0.1Sr0.2MnO3
+Perovskite
+[75,76]
+(Ca0.25Sr0.25Ba0.25Pb0.25)Bi2Nb2O9
+Aurivillius (A21am)
+[77]
+Sr(Ti0.2Fe0.2Mo0.2Nb0.2Cr0.2)O3
+Perovskite (Pm-3m)
+[78]
+(Mg0.2Co0.2 Ni0.2Cu0.2Zn0.2)O
+*Followed by Laser Molecular Beam Epitaxy Growth
+Rock salt (Fm-3m)
+[79]
+(Ba0.7Sr0.3)(Fe2.9Al2.5Mn3Ti1Ni2.9)O19
+a
+Magnetoplumbite (P63/mmc)
+[80]
+(MgCoNiZn)1-xCuxO
+x=0.16, 0.18 to 0.28
+Rock salt (Fm-3m)
+[81]
+(Na0.2K0.2Ca0.2La0.2Ce0.2)TiO3
+(Ba0.2Sr0.2Ca0.2Mg0.2Pb0.2)FeO3
+a
+*Followed by sintering
+Perovskite (Pm-3m)
+[82]
+(Co0.2Cr0.2Fe0.2Mn0.2Ni0.2)3O4
+a
+Spinel (Fd-3m)
+[49,83,84]
+(FeCoNiCrMn)3O4
+Spinel (Fd-3m)
+[85]
+La(Cr0.2Mn0.2Fe0.2Co0.2Ni0.2)O3
+*Followed by pulsed laser epitaxy
+Perovskite (Pbnm)
+[86]
+Nd2(Ta0.2Sc0.2Sn0.2Hf0.2Zr0.2)2O7
+a
+Pyrochlore (Fd-3m)
+[87]
+(Mg0.2Co0.2Cu0.2Ni0.2Zn0.2)1-xLixOa
+Rock salt (Fm-3m)
+[37,51,88,89]
+(La0.2Nd0.2Sm0.2Eu0.2Gd0.2)2Zr2O7
+a
+Pyrochlore (Fd-3m)
+[90]
+(Co0.2Ni0.2Cu0.2Zn0.2Li0.1Ga0.1)Oa
+Rock salt (Fm-3m)
+[91]
+Sr(Zr0.2Sn0.2Ti0.2Hf0.2Mn0.2)O3
+a
+Ba(Zr0.2Sn0.2Ti0.2Hf0.2Ce0.2)O3
+a
+Perovskite (Pm-3m)
+[92]
+CuCeOx(NiMgCuZnCo)O
+(CeNiMgCuZnCo)Ox
+Rock salt (Fm-3m)
+[69]
+(Y1/4Ho1/4Er1/4Yb1/4)2SiO5
+Monoclinic (C2/c)
+[50]
+Lix(Co0.2Cu0.2Mg0.2Ni0.2Zn0.2)OFx
+Nay(Co0.2Cu0.2Mg0.2Ni0.2Zn0.2)OCly
+Rock salt (Fm-3m)
+[93]
+Hf0.314Zr0.314Ce0.314Y0.029Yb0.029O2-δ
+a
+Hf0.284Zr0.284Ce0.284Y0.074Yb0.074O2-δ
+a
+Tetragonal (P42/nmc), Fluorite(Fm-3m)
+[94,95]
+(Yb0.25Y0.25Lu0.25Er0.25)2SiO5
+a
+Monoclinic (C12/m1)
+[96]
+(MgCoCuNiZn)0.95Li0.05O0.975
+a
+Rock salt (Fm-3m)
+[68]
+(Gd1/4Eu1/4Sm1/4Nd1/4)2Zr2O7
+a
+Pyrochlore (Fd-3m)
+[97]
+(Hf0.25Zr0.25Ce0.25Y0.25)O2-δ
+a
+*Followed by spark plasma sintering
+Fluorite (Fm-3m)
+[98]
+Sm2(Sn1/4Ti1/4Hf1/4Zr1/4)2O7
+a
+(La1/5Ce1/5Nd1/5Sm1/5Eu1/5)2Zr2O7
+a
+Pyrochlore (Fd-3m)
+[99]
+(CeGdLaPrY)2O3+δ
+a
+Bixbyite (Ia-3)
+[100]
+(GdLaNdSmY)2O3 *
+Monoclinic (C2/m)
+[100]
+Ba(Zr0.2Ti0.2Sn0.2Hf0.2Y0.2)O3
+a
+Perovskite (Pm-3m)
+[101]
+(Mg0.2Fe0.2Co0.2Ni0.2Cu0.2)Fe2O4
+a
+Spinel (Fd-3m)
+[83]
+(Ce0.2Zr0.2Hf0.2Sn0.2Ti0.2)O2
+Fluorite (Fm-3m)
+[17]
+(Na0.2Bi0.2Ba0.2Sr0.2Ca0.2)TiO3
+Perovskite (Pm-3m)
+[102]
+Crystal growth-micro-pulling-down
+(Lu1/6Y1/6Ho1/6Dy1/6Tb1/6Gd1/6)3Al5O12
+Garnet (Ia-3d)
+[103]
+Solvo-thermal synthesis
+(Co0.2Cu0.2Fe0.2Mn0.2Ni0.2)3O4
+Spinel (Fd-3m)
+[104]
+Combustion based methods
+(Co0.2Cr0.2Fe0.2Mn0.2Ni0.2)3O4
+a
+Spinel (Fd-3m)
+[32,105]
+(La0.2Nd0.2Sm0.2Gd0.2Yb0.2)2Zr2O7
+Pyrochlore (Fd-3m) and Fluorite (Fm-3m)
+[106]
+(LaSmDyErNd)2O3
+a
+Monoclinic B-type
+[107]
+(Al1/6Co1/6Cr1/6Fe1/6Mn1/6Ni1/6)3O4
+Spinel (Fd-3m)
+[34]
+Nebulized spray pyrolysis
+(CeGdLaNdPrSmY)Oa
+Fluorite (Fm-3m),Bixbyite (Ia-3)
+[48,52]
+(Ce0.2La0.2Pr0.2Sm0.2Y0.2)O2-δ
+Fluorite (Fm-3m)
+[108,109]
+(Ce0.2La0.2Pr0.2Sm0.2Y0.2) (Ce0.2La0.2Pr0.2Sm0.2Y0.2)O3
+Perovskite (Pbmn)
+[108]
+Li(NiCoMnAl)1O2
+a
+Spinel (Fd-3m) and/or Rock salt (Fm-3m)
+[110]
+(Co0.2Cu0.2Mg0.2Ni0.2Zn0.2)O
+Rock salt (Fm-3m)
+[58,108,111–114]
+(Gd0.2La0.2Nd0.2Sm0.2Y0.2)MnO3
+a
+Y(Co0.2Cr0.2Fe0.2Mn0.2Ni0.2)O3
+a
+Perovskite (Pbnm)
+[45,115,116]
+Flame spray pyrolysis
+(Co0.2Cu0.2Mg0.2Ni0.2Zn0.2)O
+Rock salt (Fm-3m)
+[58,113]
+Precipitation and co-precipitation based methods
+(continued on next page)
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+15
+
+
+
+
+==================== PAGE 16 ====================
+
+16 ===
+
+Table 1 (continued)
+HEO system components
+Crystal structure
+Ref.
+(Co0.2Cu0.2Mg0.2Ni0.2Zn0.2)O
+Rock salt (Fm-3m)
+[44,57,58,113]
+(Gd0.2La0.2Y0.2Hf0.2Zr0.2)O2
+a
+Fluorite (Fm-3m)
+[117]
+(CoCuMgNaNiZn)O
+Rock salt (Fm-3m)
+[118]
+(Sm1/5Eu1/5Tb1/5Dy1/5Lu1/5)2Zr2O7
+*Followed by solid-state reaction sintering and spark plasma sintering
+Pyrochlore (Fd-3m) and Fluorite (Fm-3m)
+[119]
+Pt0.3Mg0.2Co0.2Cu0.2Ni0.2Zn0.2O
+Rock salt (Fm-3m)
+[44]
+(La0.2Ce0.2Nd0.2Sm0.2Eu0.2)2Zr2O7
+Pyrochlore (Fd-3m)
+[120]
+Gd0.2La0.2Ce0.2Hf0.2Zr0.2O2
+Gd0.2La0.2Y0.2Hf0.2Zr0.2O2
+Fluorite (Fm-3m)
+[121]
+(CeZrYbHoEr)Oa
+Fluorite (Fm-3m)/ Bixbyite (Ia-3)
+[122]
+(Sc0.2Ce0.2Pr0.2Gd0.2Ho0.2)2O3±δ
+Fluorite (Fm-3m)
+[123]
+(Zn0.2Fe0.2Ni0.2Mg0.2Cd0.2)Fe2O4
+Spinel (Fd-3m)
+[33]
+(Gd0.2Nd0.2La0.2Sm0.2Y0.2)CoO3
+Perovskite (Pbmn)
+[124]
+Wet chemistry - hydrothermal method
+(Mg0.2Co0.2 Ni0.2Cu0.2Zn0.2)O
+Rock salt (Fm-3m)
+[57]
+(CeZrYLaGd)O
+Fluorite (Fm-3m)
+[125]
+Sono-chemical based methods
+Ba0.5Sr0.5(Zr0.4Hf0.3Ti0.2Fe0.3)O3
+a
+Perovskite (Pm-3m)
+[56]
+Mechanochemical based methods
+(Mg0.2Co0.2 Ni0.2Cu0.2Zn0.2)O
+Rock salt (Fm-3m)
+[35,53]
+2wt% Pt/Ru - (Mg0.2Co0.2 Ni0.2Cu0.2Zn0.2)Oa
+Rock salt (Fm-3m)
+[53]
+(CuNiFeCoMg)Ox-Al2O3
+Rock salt (Fm-3m)
+[126]
+(CeZrHfTiLa)Ox
+a
+Fluorite (Fm-3m)
+[127]
+Containerless processing method
+10La2O3-20TiO2-10Nb2O5-20WO3-20ZrO2
+Amorphous
+[128]
+Spark plasma sintering
+Sr((Zr0.94Y0.06)0.2Sn0.2Ti0.2Hf0.2Mn0.2)O3−x
+Perovskite (Pm-3m)
+[129]
+Physical vapor deposition - pulsed laser deposition
+(Mg0.167Co0.167Cu0.167Ni0.167Zn0.167Sc0.167)Oa
+Rock salt (Fm-3m)
+[60,66,130]
+Ba(Zr0.2Sn0.2Ti0.2Hf0.2Nb0.2)O3
+Perovskite (Pm-3m)
+[131]
+(Mg0.167Co0.167Cu0.167Ni0.167Zn0.167Li0.167)O
+Rock salt (Fm-3m)
+[66]
+(La0.2Pr0.2Nd0.2Sm0.2Eu0.2)NiO3
+Perovskite (Pm-3m)
+[132]
+(MgO0.25(1-x)CoxCu0.25(1-x)Ni0.25(1-x)Zn0.25(1-x))Oa
+Rock salt (Fm-3m)
+[133]
+Combinatorial sputter deposition
+(MgZnMnCoNi)Ox
+a
+Rock salt (Fm-3m), spinel (Fd-3m)
+[134]
+Sol-gel methods
+(Yb0.2Y0.2Lu0.2Sc0.2Gd0.2)2Si2O7
+Monoclinic (C12/m1)
+[135]
+(NiCoCrFeMn)Oa
+Spinel (Fd-3m)
+[136]
+(NiFeCoCrAl)O
+CNT-(NiFeCoCrAl)O
+Multiphase: Spinel, BCC and FCC NPs (Fd-3m),(Fm-3m) and (Im3m)
+[59]
+(MgNiZnCuCo)Ox
+a
+Rock salt (Fm-3m), Spinel (Fd-3m)
+[137–139]
+Radio frequency reactive magnetron sputtering method
+(Al0.19Cr0.13Nb0.19Ta0.30Ti0.19)O2
+Rutile (P42/mnm)
+[140]
+(Al0.31Cr0.20Fe0.14Ni0.35)O
+Rock salt (Fm-3m)
+[141]
+Epitaxial growth
+(Mg0.25(1-x)Co0.25(1-x)Ni0.25(1-x)CuxZn0.25(1-x))Oa
+Rock salt (Fm-3m)
+[142]
+Polymeric synthesis techniques
+(Gd0.4Tb0.4Dy0.4Ho0.4Er0.4O3
+Cubic Bixbyite (Ia-3)
+[143]
+(CoCuMgNiZnGd)O
+Rock salt (Fm-3m)
+[144]
+Reactive ﬂash sintering
+(La0.2Nd0.2Sm0.2Eu0.2Gd0.2)2Zr2O7
+Pyrochlore (Fd-3m)
+[145]
+(Bi0.2Na0.2K0.2Ba0.2Ca0.2)TiO3
+Perovskite
+[36]
+Sr(Ti0.2Y0.2Zr0.2Sn0.2Hf0.2)O3-x
+Perovskite
+[146]
+(Mg0.2Co0.2Cu0.2Ni0.2Zn0.2)O
+Rock salt (Fm-3m)
+[145,147,148]
+Anodization/oxidation of high entropy alloys precursors
+(TaNbHfZrTi)O
+Metal Oxide Nanotube arrays
+[149]
+TiHfZrNbTaO11
+Monoclinic (P2 1/n) and orthorhombic perovskite (Pbnm)
+[150]
+Anchoring merging process with Graphene Oxide(GO)
+(Co0.2Ni0.2Cu0.2Mg0.2Zn0.2O)
+Holey lamellar
+[151]
+a More high entropy oxides were derived from this main system can be found in the source references.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+16
+
+
+
+
+==================== PAGE 17 ====================
+
+17 ===
+
+5.7. Surface acidity/basicity
+In catalysis (thermal, electro- and photo-) the surface acidity and ba-
+sicity has been reported to play key role in C-C cracking, dehydration,
+dehydrogenation, proton transfer reactions, [165,166] etc. Two are the
+predominant approaches for explaining the surface acidity and basicity;
+Lewis and Brönsted-Lowry theories. Lewis acid/base is an electron ac-
+ceptor/donor, whereas a Bronsted-Lowry acid/base is a proton done/ac-
+ceptor, respectively. There is a plethora of acid-base chemistries that can
+take place as a result of the following: (a) the oxygen vacancies are
+Lewis base sites (due to the unpaired electrons left upon their forma-
+tion), (b) a metal oxide surface can be catalytically tuned through sub-
+stitutional doping with low (or high) valence dopant (LVD or HVD)
+which increases the Lewis acidity/basicity of the surface [167], respec-
+tively. This type of activity is linked with lowering of the activation en-
+ergy of the C-H bond and activation of CH4. This process is of high value
+for catalytic reactions such as steam reforming of methane towards hy-
+drogen production [157] and catalytic decomposition of methane
+(CDM) [168]. Titration of the surface with acid/basic molecules (e.g.
+CO2 and NH3) followed by Temperature Programmed Desorption
+(TPD) is a mainstream method for evaluating the overall surface basic
+and acidic sites [169]. In order to differentiate between Lewis and
+Brönsted-Lowry adsorption of volatile amines (e.g. pyridine) and/or cat-
+alytic probe reactions that are exclusively favored over Lewis or
+Brönsted-Lowry type of centers have been successfully proposed.
+5.8. What type of information are in the scope of interest and to be extracted
+from such complex oxide structures?
+Towards characterizing the catalysts and analyzing the properties
+that improve or deteriorate their performance, this section demon-
+strates the results of some characterization techniques with a brief dis-
+cussion of certain compositions, such as (CeZrHfTiSn)O2 [17],
+(CeLaPrSmY)O [48,52] and (CeLaPrSmY)O2-δ [170] which were synthe-
+sized by ball milling (BM), nebulized spray pyrolysis (NSP) and reverse
+co-precipitation (RCP), respectively, and all were crystalized into ﬂuo-
+rite structure.
+In Section 4, morphology analysis section, an observation on the
+morphology of (CeZrHfTiSn)O2 was reported [17] in Fig. 7(G) where
+Ce exhibited a segregation upon sintering at 1500 °C due to the reasons
+explained previously. Fig. 9(A) shows an SEM image for the same
+material with a different magniﬁcation that was mapped to analyze
+the distribution of the elements through EDS. Fig. 9(B) depicts a non-
+homogeneous map of Ce, which comes in consistency with Fig. 7
+(J) ﬁndings for observing a second phase that Ce favored to form at
+1500 °C around the pores. Generally, from a catalytic perspective, ele-
+ments segregation or sintering at high temperatures can abort/deacti-
+vate some reactions, due to the increase of the particles size that
+reduce the exposed active sites [17]. Fig. 9(C-D) conﬁrms the ﬂuorite
+XRD of the material through HR-TEM along 1 1 0
+h
+i
+[17].
+(CeLaPrSmY)O2 high entropy system is extensively studied in this
+review due to their remarkable ability to have oxygen vacancies (ex-
+plained in Section 6) which are usually increase/decrease in population,
+can be tailored in size (single or cluster vacancies) and can be conve-
+niently located in the surface/subsurface depending on the dopant na-
+ture, oxidation state and content [52]. Fig. 9(E–F) shows the XPS 3d
+spectra of Ce and Pr in (CeLaPrSmY)O, where the recorded peaks indi-
+cated the existence of Ce (+4) oxidation state and Pr (+3 and +4) ox-
+idation states which will be neutralized by the generation of oxygen
+vacancies that in catalysts will improve adsorbing O containing species
+and reduce more sites in the material (every O vacancy leaves behind 2
+electrons from its 2p orbital) [48]. Fig. 9(G) shows the TEM image of the
+as-prepared (CeLaSmPrY)O an
+
+==================== PAGE 18 ====================
+
+18 ===
+
+band at 464 cm-1 which is due to the F2g symmetric vibrational mode of
+the 8-fold Ce-O bond (CeO8) in ﬂuorite structure [172]. For the current
+high entropy oxide system, the position of the main band exhibited a
+blue shift, by around 15 cm-1, which was reasoned by the chemical sub-
+stitution which led the crystal lattice to compression and to generate
+oxygen defects [52]. Another broad band at 570 cm-1 was detected for
+the HEO system and was related directly to the presence of oxygen va-
+cancies. Fig. 12 (B) demonstrates the oxygen vacancies amount that is in
+a rapid increase of the concentration with element number increase
+[52].
+For further augmentation, XPS studies were conducted by Sarakar
+et al. [52] over the as-prepared HEO (CeLaPrSmY)O2-δ sample and it
+was found that in the La 3d spectra at around 834 and 850 eV two dou-
+blets were recorded which indicated the presence of La3+. Also, the
+presence of Sm in 3+ oxidation state was indicated by the two bands
+of 3d5/2 and 3d3/2 in the 3d spectra at around 1080 and 1110 eV. Addi-
+tionally, the 3d Y spectra elucidated the presence of Y in the 3+ oxida-
+tion state. The electronic conﬁguration and the redox properties of Ce
+and Pr predetermine their tendency to exist in 3+ and 4+ oxidation
+states. The study reported the important role of Ce4+ in driving the en-
+tropy and stabilizing the multi elemental high entropy systems (proved
+by comparing the Ce containing/non-containing rare earth systems,
+Fig. 10), it could not discard the existence of an insigniﬁcant amount
+of Ce3+. The multivalence state of Pr was indicated by its 3d spectra.
+Also, it was noticed that Pr4+ was present with a signiﬁcant amount
+due to its favorability to exist with Ce4+ and other RE3+. The popula-
+tion of oxygen vacancies was conjugated with the multi-present oxida-
+tion states of Ce and Pr where maintaining the charge balance was
+achieved by generating defects as the formation reaction shows:
+M2O3
+!
+RE
+ð
+ÞO2
+2MRE þ 3Ox
+o þ V⁎⁎
+o
+The signiﬁcance of the oxygen vacancies can be presented as fol-
+lows: 1) [RE3+] and [RE4+] are the molar fractions for (RE)2O3 and
+(RE)O2, respectively. (x) is the oxygen stoichiometry, it is 1.5 in (RE)
+2O3 and 2 in (RE)O2. 2) The system contains rare earth cations in
+mixed oxidation states (3+ and 4+) so the oxygen stoichiometry in
+the system can be expressed as:
+x ¼ 1:5 RE3þ
+h
+i
+þ 2 RE4þ
+h
+i
+The deviation from stoichiometry is approximated by the formula:
+δ ¼ 2−x
+6.2. Thermal catalysis
+Catalysis is known for its essential role in the chemical industry par-
+ticularly in facilitating the production of added-value hydrocarbons,
+chemicals and fuels (e.g. CH4, H2, CH3OH) [30]. Besides, catalysts are
+being studied to be employed for the removal of fuel impurities, such
+as sulfur, towards producing cleaner fuels with desirable properties
+(e.g. ignition, viscosity, etc.) [175]. There is a major challenge when it
+comes to efﬁcient metal catalysts design, mainly in overcoming the co-
+hesive energy that drives co-domain formation [172] and sintering at el-
+evated temperatures [176]. Therefore, there is an immense effort
+tailoring catalytic systems that stabilize noble metal single atoms and
+nanoparticles at high temperature. In this section, high entropy oxides
+are being discussed in the catalysis ﬁeld where they have shown their
+superiority in thermal/photo and electro-catalysis for a versatile spec-
+trum of reaction spanning from oxidation to reduction.
+6.3. CO oxidation
+Chen et al. [44] reported a successful trial of synthesizing (0.3 wt%
+PtNiMgCuCoZn)Ox, an entropy stabilized oxide, which had rock-salt sin-
+gle phase, by the method of Pt co-deposition. In the synthesis procedure,
+the transition metals precursors were dissolved in distilled water and
+stirred, then the noble metal precursor was added to the prepared solu-
+tion (one pot synthesis). The material exhibited high dispersion of Pt
+which conﬁrmed that the six (6) cations crystalized homogenously to
+form a high entrop
+
+==================== PAGE 19 ====================
+
+19 ===
+
+synthesized by the mentioned methods. For the (NiMgCuZnCo)O- sol-gel
+studied by Fracchia et al., Cu reduced sites were responsible for carrying
+the reaction forward by adsorbing CO molecules that donate electrons
+to Cu at temperatures lower than 150 °C.
+Zhang et al. [126] tested the ability of combining high entropy oxides
+(CuNiFeCoMg)Ox with mesoporous materials (Al2O3) and the feasibility
+of using them for CO oxidation reaction, where they reported the suc-
+cess of the experiment with a complete oxidation of CO at 260 °C and
+high stability that lasted for 48 h due to the outstanding resistivity to
+SO2 contaminations. The catalyst exhibited a surface area, pore volume,
+and average pore size of 198 m2 g-1, 0.24 cm3 g-1 and 4.8 nm, respec-
+tively. It was reported that the (CuNiFeCoMg)Ox- Al2O3 had lower sur-
+face area compared to the mesoporous Al2O3 (~644 m2 g-1) due to the
+formation of the single crystalline phase process which was attributed
+to the HEOs that eventually suppressed the pores paths.
+A comprehensive summary of the recently investigated high
+entropy-based catalysts for CO oxidation along with the reaction condi-
+tions and the maximum catalytic performance (maximum CO conver-
+sion and its corresponding temperature) is reported in Table. 2
+6.4. Critical comparison; HEO vs. their non-HEO analogues in CO oxidation
+reaction
+In an attempt to compare the HEO with their non-HEO analogues,
+Fig. 15(A) depicts a comparison from a catalytic perspective for the
+high entropy oxides and the regular metal oxides (low- and medium-
+entropy) that are reported in the literature for the CO oxidation reac-
+tion. The chart shows the temperatures at which the catalysts converted
+50% and 100% of CO into CO2, namely T50 and T100, respectively. Clearly,
+HEOs ((PtNiMgCuCoZn)Ox, Cu20CeOx-(NiMgCuZnCo)O, Ru/BaSrBi
+(ZrHfTiFe)O3 and (CuNiFeCoMg)Ox- Al2O3) achieved these conversions
+at lower temperatures (T50~ 120,100, 90 and 230 °C and T100~155, 200,
+118 and 260 °C) compared to their conventional analogue metal oxides
+(PtSnO2 [178], (Ce-Sm-20Cu)O [171], BaRuO3 [56] and Co3O4-Al2O3
+[126]) (T50~155,140, 253 and 255 °C and T100~ 180, 230, NA and 278 °C).
+6.5. CO2 hydrogenation
+Reducing CO2 to CO by H2 was also investigated using Noble
+Metals-HEOs. On the contrary to the used HEO catalysts, Chen et al.
+[53] prepared (2–5 wt%) Ru/Pt-(NiMgCuZnCo)O catalyst under ambient
+conditions, and showed the effect of the gained maximized entropy on
+the loading and dispersion of the noble metals. Although 5wt%(Heat
+Treated at 500 °C) Pt-(NiMgCuZnCo)O was the only catalyst that could
+reduce up to 47.8% of CO2 , but all the synthesized systems exhibited
+high selectivity to CO 95%, and high catalytic stability that could reach
+up to 12 hours at 500 °C without any signiﬁcant fall backs in their per-
+formance. This result was justiﬁed using HAADF-STEM characterization
+that showed neither aggregations nor segregations of the loaded Pt/Ru
+in (NiMgCuZnCo)O, and the HEOs’ latent properties that enable them
+to perform actively at harsh temperature conditions, and behave as a
+stabilizing support which disperse the active noble metals as
+nanoclusters (2–3 nm) and single atoms. Towards CO as a main product,
+the reported systems can be further employed to be active for the re-
+verse water gas shift reaction, or the systems compositions can be
+tuned and be exploited to convert CO2 to CH4.
+6.6. Oxidative desulfurization
+Desulfurization process is very important in oil industry, for purify-
+ing the emissions of fuel burning from sulfur oxide that will eventually
+poison the rain and increase its acidity [28,179]. Therefore, towards the
+removal of dibenzthiophene (DBT) and its derivatives from fuels at high
+temperatures, Deng et al. [54] synthesized high entropy oxide catalyst
+with MoNiCuZnCoOx composition using ball milling followed by heat
+treating at T ≥900 °C. The applied process eventually led to the forma-
+tion of rock-salt single phase structure. The study showed the
+
+==================== PAGE 20 ====================
+
+20 ===
+
+contribution of maximized entropy to oxidative desulfurization catalytic
+reaction by comparing the performance evaluation of the single and
+multi-phase samples which were heat treated at T ≥900 °C and T <
+900 °C, respectively. The results showed that MoNiCuZnCoOx-900 °C
+and MoNiCuZnCoOx-1000 °C exhibited a superior activity in which they
+removed 100% of sulfur in 3–3.5 h, at 120 °C. In contrary,
+MoNiCuZnCoOx-800 °C removed only 58% of sulfur after 4 h of the reac-
+tion. The reason of this difference is that high entropy oxide which was
+achieved in the single phase samples (MoNiCuZnCoOx-900 °C and
+MoNiCuZnCoOx-1000 °C) prevented the materials’ components from
+clustering and promoted the dispersion and stability of Mo at high tem-
+peratures which directly affected the number of exposed reduced sites
+that participated in the reaction. Another comparison was held for binary
+(MoCo-900 °C), ternary (NiCuZn-900 °C), physically mixed (MoCo-
+900 °C and NiCuZn-900 °C) and high entropy (MoNiCuZnCoOx-900 °C)
+catalytic systems whereas obviously depicted in Fig. 14(A) and
+(B) MoNiCuZnCoOx-900 °C showed enhanced activity. The signiﬁcant
+role of Mo in the oxidative desulfurization reaction was investigated by
+comparing the catalytic activity of with/without Mo alloy systems,
+where it was noted that NiCuZnCo system experienced a sharp drop in
+the activity, and removed only about 22% of sulfur. HEOs in this study
+were reported to have better performance than H5PV2Mo10O40/SiO2
+[180], CNT-SZ [181] (which is CNT purchased from Nanotech Port Co.,
+Shen zhen-China and was labelled after the producers initials).
+Heteropoly acid, Cu NPs/g-BN [182] and MIL-101(Cr) [183], because
+they were able to remove 100% of sulfur in almost half of the time dura-
+tion recorded for the previous catalysts.
+6.7. Critical comparison; HEO vs. their non HEO analogues in oxidative de-
+sulfurization reaction
+As depicted in Fig. 15(B), a critical comparison is presented regard-
+ing the removal of sulfur completely (100%) at 120 °C for the catalysts
+MoNiCuZnCoOx, MIL-101(Cr), H5PV2Mo10O40/SiO2 [180] and Cu NPs/
+g-BN [182], where the HEO was the fastest to ﬁnish the reaction (3 h)
+and MIL-101(Cr) [183] was the slowest with 25 h to complete the reac-
+tion. Besides, the HEO studied catalysts showed good stability where
+they were re-used for six (6) times with exhibiting negligible fall back
+in their performance.
+6.8. CH4 partial oxidation
+A technical report that was published by Stanford University for
+Global Climate and Energy project [137] demonstrated the utilization of
+HEO for CH4 partial oxidation. It showed that (MgNiZnCuCo)Ox,
+(MgTiZnCuCo)Ox (AlFeCrGaTi)Ox, (FeCoMgNiMn)Ox, (MgCaNiCoFeMn)
+Ox and Cu nanoparticles supported by the previous catalysts resulted in
+oxidizing CH4 partially to CO2 and CO in temperatures that ranged be-
+tween 25–500 °C. The research was targeting producing methanol out
+of CH4, but it concluded that the used elements played an important
+role in determining the route of the reaction where the excessive amount
+of active O in the tested HEOs redirected the selectivity from methanol to
+carbon monoxide and carbon dioxide. Besides, the metal-oxygen bond-
+ing, and the condition of the high temperature was able only to activate
+the methane molecule without any signiﬁcant effect on producing the de-
+sired reaction yield.
+6.9. Alcohol oxidation
+Feng et al. [151] prepared an improved mesoporous lamellar high en-
+tropy oxides catalyst (CoNiCuMgZnO) which successfully facilitated the
+oxidation of benzyl alcohol and converted 98% of the aromatic alcohol
+to mainly benzoic acid, benzaldehyde, and benzyl benzoate at 120 °C in
+2 h only. The reported catalyst showed superior performance in terms
+of stability and activity compared to Au/Pd-TiO2 that achieved a maxi-
+mum conversion of 91.6% of benzyl alcohol in a four times longer duration
+period. The prominent catalytic activity was explained by the existence of
+the increased oxygen vacancies sites in the struc
+
+==================== PAGE 21 ====================
+
+21 ===
+
+high entropy oxide in terms of conductivity, tuned mass transfer be-
+tween the electrolyte and the electrode (~10 mA cm-2 at 1.58 V in 1 M
+KOH) (Rp and Rs of 0.74 Ω and 21.67 Ω).
+6.13.2. Critical comparison; HEO vs. their non-HEO analogues in
+electrocatalysis
+Fig. 17 compares the following electrocatalysts ((CoCuFeMnNi)3O4 /
+MWCNT [104], CoFe2O4@Co–Fe–Bi nanoarray [190] , Cu/CuO [191], and
+Fe1.1Co1.9O4 [192] in terms of their tafel slope, as the lowest value re-
+quired to increase the rate of the electrocatalytic reaction of water oxi-
+dation was attributed to the HEO/MWCNT (59.5 mv/dec) and the rest
+of the catalysts exhibited the following values of the slope respectively,
+127, 114 and 61 mV/dec.
+7. Computational studies
+This section presents the computational studies that have been
+employed so far to unravel the properties which are directly related to
+the structure and catalytic performance of the high entropy oxides.
+Modelling high entropy oxides unit cells with taking into consideration
+all the possible conﬁgurations with the intrinsic oxygen vacancies is still
+not reported in literature; though such a study is expected to enlighten
+the HEO potential as catalysts. To the best of our knowledge, over the
+last ﬁve years, few computational studies of high entropy oxides were
+published in the ﬁeld, highlighting the difﬁculty dealing with such com-
+plex structures. As explained previously, the population and mobility of
+the oxygen vacancies play a crucial role in improving the performance
+of the catalysts. Density Functional Theory (DFT) is a powerful tool
+used to validate the experimental results by studying the low (e.g.
+CeO2 and CeSmCuO) and medium entropy (e.g. BaSrCoFeO) [193] ox-
+ides at their atomistic level and calculate the energy of formation of ox-
+ygen vacancies, located at the most preferable sites, and their behavior
+under strain. Up to date publications show a clear gap in describing
+high entropy oxides’ oxygen vacancies quantitatively by DFT. In what
+follows, the use of computational tools on difference aspects of HEO is
+discussed; from the point of formation (mixing) to intrinsic properties
+(e.g. band gap).
+7.1. HEO mixing behavior
+A case study published by Zhong et al. [194] where a new computa-
+tional approach applied by CALculation of PHAse Diagram (CALPHAD)
+was adapted to evaluate the difference between the mixing in the
+high entropy ceramics and the high entropy alloys on the simple perov-
+skite model (LaMnO3±δ). The study deﬁned clearly that mixing in
+HEOs stands for the disorder of the cations, anions and defects sites
+while in the HEAs it only refers to the disorder of the main constituents
+that contributes with more than 5 mol% in the material. The study
+highlighted the difﬁculty of recording the mixing in high entropy ce-
+ramics in general due to the different contribution of the lattice constit-
+uents (cations and anions) and the lattice defect chemistry.
+7.2. Phase stability
+From a thermodynamic point a view, Anand et al. [26] conducted a
+computational study and investigated the effect of decreasing/changing
+the number of components/ composition of HEO (NiMgCoCuZn)O on
+the enthalpy and conﬁgurational entropy through optimized lattice
+conﬁgurations of cations and anions. In terms of the compositions,
+(CoCuMgNi)O and (CoMgNiZn)O achieved the lowest mixing en-
+thalpies. And, in terms of the number of components, it was observed
+that adding Ca to the system as in (CaCoCuNiZn)O increased the mixing
+enthalpy which indicated its favorability to form secondary phases
+[195]. It was proved that the HEO system is entropy stabilized since
+the enthalpy contribution was positive and signiﬁcantly low. Decreasing
+the number of cations from 5 to 4 affects directly on lowering the
+mixing entropy and increasing the enthalpy, which requires greater
+temperature compensation to stabilize the phase of the system and
+drive it to lower free energy. Changing the composition to include Ca
+among the cations instead of 
+
+==================== PAGE 22 ====================
+
+22 ===
+
+to ensure that the random distribution possess the lowest total energy.
+The results of density of states calculation revealed that the material had
+an energy band gap of 1.18 eV indicating that the studied high entropy
+oxide is a semiconductor, as shown in Fig. 19. Exploring different com-
+positions by the computational methods will help to design more efﬁ-
+cient photo-catalysts, but yet composing super cells with simple
+algorithms and optimum total energies is a challenge that should be
+encountered.
+7.6. Energy of formation
+Nguyen et al. [134] simulated using DFT (VASP) three supercells of
+three different high entropy oxides with the following constituents for
+the rock-salt systems: Mg, Zn, Mn, Co, and Ni and Cr, Fe, Mn, Co and
+Ni for the spinel system. The study investigated the effect of involving
+non-equiatomic elements in the HEO, therefore, the two rock-salt sys-
+tems varied in terms of the compositional concentration, similarly for
+the spinel system. The geometries were relaxed and the energy of for-
+mation was calculated through comparing the total energy of the
+HEOs and their corresponding compositional elements at their ground
+state. DFT is a powerful computational tool to unravel the favorability
+of a structure formation as the study employed it to augment the syn-
+chrotron XRD results as the modelled HEOs tended to crystalize in
+rock-salt structure in the regions where Mn concentration is low and
+Zn or Ni concentration is high. On the contrary, the spinel structure is
+more stable when the Mn concentration is high.
+8. Current challenges and future work
+Selecting the components to synthesize new families of high entropy
+oxides and tune it so to serve the targeted catalysis chemistry is consid-
+ered to be a challenge. Elements are chosen for their diversity in struc-
+tures, coordination and cationic radii to test entropic contribution and
+at the same time they should act as active sites for the intended reaction.
+One of the main challenges that encounters the novel class of materials
+is the fact that many still unexplored parameters contribute along with
+conﬁgurational entropy to drive the system to the single phase, espe-
+cially in the rare-earth based systems. As Djenadic et al. [48] reported,
+that thermal treatments of systems that did not contain Ce did not crys-
+tallize into a single phase unlike the Ce containing ones. Indeed, this in-
+dicates that the still unraveled reason that enables Ce to homogenize
+multiphase systems is conjugated to the possessed high entropy of the
+systems. Does this apply to other rare-earth elements, such as La, Sm,
+Pr and Gd? Which ones of the rare-earth elements offer a stabilization
+factor? This is a question worth-addressing. Also, what is the balance
+between the enthalpy penalty during the mixing and the stabilizing en-
+tropy for the different elements among the rare earth and transition
+metals? Due to the numerous applications of those elements in cataly-
+sis, the above questions are worthy to be addressed.
+The study by Djenadic et al. [48] expanded the exploration to reach
+up to 7-components per system (CeGdLaNdPrSmY)O, where a clear for-
+mation of a minor secondary phase of La2O3 in the bixbyite Ia-3 crystal
+structure was noticed. Those secondary phases are formed due to ‘slug-
+gish’ diffusion phenomena and it can be explained by that high number
+of elements are participating equally in the crystal and therefore they
+are competing for the same position in the lattice. Thus, more time is
+needed for the all the elements to reach their dedicated random sites.
+Overcoming this obstacle can be achieved by increasing the retention
+time of the components during synthesis or by subjecting it to a thermal
+treatment. System with 3-6 elements that contained Ce form a single-
+phase regardless of the thermal treatment and based on this study, en-
+tropy effect is not in charge of the phase stabilization in REOs. Another
+worth studying question would be how the secondary phases can be
+
+
+==================== PAGE 23 ====================
+
+23 ===
+
+date synthesis methods were reported in the review, where the condi-
+tions were enhanced to produce HEOs under ambient temperature.
+Analytical Tools: Characterization of HEOs covered the conventional
+techniques (e.g. XRD, SEM, EDS, HR-TEM, BET surface area, Raman and
+XPS, isotopic studies) to explore their main properties. Engaging more
+techniques, such as H2-TPR and CO2 and NH3-TPD for determining the
+redox properties as well as the basicity/acidity of the sites are also still
+not reported in literature, whereas isotopic studies would deﬁnitely
+enlighten the oxygen mobility dynamics in the complex HEO lattice.
+HEOs have been utilized for thermal catalysis, photocatalysis and
+electrocatalysis with a relatively unpreceded performance. The mate-
+rials still need to be understood using more advanced spectroscopies
+(e.g. EXAFS) so to further capture all those treats that trigger their com-
+plex structure towards a remarkable catalytic activity.
+9.2. Reported catalytic applications
+High entropy oxides showed a high activity in several catalytic reac-
+tions across the ﬁeld of thermal, photo- and electro-catalysis, such as:
+CO oxidation, alcohol oxidation, CH4 partial oxidation, oxidative desul-
+furization and CO2 hydrogenation, water oxidation and water splitting
+(H2 evolution). The CO oxidation is the most well-studied catalytic reac-
+tion so far. Getting insight information for other reactions such as those
+mentioned above is still missing in the literature.
+9.3. Implications for design
+Both transition metal (TM) oxides and rare earth (RE) oxides were
+used to synthesize entropy driven oxide catalysts. Among the impor-
+tant, but not the only ones, design parameters, are the conﬁgurational
+entropy and the enthalpy of mixing. Other crucial factors dictating the
+synthesizability of particular HEO systems are the valence and the coor-
+dination environment compatibility as veriﬁed by experimental studies
+as well as ab initio calculations.
+Author Contributions
+The manuscript was written through contributions of all authors. /
+All authors have given approval to the ﬁnal version of the manuscript.
+Funding Sources
+AARE2019-233 and RC2-2018-024.
+Declaration of Competing Interest
+The authors declare no competing interest.
+Acknowledgements
+SAB and KP acknowledge the ﬁnancial support from the Abu Dhabi
+Department of Education and Knowledge (ADEK) under the AARE
+2019-233 grant and support by the Khalifa University of Science and
+Technology under Award No. RC2-2018-024.
+References
+[1] P. Koltun, Materials and sustainable development, Prog. Nat. Sci. Mater. Int. (2010)
+https://doi.org/10.1016/s1002-0071(12)60002-1.
+[2] M. Suchea, S. Christoulakis, K. Moschovis, N. Katsarakis, G. Kiriakidis, ZnO transpar-
+ent thin ﬁlms for gas sensor applications, Thin Solid Films (2006) https://doi.org/
+10.1016/j.tsf.2005.12.295.
+[3] K. Sen Chou, T.K. Lee, F.J. Liu, Sensing mechanism of a porous ceramic as humidity
+sensor, Sensors Actuators, B Chem. (1999) https://doi.org/10.1016/S0925-4005
+(99)00187-2.
+[4] Z.S. Macedo, R.S. Da Silva, M.E.G. Valerio, A.C. Hernandes, Radiation detectors
+based on laser sintered Bi4Ge 3O12 ceramics, Nucl. Instruments Methods Phys.
+Res. Sect. B Beam Interact. with Mater. Atoms, 2004https://doi.org/10.1016/j.
+nimb.2003.12.054.
+[5] J. Suntivich, K.J. May, H.A. Gasteiger, J.B. Goodenough, Y. Shao-Horn, A perovskite
+oxide optimized for oxygen evolution catalysis from molecular orbital principles,
+Science (80-. ) (2011) https://doi.org/10.1126/science.1212858.
+[6] E. Baktash, P. Littlewood, R. Schomäcker, A. Thomas, P.C. Stair, Alumina coated
+nickel nanoparticles as a highly active catalyst for dry reforming of methane,
+Appl. Catal. B Environ. (2015) https://doi.org/10.1016/j.apcatb.2015.05.018.
+[7] C.M. Rost, E. Sachet, T. Borman, A. Moballegh, E.C. Dickey, D. Hou, J.L. Jones, S.
+Curtarolo, J.P. Maria, Entropy-stabilized oxides, Nat. Commun. (2015) https://doi.
+org/10.1038/ncomms9485.
+[8] J. Gild, J. Braun, K. Kaufmann, E. Marin, 
+
+==================== PAGE 24 ====================
+
+24 ===
+
+nanocrystalline powder, J. Mol. Struct. (2019)https://doi.org/10.1016/j.molstruc.
+2019.05.073.
+[33] A. Radoń, Ł. Hawełek, D. Łukowiec, J. Kubacki, P. Włodarczyk, Dielectric and elec-
+tromagnetic interference shielding properties of high entropy (Zn,Fe,Ni,Mg,Cd)
+Fe2O4 ferrite, Sci. Rep. (2019) https://doi.org/10.1038/s41598-019-56586-6.
+[34] A. Mao, H.X. Xie, H.Z. Xiang, Z.G. Zhang, H. Zhang, S. Ran, A novel six-component
+spinel-structure high-entropy oxide with ferrimagnetic property, J. Magn. Magn.
+Mater. (2020) https://doi.org/10.1016/j.jmmm.2020.166594.
+[35] M. Balcerzak, K. Kawamura, R. Bobrowski, P. Rutkowski, T. Brylewski, Mechano-
+chemical synthesis of (Co,Cu,Mg,Ni,Zn)O high-entropy oxide and its physicochem-
+ical properties, J. Electron. Mater. 48 (2019) 7105–7113, https://doi.org/10.1007/
+s11664-019-07512-z.
+[36] J. Liu, K. Ren, C. Ma, H. Du, Y. Wang, Dielectric and energy storage properties of
+ﬂash-sintered high-entropy (Bi0.2Na0.2K0.2Ba0.2Ca0.2)TiO3 ceramic, Ceram. Int.
+(2020) https://doi.org/10.1016/j.ceramint.2020.05.090.
+[37] D. Bérardan, S. Franger, D. Dragoe, A.K. Meena, N. Dragoe, Colossal dielectric con-
+stant in high entropy oxides, Phys. Status Solidi - Rapid Res. Lett. 10 (2016)
+328–333, https://doi.org/10.1002/pssr.201600043.
+[38] D.A. Porter, K.E. Easterling, M.Y. Sherif, Phase transformations in metals and alloys,
+third edition, 2009.
+[39] B.
+Fultz,
+Phase
+transitions in
+materials (2014) https://doi.org/10.1017/
+CBO9781107589865.
+[40] R.A. Swalin, J. Arents, Thermodynamics of solids, J. Electrochem. Soc. (1962)
+https://doi.org/10.1149/1.2425309.
+[41] Y. Zhang, Y. Zhang, History of high-entropy materials, High-Entropy Mater, 2019
+https://doi.org/10.1007/978-981-13-8526-1_1.
+[42] D. Gaskell, Introduction to Thermodynamics of Materials (2013) https://doi.org/10.
+1017/CBO9781107415324.004.
+[43] J.W. Yeh, Recent progress in high-entropy alloys, Ann. Chim. Sci. Des Mater. (2006)
+https://doi.org/10.3166/acsm.31.633-648.
+[44] H. Chen, J. Fu, P. Zhang, H. Peng, C.W. Abney, K. Jie, X. Liu, M. Chi, S. Dai, Entropy-
+stabilized metal oxide solid solutions as CO oxidation catalysts with high-
+temperature stability, J. Mater. Chem. A. (2018) https://doi.org/10.1039/
+c8ta01772g.
+[45] R. Witte, A. Sarkar, R. Kruk, B. Eggert, R.A. Brand, H. Wende, H. Hahn, High-entropy
+oxides: an emerging prospect for magnetic rare-earth transition metal perovskites,
+Phys. Rev. Mater. (2019) https://doi.org/10.1103/PhysRevMaterials.3.034406.
+[46] Y. Zhang, W.M. Guo, Z. Bin Jiang, Q.Q. Zhu, S.K. Sun, Y. You, K. Plucknett, H.T. Lin,
+Dense high-entropy boride ceramics with ultra-high hardness, Scr. Mater. (2019)
+https://doi.org/10.1016/j.scriptamat.2019.01.021.
+[47] Y. Wang, Y. Yang, H. Yang, M. Zhang, S. Ma, J. Qiao, Microstructure and wear prop-
+erties of nitrided AlCoCrFeNi high-entropy alloy, Mater. Chem. Phys. (2018)
+https://doi.org/10.1016/j.matchemphys.2017.05.029.
+[48] R. Djenadic, A. Sarkar, O. Clemens, C. Loho, M. Botros, V.S.K. Chakravadhanula, C.
+Kübel, S.S. Bhattacharya, A.S. Gandhi, H. Hahn, Multicomponent equiatomic rare
+earth oxides, Mater. Res. Lett. (2017) https://doi.org/10.1080/21663831.2016.
+1220433.
+[49] J. Dąbrowa, M. Stygar, A. Mikuła, A. Knapik, K. Mroczka, W. Tejchman, M.
+Danielewski, M. Martin, Synthesis and microstructure of the (Co,Cr,Fe,Mn,Ni)3O4
+high entropy oxide characterized by spinel structure, Mater. Lett. (2018) https://
+doi.org/10.1016/j.matlet.2017.12.148.
+[50] X. Ren, Z. Tian, J. Zhang, J. Wang, Equiatomic quaternary (Y1/4Ho1/4Er1/4Yb1/4)
+2SiO5 silicate: a perspective multifunctional thermal and environmental barrier
+coating material, Scr. Mater. (2019) https://doi.org/10.1016/j.scriptamat.2019.04.
+018.
+[51] N. Osenciat, D. Bérardan, D. Dragoe, B. Léridon, S. Holé, A.K. Meena, S. Franger, N.
+Dragoe, Charge compensation mechanisms in Li-substituted high-entropy oxides
+and inﬂuence on Li superionic conductivity, J. Am. Ceram. Soc. (2019) https://doi.
+org/10.1111/jace.16511.
+[52] A. Sarkar, C. Loh
+
+==================== PAGE 25 ====================
+
+25 ===
+
+[83] B. Musicó, Q. Wright, T.Z. Ward, A. Grutter, E. Arenholz, D. Gilbert, D. Mandrus, V.
+Keppens, Tunable magnetic ordering through cation selection in entropic spinel
+oxides, Phys. Rev. Mater. (2019) https://doi.org/10.1103/PhysRevMaterials.3.
+104416.
+[84] M. Stygar, J. Dąbrowa, M. Moździerz, M. Zajusz, W. Skubida, K. Mroczka, K. Berent,
+K. Świerczek, M. Danielewski, Formation and properties of high entropy oxides in
+Co-Cr-Fe-Mg-Mn-Ni-O system: novel (Cr,Fe,Mg,Mn,Ni)3O4 and (Co,Cr,Fe,Mg,Mn)
+3O4 high entropy spinels, J. Eur. Ceram. Soc. (2020) https://doi.org/10.1016/j.
+jeurceramsoc.2019.11.030.
+[85] D. Wang, S. Jiang, C. Duan, J. Mao, Y. Dong, K. Dong, Z. Wang, S. Luo, Y. Liu, X. Qi,
+Spinel-structured high entropy oxide (FeCoNiCrMn)3O4 as anode towards supe-
+rior lithium storage performance, J. Alloys Compd. (2020) https://doi.org/10.
+1016/j.jallcom.2020.156158.
+[86] Y. Sharma, Q. Zheng, A.R. Mazza, E. Skoropata, T. Heitmann, Z. Gai, B. Musico, P.F.
+Miceli, B.C. Sales, V. Keppens, M. Brahlek, T.Z. Ward, Magnetic anisotropy in
+single-crystal high-entropy perovskite oxide La(C r0.2 M n0.2 F e0.2 C o0.2 N
+i0.2) O3 ﬁlms, Phys. Rev. Mater. 4 (2020) 14404, https://doi.org/10.1103/
+PhysRevMaterials.4.014404.
+[87] B. Jiang, C.A. Bridges, R.R. Unocic, K.C. Pitike, V.R. Cooper, Y. Zhang, D.-Y. Lin, K.
+Page, Probing the local site disorder and distortion in pyrochlore high-entropy ox-
+ides, J. Am. Chem. Soc. (2020) https://doi.org/10.1021/jacs.0c10739.
+[88] D. Bérardan, S. Franger, A.K. Meena, N. Dragoe, Room temperature lithium
+superionic conductivity in high entropy oxides, J. Mater. Chem. A. 4 (2016)
+9536–9541, https://doi.org/10.1039/c6ta03249d.
+[89] E. Lökçü, Ç. Toparli, M. Anik, Electrochemical performance of (MgCoNiZn)1–xLixO
+high-entropy oxides in lithium-ion batteries, ACS Appl. Mater. Interfaces. 12
+(2020) 23860–23866, https://doi.org/10.1021/acsami.0c03562.
+[90] F. Li, L. Zhou, J.X. Liu, Y. Liang, G.J. Zhang, High-entropy pyrochlores with low ther-
+mal conductivity for thermal barrier coating materials, J. Adv. Ceram. (2019)
+https://doi.org/10.1007/s40145-019-0342-4.
+[91] M.P. Jimenez-Segura, T. Takayama, D. Bérardan, A. Hoser, M. Reehuis, H. Takagi, N.
+Dragoe, Long-range magnetic ordering in rocksalt-type high-entropy oxides, Appl.
+Phys. Lett. (2019) https://doi.org/10.1063/1.5091787.
+[92] S. Jiang, T. Hu, J. Gild, N. Zhou, J. Nie, M. Qin, T. Harrington, K. Vecchio, J. Luo, A new
+class of high-entropy perovskite oxides, Scr. Mater. (2018) https://doi.org/10.
+1016/j.scriptamat.2017.08.040.
+[93] Q. Wang, A. Sarkar, D. Wang, L. Velasco, R. Azmi, S.S. Bhattacharya, T. Bergfeldt, A.
+Düvel, P. Heitjans, T. Brezesinski, H. Hahn, B. Breitung, Multi-anionic and -cationic
+compounds: new high entropy materials for advanced Li-ion batteries, Energy En-
+viron. Sci. (2019) https://doi.org/10.1039/c9ee00368a.
+[94] A.J. Wright, Q. Wang, C. Huang, A. Nieto, R. Chen, J. Luo, From high-entropy ce-
+ramics to compositionally-complex ceramics: a case study of ﬂuorite oxides, J.
+Eur. Ceram. Soc. (2020) https://doi.org/10.1016/j.jeurceramsoc.2020.01.015.
+[95] A.J. Wright, C. Huang, M.J. Walock, A. Ghoshal, M. Murugan, J. Luo, Sand corrosion,
+thermal expansion, and ablation of medium- and high-entropy compositionally
+complex ﬂuorite oxides, J. Am. Ceram. Soc. (2021) https://doi.org/10.1111/jace.
+17448.
+[96] H. Chen, H. Xiang, F.Z. Dai, J. Liu, Y. Zhou, High entropy (Yb0.25Y0.25Lu0.25Er0.25)
+2SiO5 with strong anisotropy in thermal expansion, J. Mater. Sci. Technol. (2020)
+https://doi.org/10.1016/j.jmst.2019.07.022.
+[97] Z. Teng, L. Zhu, Y. Tan, S. Zeng, Y. Xia, Y. Wang, H. Zhang, Synthesis and structures
+of high-entropy pyrochlore oxides, J. Eur. Ceram. Soc. (2020) https://doi.org/10.
+1016/j.jeurceramsoc.2019.12.008.
+[98] J. Gild, M. Samiee, J.L. Braun, T. Harrington, H. Vega, P.E. Hopkins, K. Vecchio, J. Luo,
+High-entropy ﬂuorite oxides, J. Eur. Ceram. Soc. 38 (2018) 3578–3584, https://doi.
+org/10.1016/j.jeurceramsoc.2018.04.010.
+[99] A.J. 
+
+==================== PAGE 26 ====================
+
+26 ===
+
+[131] Y. Sharma, B.L. Musico, X. Gao, C. Hua, A.F. May, A. Herklotz, A. Rastogi, D. Mandrus,
+J. Yan, H.N. Lee, M.F. Chisholm, V. Keppens, T.Z. Ward, Single-crystal high entropy
+perovskite oxide epitaxial ﬁlms, Phys. Rev. Mater. 2 (2018) 60404, https://doi.
+org/10.1103/PhysRevMaterials.2.060404.
+[132] R.K. Patel, S.K. Ojha, S. Kumar, A. Saha, P. Mandal, J.W. Freeland, S. Middey, Epitaxial
+stabilization of ultra thin ﬁlms of high entropy perovskite, Appl. Phys. Lett. 116
+(2020)https://doi.org/10.1063/1.5133710.
+[133] P.B. Meisenheimer, T.J. Kratoﬁl, J.T. Heron, Giant enhancement of exchange cou-
+pling in entropy-stabilized oxide heterostructures, Sci. Rep. (2017) https://doi.
+org/10.1038/s41598-017-13810-5.
+[134] T.X. Nguyen, Y.-H. Su, J. Hattrick-Simpers, H. Joress, T. Nagata, K.-S. Chang, S. Sarker,
+A. Mehta, J.-M. Ting, Exploring the ﬁrst high-entropy thin ﬁlm libraries: composi-
+tion spread-controlled crystalline structure, ACS Comb. Sci. 22 (2020) 858–866,
+https://doi.org/10.1021/acscombsci.0c00159.
+[135] Y. Dong, K. Ren, Y. Lu, Q. Wang, J. Liu, Y. Wang, High-entropy environmental barrier
+coating for the ceramic matrix composites, J. Eur. Ceram. Soc. (2019) https://doi.
+org/10.1016/j.jeurceramsoc.2019.02.022.
+[136] G. Wang, J. Qin, Y. Feng, B. Feng, S. Yang, Z. Wang, Y. Zhao, J. Wei, Sol–gel synthesis
+of spherical mesoporous high-entropy oxides, ACS Appl. Mater. Interfaces. 12
+(2020) 45155–45164, https://doi.org/10.1021/acsami.0c11899.
+[137] A. Majumdar, W.C. Chueh, C. Xie, J. Rojas, E. Sun, Use of Entropy-Stabilized Oxides
+(ESOs) to Control Partial Oxidation of Methane, 2018.
+[138] M. Fracchia, P. Ghigna, T. Pozzi, U. Anselmi Tamburini, V. Colombo, L. Braglia, P.
+Torelli, Stabilization by conﬁgurational entropy of the Cu(II) active site during
+CO oxidation on Mg0.2Co0.2Ni0.2Cu0.2Zn0.2O, J. Phys. Chem. Lett. (2020)
+https://doi.org/10.1021/acs.jpclett.0c00602.
+[139] J. Sushil, A. Kumar, A. Gautam, M.I. Ahmad, High entropy phase evolution and ﬁne
+structure of ﬁve component oxide (Mg, Co, Ni, Cu, Zn)O by citrate gel method,
+Mater. Chem. Phys. (2021) https://doi.org/10.1016/j.matchemphys.2020.124014.
+[140] A. Kirnbauer, C. Spadt, C.M. Koller, S. Kolozsvári, P.H. Mayrhofer, High-entropy
+oxide thin ﬁlms based on Al–Cr–Nb–Ta–Ti, Vacuum (2019) https://doi.org/10.
+1016/j.vacuum.2019.108850.
+[141] Z.M. Yang, K. Zhang, N. Qiu, H. Bin Zhang, Y. Wang, J. Chen, Effects of helium im-
+plantation on mechanical properties of (Al0.31Cr0.20Fe0.14Ni0.35)O high entropy
+oxide ﬁlms, Chinese Phys. B (2019) https://doi.org/10.1088/1674-1056/28/4/
+046201.
+[142] P.B. Meisenheimer, L.D. Williams, S.H. Sung, J. Gim, P. Shafer, G.N. Kotsonis, J.P.
+Maria, M. Trassin, R. Hovden, E. Kioupakis, J.T. Heron, Magnetic frustration control
+through tunable stereochemically driven disorder in entropy-stabilized oxides,
+Phys. Rev. Mater. (2019)https://doi.org/10.1103/PhysRevMaterials.3.104420.
+[143] K.P. Tseng, Q. Yang, S.J. McCormack, W.M. Kriven, High-entropy, phase-
+constrained, lanthanide sesquioxide, J. Am. Ceram. Soc. (2020) https://doi.org/10.
+1111/jace.16689.
+[144] A.L.F. Cardoso, C.P.F. Perdomo, R.H.G.A. Kiminami, R.F.K. Gunnewiek, Enhancing the
+stabilization of nanostructured rocksalt-like high entropy oxide by Gd addition,
+Mater. Lett. 285 (2021) 129175, https://doi.org/10.1016/j.matlet.2020.129175.
+[145] D. Liu, X. Peng, J. Liu, L. Chen, Y. Yang, L. An, Ultrafast synthesis of entropy-
+stabilized oxide at room temperature, J. Eur. Ceram. Soc. 40 (2020) 2504–2508,
+https://doi.org/10.1016/j.jeurceramsoc.2020.01.018.
+[146] K. Wang, B. Ma, T. Li, C. Xie, Z. Sun, D. Liu, J. Liu, L. An, Fabrication of high-entropy
+perovskite oxide by reactive ﬂash sintering, Ceram. Int. (2020) https://doi.org/10.
+1016/j.ceramint.2020.04.060.
+[147] B. Yoon, V. Avila, R. Raj, L.M. Jesus, Reactive ﬂash sintering of the entropy-
+stabilized oxide Mg0.2Ni0.2Co0.2Cu0.2Zn0.2O, Scr. Mater. (2020). 10.1016/j.
+scriptamat.2020.02.006.
+[148] A. Kumar, G. Sharma, A. Aftab, M.I. Ahmad
+
+==================== PAGE 27 ====================
+
+27 ===
+
+[184] D.I. Enache, J.K. Edwards, P. Landon, B. Solsona-Espriu, A.F. Carley, A.A. Herzing, M.
+Watanabe, C.J. Kiely, D.W. Knight, G.J. Hutchings, Solvent-free oxidation of primary
+alcohols to aldehydes using Au-Pd/TiO2 catalyst, Science (80-. ) (2006) https://doi.
+org/10.1126/science.1120560.
+[185] V.R. Choudhary, R. Jha, P. Jana, Solvent-free selective oxidation of benzyl alcohol by
+molecular oxygen over uranium oxide supported nano-gold catalyst for the pro-
+duction of chlorine-free benzaldehyde, Green Chem. (2007) https://doi.org/10.
+1039/b608304h.
+[186] T. Li, F. Liu, Y. Tang, L. Li, S. Miao, Y. Su, J. Zhang, J. Huang, H. Sun, M. Haruta, A.
+Wang, B. Qiao, J. Li, T. Zhang, Maximizing the number of interfacial sites in
+single-atom catalysts for the highly selective, solvent-free oxidation of primary al-
+cohols, Angew. Chemie - Int. Ed (2018) https://doi.org/10.1002/anie.201803272.
+[187] E.P. Melián, O.G. Díaz, A.O. Méndez, C.R. López, M.N. Suárez, J.M.D. Rodríguez, J.A.
+Navío, D.F. Hevia, J.P. Peña, Efﬁcient and affordable hydrogen production by
+water photo-splitting using TiO2-based photocatalysts, Int. J. Hydrogen Energy.
+(2013) https://doi.org/10.1016/j.ijhydene.2012.12.005.
+[188] J. Kim, Y. Sohn, M. Kang, New fan blade-like core-shell Sb2TixSy photocatalytic
+nanorod for hydrogen production from methanol/water photolysis, Int. J. Hydro-
+gen Energy. (2013) https://doi.org/10.1016/j.ijhydene.2012.12.002.
+[189] J.S. Jang, H.G. Kim, J.S. Lee, Heterojunction semiconductors: A strategy to develop
+efﬁcient photocatalytic materials for visible light water splitting, Catal. Today
+(2012) https://doi.org/10.1016/j.cattod.2011.07.008.
+[190] X. Ji, S. Hao, F. Qu, J. Liu, G. Du, A.M. Asiri, L. Chen, X. Sun, Core-shell CoFe2O4@Co-
+Fe-Bi nanoarray: a surface-amorphization water oxidation catalyst operating at
+near-neutral pH, Nanoscale (2017) https://doi.org/10.1039/c7nr02929b.
+[191] J. Du, Z. Chen, S. Ye, B.J. Wiley, T.J. Meyer, Copper as a robust and transparent
+electrocatalyst for water oxidation, Angew. Chemie - Int. Ed. (2015) https://doi.
+org/10.1002/anie.201408854.
+[192] X. Zhou, J. Huang, F. Zhang, Y. Zhao, Y. Zhang, Y. Ding, Iron-cobalt bimetal oxide
+nanorods as efﬁcient and robust water oxidation catalysts, Dalt. Trans (2017)
+https://doi.org/10.1039/c7dt00302a.
+[193] C. Zhang, P.D. Bristowe, First principles calculations of oxygen vacancy formation in
+barium-strontium-cobalt-ferrite, RSC Adv. 3 (2013) 12267–12274, https://doi.org/
+10.1039/c3ra41585f.
+[194] Y. Zhong, H. Sabarou, X. Yan, M. Yang, M.C. Gao, X. Liu, R.D. Sisson, Exploration of
+high entropy ceramics (HECs) with computational thermodynamics - a case
+study with LaMnO3±δ, Mater. Des. (2019) https://doi.org/10.1016/j.matdes.
+2019.108060.
+[195] C.M. Rost, Entropy-Stabilized Oxides: Explorations of a Novel Class of Multicompo-
+nent Materials, PhD Thesis https://repository.lib.ncsu.edu/handle/1840.16/11411?
+show=full 2016.
+[196] Z. Rák, J.P. Maria, D.W. Brenner, Evidence for Jahn-Teller compression in the (Mg
+Co Ni Cu Zn)O entropy-stabilized oxide: a DFT study, Mater. Lett. (2018) https://
+doi.org/10.1016/j.matlet.2018.01.111.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+27

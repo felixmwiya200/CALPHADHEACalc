@@ -1,0 +1,10 @@
+Property,FunctionName,Start,End,Function
+Density,rho,293,2250,-0.125*T+4031.3
+Density,rho,2250,3500,-0.8*T+5050
+Thermo conductivity,k,293,2250,1e-5*T^2-0.0378*T+35.175
+Thermo conductivity,k,2250,3500,7.5
+Dynamic Viscosity,mu,293,2250,0.1
+Dynamic Viscosity,mu,2250,2300,1e-3*(3.2*exp(42.2e3/(8.314 * T)))
+Dynamic Viscosity,mu,2300,10000,0.001
+Surface tension,surfT,293,2500,0.64-8.2e-5*T
+Modulus of elasticity,E,407.10,2190,407.10-7.3407e-2*T

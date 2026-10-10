@@ -1,0 +1,404 @@
+=== GRAPHICAL MODE DESKTOP (p.232-236) ===
+
+--- PAGE 232 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 3 of 504
+Working in Graphical Mode
+In this section:
+The Graphical Mode Desktop Layout
+4
+Menu, Toolbar, and Keyboard Shortcuts
+5
+Organizing the Windows on the Desktop
+8
+
+--- PAGE 233 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 4 of 504
+The Graphical Mode Desktop Layout
+Open Thermo-Calc to view the default graphical user interface (GUI) layout for Graphical 
+Mode. 
+The windows are:
+ 1. Project: Create, make changes, and navigate between the activities that make up a 
+project. Click the My Project node to access the Quick Start wizard and a variety of 
+templates to create projects for all the calculator types. 
+ 2. Configuration: Shows the settings that can be configured for the currently selected 
+activity.  
+ 3. Visualizations: Shows the results of a calculation, either plotted as a diagram or 
+displayed in table format. In this example, there is a Plot Renderer tab in the 
+Visualizations window.
+ 4. Scheduler: Displays information about jobs, such as calculations, that are being 
+performed or are scheduled to be performed. You can cancel scheduled jobs and if a 
+job has failed, then you can view information about the error.
+ 5. Event Log: By default this window is closed but it displays during calculation 
+processes. You can always open it to view progress of calculations and to 
+troubleshoot.
+In this example, the Visualizations window also has a Plot Renderer tab. You can also 
+have a Table Renderer tab. 
+
+--- PAGE 234 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 5 of 504
+Menu, Toolbar, and Keyboard Shortcuts
+The File menu and toolbar are reserved for Graphical Mode but in Console Mode the Tools, 
+Window, and Help menus have the same options. 
+In Console Mode you use commands to access the other options, for example 
+see Main Menu Commands.
+Graphical Mode Menu and Toolbar Options
+Option
+Description
+Action (s)
+New Project
+Create a new project.
+Click New on the toolbar
+Select File → New Project
+Windows: Press <Ctrl+N>
+Mac: Press < ⌘+ N>
+Open Project
+Open an existing project. See Opening 
+Project Files.
+Click Open on the toolbar
+Select File → Open Project
+Windows: Press <Ctrl+O>.
+Mac: Press < ⌘+ O>
+Open Recent 
+Project
+Open a recent project. See Opening 
+Project Files.
+Select File → Open Recent Project and choose from 
+the list of projects or click Clear Recent Projects to 
+reset the list. Up to the last 10 projects are listed 
+and numbered in the order at which last opened.
+Save
+Save a project. See Saving Project Files.
+Click Save on the toolbar
+Select File → Save Project
+Windows: Press <Ctrl+S>.
+Mac: Press < ⌘+ S>
+Save Project 
+As
+Save an existing project with a new name.
+Select File → Save Project As
+Windows: Press <Ctrl+Shift+S>
+
+--- PAGE 235 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 6 of 504
+Option
+Description
+Action (s)
+Mac: Press < ⇧⌘+ S>
+Switch to 
+Console 
+Mode
+Launch Console Mode and the command 
+prompt.
+Click the button to exit Graphical Mode and open 
+Console Mode.
+Switch to 
+Graphical 
+Mode
+Launch Graphical Mode to work with the 
+GUI version.
+Click the button to exit Console Mode and open 
+Graphical Mode.
+Append 
+Project
+Combine two projects into one project file. 
+See Appending Project Files.
+Select File → Append Project
+Windows: Press <Ctrl+Shift+O>
+Mac: < ⇧⌘+O>
+Exit
+Exit the program.
+In the upper right-corner of the program, click the 
+X.
+Select File → Exit
+Windows: Press <Ctrl+Q>.
+Mac: < ⌘+Q>
+Options
+Change the global defaults for a variety of 
+settings. See Global Settings.
+Select Tools → Options
+Database 
+Checker
+Open the Database Checker, a program to 
+check that the syntax of Thermo-Calc 
+database files is correct. This is for 
+advanced users who develop and manage 
+databases.
+Select Tools → Database Checker
+Window 
+menu
+Highlight a specific window on the GUI 
+From the Window menu, select an option to 
+refocus on that specific window. 
+Help
+Open the online help system where you 
+can browse or search all the Thermo-Calc 
+documentation.
+This does not require an 
+Internet connection. The 
+content is stored locally.
+First open Thermo-Calc, then choose one of these 
+options:
+ l
+Press <F1> on the keyboard.
+ l
+Select Help → Online Help.
+ l
+On the My Project Configuration window, 
+click Online Help.
+ l
+At the bottom of any Configuration 
+window, click Help.
+Video 
+Tutorials
+Open a link to the Thermo-Calc website 
+where a variety of video tutorials are 
+ l
+Select Help → Video Tutorials
+
+--- PAGE 236 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 7 of 504
+Option
+Description
+Action (s)
+available.
+ l
+On the My Project Configuration window, 
+click Video Tutorials.
+Examples 
+Files
+Open the examples folder based on 
+whether you are in Console Mode or 
+Graphical Mode. Also see Opening 
+Example Project Files in Thermo-Calc.
+ l
+Select File → Examples Files.
+ l
+Select Help → Examples Files.
+ l
+On the My Project Configuration window, 
+click Example Calculation.
+Manuals 
+Folder
+Open the folder on your computer that 
+has the PDF documentation and guides.
+Select Help → Manuals Folder
+Show License 
+Info
+Open the License Information window. 
+Also see Displaying 
+Thermo-Calc License 
+Information and the 
+Thermo-Calc Installation 
+Guide
+Select Help → Show License Info
+Check for 
+update
+Check for updates to the software.
+Select Help → Check for Updates
+Request 
+Support
+Open a link to the Support on the 
+Thermo-Calc website. There are 
+instructions about how to submit your 
+question.
+Select Help → Request Support
+About
+Includes the version number of the 
+installed software and information about 
+third party software licenses.
+Select Help → About
+Notes
+Open a Notes - My Project window to add 
+notes to your project file. 
+At the bottom center of the Configuration window, 
+click the Notes (
+) button. Once a note is added, 
+hover your mouse over the button and it is then 
+called Read and edit notes.
+
+--- PAGE 237 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 8 of 504
+Organizing the Windows on the Desktop
+The windows on the Thermo-Calc desktop can be fixed or free floating. By default, most 
+windows are fixed and open. 
+Using a combination of menu (right-click the window bar) and buttons (top right corner of a 
+window), you can organize the windows as needed for your workflow.
+For example, right-click the top of a window to select from the options to float, auto hide, 
+maximize, or dock it. You can also left-click on the top bar of a window to float (i.e. 
+detach) and move a window or to dock it again using the guides on the screen.
+Reset the Desktop Layout
+At any time to return to the standard desktop layout, from the main menu, select Window 
+→ Reset Windows.
+Make a Window Dockable or "Permanently" Floating
+By default windows are dockable, i.e. you can move the windows around using the outline 
+guides and adjust the layout location for each window on one monitor. When a window is 
+NOT dockable the window can be moved around it is just does not become part of the 
+layout, it stays floating all the time (i.e. it is "permanently" floating).
+When Dockable is turned off (i.e. not selected) the other options are not 
+available and there are no buttons at the top right corner of the window. 
+However, you can reset the desktop layout to return it to the default location. 
+Right-click the top of a window to select Dockable to turn this option on and off.
+
+
+
+=== YIELD STRENGTH PROPERTY MODEL (p.518-522) ===
+
+--- PAGE 518 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 289 of 504
+About the Yield Strength Property Model
+The Yield Strength Model is a general model to estimate the yield stress of a material that 
+considers these contributions to the overall yield stress of the material:
+ l
+Intrinsic strength (
+) for the pure elements,
+ l
+Grain boundary strengthening (
+),
+ l
+Solid solution strengthening (
+),
+ l
+Precipitation strengthening (
+), and
+ l
+A user set, constant strength contribution (
+).
+The temperature ( ) is used to evaluate the equilibrium state of the system, and the 
+resulting compositions and phase fractions are subsequently used in the evaluation of 
+mechanical properties.
+It returns the calculated yield strength at room temperature for the specified material using 
+the equilibrium values calculated at temperature  (i.e.  is the freeze-in temperature).
+Below follows a short summary for each of the contributions.
+The settings for the contributions are found on the Property Model Calculator 
+when the Yield Strength Property Model Settings is selected under General 
+Models.
+Yield strength is also available as a variable when working with Plots and Tables 
+that are successors to the Precipitation Calculator.
+The settings details, some of which are mentioned in this topic, are entered on 
+the Configuration window, see Yield Strength Property Model Settings.
+Intrinsic Strength
+Intrinsic strength, 
+, is the base strength as evaluated from linear combination of the pure 
+elements' strength. If data is missing for one or more elements, a message displays in the 
+software to indicate this.
+
+--- PAGE 519 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 290 of 504
+The intrinsic strength is evaluated at the same temperature as the solid solution 
+strengthening, i.e. to get the temperature dependent intrinsic strength, on the Configuration 
+settings window, first select the Solid solution strengthening check box followed by also 
+selecting the Solid solution strengthening evaluation temperature check box. Then enter an 
+evaluation temperature.
+Temperature Dependence for Pure Elements
+The following pure elements can be used to evaluate yield strength at non-room 
+temperature conditions:
+ l
+Ag, Al, Au, Be, Ce, Co, Cr, Cu, Dy, Er, Fe, Gd, Hf, Ho, Ir, La, Mg, Mo, Nb, Nd, Ni, Pd, Pt, 
+Rh, Sm, Ta, Ti, U, V, W, Y, Zn, and Zr
+The temperature dependence is of the form:
+and is available for the listed pure elements where  and  are fitted to data from 
+[1968Sam; 2017Wu]. This improves the results for evaluated yield strength at non-room 
+temperature conditions.
+The calculated solid solution strength can differ from versions of Thermo-Calc 
+prior to 2022b where the pure element strength from Cordero et al. was used 
+[2016Cor]. This is especially noticeable for pure element or dilute solution 
+calculations. The pure element strength is only evaluated for FCC, BCC, and 
+HCP.
+Constant Addition of Strength
+The constant strength contribution parameter, 
+, is set by the user as a constant strength 
+addition to the material.
+Grain Boundary Strengthening
+The grain boundary strengthening, 
+, is the contribution to the total strength stemming 
+from the grain boundary's ability to hinder dislocation movement described by the Hall-
+Petch relation [2004Han].
+The parameters entered are the Hall-Petch constant, 
+, in MPa μm1/2, and the average 
+grain diameter in μm.
+
+--- PAGE 520 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 291 of 504
+Solid Solution Strengthening
+The solution strengthening, 
+, is the contribution to total strength due to the elastic strains 
+in the crystal lattice caused by alloying elements of a lattice parameter differing from the 
+main constituent. For the solid solution strengthening the option of evaluating the strength 
+at any temperature is available. The result is normalized with respect to the sum of all mole 
+fractions for FCC, BCC, and HCP. This option uses the phase fractions and compositions 
+calculated at the overall equilibrium temperature. The model by Walbrühl et al. [2017Wal] is 
+implemented.
+PM_G_06: Yield Strength HEA shows how this model is applied.
+Precipitation Strengthening
+The precipitation strengthening, 
+, is the contribution to total strength due to precipitation 
+of a secondary phase, e.g. gamma prime (γ') in Ni-base alloys or Al3Sc precipitates in Al-base 
+alloys. This model is available for any number of precipitating phases. The total particle 
+strength is calculated by the square mean of the individual particle strength contributions:
+The Simplified model (general), Seidman model (Al-base), and Reppich model (Ni-based) 
+are available as settings on the Configuration window to estimate the precipitation 
+strengthening contribution.
+
+--- PAGE 521 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 292 of 504
+Simplified Model (General)
+The Simplified model (general) is based on the work by Zander et al. [2008Zan] and 
+considers the general mechanisms of cutting and looping without regard to any detailed 
+dislocation mechanisms. The default parameters are, however, optimized against 
+experimental data for the Al-0.3wt%Sc alloy described by Seidman et al. [2002Sei]. Also see 
+Mean Precipitate Radius and Particle Size Distribution (PSD) below.
+PM_G_04: Yield Strength compares the Simplified model (general) and 
+Seidman model (Al-base) yield strength versus precipitate radius to 
+experimental data for an Al-0.3wt%Sc alloy homogenized at 648 °C for 24 hours 
+and subsequently aged at 350 °C.
+Seidman Model (Al-base)
+The Seidman model (Al-base) by Seidman et al. [2002Sei] considers several contributions to 
+the overall precipitation strengthening - ordering, coherency stresses, shear modulus 
+mismatch, and Orowan looping. The Seidman model is suitable for Al-base alloys with a low 
+volume fraction of spherical precipitates. Also see Mean Precipitate Radius and Particle Size 
+Distribution (PSD) below.
+PM_G_04: Yield Strength compares the Simplified model (general) and 
+Seidman model (Al-base) yield strength versus precipitate radius to 
+experimental data for an Al-0.3wt%Sc alloy homogenized at 648 °C for 24 hours 
+and subsequently aged at 350 °C.
+Reppich Model (Ni-base)
+The Reppich model (Ni-base) by Reppich et al. [1982aRep] considers both weak and strong 
+coupling of dislocation as they propagate through an ordered secondary phase and is thus 
+suitable for Ni-base alloys with relatively high volume fractions of gamma prime or gamma 
+double prime.
+The Reppich model is not valid for very small values of volume fraction 
+precipitate and precipitate radius, and it does not take precipitate size 
+distribution into account.
+
+--- PAGE 522 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 293 of 504
+PM_G_05: Yield Strength NiAlCr is an example of this model.
+Figure 8: Reppich model plotted with results and experimental data for PE16 [1982bRep], all data 
+is normalized with the square root of the volume fraction of precipitate.
+
+--- PAGE 523 ---
+Thermo-Calc Documentation Set
+Thermo-Calc User Guide: Graphical Mode ǀ 294 of 504
+Figure 9: Reppich model yield strength vs mean precipitate radius for Ni-10Cr-10Al.
+Mean Precipitate Radius and Particle Size Distribution 
+(PSD)
+The mean precipitate radius entered on the Configuration window for the Simplified model 
+(general) and Seidman model (Al-base) is transformed to a Lifshitz-Slyozov-Wagner 
+(LSW) particle size distribution [2010Tir]. The distribution is stepwise integrated and the 
+mean radius for all sections are used to calculate a partial precipitate strengthening 
+contribution. The partial contributions are added as 
+ 
+The use of a PSD smoothes the transition between the cutting and Orowan regions. This 
+change is implemented for the Simplified model (general) and Seidman model (Al-base).
+

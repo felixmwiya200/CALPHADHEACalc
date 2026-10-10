@@ -1,0 +1,1952 @@
+
+
+=== PAGE 1 ===
+
+Evolution of corrosion mechanism of 3d transition metal high entropy 
+alloys: A review
+Shuai Li a,*
+, Xin Liu a, Xiaotong Hou a, Zhongying Liu a, Xingxing Wang a,  
+Jinoop Arackal Narayanan b, Tingting Wu a, Yanchao Bai a, Yong Dong c, Hui Jiang d
+a School of Mechanical Engineering, North China University of Water Resources and Electric Power, Zhengzhou, 450045, PR China
+b School of Computing, Engineering & Digital Technologies, Teesside University, UK
+c School of Materials and Energy, Guangdong University of Technology, Guangzhou, 510006, PR China
+d College of Mechanical and Electronic Engineering, Shandong University of Science and Technology, Qingdao, 266590, PR China
+A R T I C L E I N F O
+Keywords:
+3d transition metal high entropy alloys
+Processing method
+Passive film stability
+Corrosion susceptibility
+A B S T R A C T
+High entropy alloys (HEAs) attracted intensive study as they exhibit remarkable properties in potentially harsh 
+service conditions. In numerous performance evaluation indicators, corrosion susceptibility is a major concern 
+when selecting materials for practical applications because it causes serious problems with safety and significant 
+economic loss. This review paper primarily analyses the evolution of corrosion characteristics of 3d transition 
+metal HEAs with various chemical compositions across different aqueous solutions. Additionally, the effect of the 
+chemistry of materials on the corrosion characteristics of 3d transition metal HEAs across different aqueous 
+solutions is also discussed. The 3d transition metal HEA elements considered in the analysis mainly include Al, 
+Cr, Ni, Ti, and Co. Additionally, the other elements, such as N, Sn and rare earth were also discussed. Further, the 
+evolution of corrosion susceptibility under different preparation methods was elaborated, including the 
+manufacturing process and heat treatment. Specifically, the existence of oxidation film and its correlation with 
+the change of corrosion resistance in 3d transition metal HEAs was explored. Finally, the prospects in the field of 
+3d transition metal HEAs corrosion research are put forward. The review article will provide a quick guide for 
+researchers intending to work on the corrosion performance of 3d transition metal HEAs.
+1. Introduction
+The composition of traditional metal alloys is determined by the 
+utilisation of a singular element as the primary constituent, with the 
+subsequent incorporation of a limited number of additional elements to 
+effect alterations in the microstructure and properties. The proportional 
+weight of the primary component typically ranges from 50 to 90% 
+[1–3]. However, the solubility of the primary component is limited. 
+When the concentration of trace elements exceeds this solubility 
+threshold, the formation of intermetallic compounds occurs, which can 
+result in substantial alterations to the properties of the alloy [4–7]. As 
+society progresses, the demands on materials have become more 
+exacting, and the design of traditional alloys has gradually reached a 
+point of stagnation. In order to overcome this challenge, numerous re­
+searchers in the field of materials science have made extensive efforts 
+[8–10].
+In 1990s, the concept of high entropy alloys (HEAs) were proposed 
+by Yeh et al. [11] and Cantor et al. [12], which were characterised by the 
+presence of multiple principal elements and a high degree of mixing 
+entropy. At present, a substantial number of HEAs, consisting of a va­
+riety of components, have been meticulously developed. However, the 
+precise definition of these novel alloys remains a subject of ongoing 
+debate. Generally speaking, the definition of HEAs is generally divided 
+into two categories: compositional definition and entropy range-based 
+definition [13,14]. The definition of HEA is divided into two main ap­
+proaches: composition-based and entropy range-based [11].
+For the compositional definition, the HEAs typically contained five 
+or more elements in equal or nearly equal atomic ratios, with each 
+component constituting between 5 and 35% atomic percent [15]. 
+Additionally, the HEAs can be divided into low, medium and high en­
+tropy alloys according to the entropy values R [16], namely low entropy 
+(SSSS,ideal < 0.69R), medium entropy (0.69R < SSSS,ideal < 1.61R) and 
+low entropy (SSSS,ideal > 1.61R) alloys. It is emphasized that the above 
+mentioned definitions of HEAs are contradictory in some specific cases.
+* Corresponding author.
+E-mail address: lyctlishuai@163.com (S. Li). 
+Contents lists available at ScienceDirect
+Journal of Materials Research and Technology
+journal homepage: www.elsevier.com/locate/jmrt
+https://doi.org/10.1016/j.jmrt.2025.02.090
+Received 28 October 2024; Received in revised form 15 January 2025; Accepted 11 February 2025  
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+Available online 12 February 2025 
+2238-7854/© 2025 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY-NC license ( http://creativecommons.org/licenses/by- 
+nc/4.0/ ). 
+
+
+=== PAGE 2 ===
+
+1.1. Relationship between the four significant effects in HEAs and 
+corrosion susceptibility
+Due to this unique design concept, HEAs typically exhibit four sig­
+nificant effects: the high entropy effect, the lattice distortion effect, the 
+slow diffusion effect and the cocktail effect, as shown in Fig. 1 [17]. Lots 
+of investigations had been demonstrated that the HEAs displayed 
+outstanding corrosion resistance compared to traditional alloys [18]. 
+This enhanced corrosion resistance is primarily attributed to the for­
+mation of simple, disordered solid solutions with face-centered cubic 
+(FCC) [19–21], body-centered cubic (BCC) [22–24], or close-packed 
+hexagonal (HCP) structures [25–27], which decreases the possibility 
+of elemental segregation. The relationship between the four main effects 
+of HEAs and corrosion resistance can be summarized as follows.
+1.1.1. The high entropy effect
+The experimental findings demonstrate that HEAs composed of 
+multiple compatible elements exhibit a propensity to form simple solid 
+solutions rather than intermetallics, which is different from the results 
+obtained on the basis of the classical Gibbs phase transition rule [15]. 
+The presence of high entropy within an alloy is indicative of the exis­
+tence of multiple elements, resulting in the formation of a complex solid 
+solution [28]. This, in turn, leads to an increase in both the disorder and 
+the stability of the alloy. The presence of a highly mixed elemental 
+composition serves to render the surface of the alloy more resistant to 
+the effects of corrosive media, due to the increased difficulty of the 
+corrosion reaction engendered by the interaction between the different 
+elements [29]. Moreover, the enhancement of corrosion resistance and 
+passive properties of HEAs is concomitant with the uniform distribution 
+of elements, a phenomenon attributable to the high-entropy effect of 
+HEAs [30]. Then the process of galvanic corrosion is prevented in the 
+presence of various phases of HEAs. It is imperative to note that this rule 
+does not extend to all high entropy alloys.
+1.1.2. The lattice distortion effect
+The phenomenon of lattice distortion can be attributable to the 
+disparate atomic dimensions of the constituent primary elements within 
+HEA [31]. So far, no study has explored the relationship between lattice 
+distortion effects and the corrosion resistance of HEAs. Fu et al. [15] 
+pointed out that significant lattice distortion decreases the thermody­
+namic stability of HEAs, potentially influencing the passivation behav­
+iour of surface films on the alloys, and results in an altered mechanism 
+for stress corrosion cracking (SCC). Furthermore, the relationship be­
+tween lattice distortion and corrosive media in terms of the increase in 
+energy of the system due to the increase in atomic spacing was illus­
+trated by Varshney et al. [29,32]. Namely, the increase in the system’s 
+potential energy can be associated with the variation in interatomic 
+distance caused by the lattice distortion. Then the interaction between 
+the HEA surface atoms and the corrosive environment changed.
+1.1.3. The sluggish diffusion effect
+As we know, the occurrence of SCC in metal alloys is contingent upon 
+the interplay of numerous factors [33]. The hydrogen embrittlement 
+failure mechanism, which serves as the important theory for elucidating 
+SCC, posits that the hydrogen diffusion and its interaction with dislo­
+cations play an important role in hydrogen embrittlement [33,34]. The 
+sluggish diffusion effect of HEAs is closed related to the lattice disloca­
+tion and the increase of mixing entropy. It has been demonstrated that 
+lattice distortion has a significant effect on the resistance of dislocation 
+motion [35]. Consequently, the mobility of dislocations in HEAs may not 
+increase to the same extent as in traditional metal alloys under similar 
+hydrogen concentrations. This suggests that localized deformation is less 
+likely to occur in HEAs, which contributes to their higher resistance to 
+hydrogen embrittlement.
+1.1.4. The cocktail effect
+The cocktail effect in HEAs refers to the synergistic interplay of 
+multiple principal elements, which collectively contribute to properties 
+that cannot be achieved by any single element or simple alloy [36]. This 
+effect arises from the random and diverse mixture of elements in 
+approximately equiatomic proportions, leading to unique mechanical, 
+thermal, and chemical behaviors, including corrosion resistance [37]. 
+The cocktail effect promotes the formation of oxide films enriched with 
+protective elements like Cr [38], Al [39], Ti [40], and Mo [41]. These 
+films are denser, more stable, and provide robust resistance to general 
+and localized corrosion. The diverse alloying elements lead to passive 
+Fig. 1. Diagram of four significant effects of high entropy alloys [17].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4143 
+
+
+=== PAGE 3 ===
+
+films with a mixed oxide composition, which can adapt to a wide range 
+of aggressive environments.
+Due to the ‘cocktail’ effect, HEAs tend to form simple solid solution 
+phases (e.g. FCC, BCC or HCP structures) rather than complex inter­
+metallic compounds [39]. These solid solution phases have higher 
+thermodynamic stability and chemical homogeneity, and exhibit supe­
+rior corrosion resistance in corrosive environments. Additionally, the 
+‘cocktail’ effect may lead to a reduction in the energy of grain and phase 
+boundaries, resulting in the formation of a fine, uniform grain structure 
+[29]. This structure improves corrosion resistance because it is more 
+difficult for corrosion processes to occur selectively in a homogeneous 
+microstructure.
+The unique composition, structure and its four significant effects (as 
+shown in Fig. 1) give HEAs better comprehensive properties than 
+traditional structural materials, making them a research focal point of 
+potential structural materials. At present, lots of investigations have 
+been conducted on the transformation of mechanical performances and 
+microstructure of HEAs and the study on the corrosion susceptibility of 
+HEAs is fragmented, with experimental results showing variance and, in 
+some cases, even contradiction. Consequently, it is necessary to sys­
+tematically review relevant literature on the corrosion mechanism of 
+HEAs. This paper offers several recommendations for future studies on 
+the corrosion susceptibility of HEAs, emphasizing the role of micro- 
+alloying elements such as Al, Cr, Ni, Ti, and Co. It also highlights the 
+importance of investigating processing methods and the stability of 
+oxidation films in enhancing corrosion resistance.
+2. Corrosion susceptibility evolution of HEAs with different 
+chemical compositions
+2.1. Al
+Al is an essential element in the HEAs system, exerting a significant 
+influence on the mechanical properties and corrosion behaviour of the 
+material. The variation in corrosion resistance exhibited by HEAs in 
+relation to their Al content is predominantly attributed to the volume of 
+BCC and FCC phases [42–44]. Furthermore, other studies have demon­
+strated that the addition of Al results in the formation of a passive film 
+on HEAs in corrosive solutions [45–47].
+The effect of Al content on the corrosion resistance of AlxCoCrFeNi 
+HEAs in a 3.5 wt% NaCl solution are reported systematically by Shi et al. 
+[48–52]. They verified that the change in corrosion resistance was 
+linked to the microstructural evolution of AlxCoCrFeNi, resulting from 
+variations in the Al content [50,51]. Typical single FCC phase was 
+detected in the Al0.3CoCrFeNi alloy, consisting of a (Cr,Co,Fe)-rich 
+structure with an even distribution of chemical elements. Then the BCC 
+phase with the main element of Al and Ni appeared as the aluminum 
+content increased in the Al0.5CoCrFeNi and Al0.7CoCrFeNi alloys. There 
+was a notable increase in the volume fraction of the BCC phase, rising 
+from 5% to 35%, as illustrated in Fig. 2 [51]. For the Al0.3CoCrFeNi 
+HEAs, scattered pitting is observed after the polarization measurement. 
+However, selective corrosion dissolution occurring at (Al, Ni)-rich zones 
+is detected after polarization measurement and the FCC phase remains 
+smooth for the Al0.5CoCrFeNi and Al0.7CoCrFeNi HEAs, as displayed in 
+Fig. 3 [51]. Furthermore, the authors indicated that the observed fluc­
+tuations in the AlxCoCrFeNi HEAs during polarization measurements, 
+which vary with different Al contents, are linked to the formation, 
+growth, and re-passivation of metastable pitting on the alloy surface. 
+The corresponding evolution mechanism is illustrated in Fig. 4 [51]. The 
+transformation of pitting propagation in AlxCoCrFeNi HEAs with vary­
+ing Al content has been attributed to a change in the amount of the 
+Cr-depleted BCC phase. The influence of alloy elements on the micro­
+structure evolution and electrochemical parameters of representative 
+HEAs with different solutions is summarized in Table 1.
+In order to gain further insight into the effect of element variation on 
+the corrosion susceptibility of AlxCoCrFeNi HEAs in NaCl solution, in- 
+situ observations and high-throughput synthesis were employed by Shi 
+et al. [48,50,52]. They confirmed that the corrosion begins with pitting 
+and gradually evolves into the selective corrosion of the BCC phase, 
+which is attributed to the formation of galvanic corrosion between the 
+BCC and FCC phase [48,50]. However, they emphasized the role of Al in 
+forming Cr-depleted B2 phases ((Al, Ni)-rich), which preferentially 
+Fig. 2. Microstructure morphologies of AlxCoCrFeNi alloys with various Al addition [51].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4144 
+
+
+=== PAGE 4 ===
+
+dissolve in NaCl solution. Nonetheless, they failed to consider the po­
+tential synergistic effects of Al, Cr, and other elements on the passivation 
+behavior of HEAs. The same corrosion mechanism was reported by Wu 
+et al. [36]. They identified that CoCrFeNiAl0.3 HEAs exhibit exceptional 
+pitting corrosion resistance. This enhanced performance was attributed 
+to the reduced volume fraction of the B2 phase and the formation of a 
+passivation film primarily composed of Al, Cr, and Fe.
+Additionally, Wang et al. [39] also demonstrated that the corrosion 
+behavior of AlxCoCrFeNi HEAs transitions from pitting corrosion to se­
+lective corrosion as the Al content increases. The presence of corrosion 
+products in the Al0.0 sample indicated the occurrence of pitting corro­
+sion, with Co, Cr, Fe, and Ni being the primary elements affected [39]. In 
+the Al0.5 and Al1.0 samples, Al and Ni were observed to be corroded, 
+suggesting the presence of selective corrosion in these alloy systems. In 
+the Al1.5 sample, the presence of selective corrosion was observed, with 
+corrosion extending to Al, Ni, and Co, indicating a transition in the 
+corroded elements from (Co, Cr, Fe, and Ni) to (Al and Ni) and finally to 
+(Al, Ni, and Co) [39].
+However, Raza et al. [65] demonstrated that enhancing the Al con­
+tent resulted in enhanced corrosion resistance in AlxCrFeMoV HEAs. 
+Unlike other Al-containing high entropy alloys, the inclusion of Al in 
+AlxCrFeMoV HEAs reduced the current density in the passive region 
+without reducing the pitting potential, as X-ray photoelectron spec­
+troscopy (XPS) analysis confirmed the formation of Mo4+ and Cr3+, 
+which stabilised the passive film and prevented pitting. The enhance­
+ment of corrosion resistance exhibited by the AlxCrFeMoV alloys (x = 0, 
+0.2, 0.6, 1) in conjunction with the rise in Al content is predominantly 
+attributed to the elevated pitting resistance equivalent number, attrib­
+utable to the presence of equiatomic Mo and Cr elements.
+To further evaluate the corrosion susceptibility of HEAs, Wei et al. 
+[66] examined the corrosion resistance of AlCoCrFeNi2.1 HEAs in 0.5 M 
+H2SO4, the corresponding electrochemical parameters are illustrated in 
+Table 1. The corrosion mechanism is illustrated in Fig. 5. They pointed 
+out that the corrosion process of the eutectic HEAs in sulfuric acid so­
+lution can be categorised into three distinct stages, as evidenced by the 
+changes 
+in 
+electrochemical 
+properties 
+and 
+morphological 
+characteristics. During the short-term self-protection stage, a Cr-rich 
+film formed on the BCC surface, thereby reducing the active area and 
+providing partial protection to the BCC phase. Furthermore, the 
+appearance of loose outer film on the FCC phase surface greatly reduced 
+the micro-galvanic corrosion influence between FCC and BCC phases, as 
+shown in Fig. 5(a-b). Consequently, the overall corrosion resistance of 
+the eutectic HEAs improved during this stage [66]. The corrosion 
+product film formed in the initial stage can only decelerate the corrosion 
+process to a limited extent and was incapable of completely obstructing 
+the corrosion process. The exposed area of the FCC phase increased 
+gradually due to the dissolution of the BCC phase. Concurrently, the area 
+ratio of the cathode and anode increased, resulting in the dissolution of 
+the BCC phase in this transitional stage, as illustrated in Fig. 5(c). As the 
+lamellar BCC phase continued to dissolve, a new micro-galvanic corro­
+sion system developed between the lamellar and irregular regions, 
+thereby accelerating the corrosion of the eutectic HEAs, as displayed in 
+Fig. 5(d).
+Fu et al. [55] assessed the evolution of corrosion behavior and the 
+stability of passive films in FeCoCrNiAlx alloys (where x = 0.1, 0.3) with 
+varying aluminum content in 0.5 M H2SO4 solution and 0.5 M HCl so­
+lution. The corrosion resistance of the HEAs in the two acid solutions 
+demonstrates an inverse relationship with the increasing Al content. The 
+increase in Al content in FeCoCrNiAlx alloys is beneficial to improving 
+the corrosion resistance in 0.5 M H2SO4 solution, which associated with 
+the formation dense oxide film. The deterioration of the corrosion 
+resistance of FeCoCrNiAlx alloys in 0.5 M HCl solution with the 
+increasing of Al content is predominantly attributable to the interaction 
+between Cl−and Al-containing metastable ion complexes [55]. How­
+ever, Kao et al. [67] demonstrated that an increase in Al content has a 
+detrimental effect on the corrosion resistance of AlxCoCrFeNi alloys in 
+H2SO4 solution when the temperature exceeds 27 ◦C. Conversely, an 
+enhancement in corrosion resistance is observed with the incorporation 
+of Al content when the temperature is below 23 ◦C.
+The corrosion resistance of the AlxCoCrFeNi HEAs is commonly 
+evaluated in a 3.5 wt% NaCl solution and H2SO4 solution. The resistance 
+to the localized and general corrosion is always be estimated by the 
+Fig. 3. Corrosion micrographs for the AlxCoCrFeNi HEAs with different Al content [51].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4145 
+
+
+=== PAGE 5 ===
+
+electrochemical parameters of corrosion potential (Ecorr) and corrosion 
+current density (icorr) to compared between the AlxCoCrFeNi HEAs and 
+traditional alloys, such as Ni alloys, Ti alloys, Al alloys, Cu alloys and 
+stainless steels, as displayed in Figss. 6–7. The HEAs positioned in the 
+lower right section of the figures show that the localised and overall 
+corrosion resistance of the AlxCoCrFeNi HEAs is either comparable to or 
+exceeds that of certain traditional corrosion resistant alloys in both 3.5 
+wt% NaCl and H2SO4 solutions. The corrosion resistance of AlxCoCrFeNi 
+HEAs is inferior to that of certain nickel-based alloys when immersed in 
+a 3.5 wt% NaCl solution. To enhance corrosion resistance, the devel­
+opment of alternative alloy systems with simpler microstructures, which 
+incorporate elements with strong passivating properties, such as Cr, Ni, 
+Mo, and Ti, could be a promising approach.
+In conclusion, the corrosion behavior of HEAs is primarily influenced 
+by both structural and non-structural factors. Structural changes, 
+particularly phase transformations driven by Al content, lead to selec­
+tive corrosion of the BCC phase through galvanic interactions with the 
+FCC phase. Additionally, non-structural factors, such as the dynamics of 
+oxide film formation, dissolution, and re-passivation, significantly 
+contribute to the corrosion susceptibility of HEAs. Furthermore, the 
+lattice distortion energy rises with rising Al content, thereby reducing 
+the protective effect of the passive film [50]. Therefore, both micro­
+structural design and the stability of the oxide film must be carefully 
+considered when designing HEAs for enhanced corrosion resistance.
+2.2. Cr
+Several investigations have proved that the corrosion susceptibility 
+of alloys under extreme conditions can be regulated by the addition of 
+the Cr element, which is associated with the critical concentration of Cr 
+in various alloys [68].
+To understand the effect of Cr incorporation, Yan et al. [56] prepared 
+Al0.3CrxFeCoNi (x = 0, 0.5, 1.0, 1.5, 1.7 and 2.0) alloys through 
+arc-melting. The formation of a single FCC was observed for the 
+Al0.3CrxFeCoNi alloys, with x ranging from 0 to 1.0. The appearance of a 
+mixed structure of FCC and BCC/B2 is observed when Cr addition ex­
+ceeds 1.5. Furthermore, an analysis was conducted on the effect of Cr on 
+the corrosion susceptibility of Al0.3CrxFeCoNi alloys. The experimental 
+findings demonstrated that the Cr-doping of Al0.3CrxFeCoNi alloys 
+exhibited reduced corrosion susceptibility compared to that of Al0.3Fe­
+CoNi alloy in a 3.5 wt % NaCl solution. The transformation of corrosion 
+susceptibility of Al0.3CrxFeCoNi with different Cr content is mainly 
+associated with the appearance of Cr2O3 [56,69]. A comparable corro­
+sion mechanism is put forth by Lu et al. [70] for Ni38Fe20CrxMn21-0.5x­
+Co21-0.5x alloys in a 0.6 M NaCl solution. It was established that the 
+transformation of the corrosion susceptibility of Ni38Fe20CrxMn21-0.5x­
+Co21-0.5x(x = 6,10,14 and 22) with differing Cr content is predominantly 
+associated with the passivation of the Cr element. This finding indicates 
+that the incorporation of Cr significantly enhances the corrosion per­
+formance of the alloy, acting as a crucial positive modifier.
+Zhou et al. [38] also observed that the corrosion resistance of 
+Fig. 4. Schematic diagram of the pitting of Al0.5CoCrFeNi (a1-a3) and Al0.7CoCrFeNi (b1-b3) [51].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4146 
+
+
+=== PAGE 6 ===
+
+FeCoNiCrxMn (where x = 0.0, 0.6, 0.8, 1.0) HEAs improved as the Cr 
+content increased. This enhancement was attributed to the formation of 
+a dense passivation layer. However, an excess of Cr (greater than 0.8) 
+resulted in a decline in the corrosion resistance of the HEAs, which was 
+attributed to the emergence of a new BCC phase. It has been demon­
+strated that the corrosion resistance of the BCC phase is weaker than that 
+of the FCC phase. Furthermore, micro-galvanic corrosion between the 
+FCC and BCC phases is a significant factor contributing to the reduction 
+in corrosion resistance.
+Dworschak et al. [68] investigated the impact of each major element 
+on the corrosion susceptibility of NiCoCrFeMn HEAs. It was observed 
+that the enhanced corrosion resistance of the NiCoCrFeMn HEAs in a 1.0 
+mM NaCl solution is attributable to the synergistic effects of Fe and Cr. 
+The addition of Cr alone is insufficient to achieve adequate corrosion 
+resistance for multi-component alloys. This finding contradicts the 
+commonly held assumption that the addition of Cr generally enhances 
+the corrosion resistance of HEAs.
+Chai et al. [71] examined the corrosion pattern of FeCoNiCrx (x = 0, 
+0.5,1.0) HEAs in 3.5% NaCl solutions and 0.5 M H2SO4. The change in 
+the anticorrosion properties of FeCoNiCrx HEAs is primarily associated 
+Table 1 
+Summary of the influence of elements on the microstructure evolution and electrochemical parameters of HEAs with different solution.
+Alloys composition
+Microstructure
+Corrosive medium
+Reference electrode
+Ecoor/mV
+Icoor/μA/cm2
+Ref.
+CoCrFeNi
+FCC
+3.5 wt%NaCl
+SCE
+−51
+0.0349
+[39]
+Al0.5CoCrFeNi
+FCC + BCC
+−129
+0.0637
+Al1.0CoCrFeNi
+FCC + BCC
+−249
+0.472
+Al1.5CoCrFeNi
+FCC + BCC
+−357
+1.36
+Al0.25CoCrFeNi
+FCC + BCC
+3.5 wt%NaCl
+SCE
+−324.847
+0.03513
+[53]
+Al0.75CoCrFeNi
+FCC + BCC
+−362.319
+0.08173
+Al1.25CoCrFeNi
+FCC + BCC
+−382.91
+0.1640
+Al2.0CoCrFeNi
+FCC + BCC
+−423.339
+0.2092
+CoCrFeNiAl0.1
+FCC
+3.5 wt%NaCl
+SCE
+−170
+2.383
+[54]
+CoCrFeNiAl0.5
+−395
+4.445
+CoCrFeNiAl1.0
+BCC + B2
+−756
+7.462
+FeCoCrNiAl0.1
+FCC
+0.5 M H2SO4
+SCE
+−299.48
+32.39
+[55]
+FeCoCrNiAl0.3
+−294.49
+17.93
+FeCoCrNiAl0.1
+FCC
+0.5 M HCl
+−371.95
+3.23
+FeCoCrNiAl0.3
+−357.50
+3.68
+Al0.3FeCoNi
+FCC
+3.5 wt% NaCl
+SCE
+−204
+0.502
+[56]
+Al0.3Cr0.5FeCoNi
+−185
+0.101
+Al0.3Cr1.0FeCoNi
+−155
+0.077
+Al0.3Cr1.5FeCoNi
+FCC + BCC
+−149
+0.057
+Al0.3Cr1.7FeCoNi
+−129
+0.030
+Al0.3Cr2.0FeCoNi
+−99
+0.014
+FeCoNiMn
+FCC
+3.5 wt% NaCl
+SCE
+−104.8
+2.1
+[38]
+FeCoNiCr0.6Mn
+FCC + BCC
+−51.7
+1.5
+FeCoNiCr0.8Mn
+70.3
+1.3
+FeCoNiCrMn
+276.4
+1.5
+CuFeMnNi
+FCC1+FCC2
+2 wt% HNO3
+SCE
+−479.4
+92.578
+[57]
+(CuFeMnNi)0.95Cr0.05
+−561.4
+26.677
+(CuFeMnNi)0.9Cr0.1
+−374.2
+3.8622
+(CuFeMnNi)0.85Cr0.15
+FCC1+FCC2 
++BCC
+−593.3
+3.8120
+(CuFeMnNi)0.80Cr0.20
+−526.4
+2.9204
+(CuFeMnNi)0.75Cr0.25
+−493.1
+2.7188
+Al0.5CoCrFeNi0
+BCC
+0.5 M H2SO4 solution
+SCE
+−463
+878.62
+[58]
+Al0.5CoCrFeNi0.2
+A2 + B2
+−382
+66.43
+Al0.5CoCrFeNi0.6
+BCC + FCC + B2
+−381
+23.07
+Al0.5CoCrFeNi0.8
+BCC + FCC + B2
+−321
+21.87
+AlCrFeCoNi
+BCC
+Simulated body fluid
+SCE
+−255.59
+0.428
+[59]
+AlCrFeCoNi1.4
+BCC + FCC1+FCC2
+−199.7
+0.748
+AlCrFeCoNi1.8
+BCC + FCC1+FCC2
+−206.86
+0.374
+Al2CrFeCoCuTi
+FCC + BCC
+3.5 wt% NaCl
+SCE
+−510
+68
+[60]
+Al2CrFeCoCuTiNi0.5
+−430
+32
+Al2CrFeCoCuTiNi1.0
+−220
+13
+Al2CrFeCoCuTiNi1.5
+−480
+64
+Al2CrFeCoCuTiNi2.0
+−500
+67
+AlCrFeCoNi
+A2+B2
+3.5 wt% NaCl
+SCE
+−208
+8.2*10−2
+[40]
+AlCrFeCoNiTi0.5
+−199
+7.08*10−2
+Al2CoCrFeNi
+BCC1+B2
+3.5 wt% NaCl
+SCE
+−193.4
+9.41*10−3
+[61]
+Al1.8CoCrFeNiTi0.2
+−260.2
+2.633*10−2
+Al1.5CoCrFeNiTi0.5
+BCC2+BCC1+B2
+−239.4
+1.644*10−2
+Al1.2CoCrFeNiTi0.8
+BCC2+BCC1
+−258.8
+2.411*10−2
+Al1.0CoCrFeNiTi1.0
+BCC2+Laves + BCC1
+−311.0
+3.273*10−2
+Al0.8CoCrFeNiTi1.2
+−426.0
+5.60*10−2
+AlCoCrFeNi
+BCC
+3.5 wt% NaCl
+SCE
+−270
+0.561
+[62]
+Al0.8CoCrFeNiTi0.2
+FCC + BCC
+−690
+7.96
+Al0.5CoCrFeNiTi0.5
+−320
+0.532
+Al0.3Co0.25CrFeNi
+FCC + BCC + B2
+3.5 wt% NaCl
+SCE
+−396
+1.06
+[63]
+Al0.3Co0.5CrFeNi
+FCC
+−348
+0.45
+Al0.3CoCrFeNi
+FCC
+−298
+0.18
+FeCoNiCuAl
+FCC
+3.5 wt% NaCl
+SCE
+−430
+5.78
+[64]
+FeCoNiCuAlCe0.1
+FCC + BCC
+−430
+5.27
+FeCoNiCuAlCe0.3
+−430
+4.61
+FeCoNiCuAlCe0.9
+−450
+4.01
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4147 
+
+
+=== PAGE 7 ===
+
+with the concentration of Cr in the manufactured alloy and the typical 
+microstructure, which is governed by the preparation process. Typical 
+galvanic corrosion occurred between the interdendritic structures and 
+dendrites of FeCoNiCr HEAs in NaCl solution, with the interdendritic 
+structures being severely corroded. However, FeCoNiCrx HEAs exhibi­
+ted remarkable corrosion resistance in 3.5% NaCl solutions and 0.5 M 
+H2SO4 when Cr was added to the ratio of x = 0.5, as shown in Fig. 8.
+The findings presented above demonstrate that the addition of Cr has 
+a significant effect on the regulation of the corrosion resistance of HEAs 
+in both sodium chloride solution and sulfuric acid, the details are 
+illustrated in Table 1. The enhancement of corrosion performance in 
+HEAs is predominantly associated with the formation of a film, while the 
+deterioration of corrosion resistance is attributed to the galvanic 
+corrosion effect between the BCC phase and the FCC phase. The 
+Fig. 5. Diagrammatic drawing of the corrosion mechanism of AlCoCrFeNi2.1 HEAs: (a) galvanic corrosion; (b) self-protection; (c) corrosion of FCC and BCC phases; 
+(d) corrosion of the lamellar structure [66].
+Fig. 6. Comparison of the corrosion potential (Ecorr) and corrosion current 
+density (icorr) of HEAs and other conventional alloys in 3.5 wt% NaCl solution.
+Fig. 7. Comparison of the corrosion potential (Ecorr) and corrosion current 
+density (icorr) of HEAs and other conventional alloys in 0.5 M H2SO4 solution.
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4148 
+
+
+=== PAGE 8 ===
+
+synergistic effects of Cr with other alloying elements emphasise the 
+complexity of designing optimal corrosion-resistant alloys. Future 
+research should aim to determine the optimal concentration of Cr in 
+various HEA systems and explore the role of other alloying elements in 
+improving the corrosion performance of these advanced materials.
+2.3. Ni
+The corrosion behavior of HEAs is significantly influenced by the 
+composition and the interaction of various elements, particularly the 
+transition metals such as Co, Cr, Fe, and Ni. Among these, Ni plays a 
+crucial role in the corrosion resistance and mechanical properties of 
+CoCrFeNi-based HEAs.
+Dong et al. [58] demonstrated that the incorporation of Ni resulted in 
+the transformation of microstructure of Al0.5CoCrFeNix(x = 0.2, 0.6, 
+0.8) alloys. The microscopic analysis shows that as the Ni content in­
+creases, there is a transition from a single-phase BCC structure to a 
+multi-phase structure consisting of BCC, FCC and B2 phases. For the 
+Al0.5CoCrFeNi0 HEAs, the corrosion morphology is uniform in both acid 
+and alkaline media due to the homogeneous microstructure. Then, the 
+corrosion resistance of Al0.5CoCrFeNix decreases with increasing Ni 
+content. This deterioration can be attributed to the formation of (Al, 
+Ni)-rich B2 phases, which undergo selective dissolution in acidic solu­
+tions and preferential oxidation in alkaline solutions [58].
+In the study by Lopez et al. [59], the influence of the Ni ratio on the 
+corrosion characteristics of AlCoCrFeNix (x = 1.0, 1.4 and 1.8) alloys in 
+a simulated body fluid was investigated. The study revealed that the 
+corrosion resistance of HEAs progressively improves with an increase in 
+Ni content. This enhancement is attributed to the expansion of inter­
+dendritic regions and the segregation of Cr within these regions, which 
+facilitates the formation of a dense oxide film in the corrosive solution. 
+The HEAs exhibited good stability in the simulated biological environ­
+ment, which is safe for the medical device field.
+The corrosion resistance of Al2CrFeCoCuTiNix(x = 0.0, 0.5, 1.0, 1.5, 
+2.0) HEAs was investigated by Qiu et al. [60]. The findings indicated 
+that the HEAs coating demonstrated noteworthy corrosion resistance in 
+both NaOH solute ion and NaCl solutions. Additionally, the corrosion 
+resistance of the alloys exhibited an initial increase followed by a decline 
+with increasing Ni content. This can be attributed to the excellent 
+corrosion resistance of Ni. Its relatively small atomic radius means that 
+when the Ni content is high, severe lattice distortions can occur within 
+HEAs. These distortions impact the microstructure, thereby diminishing 
+the corrosion resistance of the alloy.
+Huang et al. [72] investigated the corrosion behavior of CoCr2­
+Ni2AlTi, Co2Cr2Ni2AlTi and CoCr2Ni3AlTi HEAs in NaCl solution and 
+H2SO4 solution. It was observed that the Co2Cr2Ni2AlTi HEAs exhibited 
+remarkable corrosion resistance in both the NaCl solution and the H2SO4 
+solution. The enhancement of corrosion resistance in the Co2Cr2Ni2AlTi 
+HEAs was found to be associated with the formation of Cr2O3. 
+Furthermore, it was illustrated that the incorporation of the Co element 
+had a favourable impact on the stability of the passivation film, atten­
+uating the hydrolysis of Cr3+. In contrast, the addition of Ni promotes 
+the hydrolysis of Cr3+ in H₂SO₄ solution.
+The current research on the effect of Ni on the corrosion resistance of 
+HEAs is fragmented. The findings suggest that, within certain concen­
+trations, the addition of Ni can enhance the corrosion resistance of the 
+alloy. However, excessive Ni content leads to significant lattice distor­
+tion and phase formation, which undermines the alloy’s corrosion per­
+formance. The complexity of Ni’s effect on corrosion resistance, 
+influenced by factors such as phase composition and microstructure. 
+Future research should focus on optimizing the Ni content in HEAs to 
+achieve optimal performance for specific applications, such as biomed­
+ical devices and harsh industrial environments.
+2.4. Ti
+The Ti element exhibits superior corrosion resistance compared to 
+Cl⁻ [73]. A number of related reports have indicated that the incorpo­
+ration of an appropriate quantity of Ti into HEAs can hinder the 
+movement of point defects and the breakdown of the passive film, 
+thereby facilitating the formation of a more protective passive film [40,
+61]. However, as the Ti content increases, element segregation is 
+intensified, resulting in the formation of numerous precipitated phases, 
+which negatively affects the corrosion resistance of the material [74].
+There are different views on the reports that high Ti content pro­
+motes the formation of multi-phase structures. Zhao et al. [61] examined 
+the role of Ti/Al ratios on the corrosion resistance of Al2-xCoCrFeNiTix 
+(x = 0, 0.2, 0.5, 0.8, 1.0, and 1.2) HEAs in a 3.5 wt% NaCl solution. It 
+was demonstrated that all Ti-doped Al2-xCoCrFeNiTix alloys exhibited a 
+reduced susceptibility to pitting corrosion in comparison with the Ti-free 
+Fig. 8. Corrosion morphology of FeCoNiCrx HEAs after immersion in 3.5 wt% NaCl solution [71].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4149 
+
+
+=== PAGE 9 ===
+
+Al2CoCrFeNi alloy. Furthermore, the Al1.5CoCrFeNiTi0.5 HEA demon­
+strated exceptional mechanical properties and corrosion resistance. The 
+enhanced pitting corrosion resistance of the Ti-added alloys is attributed 
+to the inhibitory effects of the Ti addition, which suppress point defect 
+transport and prevent the breakdown of the passive film.
+However, Jiang et al. [62] examined the combined effect of Al and Ti 
+on the corrosion resistance of AlxCoCrFeNiTi1-x(x = 1.0, 0.8, 0.5) HEAs 
+in NaCl, NaOH and H₂SO₄ solutions. The Al1.0CoCrFeNi and Al0.5CoCr­
+FeNiTi0.5 HEAs exhibited comparable corrosion resistance in both the 
+NaCl and NaOH solutions. Among the three types of HEAs, the 
+Al0.5CoCrFeNiTi0.5 HEAs displayed outstanding corrosion resistance in 
+the H2SO4 solution. Moreover, it was emphasized that a modest amount 
+of Ti added to AlxCoCrFeNiTi1-x HEAs is inadequate to mitigate the 
+harmful effects of the biphasic structure and significant elemental 
+segregation on corrosion resistance. It is therefore concluded that 
+improvement in corrosion resistance is only possible when the atomic 
+percentage of Ti surpasses that of Al. Gu et al. [73] proposed a similar 
+perspective in the research exploring the corrosion resistance of 
+Al0.3CoCrFeNi HEAs in NaCl solution with doping Ti elements. They also 
+found that the grain size of HEAs can be reduced and the impact of the 
+dual-phase structure on the corrosion resistance can be eliminated only 
+when the atomic percentage of Ti exceeds that of Al, thereby enhancing 
+the corrosion resistance.
+Ti exhibits outstanding performance in enhancing pitting resistance, 
+while Cr improves the corrosion resistance of the alloy by promoting the 
+formation of a passive film. To explore the synergistic effects of Ti and Cr 
+on the corrosion resistance of HEAs, Xiao et al. [75] assessed the impact 
+of Cr and Ti on the corrosion performance of AlCoCuFeNi-(Cr,Ti) HEAs 
+in H2SO4 solution, with the corrosion morphology shown in Fig. 9. At 
+298 K, the addition of Cr resulted in higher polarization resistance and 
+lower atomic radius mismatch in AlCoCuFeNi HEAs, promoting the 
+formation of the corrosion-resistant BCC phase and Cr₂O₃ passive film. In 
+contrast, the incorporation of Ti led to lower polarization resistance and 
+higher atomic radius mismatch in FeNiCoCuAl HEAs, which favored the 
+breakdown of the BCC phase and promoted the formation of the sus­
+ceptible FCC phase. At 366 K, the addition of Cr increased the corrosion 
+sensitivity of AlCoCuFeNi HEAs, which can be attributed to the 
+decomposition of the Cr₂O₃ passive film at high temperature, preventing 
+its regeneration.
+In summary, the presence of Ti has been shown to result in the for­
+mation of a protective passivation film of titanium oxide. The incorpo­
+ration of Ti into HEAs has the potential to enhance their corrosion 
+resistance. However, it is important to note that Ti has a propensity to 
+react with other metals, resulting in the formation of intermetallic 
+compounds. This phenomenon may result in structural inhomogeneity 
+within the alloy, which could ultimately compromise the corrosion 
+resistance of the alloy.
+2.5. Co
+Co in HEAs plays a critical role in enhancing corrosion resistance by 
+stabilizing the formation of passive oxide films. In addition, Co 
+Fig. 9. Corrosion morphology of the AlCoCuFeNi-(Cr,Ti) HEAs in 0.5 mol/L(a) H2SO4. (a) AlCoCuFeNi, (b) AlCoCuFeNiCr, (c) AlCoCuFeNiTi, (d) AlCoCuFe­
+NiCrTi [75].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4150 
+
+
+=== PAGE 10 ===
+
+synergistically interacts with elements such as Cr and Ni, enhancing 
+resistance against localized corrosion and pitting, particularly in 
+chloride-rich environments [63]. However, the influence of Co content 
+on the corrosion susceptibility of HEAs has been insufficiently addressed 
+in the existing literature.
+Zhang et al. [63] investigated the corrosion mechanism of 
+Al0.3CoxCrFeNi(x = 0.25, 0.5, and 1.0) HEAs with varying Co contents in 
+a 3.5 wt% NaCl solution. The corrosion phenomenon of Al0.3CoxCrFeNi 
+HEAs is characterised by the presence of significant localised corrosion 
+and pitting corrosion, as illustrated in Fig. 10. It was demonstrated that 
+the corrosion resistance of Al0.3CoxCrFeNi HEAs improves with 
+increasing Co content, which can be attributed to the evolution of 
+microstructure. For Al0.3Co0.25CrFeNi and Al0.3Co0.5CrFeNi HEAs, the 
+typical microstructure exhibited a double-phase (FCC + BCC) structure. 
+More specifically, the BCC phase is constituted of a (Cr, Fe, Co)-rich A2 
+phase and an (Al, Ni)-rich B2 phase. The dissolution of the BCC phase is 
+associated with the occurrence of galvanic corrosion between the BCC 
+and FCC phases. Furthermore, the potential difference between the A2 
+phase and B2 phase resulted in the preferential dissolution of the B2 
+phase, which exhibits a lower potential. In the case of the 
+Al0.3Co1.0CrFeNi HEAs, only pitting corrosion was detected, which can 
+be attributed to the existence of a single FCC phase. The evolution 
+mechanism of corrosion behavior for Al0.3CoxCrFeNi HEAs is illustrated 
+in Fig. 11.
+Lee et al. [76] identified a comparable corrosion mechanism. They 
+observed that Co30 HEAs exhibit a single FCC phase, whereas Co40 and 
+Co50 HEAs demonstrate a dual-phase FCC + σ structure. In Ringer’s 
+solution, the corrosion resistance was found to decrease with increasing 
+Co content, primarily due to the presence of σ-phase enriched with Cr 
+and Mo in Co40 and Co50 HEAs. This enrichment results in the formation 
+of (Cr, Mo)-depleted zones, where localized damage to the passive film 
+occurs.
+Moreover, Liu et al. [30] analyzed the corrosion behaviour of 
+Co1-xCrFeNi1+xCuy HEAs in 3.5 wt% NaCl solution. The experimental 
+results showed that the formation of Cu2O oxide film on the surface of 
+the Cu-rich phase compromises the integrity of the Cr2O3 passive film. 
+After the initial corrosion of the Cu2O film, the Cu-rich phase and the 
+regions with high Cu content were exposed. Subsequently, the Cu-rich 
+phase underwent preferential corrosion as a consequence of the poten­
+tial difference between the two phases, as illustrated in Fig. 12. Apart 
+from copper, the other elements form metal oxides that exhibit excellent 
+corrosion resistance. Furthermore, the researchers demonstrated that 
+reducing the Co content and increasing the Ni content can mitigate the 
+segregation of Cu, thereby reducing the corrosion susceptibility of HEAs. 
+However, their exploration of synergistic effects remains limited, with 
+insufficient investigation into the interactions among Co, Cu, Ni, and Cr. 
+Additionally, Wu et al. [77] also indicated that the synergistic effect 
+between the Co and other elements leads to the formation of complex 
+oxides, which enhances the corrosion resistance of Fe40N20Co20Cr20 
+HEAs in H₂SO₄ solution.
+2.6. Other elements
+The N element enhances passivation by enriching Cr2O3 in the oxide 
+layer, reducing defect density and improving corrosion resistance. Yang 
+et al. [78] examined the impact of N on microbiologically induced 
+pitting corrosion of CoCrFeMnNi HEAs. N-bearing HEAs were prepared 
+by pressure-induced melting. They indicated that N alloying inhibited 
+pitting and moderated the corrosion rate of HEAs attacked by Desulfo­
+vibrio vulgaris. The enrichment of N in the passive layer resulted in an 
+increase in the content of Cr2O3 and a reduction in the defect density 
+within the passive layer, and the corrosion mechanism is illustrated in 
+Fig. 13.
+Lv et al. [18] investigated the corrosion patterns of (CuZnMn­
+Ni)100-xSnx HEAs. The corrosion morphologies of CuZnMnNi (Fig. 14(a, 
+c, and e)) and (CuZnMnNi)96Sn4 (Fig. 14(b, d, and f)) were observed 
+after immersion in 5 wt% NaCl for 20 days. The results show that 
+corrosion products appear on the surface of HEAs (Fig. 14(a and b)), 
+accompanied by obvious cracks (Fig. 14(c and d)). Compared with 
+(CuZnMnNi)96Sn4, CuZnMnNi exhibits better corrosion resistance, 
+which is attributed to the thinner corrosion products in CuZnMnNi HEAs 
+compared to (CuZnMnNi)96Sn4 HEAs (Fig. 14(e and f)). They effectively 
+Fig. 10. Corrosion morphology of the Al0.3CoxCrFeNi HEAs with different Co content after electrochemical experiment in a 3.5 wt% NaCl solution [63].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4151 
+
+
+=== PAGE 11 ===
+
+elucidated the corrosion pattern of (CuZnMnNi)100-xSnx HEAs. As illus­
+trated in Fig. 15(a), during the initial corrosion stage, Cl⁻ ions selectively 
+attack grain boundaries and phase interfaces. Subsequently, the BCC 
+phase is more prone to preferential corrosion compared to the FCC 
+phase. As the corrosion process advances, a dense oxide film forms on 
+the alloy surface (Fig. 15 (b)). However, significant internal stresses 
+between the passive film and the substrate result in the formation of 
+numerous penetrating cracks (Fig. 15(c and d)). These cracks likely 
+serve as pathways for Cl⁻ ions, accelerating the corrosion of the internal 
+structure of the alloy.
+Zheng et al. [79] evaluated the corrosion susceptibility of FeCoNi­
+CuSnx (x = 0~0.09) HEAs with various Sn contents in NaOH and 3.5 wt 
+% NaCl solution. The microstructure of FeCoNiCuSnx shows a single FCC 
+phase when the Sn content is less than 0.09. Then the mixed FCC phase 
+and BCC phase occurred when the Sn addition of the alloy was 0.09. The 
+FeCoNiCuSn0.04 HEAs exhibited the lowest corrosion susceptibility in 
+NaCl solution among all the FeCoNiCuSnx HEAs. This phenomenon can 
+be attributed to the refined grain structure and the absence of elemental 
+segregation.
+The addition of V elements enhances passivation effectiveness; 
+however, its uneven distribution can lead to galvanic corrosion. Han 
+et al. [80] examined the influence of the V element on the corrosion 
+behavior of as-cast AlFeNiCrCoTi0.5Vx (x = 0, 0.5, 1, 1.5, 2) HEAs in 3.5 
+M NaCl solution. The findings revealed a non-uniform distribution of V 
+within the HEAs. Specifically, the V element was predominantly 
+concentrated in the dendritic area, while Cr and Ti elements are pri­
+marily distributed in interdendritic regions. The distribution of Cr and Ti 
+promoted passivation, leading to an increased corrosion potential and a 
+decreased passive current of the HEAs.
+The incorporation of Mn influences the composition of the passive 
+film [37]. However, excessive Mn content promotes the formation of 
+inclusions, thereby reducing the corrosion resistance of HEAs. To 
+investigate the influence of Mn content on the corrosion resistance of 
+HEAs, Hsu et al. [81] explored the effect of Mn on the passive charac­
+teristics of FeCrNiCoMnx(x = 1.0, 0.6, 0.3, 0) HEAs in a 0.5 M H2SO4. It 
+was observed that four different types of inclusions were identified in 
+the FeCrNiCoMnx HEAs with varying Mn content. These were identified 
+as (Cr,Mn)O, (Cr,Mn)(S,O), Mn(S,O), and Cr2O3. Additionally, only 
+Cr2O3 impurities were formed without the addition of the Mn element. 
+The study revealed that Mn competes with Cr for oxidation, resulting in 
+Fig. 11. The evolution mechanism of corrosion behavior for Al0.3CoxCrFeNi alloy [63].
+Fig. 12. Schematic corrosion mechanism of Co1-xCrFeNi1+xCuy HEAs containing [30].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4152 
+
+
+=== PAGE 12 ===
+
+Fig. 13. Schematic representation of the corrosion behaviour of the N-containing HEAs in the occurrence of D. vulgaris biofilm [78].
+Fig. 14. Corrosive morphologies of CuZnMnNi (a, c and e) and (CuZnMnNi)96Sn4 (b, d and f) [18].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4153 
+
+
+=== PAGE 13 ===
+
+the formation of Mn-related oxide and sulfide inclusions, which subse­
+quently reduce the Cr₂O₃ content within the passive film. The incorpo­
+ration of the Mn element resulted in a detrimental impact on the 
+corrosion resistance of FeCrNiCoMnx HEAs in a 0.5 M H2SO4 solution.
+Rare earth elements are integral to the research and development of 
+advanced industrial technologies. Sun et al. [82] investigated the effect 
+of La incorporation on CrMnFeNi HEAs in H2SO4 solution. They found 
+that the incorporation of La significantly increases the proportion of Mn 
+in the passive film of CrMnFeNi HEAs, thereby enhancing the corrosion 
+sensitivity of the HEA. Wu et al. [64] studied the impact of Ce content on 
+the corrosion susceptibility of FeCoNiCuAlCex(0≤x ≤0.09) HEAs in a 
+3.5 wt% NaCl solution. It was experimentally found that general 
+corrosion changed to localized corrosion with the introduction of Ce. 
+Specifically, when the Ce content was x = 0.09, the corrosion current 
+improved by 31%.
+Based on the investigation mentioned above, it can be concluded that 
+the incorporation of various elements such as N, Sn, V, Mn, and rare 
+earth elements plays a significant role in modulating the corrosion 
+behavior of HEAs. While elements like N and Cr enhance corrosion 
+resistance by promoting the formation of stable passive films, other el­
+ements like Sn, Mn, and Ce exhibit more complex effects. Excessive 
+addition of certain elements, such as Mn or Ce, can lead to localized 
+corrosion or reduced passivation stability. Future research should focus 
+on exploring the combined effects of multiple alloying elements to 
+design HEAs with superior corrosion resistance.
+3. Effect of heat treatment on the corrosion of HEAs
+The majority of HEAs utilised in experimental procedures are cast 
+materials, which exhibit inadequate microstructure uniformity and a 
+propensity for the emergence of defects such as cracks and pores 
+[83–85]. The appropriate heat treatment process has the capacity to 
+refine the grain, improve the microstructure density, and render the 
+microstructure of the alloyed material more uniform [86–89]. Table 2
+summarizes the relevant corrosion resistance parameters of some HEAs 
+at different heat treatment temperatures.
+By altering the heat treatment temperature, the phase structure and 
+morphology of the precipitates in the alloy can be adjusted, thereby 
+influencing its corrosion resistance [90,91]. Guo et al. [92] investigated 
+the impact of heat treatment temperature (1100 ◦C, 1150 ◦C, 1185 ◦C, 
+1200 ◦C) for 2h on the corrosion susceptibility of AlCoCrFeNiSi HEAs in 
+a 3.5 wt% NaCl solution. It was demonstrated that the phase trans­
+formation doesn’t occur with different heat treatment temperatures, 
+except for changes in microstructure morphology. The typical corrosion 
+morphology of HEAs after the electrochemical experiment in a 3.5 wt% 
+NaCl solution is illustrated in Fig. 16. As-cast alloy and the samples 
+heat-treated at 1185 ◦C for 2 h (Fig. 16(a–d)) exhibited obvious pitting 
+corrosion. In addition, corrosion deposits such as irregular blocks were 
+observed on the surface of heat-treated samples at 1100 ◦C and 1150 ◦C, 
+which may retard the corrosion rate. The corrosive morphology is dis­
+played in Fig. 17. Pitting corrosion was infrequently observed in all 
+HEAs. The results indicated that the (Al, Ni)-rich dendrite phase facili­
+tated the formation of a passive film. Consequently, due to the occur­
+rence of a weak passivation phenomenon, the samples treated at 1100 ◦C 
+demonstrated the best corrosion resistance.
+Additionally, Guo et al. [93] examined the impact of phase compo­
+sition changes, induced by heat treatment, on the corrosion suscepti­
+bility of AlCoCrFeNiTi0.5 HEAs in a 3.5 wt% NaCl solution. They 
+discovered that, contrary to the expected trend of the BCC phase volume 
+fraction, the corrosion resistance of the HEAs decreased with increasing 
+heat treatment temperature. This reduction in corrosion resistance was 
+mainly attributed to the growth of grain and phase boundaries, as well as 
+the potential difference between the dendritic FCC phase and the 
+interdendritic BCC phase. Zhang et al. [94] also demonstrated that the 
+evolution of corrosion resistance of the AlFeNiCoCuCr HEAs with 
+different heat treatment conditions (as-cast, remelted and annealed) in a 
+3.5 wt% NaCl solution was associated with the morphology trans­
+formation of dendrite and interdendritic phases. It was observed that the 
+corrosion resistance of the HEAs significantly improved after annealing 
+treatment. This enhancement can be attributed to the growth of den­
+drites post-annealing, which exhibited larger sizes compared to those in 
+the as-cast and remelted conditions.
+Fig. 15. A schematic diagram of the corrosion mechanism of CuZnMnNi HEAs [18].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4154 
+
+
+=== PAGE 14 ===
+
+Table 2 
+The relevant corrosion resistance parameters of some HEAs at different heat treatment temperatures and duration.
+Alloys composition
+Electrolyte
+Heat treatment condition
+Ecoor/mV
+Icoor/μA/cm2
+Epit/mv
+Ref.
+AlCrFeCoNiCu
+3.5% NaCl solution
+As-cast
+−85.0
+1.8761
+/
+[101]
+Annealed at 600 ◦C
+−99.0
+6.0646
+Annealed at 1000 ◦C
+−67.0
+1.7005
+AlCoCrFeNi
+0.5 M H2SO4 aerated aqueous solution
+As-cast
+−197
+54.95
+/
+[98]
+Anneal at 1100 ◦C for 2h
+−204
+109.14
+Anneal at 1100 ◦C for10h
+−224
+81.66
+Anneal at 1100 ◦C for 48 h
+−168.8
+30.41
+AlFeNiCoCuCr
+3.5 wt% NaCl solution
+As-cast
+−237.36
+216.32
+−109.15
+[94]
+Annealed at 1000 ◦C
+−189.39
+98.937
+−96.43
+AlCoCrFeNiSi
+3.5 wt% NaCl solution
+As-cast
+−399.539
+0.644715
+210.707
+[92]
+Annealed at 1100 ◦C
+−330.776
+0.637587
+235.243
+Annealed at1150 ◦C
+−372.504
+0.746180
+238.617
+Annealed at 1185 ◦C
+−395.938
+0.897658
+/
+Annealed at 1200 ◦C
+−383.042
+0.642266
+/
+AlCoCrFeNiTi0.5
+3.5 wt% NaCl solution
+As-cast
+−292.695
+0.366352
+305.4
+[93]
+Annealed at 800 ◦C
+−366.852
+0.300277
+345.351
+Annealed at 900 ◦C
+−345.196
+0.348617
+191.078
+Annealed at 1000 ◦C
+−347.536
+0.375854
+250.272
+Annealed at 1100 ◦C
+−364.043
+1.118
+24.229
+Annealed at 1200 ◦C
+−356.559
+0.852888
+35.271
+CoCrFeNiW0.5
+3.5 wt% NaCl solution
+As-cast
+−308
+0.135
+1077
+[96]
+Annealed at 600 ◦C
+−303
+0.132
+1067
+Annealed at 800 ◦C
+−327
+0.137
+1048
+Annealed at 1000 ◦C
+−313
+0.242
+980
+Annealed at 1200 ◦C
+−309
+0.186
+1086
+(CoCrFeNi)99Mo1
+3.5 wt% NaCl solution
+700 ◦C aging
+−399
+0.32
+1023
+[90]
+(CoCrFeNi)98Mo2
+−258
+0.24
+944
+(CoCrFeNi)97Mo3
+−313
+0.11
+998
+(CoCrFeNi)99Mo1
+900 ◦C aging
+−167
+0.19
+958
+(CoCrFeNi)98Mo2
+−191
+0.07
+1032
+(CoCrFeNi)97Mo3
+−194
+0.22
+1002
+CrMnFeCoNi
+3.5 wt% NaCl solution
+Base sample
+−310
+0.21
+/
+[86]
+Annealed at 1073 K
+−280
+0.15
+Cu0.5CoCrFeNi
+3.5 wt% NaCl solution
+As-cast
+−280
+0.00203
+70
+[95]
+350 ◦C
+−510
+0.0391
+60
+500 ◦C
+−420
+0.117
+60
+650 ◦C
+−490
+0.0211
+20
+800 ◦C
+−290
+0.0171
+10
+950 ◦C
+−430
+0.110
+30
+1100 ◦C
+−400
+0.141
+50
+1250 ◦C
+−270
+0.00513
+40
+1350 ◦C
+−410
+0.0458
+50
+Fig. 16. Corrosion morphology of samples under different heat treatment conditions: (a) as-cast, (b) 1100 ◦C/2 h, (c) 1150 ◦C/2 h, (d) 1185 ◦C/2 h [92].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4155 
+
+
+=== PAGE 15 ===
+
+Lin et al. [95] examined the corrosion susceptibility of Cu0.5CoCr­
+FeNi HEAs in both as-cast and heat-treated conditions in a 3.5 wt% NaCl 
+solution. The heat treatments were conducted at temperatures ranging 
+from 350 ◦C to 1250 ◦C, with 150 ◦C intervals, and an additional 
+treatment at 1350 ◦C for a duration of 24 h. The results indicated that 
+both the as-cast samples and those heat-treated at temperatures ranging 
+from 350 ◦C to 950 ◦C exhibited severe corrosion in the 3.5 wt% NaCl 
+solution. This was primarily due to the segregation of Cu-rich 
+Fig. 17. The corrosive morphology and line scanning of the samples: (a) as-cast, (b) 1100 ◦C/2 h, (c) 1150 ◦C/2 h, (d) 1185 ◦C/2 h [92].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4156 
+
+
+=== PAGE 16 ===
+
+precipitates within the FCC matrix, which were found to be more sus­
+ceptible to corrosion than the FCC phase itself, leading to preferential 
+attack by Cl⁻. However, the corrosion resistance of the samples treated 
+temperatures between 1100 ◦C and 1350 ◦C was significantly improved, 
+a change attributed to the dissolution of the Cu-rich phase at elevated 
+temperatures.
+Wang et al. [96] examined the corrosion susceptibility of both cast 
+non-equiatomic CoCrFeNiW0.5 HEAs and annealed HEAs samples was 
+examined in a 3.5 wt% NaCl solution. The samples were treated at 
+temperatures of 600 ◦C, 800 ◦C, 1000 ◦C and 1200 ◦C for a duration of 3 
+h. They found that both the cast and annealed HEAs exhibited a dual 
+structure comprising FCC and μ-Fe₇W₆ phases. The variation in corrosion 
+resistance of the CoCrFeNiW0.5 HEAs at different annealing tempera­
+tures was linked to changes in the morphology and volume of the μ 
+phase. Specifically, numerous needle-like μ phases were observed within 
+the FCC matrix after heat treatment at 1000 ◦C. However, when the 
+annealing temperature was increased to 1200 ◦C, these μ phases dis­
+solved into the matrix, resulting in galvanic corrosion between the FCC 
+matrix and the remaining μ phase.
+The annealing process has a significant impact on the microstructure 
+and corrosion resistance of alloys, particularly under varying tempera­
+ture and time conditions. Dai et al. [97] studied the effects of annealing 
+temperature and duration on the corrosion susceptibility of FeCoCr­
+NiMo0.1 in 1 M NaCl solution. The results show that the corrosion 
+resistance of FeCoCrNiMo0.1 HEAs was enhanced following annealing at 
+900 ◦C, with the duration of the process varying from 3 min to 60 min. 
+However, it was found that the corrosion resistance was deteriorated 
+when the annealing temperature was altered from 900 ◦C to 1050 ◦C for 
+a period of 60 min. This can be attributed to the grain size growth 
+observed at annealing temperatures exceeding 900 ◦C, which increased 
+corrosion susceptibility of FeCoCrNiMo0.1 HEAs.
+It is imperative to assess the corrosion susceptibility of HEAs in acidic 
+solutions, with the exception of corrosion susceptibility in NaCl solu­
+tions. The corrosion susceptibility of annealed AlCoCrFeNi HEAs in 0.5 
+M H2SO4 aerated aqueous solution was investigated by Yen et al. [98]. 
+They found that a more uniform passivation film containing hydroxide 
+was formed after annealing. Furthermore, the researchers provided a 
+detailed explanation of the corrosion mechanism of the annealed 
+AlCoCrFeNi HEAs, as shown in Fig. 18. The Cr-rich hydroxide passive 
+film became denser and more stable due to the formation of Fe(OH)3 and 
+Co(OH)3, which inhibited the release of Fe3+, Co3+, Ni2+ and Al3+, 
+forming the passive region as shown in Fig. 18(b). However, the Cr-rich 
+hydroxide was further oxidized to CrO4
+2−, then dissolved in the solution 
+and caused the Cr content on the passive film to decrease, as depicted in 
+Fig. 18(c). Cu is a less stable element, which makes it less resistant to 
+corrosion in electrolytes, especially in solutions containing Cl−
+[99,
+100].
+Based on the above discussions, it has been clearly demonstrated that 
+corrosion properties are strongly influenced by both microstructure and 
+composition. The change in corrosion resistance of HEAs after heat 
+treatment is primarily associated with volume changes in the BCC and 
+FCC phases and local element segregation. Consequently, the homoge­
+nisation effect of heat treatment could minimise the chances of localised 
+corrosion, thus improving the corrosion resistance.
+4. The relationship between passive film and corrosion 
+resistance of material
+4.1. The composition and structure of passive film
+In a broad context, the passive film on the metal surface can be 
+considered a distinct phase. The formation process of this passive film on 
+the alloy surface mainly involves the reaction of cations from elements 
+such as Al, Co, Cr, Fe, and other alloying elements, leading to the gen­
+eration of oxides and hydroxides. The variation in element distribution 
+within the passive film is principally attributable to differences in 
+oxidation potential and diffusion rates. However, it is also affected by 
+factors such as the corrosive medium, pH level, and temperature.
+To comprehensively investigate the passivation mechanisms of HEAs 
+in acidic and saline environments, Lu et al. [102] conducted a com­
+parison of the corrosion resistance between CoCrFeMnNi and 
+Fe50Mn30Co10Cr10 dual-phase HEAs in a 3.5 wt% NaCl solution. The 
+findings indicated that the corrosion product film on the Fe50Mn30­
+Co10Cr10 dual-phase HEA exhibited a thickness of 12 nm, a value that 
+was significantly higher than the 3 nm film observed on the CoCrFeMnNi 
+alloy. Furthermore, the corrosion product film on the CoCrFeMnNi HEA 
+displayed a lower Mn content and a higher Cr and Fe content in com­
+parison to that observed in the Fe50Mn30Co10Cr10 dual-phase HEA. 
+Wetzel et al. [103] characterized the corrosion characteristics of 
+CrMnFeCoNi HEA and CrCoNi medium entropy alloys in NaCl and 
+Fig. 18. Schematic of the corrosion behaviors of AlCoCrFeNi at (a) Ecorr, (b) 0.6 V, and (c) 1.05 V [98].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4157 
+
+
+=== PAGE 17 ===
+
+H2SO4 solutions. It was found that the oxide film formed on the CrCoNi 
+was composed primarily of Cr oxides, and the oxide film formed on the 
+CrMnFeCoNi consisted mainly of Cr and Fe oxides. Furthermore, CrCoNi 
+had a thicker oxide film in NaCl solution than in H2SO4 solution, with 
+CrMnFeCoNi achieving similar values for oxide film thickness in the two 
+electrolytes.
+The corrosion testing of five as-cast AlCrFeNi based HEA models in 
+oxygen-containing molten Pb was investigated by Shi et al. [103]. They 
+demonstrated that the development of a protective oxide film, consisting 
+of a (Fe,Cr)3O4/Al2O3 bilayer and/or a Cr2O3/(Al, Cr)2O3 bilayer, 
+significantly enhanced the corrosion resistance of the HEA samples. 
+Furthermore, the thickness of the Cr2O3/(Al, Cr)2O3 bilayer and the 
+transition layer diminished as the Al content increased. Li et al. [41] 
+fabricated a FeCoNiMnMo HEA electrode for oxygen evolution in 
+simulated seawater. They studied the oxygen evolution reaction (OER) 
+behaviours of FeCoNiMnMo HEA and pure metals (Fe, Co, Ni, Mn, and 
+Mo). The Cl−resistance of five pure metals is shown in Fig. 19. In the 
+case of the pure metals, it was evident that oxide films had formed on the 
+electrode surface following the stability test (see Fig. 19(a–d)). At the 
+same time, the smooth surfaces of the electrode were severely damaged 
+by pitting and cracking of the oxidation layer (Fig. 19(f)). The experi­
+mental phenomenon showed that the stability of the five pure metals 
+against OER in the chlorine electrolyte was poor. In the case of FeCo­
+NiMnMo 
+HEA, 
+it 
+exhibited 
+remarkable 
+OER 
+properties 
+in 
+chlorine-containing electrolytes. After the stability test, the oxygen 
+evolution potential did not change obviously (Fig. 20(a)). Additionally, 
+Fig. 20(b) demonstrated that the impact of Cl⁻ concentration on the OER 
+properties was minimal. Moreover, the Tafel slope values remained 
+relatively unchanged after conducting stability tests in electrolytes with 
+varying Cl⁻ concentrations (Fig. 20(c and d)). This observation suggests 
+that the FeCoNiMnMo electrode exhibits remarkable oxygen evolution 
+activity and stability. The authors noted that the adsorption energy of 
+K2MoO4 was the highest, which contributed to the stability of other 
+oxides during the oxygen evolution process, preventing corrosion from 
+chloride ions. Zhang et al. [104] investigated the passivation film for­
+mation mechanism of CoCrFeNiNbx (x = 0.3, 0.45, 0.6) HEAs in 0.6 M 
+NaCl, 0.6 M Na2SO4, and 0.6 M H2SO4 solutions. The corrosion mech­
+anism was illustrated in Fig. 21. It was found that the CoCrFeNiNb0.45 
+eutectic HEAs forms a bilayer passivation film in 0.6 M NaCl and 0.6 M 
+Na2SO4 solutions primarily consisted of metal hydroxides. The outer 
+layer is characterized by a loose and porous hydroxide film, while the 
+inner layer consists of a compact and dense oxide film. In contrast, a thin 
+and dense oxide layer was formed in the H2SO4 solution due to the 
+dissolution of hydroxides in the presence of H+.
+The 
+passivation 
+characteristics 
+of 
+Al20Cr5Fe50Mn20Ti5 
+and 
+Al7Cr23.26Fe23.26Co23.26Ni23.26 HEAs in Hanks’ solution were studied by 
+Tan et al. [106]. The study demonstrated that Al7Cr23.26Fe23.26­
+Co23.26Ni23.26 exhibited excellent corrosion resistance, attributed to the 
+formation of a stable p-type passive film. This film, comprising Cr(OH)3, 
+Cr2O3, CoO, Co3O4, and Ni(OH)2, effectively reduced vacancy concen­
+tration and restricted ionic conductivity. In the case of the Al20Cr5­
+Fe50Mn20Ti5 HEAs, an n-type passive film comprising Fe2O3, Fe(OH)3, 
+TiO2 and MnO2 was identified. Wang et al. [107] investigated the 
+corrosion behavior of the single FCC phase Co36Fe36Cr18Ni10 and 316L 
+in simulated body fluids. The findings indicated that it was difficult for 
+metal cations to penetrate the passive film attributable to the low ND 
+value of Co36Fe36Cr18Ni10. Furthermore, it was indicated that the 
+binding of water with the adsorption of dissolved metal ions could result 
+in the formation of a new film, which would serve to prevent any further 
+deterioration due to corrosion. The detailed corrosion mechanism is 
+provided in Fig. 22.
+4.2. Effect of material selection on passivation film
+In the field of alloy material design, the selection and concentration 
+of alloying elements represent a pivotal aspect in the formation of the 
+microstructure, which in turn significantly impacts the alloy’s passiv­
+ation behavior [108]. For instance, adding Cr, an element known for its 
+Fig. 19. Chlorine resistance of five pure metals Fe, Co, Ni, Mn, and Mo before and after tests in 1 M KOH +0.6 M NaCl at 100 mA cm−2 for 5 h. Optical picture (a, d), 
+SDFM image (b, e), and SEM image (c, f) [41].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4158 
+
+
+=== PAGE 18 ===
+
+passivating properties, can promote the development of a dense and 
+protective passivation film. However, an excessive amount of Cr may 
+result in the formation of phases with low corrosion resistance, dimin­
+ishing the overall protective capabilities of the alloy. Similarly, Al can 
+form a protective oxide film, but its stability tends to be poor. A high 
+concentration of Al may lead to the formation of Al-rich phases with low 
+corrosion resistance, adversely affecting the alloy’s durability. On the 
+other hand, when Ti is added in quantities not lower than Al, the com­
+bined effect of these two elements can enhance the alloy’s corrosion 
+resistance. Ni improves passivation by reducing the dissolution rates of 
+Fe and Cr, thus stabilizing the passivation layer. In contrast, Mn has the 
+opposite effect; it increases the dissolution rates of Ni and Mo, which 
+ultimately compromises the alloy’s corrosion resistance. Additionally, 
+Mn and Cr have a competitive relationship in the oxidation process. 
+These interactions between alloying elements underscore the impor­
+tance of carefully balancing their concentrations to optimize the corro­
+sion resistibility and overall properties of the alloy.
+Xiao et al. [109] fabricated a crystal amorphous FeMnCoCrNi HEA as 
+a mixture of nanocrystalline and amorphous shell. It was found that the 
+Cr atom had a higher driving force and diffusion rate due to the 
+Fig. 20. Chlorine resistance evaluation (a) LSV polarizationcurves (b) Tafel plots (c, d), and (e) electrochemical impedance spectroscopy of FeCoNiMnMo electrode 
+in 1 M KOH + x M NaCl (x = 0, 0.1, 0.2, 0.3, 0.4, 0.5, and 0.6) electrolytes. (f) The SEM image and (g) SDFM image after sequential electrolysis for 119 h [41].
+Fig. 21. Corrosion mechanism of CoCrFeNiNb0.45 HEAs [105].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4159 
+
+
+=== PAGE 19 ===
+
+significant Cr-enrichment of the amorphous shell. The crystal amor­
+phous FeMnCoCrNi formed a passive film about 40 nm thick, which 
+effectively inhibited pitting corrosion. Hsu et al. [81] explored the in­
+fluence of Mn on the passive behavior of FeCrNiCoMn HEAs in 0.5 M 
+H2SO4, and the results showed that competitive oxidation occurred 
+between Mn and Cr, resulting in lower Cr2O3 content in the passive 
+layer.
+Han et al. [80] examined the impact of V element on the change of 
+corrosion behaviour of as-cast AlFeNiCrCoTi0.5Vx (x = 0, 0.5,1,1.5,2). 
+The findings revealed that the distribution of V in the HEAs was uneven, 
+with V primarily concentrated in the dendritic regions. The findings 
+demonstrated that the distribution of V in the HEAs was non-uniform, 
+with V predominantly concentrated in the dendritic regions. This 
+non-uniform distribution resulted in the accumulation of Cr and Ti in the 
+interdendritic areas. The presence of Cr and Ti in these regions was 
+found to enhance passivation, thereby increasing the corrosion potential 
+and reducing the passive current of the alloys.
+In summary, the integrity and uniformity of the passive film are 
+influenced by the discrepancy in oxidation potential and diffusion rate 
+of the alloying elements. The chemical composition and microstructure 
+of passive films on the surface of different phases are distinct in the 
+microstructure with a complex phase structure. Furthermore, impurities 
+within the microstructure and segregation of alloying elements result in 
+defects in the passive film.
+5. Summary and future prospects
+The corrosion behavior of HEAs is primarily influenced by both 
+structural and non-structural factors. Structural changes, particularly 
+phase transformations driven by the addition of different elements and 
+various content. The occurrence of corrosion is mainly associated with 
+the formation of galvanic corrosion between the BCC and FCC phases. 
+Additionally, the potential difference of a (Cr, Fe, Co)-rich A2 phase and 
+an (Al, Ni)-rich B2 phase of BCC phase also led to the selective corrosion. 
+For the non-structural factors, such as the dynamics of oxide film for­
+mation, dissolution, and re-passivation, significantly contribute to the 
+corrosion susceptibility of HEAs. Furthermore, the lattice distortion 
+caused by the different atomic dimensions of the constituent primary 
+elements within HEA has a significant effect on the stability of the 
+passive film. Consequently, both microstructural design and the stability 
+of the oxide film must be meticulously considered when designing HEAs 
+for enhanced corrosion resistance. The change in corrosion resistance of 
+HEAs can be explained by the change in microstructure and the for­
+mation of a dense oxide film after the addition of Cr and Al elements.
+Furthermore, HEAs often exhibit sluggish diffusion, which can affect 
+how corrosion products develop and evolve. In some cases, this sluggish 
+diffusion helps to slow down the overall corrosion process, while in 
+others, it may promote localized degradation if corrosion products 
+cannot redistribute evenly. The grain boundaries and phase segregation 
+in HEAs also play a significant role at the microscale. These features can 
+act as corrosion initiation sites, particularly if certain phases are more 
+anodic compared to the matrix, leading to selective dissolution.
+Overall, the corrosion mechanisms in HEAs are governed by the 
+interplay of localized galvanic corrosion, passive film stability, sluggish 
+diffusion, and phase distribution, all of which are influenced by the 
+complex chemistry and structural characteristics of these alloys. In order 
+to enhance the applicability of HEAs, future research on the corrosion 
+susceptibility of HEAs may concentrate on the following areas, building 
+upon the investigation of corrosion characteristics. 
+(1) Corrosion mechanism of HEAs at micro-scale
+Further investigation of the micro-scale corrosion characteristics of 
+HEAs will be a hot topic in the future, which will require the use of 
+advanced surface analysis techniques. High-throughput electrochemical 
+characterization of micro-corrosion is useful for monitoring and char­
+acterizing the electrochemical behavior of material and metal corrosion 
+and dissolution at nanometer and sub-micron levels at high speed and 
+high throughput. Furthermore, the intricate corrosion processes and 
+corrosion mechanisms of HEAs at the micro-scale interface require 
+investigation, including the formation and dissolution of the passive film 
+and the evolution of the HEA/solution interface. Additionally, in-situ 
+corrosion characterization under multi-factor coupling is also a 
+research hotspot in the future. It is essential to examine the influence of 
+high entropy, lattice distortion, sluggish diffusion and the "cocktail" ef­
+fect on the corrosion susceptibility of HEAs, which will provide key 
+technical support for quality control, process optimization and property 
+evaluation of HEAs. 
+(2) Evolution of corrosion behavior under various environments
+The exceptional properties of HEA expand the range of applications. 
+These applications primarily encompass welding and brazing filler ma­
+terials, biomedical materials, nuclear structural materials, optical 
+transmission materials, heat-resistant or wear-resistant coatings, 
+hydrogen storage materials, etc. Consequently, there is a need for a 
+systematic investigation into the evolution of corrosion susceptibility in 
+service environments. The above can provide detailed information on 
+stress corrosion cracking, corrosion fatigue and other local corrosion 
+performance of HEAs. During the analysis of corrosion data, the estab­
+lishment of high-throughput data collection and machine-learning 
+technology will also be a hot topic. 
+(3) Efficiency of component design and preparation of HEAs
+The multitude of potential alloy compositions and manufacturing 
+Fig. 22. Illustration of the corrosion resistance mechanism for (a) Co36Fe36Cr18Ni10 alloy and (b) 316L SS [107].
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4160 
+
+
+=== PAGE 20 ===
+
+routes gives rise to a vast material design space, which is challenging to 
+navigate through a conventional trial-and-error methodology. Several 
+physicochemical parameters, including differences in atomic radius, 
+electronegativity, valence electron count, as well as mixing enthalpy and 
+entropy, have been proposed to clarify the relationship between the 
+variation in each factor and the microstructural composition of HEAs. 
+Various thermodynamic simulation tools are used to study the trans­
+formation of microstructure and properties. In the future, materials 
+design approaches that leverage high-throughput computing and ma­
+chine learning are expected to greatly reduce the time needed to develop 
+new materials. Additionally, during the HEA preparation process, ad­
+ditive manufacturing offers a rapid method to produce bulk samples 
+with diverse compositions and microstructures.
+CRediT authorship contribution statement
+Shuai Li: and. Xin Liu: Data curation, Methodology, Software, 
+Writing – original draft, Writing – review & editing. Xiaotong Hou: and. 
+Zhongying Liu: and. Xingxing Wang: Methodology. Jinoop Arackal 
+Narayanan: and. Tingting Wu: Funding acquisition. Yanchao Bai: 
+Methodology. Yong Dong: and. Hui Jiang: Software.
+Declaration of competing interest
+We declare that we have no financial and personal relationships with 
+other people or organizations that can inappropriately influence our 
+work, there is no professional or other personal interest of any nature or 
+kind in any product, service and/or company that could be construed as 
+influencing the position presented in, or the review of, the manuscript 
+entitled, “Evolution of corrosion mechanism of 3d transition metal high 
+entropy alloys: A review” authored by Shuai Li, Xin Liu, Xiaotong Hou, 
+Zhongying Liu, Xingxing Wang, Jinoop Arackal Narayanan, Tingting 
+Wu, Yanchao Bai, Yong Dong, Hui Jiang.
+Acknowledgment
+This work was financially supported by the fund of Henan Province 
+Science and Technology Research Project (Nos. 232102220055 and 
+242102220072).
+References
+[1] Zhang Y, Zuo T, Tang Z, Gao M, Dahmen K, Liaw P, et al. Microstructures and 
+properties of high-entropy alloys. Prog Mater Sci 2014;61:1–93.
+[2] He Q, Ding Z, Ye Y, Yang Y. Design of high-entropy alloy: a perspective from 
+nonideal mixing. JOM Journal of the Minerals Metals and Materials Society 2017; 
+69:2092–8.
+[3] Tang Y, Wang R, Xiao B, Zhang Z, Li S, Qiao J, et al. A review on the dynamic- 
+mechanical behaviors of high-entropy alloys. Prog Mater Sci 2023;135:101090.
+[4] Thurston K, Gludovatz B, Hohenwarter A, Laplanche G, George E, Ritchie R. 
+Effect of temperature on the fatigue-crack growth behavior of the high-entropy 
+alloy CrMnFeCoNi. Intermetallics 2017;88:65–72.
+[5] Senkov O, Scott J, Senkova S, Miracle D, Woodward C. Microstructure and room 
+temperature properties of a high-entropy TaNbHfZrTi alloy. J Alloys Compd 
+2011;509:6043–8.
+[6] Lilensten L, Couzini´e J, Perri`ere L, Bourgon J, Emery N, Guillot I. New structure 
+in refractory high-entropy alloys. Mater Lett 2014;132:123–5.
+[7] Shiratori H, Fujieda T, Yamanaka K, Koizumi Y, Kuwabara K, Kato T, et al. 
+Relationship between the microstructure and mechanical properties of an 
+equiatomic AlCoCrFeNi high-entropy alloy fabricated by selective electron beam 
+melting. Mater Sci Eng, A 2016;656:39–46.
+[8] Gorsse S, Couzini´e J, Miracle D. From high-entropy alloys to complex 
+concentrated alloys. C R Phys 2018;19:721–36.
+[9] Zhang W, Liao W, Liaw P, Ren J, Brechtl J, Zhang Y. Effects of transient thermal 
+shock on the microstructures and corrosion properties of a reduced activation 
+high-entropy alloy. J Alloys Compd 2022;918:165762.
+[10] Chen C, Zhang H, Hu S, Wei R, Wang T, Cheng Y, et al. Influences of laser surface 
+melting on microstructure, mechanical properties and corrosion resistance of 
+dual-phase Cr–Fe–Co–Ni–Al high entropy alloys. J Alloys Compd 2020;826: 
+154100.
+[11] Yeh J, Chen S, Lin S, Gan J, Chin T, Shun T, et al. Nanostructured high-entropy 
+alloys with multiple principal elements: novel alloy design concepts and 
+outcomes. Adv Eng Mater 2004;6:299–303.
+[12] Cantor B, Chang I, Knight P, Vincent A. Microstructural development in 
+equiatomic multicomponent alloys. Mater Sci Eng, A 2004;375–377:213–8.
+[13] Cantor B. Multicomponent and high entropy alloys. Entropy 2014;16:4749–68.
+[14] Wetzel A, der Au von, Dietrich P, Radnik J, Ozcan O, Witt J. The comparison of 
+the corrosion behavior of the CrCoNi medium entropy alloy and CrMnFeCoNi 
+high entropy alloy. Appl Surf Sci 2022;601:154171.
+[15] Fu Y, Li J, Luo H, Du C, Li X. Recent advances on environmental corrosion 
+behavior and mechanism of high-entropy alloys. J Mater Sci Technol 2021;80: 
+217–33.
+[16] Yeh J, Lin S, Chin T, Gan J, Chen S, Shun T, et al. Formation of simple crystal 
+structures in Cu-Co-Ni-Cr-Al-Fe-Ti-V alloys with multiprincipal metallic elements. 
+Metall Mater Trans 2004;35:2533–6.
+[17] Kumar D. Recent advances in tribology of high entropy alloys: a critical review. 
+Prog Mater Sci 2023;136:101106.
+[18] Lv Y, Lang X, Zhang Q, Liu W, Liu Y. Study on corrosion behavior of (CuZnMnNi) 
+100−xSnx high-entropy brass alloy in 5 wt% NaCl solution. J Alloys Compd 2022; 
+921:166051.
+[19] Luo H, Zou S, Chen Y, Li Z, Du C, Li X. Influence of carbon on the corrosion 
+behaviour of interstitial equiatomic CoCrFeMnNi high-entropy alloys in a 
+chlorinated concrete solution. Corros Sci 2020;163:108287.
+[20] Shang X, Wang Z, He F, Wang J, Li J, Yu J. The intrinsic mechanism of corrosion 
+resistance for FCC high entropy alloys. Sci China Technol Sci 2017;61:189–96.
+[21] Chen C, Yuan S, Chen J, Wang W, Zhang W, Wei R, et al. A Co-free Cr-Fe-Ni-Al-Si 
+high entropy alloy with outstanding corrosion resistance and high hardness 
+fabricated by laser surface melting. Mater Lett 2022;314:131882.
+[22] Wang W, Wang W, Wang S, Tsai Y, Lai C, Yeh J. Effects of Al addition on the 
+microstructure and mechanical property of AlxCoCrFeNi high-entropy alloys. 
+Intermetallics 2012;26:44–51.
+[23] Zhou Q, Sheikh S, Ou P, Chen D, Hu Q, Guo S. Corrosion behavior of 
+Hf0.5Nb0.5Ta0.5Ti1.5Zr refractory high-entropy in aqueous chloride solutions. 
+Electrochem Commun 2019;98:63–8.
+[24] Xiang S, Luan H, Wu J, Yao K, Li J, Liu X, et al. Microstructures and mechanical 
+properties of CrMnFeCoNi high entropy alloys fabricated using laser metal 
+deposition technique. J Alloys Compd 2019;773:387–92.
+[25] Zhao Y, Qiao J, Ma S, Gao M, Yang H, Chen M, et al. A hexagonal close-packed 
+high-entropy alloy: the effect of entropy. Mater Des 2016;96:10–5.
+[26] Yusenko K, Riva S, Carvalho P, Yusenko M, Arnaboldi S, Sukhikh A, et al. First 
+hexagonal close packed high-entropy alloy with outstanding stability under 
+extreme conditions and electrocatalytic activity for methanol oxidation. Scr 
+Mater 2017;138:22–7.
+[27] Wang Q, Amar A, Jiang C, Luan H, Zhao S, Zhang H, et al. CoCrFeNiMo0.2 high 
+entropy alloy by laser melting deposition: prospective material for low 
+temperature and corrosion resistant applications. Intermetallics 2020;119: 
+106727.
+[28] Maulik O, Kumar D, Kumar S, Dewangan S, Kumar V. Structure and properties of 
+lightweight high entropy alloys: a brief review. Mater Res Express 2018;5: 
+052001.
+[29] Varshney P, Kumar N. Exploring the influence of tensile load on the nature of 
+passive film during stress corrosion cracking in a TRIP 
+Fe39Mn20Co20Cr15Si5Al1 (at.%) high entropy alloy. Electrochim Acta 2024; 
+497:144591.
+[30] Liu F, Song Q, Chen R, Wang C, Sun J. Effect of Co, Ni, Cu content on phase 
+composition, microstructure and corrosion resistance of Co1-xCrFeNi1+xCuy 
+series high-entropy alloys. Vacuum 2023;210:111830.
+[31] Huang E, Yu D, Yeh J, Lee C, An K, Tu S. A study of lattice elasticity from low 
+entropy metals to medium and high entropy alloys. Scr Mater 2015;101:32–5.
+[32] Varshney P, Kumar N. Investigating the susceptibility of 
+Fe39Mn20Co20Cr15Si5Al1 high entropy alloy to stress corrosion cracking in a 
+3.5 wt.% NaCl environment. Corros Sci 2023;222:111422.
+[33] Liu M, Lu W, Li F, Zhang S, Shen Q, Jian M, et al. Effect of heat treatment on 
+hydrogen embrittlement susceptibility of Al0.25CoCrFeNi high entropy alloy. Eng 
+Fail Anal 2024;162:108432.
+[34] Li X, Cui Y, Zhang J. Enhancement of hydrogen embrittlement resistance in 
+CoCrFeNi high-entropy alloy through the addition of MoB elements. Int J 
+Hydrogen Energy 2024;92:1306–19.
+[35] Cheng H, Luo H, Pan Z, Wang X, Zhao Q, Li X. Hydrogen embrittlement of a 
+precipitation-strengthened high-entropy alloy. Corros Sci 2024;227:111708.
+[36] Wu Y, Yue Y, Yan X, Zhang C, Huang J, Liaw P, et al. Mechanical and corrosion 
+behavior of CoCrFeNiAl0.3 high entropy alloy seamless tubes. J Alloys Compd 
+2025;1010:177143.
+[37] Wang Z, Ma K, Feng L, Cui J, Zhao Y. Corrosion resistance of FeCrMnxAlCu high- 
+entropy alloys in 0.5M H2SO4 solution. Mater Today Commun 2024;40:109864.
+[38] Zhou H, Jiang L, Zhu S, Wang L, Hu Y, Zhang X, et al. Excellent electromagnetic- 
+wave absorbing performances and great harsh-environment resistance of 
+FeCoNiCrxMn high entropy alloys. J Alloys Compd 2023;936:168282.
+[39] Wang Y, Li G, Qi H, Zhang W, Chen R, Su R, et al. Effect of Al content on the 
+corrosion behavior and mechanism of AlxCoCrFeNi high-entropy alloys. J Mater 
+Res Technol 2024;30:5977–89.
+[40] Wu M, Setiawan R, Li D. Benefits of passive element Ti to the resistance of 
+AlCrFeCoNi high-entropy alloy to corrosion and corrosive wear. Wear 2022; 
+492–493:204231.
+[41] Li P, Yao Y, Ouyang W, Liu Z, Yin H, Wang D. A stable oxygen evolution splitting 
+electrocatalysts high entropy alloy FeCoNiMnMo in simulated seawater. J Mater 
+Sci Technol 2023;138:29–35.
+[42] Anber E, Smith N, Liaw P, Wolverton C, Taheri M. Role of Al additions in 
+secondary phase formation in CoCrFeNi high entropy alloys. APL Mater 2022;10.
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4161 
+
+
+=== PAGE 21 ===
+
+[43] Zhang M, Shi X, Li Z, Xu H, Li G. Corrosion behaviors and mechanism of CrFeNi2 
+based high-entropy alloys. Corros Sci 2022;207:110562.
+[44] Li M, Zhang Q, Han B, Song L, Li J, Yang J. Investigation on microstructure and 
+properties of AlxCoCrFeMnNi high entropy alloys by ultrasonic impact treatment. 
+J Alloys Compd 2020;816:152626.
+[45] Ye F, Jiao Z, Yan S, Guo L, Feng L, Yu J. Microbeam plasma arc remanufacturing: 
+effects of Al on microstructure, wear resistance, corrosion resistance and high 
+temperature oxidation resistance of AlxCoCrFeMnNi high-entropy alloy cladding 
+layer. Vacuum 2020;174:109178.
+[46] Muangtong P, Rodchanarowan A, Chaysuwan D, Chanlek N, Goodall R. The 
+corrosion behaviour of CoCrFeNi-x (x = Cu, Al, Sn) high entropy alloy systems in 
+chloride solution. Corros Sci 2020;172:108740.
+[47] Zhang H, Guo F, Wan L, Gao Z, Chen T, Cao H, et al. Performance assessments of 
+porous FeCoNiCrAlx high-entropy alloys in high-temperature oxidation, 
+carbonization and sulfidation atmospheres. J Alloys Compd 2023;930:167437.
+[48] Shi Y, Mo J, Zhang F, Yang B, Liaw P, Zhao Y. In-situ visualization of corrosion 
+behavior of Al CoCrFeNi high-entropy alloys during electrochemical polarization. 
+J Alloys Compd 2020;844:156014.
+[49] Shi Y, Collins L, Feng R, Zhang C, Balke N, Liaw P, et al. Homogenization of Al 
+CoCrFeNi high-entropy alloys with improved corrosion resistance. Corros Sci 
+2018;133:120–31.
+[50] Shi Y, Collins L, Balke N, Liaw P, Yang B. In-situ electrochemical-AFM study of 
+localized corrosion of Al CoCrFeNi high-entropy alloys in chloride solution. Appl 
+Surf Sci 2018;439:533–44.
+[51] Shi Y, Yang B, Xie X, Brechtl J, Dahmen K, Liaw P. Corrosion of Al CoCrFeNi high- 
+entropy alloys: Al-content and potential scan-rate dependent pitting behavior. 
+Corros Sci 2017;119:33–45.
+[52] Shi Y, Yang B, Rack P, Guo S, Liaw P, Zhao Y. High-throughput synthesis and 
+corrosion behavior of sputter-deposited nanocrystalline Al (CoCrFeNi)100- 
+combinatorial high-entropy alloys. Mater Des 2020;195:109018.
+[53] Izadi M, Soltanieh M, Alamolhoda S, Aghamiri S, Mehdizade M. Microstructural 
+characterization and corrosion behavior of AlxCoCrFeNi high entropy alloys. 
+Mater Chem Phys 2021;273:124937.
+[54] Lyu P, Gao Q, Peng T, Yuan H, Guan Q, Cai J, et al. Microstructure and properties 
+of CoCrFeNiAlx (x = 0.1, 0.5, 1) high-entropy alloys enhanced by laser surface 
+remelting. Mater Char 2022;185:111717.
+[55] Fu Y, Dai C, Luo H, Li D, Du C, Li X. The corrosion behavior and film properties of 
+Al-containing high-entropy alloys in acidic solutions. Appl Surf Sci 2021;560: 
+149854.
+[56] Yan X, Guo H, Yang W, Pang S, Wang Q, Liu Y, et al. Al0.3CrxFeCoNi high- 
+entropy alloys with high corrosion resistance and good mechanical properties. 
+J Alloys Compd 2021;860:158436.
+[57] Chen X, Hu J, Liu Y, Xiang F. Corrosion behavior in nitric acid solution and tensile 
+properties of (CuFeNiMn)1−xCrx HEAs. Met Mater Int 2020;27:2230–8.
+[58] Dong Q, Jia W, Zhang Z, Zhang D, Wu J, Zhang B. Effects of Ni content on the 
+corrosion behavior of Al0.5CoCrFeNix high entropy alloys in acid and alkaline 
+media. Mater Corros 2022;73:1274–85.
+[59] Lopez Rios M, Socorro Perdomo P, Voiculescu I, Geanta V, Craciun V, Boerasu I, 
+et al. Effects of nickel content on the microstructure, microhardness and corrosion 
+behavior of high-entropy AlCoCrFeNix alloys. Sci Rep 2020;10:21119.
+[60] Qiu X, Liu C. Microstructure and properties of Al2CrFeCoCuTiNi high-entropy 
+alloys prepared by laser cladding. J Alloys Compd 2013;553:216–20.
+[61] Zhao Y, Wang M, Cui H, Zhao Y, Song X, Zeng Y, et al. Effects of Ti-to-Al ratios on 
+the phases, microstructures, mechanical properties, and corrosion resistance of 
+Al2-xCoCrFeNiTix high-entropy alloys. J Alloys Compd 2019;805:585–96.
+[62] Jiang S, Lin Z, Xu H, Sun Y. Studies on the microstructure and properties of 
+AlxCoCrFeNiTi1-x high entropy alloys. J Alloys Compd 2018;741:826–33.
+[63] Zhang Z, Dong Q, Chen Z, Wu J, Xia J, Huang K, et al. Effect of Co content on the 
+microstructure and corrosion behavior of Al0.3CoxCrFeNi high entropy alloys. 
+Met Mater Int 2023;30:360–9.
+[64] Wu Z, Li B, Chen M, Yang Y, Zheng R, Yuan L, et al. Tailoring magnetic property 
+and corrosion resistance of FeCoNiCuAl high-entropy alloy with Ce additive. 
+J Alloys Compd 2022;901:163665.
+[65] Raza A, Abdulahad S, Kang B, Ryu H, Hong S. Corrosion resistance of weight 
+reduced AlxCrFeMoV high entropy alloys. Appl Surf Sci 2019;485:368–74.
+[66] Wei L, Qin W. Corrosion mechanism of eutectic high-entropy alloy induced by 
+micro-galvanic corrosion in sulfuric acid solution. Corros Sci 2022;206:110525.
+[67] Kao Y, Lee T, Chen S, Chang Y. Electrochemical passive properties of 
+AlxCoCrFeNi (x=0, 0.25, 0.50, 1.00) alloys in sulfuric acids. Corros Sci 2010;52: 
+1026–34.
+[68] Dworschak D, Tseng K, Yeh J, Cheng H, Valtiner M. Bottom-up characterization 
+of electrochemical passivity from simple binary alloys to high entropy alloys. 
+Electrochim Acta 2022;405:139804.
+[69] Chen M, Shen H, Wen C, Wang N, Tian Y, Zhong W, et al. Phase, microstructure 
+and corrosion behaviour of Al(0.3)FeCoNiCr(x) high-entropy alloys via Cr 
+addition. Materials 2024;17.
+[70] Lu P, Saal J, Olson G, Li T, Sahu S, Swanson O, et al. Computational design and 
+initial corrosion assessment of a series of non-equimolar high entropy alloys. Scr 
+Mater 2019;172:12–6.
+[71] Chai W, Lu T, Pan Y. Corrosion behaviors of FeCoNiCr (x = 0, 0.5, 1.0) multi- 
+principal element alloys: role of Cr-induced segregation. Intermetallics 2020;116: 
+106654.
+[72] Huang L, Wang X, Zhao X, Wang C, Yang Y. Analysis on the key role in corrosion 
+behavior of CoCrNiAlTi-based high entropy alloy. Mater Chem Phys 2021;259: 
+124007.
+[73] Gu X, Zhuang Y, Huang D. Corrosion behaviors related to the microstructural 
+evolutions of as-cast Al0.3CoCrFeNi high entropy alloy with addition of Si and Ti 
+elements. Intermetallics 2022;147:107600.
+[74] Shi H, Fetzer R, Jianu A, Weisenburger A, Heinzel A, Lang F, et al. Influence of 
+alloying elements (Cu, Ti, Nb) on the microstructure and corrosion behaviour of 
+AlCrFeNi-based high entropy alloys exposed to oxygen-containing molten Pb. 
+Corros Sci 2021;190:109659.
+[75] Xiao D, Zhou P, Wu W, Diao H, Gao M, Song M, et al. Microstructure, mechanical 
+and corrosion behaviors of AlCoCuFeNi-(Cr,Ti) high entropy alloys. Mater Des 
+2017;116:438–47.
+[76] Lee M, Zakiyuddin A, Lee K, Park C. Electrochemical characterization of passive 
+film and corrosion in Co-rich high entropy alloys in Ringer’s solution. J Mater Res 
+Technol 2024;32:649–60.
+[77] Wu P, Gan K, Yan D, Fu Z, Li Z. A non-equiatomic FeNiCoCr high-entropy alloy 
+with excellent anti-corrosion performance and strength-ductility synergy. Corros 
+Sci 2021;183:109341.
+[78] Yang C, Feng H, Chen X, Han Y, Li H, Xu D, et al. Enhanced pitting corrosion 
+resistance of CoCrFeMnNi high entropy alloy in the presence of Desulfovibrio 
+vulgaris via nitrogen doping. J Mater Sci Technol 2023;139:92–102.
+[79] Zheng Z, Li X, Zhang C, Li J. Microstructure and corrosion behaviour of 
+FeCoNiCuSnxhigh entropy alloys. Mater Sci Technol 2014;31:1148–52.
+[80] Han L, Wang C, Sun H. Microstructure and anticorrosion property of high-entropy 
+alloy AlFeNiCrCoTi0.5Vx. Mater Trans 2016;57:1134–7.
+[81] Hsu K, Chen S, Lin C. Microstructure and corrosion behavior of FeCrNiCoMnx (x 
+= 1.0, 0.6, 0.3, 0) high entropy alloys in 0.5 M H2SO4. Corros Sci 2021;190: 
+109694.
+[82] Sun Y, Wang Z, Yang H, Lan A, Qiao J. Effects of the element La on the corrosion 
+properties of CrMnFeNi high entropy alloys. J Alloys Compd 2020;842:155825.
+[83] Lyu P, Chen Y, Liu Z, Cai J, Zhang C, Jin Y, et al. Surface modification of 
+CrFeCoNiMo high entropy alloy induced by high-current pulsed electron beam. 
+Appl Surf Sci 2020;504:144453.
+[84] Nishimoto A, Fukube T, Maruyama T. Microstructural, mechanical, and corrosion 
+properties of plasma-nitrided CoCrFeMnNi high-entropy alloys. Surf Coating 
+Technol 2019;376:52–8.
+[85] Lyu P, Peng T, Miao Y, Liu Z, Gao Q, Zhang C, et al. Microstructure and properties 
+of CoCrFeNiMo0.2 high-entropy alloy enhanced by high-current pulsed electron 
+beam. Surf Coating Technol 2021;410:126911.
+[86] Zou Y, Li S, Liu S, Li J, Li Y. Improved mechanical and corrosion properties of 
+CrMnFeCoNi high entropy alloy with cold rolling and post deformation annealing 
+process. J Alloys Compd 2021;887:161416.
+[87] Nong Z, Zhang Z, Wang H, Deng X. Microstructure inhomogeneity of as-cast high- 
+entropy alloy and heat treatment improvement. Mater Sci Technol 2019;35: 
+1749–55.
+[88] Lin C, Tsai M, Tsai C, Yeh J, Chen S. Microstructure and aging behaviour of 
+Al5Cr32Fe35Ni22Ti6high entropy alloy. Mater Sci Technol 2015;31:1165–70.
+[89] Guo J, Xing X, Zhang X, Xu L, Cui X, Song Y, et al. Effect of melt superheating 
+treatment on corrosion resistance of Al2CoCrCuFeNi high entropy alloy in 0.5 M 
+HNO3 solution. J Alloys Compd 2022;899:163284.
+[90] Wang W, Wang J, Sun Z, Li J, Li L, Song X, et al. Effect of Mo and aging 
+temperature on corrosion behavior of (CoCrFeNi)100-Mo high-entropy alloys. 
+J Alloys Compd 2020;812:152139.
+[91] Guo Y, Liu L, Zhang W, Yao K, Zhao Z, Shang J, et al. Effects of electromagnetic 
+pulse treatment on spinodal decomposed microstructure, mechanical and 
+corrosion properties of AlCoCrFeNi high entropy alloy. J Alloys Compd 2021;889: 
+161676.
+[92] Guo W, Li J, Qi M, Xu Y, Ezatpour H. Effects of heat treatment on the 
+microstructure, wear behavior and corrosion resistance of AlCoCrFeNiSi high- 
+entropy alloy. Intermetallics 2021;138:107324.
+[93] Guo W, Li J, Qi M, Xu Y, Ezatpour H. Effects of heat treatment on the 
+microstructure, mechanical properties and corrosion resistance of 
+AlCoCrFeNiTi0.5 high-entropy alloy. J Alloys Compd 2021;884:161026.
+[94] Zhang X, Guo J, Zhang X, Song Y, Li Z, Xing X, et al. Influence of remelting and 
+annealing treatment on corrosion resistance of AlFeNiCoCuCr high entropy alloy 
+in 3.5% NaCl solution. J Alloys Compd 2019;775:565–70.
+[95] Lin C, Tsai H, Bor H. Effect of aging treatment on microstructure and properties of 
+high-entropy Cu0.5CoCrFeNi alloy. Intermetallics 2010;18:1244–50.
+[96] Wang P, Wang Y, Cui F, Yang X, Pan A, Wu W. Microstructural evolution, 
+mechanical properties and corrosion resistance of CoCrFeNiW0.5 high entropy 
+alloys with various annealing heat treatment. J Alloys Compd 2022;918:165602.
+[97] Dai C, Fu Y, Pan Y, Yin Y, Du C, Liu Z. Microstructure and mechanical properties 
+of FeCoCrNiMo0.1 high-entropy alloy with various annealing treatments. Mater 
+Char 2021;179:111313.
+[98] Yen C, Lu H, Tsai M, Wu B, Lo Y, Wang C, et al. Corrosion mechanism of annealed 
+equiatomic AlCoCrFeNi tri-phase high-entropy alloy in 0.5 M H2SO4 aerated 
+aqueous solution. Corros Sci 2019;157:462–71.
+[99] Fornell J, Pellicer E, Van Steenberge N, Gonz´alez S, Gebert A, Suri˜nach S, et al. 
+Improved plasticity and corrosion behavior in Ti–Zr–Cu–Pd metallic glass with 
+minor additions of Nb: an alloy composition intended for biomedical applications. 
+Mater Sci Eng, A 2013;559:159–64.
+[100] Yi X, Feng X, Huang B, Sun K, Meng X, Gao Z, et al. The effect of annealing 
+temperatures on the phase constitutes, thermal properties and corrosion 
+behaviors of Ti-Ni-Zr-Cu high entropy alloy thin ribbons. J Alloys Compd 2022; 
+896:162947.
+[101] Zhao J, Ji X, Shan Y, Fu Y, Yao Z. On the microstructure and erosion–corrosion 
+resistance of AlCrFeCoNiCu high-entropy alloy via annealing treatment. Mater Sci 
+Technol 2016;32:1271–5.
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4162 
+
+
+=== PAGE 22 ===
+
+[102] Lu C, Lu Y, Lai Z, Yen H, Lee Y. Comparative corrosion behavior of 
+Fe50Mn30Co10Cr10 dual-phase high-entropy alloy and CoCrFeMnNi high- 
+entropy alloy in 3.5 wt% NaCl solution. J Alloys Compd 2020;842:155824.
+[103] Shi H, Jianu A, Fetzer R, Szab´o D, Schlabach S, Weisenburger A, et al. 
+Compatibility and microstructure evolution of Al-Cr-Fe-Ni high entropy model 
+alloys exposed to oxygen-containing molten lead. Corros Sci 2021;189:109593.
+[104] Zhang F, Zhang L, Wei X, Zhang C, Jia Q, Sun K, et al. Corrosion and passive 
+behaviors of the Co-Cr-Fe-Ni-Nb eutectic high-entropy alloys in different 
+electrolyte solutions. Intermetallics 2025;177:108586.
+[105] Zhang Z, Li X, Yi H, Xie H, Zhao Z, Bai P. Clarify the role of Nb alloying on passive 
+film and corrosion behavior of CoCrFeMnNi high entropy alloy fabricated by laser 
+powder bed fusion. Corros Sci 2023;224:111510.
+[106] Tanji A, Feng R, Lyu Z, Sakidja R, Liaw P, Hermawan H. Passivity of AlCrFeMnTi 
+and AlCrFeCoNi high–entropy alloys in Hanks’ solution. Corros Sci 2023;210: 
+110828.
+[107] Wang H, Liu P, Chen X, Lu Q, Zhou H. Mechanical properties and corrosion 
+resistance characterization of a novel Co36Fe36Cr18Ni10 high-entropy alloy for 
+bioimplants compared to 316L alloy. J Alloys Compd 2022;906:163947.
+[108] Luo H, Li Z, Mingers A, Raabe D. Corrosion behavior of an equiatomic 
+CoCrFeMnNi high-entropy alloy compared with 304 stainless steel in sulfuric acid 
+solution. Corros Sci 2018;134:131–9.
+[109] Xiao L, Zheng Z, Huang P, Wang F. Superior anticorrosion performance of crystal- 
+amorphous FeMnCoCrNi high-entropy alloy. Scr Mater 2022;210:114454.
+S. Li et al.                                                                                                                                                                                                                                        
+Journal of Materials Research and Technology 35 (2025) 4142–4163 
+4163 

@@ -1,0 +1,179 @@
+================================================================================
+THIRD-PARTY SOFTWARE, DATABASE, AND SCIENTIFIC LEGAL NOTICES
+Application: CALPHADHEACalc 2026 (v3.4.0)
+Lead Developer: Felix Mwiya (Materials computational research engineer and lead developer)
+Academic Guidance: Prof. (Dr.) Sheela Singh
+Host Institution: Department of Mechanical Engineering, School of Engineering and Sciences,
+                  SRM University-AP, Andhra Pradesh, India
+Formal Academic Citation:
+  Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics
+  Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering,
+  School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
+Standard: ISO/IEC 5230:2020 (OpenChain) Specification
+Date: 2026-10-09
+================================================================================
+
+This document contains the complete third-party notices, copyrights, licenses,
+and academic data attributions for all third-party software, databases, and
+scientific models integrated into or bundled with CALPHADHEACalc.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. OpenJDK (GPL 2.0 with Classpath Exception)
+2. OpenJFX (GPL 2.0 with Classpath Exception)
+3. HanSolo Charts (Apache 2.0)
+4. SGTE Pure Elements Thermodynamic Database (Dinsdale 1991 Citation Notice)
+5. Miedema Macroscopic Atom Model (Academic Citation Notice)
+6. HEA Experimental Literature Database (CC-BY 4.0)
+7. The Materials Project Reference Structures (CC-BY 4.0)
+8. ASTM G102-89 Electrochemical Calculation Methodology (Notice & Disclaimer)
+9. Varvenne-Luque-Curtin Solid Solution Strengthening (Academic Citation)
+10. Wagner High-Temperature Oxidation Kinetics (Classical Theory Notice)
+11. Krieger-Dougherty Semi-Solid Rheology Model (Classical Theory Notice)
+12. OriginPlotter Publication Plotting Engine (MIT License)
+13. ColorBrewer 2.0 Palettes (Apache 2.0)
+14. JSONlab Portable Parser (BSD 3-Clause)
+15. Commercial Interoperability Notice (COMSOL Multiphysics, JMatPro)
+
+================================================================================
+SECTION 1: RUNTIME PLATFORM & DESKTOP COMPONENTS
+================================================================================
+
+PACKAGE: OpenJDK
+VERSION: 25.0.3
+SPDX IDENTIFIER: GPL-2.0-with-classpath-exception
+LICENSE: GNU General Public License v2 with Classpath Exception
+COPYRIGHT: Copyright (C) 1993, 2026, Oracle and/or its affiliates. All rights reserved.
+NOTICE: Java SE runtime environment and class libraries.
+Dynamic Linking Notice: CALPHADHEACalc links with runtime libraries under the
+terms of the GNU Classpath Exception. Independent application modules are not
+governed by the GPL.
+
+--------------------------------------------------------------------------------
+
+PACKAGE: OpenJFX
+VERSION: 21.0.11
+SPDX IDENTIFIER: GPL-2.0-with-classpath-exception
+LICENSE: GNU General Public License v2 with Classpath Exception
+COPYRIGHT: Copyright (C) 2011, 2026, Oracle and/or its affiliates and Gluon.
+
+--------------------------------------------------------------------------------
+
+PACKAGE: HanSolo Charts
+VERSION: 17.1.51.2
+SPDX IDENTIFIER: Apache-2.0
+LICENSE: Apache License, Version 2.0
+COPYRIGHT: Copyright (C) 2017-2026 Gerrit Grunwald
+Licensed under the Apache License, Version 2.0 (the "License"). You may obtain
+a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+================================================================================
+SECTION 2: THERMODYNAMIC & MATERIALS DATABASES
+================================================================================
+
+PACKAGE: SGTE Pure Elements Thermodynamic Database
+VERSION: 5.0 (Dinsdale 1991)
+SPDX IDENTIFIER: LicenseRef-SGTE-Unary-Citation
+COPYRIGHT: Copyright (C) 1991 Scientific Group Thermodata Europe (SGTE)
+REFERENCE: A.T. Dinsdale, "SGTE Data for Pure Elements", CALPHAD, 15(4): 317-425 (1991).
+NOTICE: Pure element unary Gibbs free energy descriptions are utilized for
+thermodynamic equilibrium calculations under SGTE open scientific reference terms.
+
+--------------------------------------------------------------------------------
+
+PACKAGE: Miedema Macroscopic Atom Model
+VERSION: 1988 Revision
+SPDX IDENTIFIER: LicenseRef-Academic-Citation
+COPYRIGHT: Physical Constants and Semi-Empirical Relations (Uncopyrightable 17 U.S.C. 102(b))
+REFERENCES:
+- A.R. Miedema et al., Physica B+C, 100(1): 1-28 (1980).
+- F.R. de Boer et al., "Cohesion in Metals", North-Holland, Amsterdam (1988).
+NOTICE: Semi-empirical binary mixing enthalpy parameters are calculated in
+accordance with the macroscopic atom contact-energy model.
+
+--------------------------------------------------------------------------------
+
+PACKAGE: HEA Experimental Literature Database
+VERSION: 2026 Release (12,427 Alloys)
+SPDX IDENTIFIER: CC-BY-4.0
+LICENSE: Creative Commons Attribution 4.0 International
+COPYRIGHT: Copyright (C) 2014-2026 Curated Public HEA Research Repositories
+
+--------------------------------------------------------------------------------
+
+PACKAGE: The Materials Project
+VERSION: v2026.04
+SPDX IDENTIFIER: CC-BY-4.0
+LICENSE: Creative Commons Attribution 4.0 International
+COPYRIGHT: Copyright (C) 2011-2026 Materials Project, Lawrence Berkeley National Laboratory
+REFERENCE: A. Jain et al., APL Materials, 1(1): 011002 (2013). DOI: 10.1063/1.4812323
+
+================================================================================
+SECTION 3: SCIENTIFIC & ENGINEERING CONSTITUTIVE MODELS
+================================================================================
+
+PACKAGE: ASTM G102-89 Electrochemical Calculation Methodology
+VERSION: G102-89(2015)
+SPDX IDENTIFIER: LicenseRef-ASTM-Calculation-Notice
+NOTICE: Mathematical formulas for Faraday's law corrosion current density conversion
+are implemented in accordance with ASTM G102-89. CALPHADHEACalc is an independent
+implementation and is not evaluated, certified, or endorsed by ASTM International.
+
+--------------------------------------------------------------------------------
+
+PACKAGE: Varvenne-Luque-Curtin Solid Solution Strengthening Model
+VERSION: 2016 Formulation
+SPDX IDENTIFIER: LicenseRef-Academic-Citation
+REFERENCE: C. Varvenne, A. Luque, W.A. Curtin, Acta Materialia, 118: 164-176 (2016).
+
+--------------------------------------------------------------------------------
+
+PACKAGE: Wagner High-Temperature Oxidation Kinetics
+VERSION: 1952 Classic
+SPDX IDENTIFIER: LicenseRef-Academic-Citation
+REFERENCE: Carl Wagner, J. Electrochem. Soc., 99(10): 369-380 (1952).
+
+--------------------------------------------------------------------------------
+
+PACKAGE: Krieger-Dougherty Semi-Solid Rheology
+VERSION: 1959 Model
+SPDX IDENTIFIER: LicenseRef-Academic-Citation
+REFERENCE: I.M. Krieger, T.J. Dougherty, Trans. Soc. Rheol., 3(1): 137-152 (1959).
+
+================================================================================
+SECTION 4: GRAPHICS & UTILITY LIBRARIES
+================================================================================
+
+PACKAGE: OriginPlotter Graphics Engine
+VERSION: 2026.1
+SPDX IDENTIFIER: MIT
+LICENSE: The MIT License (MIT)
+COPYRIGHT: Copyright (c) 2026 CALPHADHEACalc Project
+
+--------------------------------------------------------------------------------
+
+PACKAGE: ColorBrewer 2.0 Palettes
+VERSION: 2.0
+SPDX IDENTIFIER: Apache-2.0
+LICENSE: Apache License 2.0
+COPYRIGHT: Copyright (C) Cynthia Brewer, Mark Harrower, and Penn State University
+
+--------------------------------------------------------------------------------
+
+PACKAGE: JSONlab Portable Parser
+VERSION: 2.9.8
+SPDX IDENTIFIER: BSD-3-Clause
+LICENSE: 3-Clause BSD License
+COPYRIGHT: Copyright (C) 2011-2024 Qianqian Fang
+
+================================================================================
+SECTION 5: COMMERCIAL INTEROPERABILITY DISCLAIMERS
+================================================================================
+- "Thermo-Calc" is a registered trademark of Thermo-Calc Software AB.
+- "JMatPro" is a registered trademark of Sente Software Ltd.
+- "COMSOL Multiphysics" is a registered trademark of COMSOL AB.
+- "Pandat" is a registered trademark of CompuTherm LLC.
+CALPHADHEACalc generates independent interoperability data and calculation files.
+No affiliation, endorsement, or sponsorship by the above vendors is claimed.
+================================================================================

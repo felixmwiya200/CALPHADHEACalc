@@ -1,0 +1,29 @@
+================================================================================
+ASTM STANDARD G102-89 MATHEMATICAL IMPLEMENTATION NOTICE & DISCLAIMER
+================================================================================
+Standard Reference:
+ASTM Standard G102-89 (Reapproved 2015),
+"Standard Practice for Calculation of Corrosion Rates and Related Information
+from Electrochemical Measurements",
+ASTM International, West Conshohocken, PA (2015).
+DOI: https://doi.org/10.1520/G0102-89R15E01
+
+Implementation Scope & Legal Disclaimer:
+--------------------------------------------------------------------------------
+1. Mathematical Equations:
+   The electrochemical conversion formulas (Faraday's Law, Equivalent Weight calculation
+   EW = 1 / sum(f_i * n_i / M_i), and penetration rate constant K1 = 3.27e-3 mm*g/(uA*cm*yr))
+   implemented in CALPHADHEACalc represent published mathematical procedures and
+   scientific principles. Under 17 U.S.C. Section 102(b), copyright protection does not
+   extend to ideas, procedures, systems, or mathematical formulas.
+
+2. Trademark and Non-Endorsement Notice:
+   "ASTM" is a registered trademark of ASTM International. CALPHADHEACalc is an
+   independent scientific software implementation. This application, its calculation
+   algorithms, and output reports have not been evaluated, certified, or endorsed
+   by ASTM International.
+
+3. Verbatim Content Exclusion:
+   This software does not reproduce proprietary verbatim text, figures, test procedures,
+   or editorial matter from ASTM Standard G102.
+================================================================================

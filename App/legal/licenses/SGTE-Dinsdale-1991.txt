@@ -1,0 +1,26 @@
+================================================================================
+SGTE PURE ELEMENTS THERMODYNAMIC DATABASE (UNARY REFERENCE STATE)
+================================================================================
+Source Reference:
+Alan T. Dinsdale, "SGTE Data for Pure Elements",
+CALPHAD: Computer Coupling of Phase Diagrams and Thermochemistry,
+Vol. 15, No. 4, pp. 317-425 (1991).
+DOI: https://doi.org/10.1016/0364-5916(91)90030-N
+
+Scientific Group Thermodata Europe (SGTE) License Notice:
+--------------------------------------------------------------------------------
+The thermodynamic unary polynomial coefficients for the standard element reference
+states (SER) and phase transformations utilized in this software are based on
+the SGTE (Scientific Group Thermodata Europe) Pure Elements Thermodynamic Database.
+
+Terms of Use:
+1. The assessed unary thermodynamic descriptions (Gibbs free energy expressions
+   G_i^phi(T) - H_i^SER(298.15 K)) are made available for non-commercial and
+   commercial scientific calculation and computational thermodynamics applications.
+2. Any publication or software utilizing these parameters must provide proper
+   bibliographic attribution to A.T. Dinsdale (1991) and the Scientific Group
+   Thermodata Europe.
+3. The unary parameters are provided "as is" without warranty of any kind, either
+   express or implied, including but not limited to the implied warranties of
+   merchantability and fitness for a particular purpose.
+================================================================================

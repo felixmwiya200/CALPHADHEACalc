@@ -1,0 +1,573 @@
+6. High entropy oxides as catalysts
+6.1. Maximized disorder as a descriptor for catalytic activity
+Fig. 11 approaches the concept of maximized disorder, formulated as
+lattice strain, from a catalytic point of view, where in previous studies
+the idea of enhancing the oxygen mobility of a metal-oxide system
+was studied through introducing dopants where Alkhoori et al. [171]
+and Alketbi et al. [172] studied both pure and metal doped CeO2 sys-
+tems, by taking CeO2, as a starting model for a low entropy oxide system
+since it consists of 1 cation (Ce) and has two oxidation states (+4 and
++3), it is known for its ability to store oxygen, which means that it
+has intrinsic defects (oxygen vacancies) [173,174]. Adding alio-valent
+dopants such as Sm and Cu to the pure CeO2 shifted the whole system
+to the range of medium entropy metal oxides, with the fact that it
+could improve the oxygen mobility directions. This was implemented
+through creating extra oxygen vacancies near Cu dopant atoms, the lat-
+ter proved through DFT studies, that they are reducing the energy of ox-
+ygen vacancy formation (Evf) [171]. Therefore, high entropy oxides
+(e.g.: CeLaYSmPr)O), as suggested in Fig. 12(A), are anticipated to
+have improved catalytic activity since they will have different active
+sites if they were composed from higher number of alio-valent elements
+with holding the symmetry of single phase (e.g.: Fluorite structure). The
+population of oxygen defects (Ov) in pure/doped ceria was studied thor-
+oughly in different studies by experimental and computational methods
+including Raman spectroscopy and Density Functional Theory, whereas
+the lattice oxygen mobility (pre-condition of Ov formation) was studied
+using 18O TIE experiments [172]. It was well-reported in the literature,
+as shown in Fig. 12(A), that the Raman spectra of CeO2 has a main
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+17
+
+
+=== PAGE 18 ===
+
+band at 464 cm-1 which is due to the F2g symmetric vibrational mode of
+the 8-fold Ce-O bond (CeO8) in ﬂuorite structure [172]. For the current
+high entropy oxide system, the position of the main band exhibited a
+blue shift, by around 15 cm-1, which was reasoned by the chemical sub-
+stitution which led the crystal lattice to compression and to generate
+oxygen defects [52]. Another broad band at 570 cm-1 was detected for
+the HEO system and was related directly to the presence of oxygen va-
+cancies. Fig. 12 (B) demonstrates the oxygen vacancies amount that is in
+a rapid increase of the concentration with element number increase
+[52].
+For further augmentation, XPS studies were conducted by Sarakar
+et al. [52] over the as-prepared HEO (CeLaPrSmY)O2-δ sample and it
+was found that in the La 3d spectra at around 834 and 850 eV two dou-
+blets were recorded which indicated the presence of La3+. Also, the
+presence of Sm in 3+ oxidation state was indicated by the two bands
+of 3d5/2 and 3d3/2 in the 3d spectra at around 1080 and 1110 eV. Addi-
+tionally, the 3d Y spectra elucidated the presence of Y in the 3+ oxida-
+tion state. The electronic conﬁguration and the redox properties of Ce
+and Pr predetermine their tendency to exist in 3+ and 4+ oxidation
+states. The study reported the important role of Ce4+ in driving the en-
+tropy and stabilizing the multi elemental high entropy systems (proved
+by comparing the Ce containing/non-containing rare earth systems,
+Fig. 10), it could not discard the existence of an insigniﬁcant amount
+of Ce3+. The multivalence state of Pr was indicated by its 3d spectra.
+Also, it was noticed that Pr4+ was present with a signiﬁcant amount
+due to its favorability to exist with Ce4+ and other RE3+. The popula-
+tion of oxygen vacancies was conjugated with the multi-present oxida-
+tion states of Ce and Pr where maintaining the charge balance was
+achieved by generating defects as the formation reaction shows:
+M2O3
+!
+RE
+ð
+ÞO2
+2MRE þ 3Ox
+o þ V⁎⁎
+o
+The signiﬁcance of the oxygen vacancies can be presented as fol-
+lows: 1) [RE3+] and [RE4+] are the molar fractions for (RE)2O3 and
+(RE)O2, respectively. (x) is the oxygen stoichiometry, it is 1.5 in (RE)
+2O3 and 2 in (RE)O2. 2) The system contains rare earth cations in
+mixed oxidation states (3+ and 4+) so the oxygen stoichiometry in
+the system can be expressed as:
+x ¼ 1:5 RE3þ
+h
+i
+þ 2 RE4þ
+h
+i
+The deviation from stoichiometry is approximated by the formula:
+δ ¼ 2−x
+6.2. Thermal catalysis
+Catalysis is known for its essential role in the chemical industry par-
+ticularly in facilitating the production of added-value hydrocarbons,
+chemicals and fuels (e.g. CH4, H2, CH3OH) [30]. Besides, catalysts are
+being studied to be employed for the removal of fuel impurities, such
+as sulfur, towards producing cleaner fuels with desirable properties
+(e.g. ignition, viscosity, etc.) [175]. There is a major challenge when it
+comes to efﬁcient metal catalysts design, mainly in overcoming the co-
+hesive energy that drives co-domain formation [172] and sintering at el-
+evated temperatures [176]. Therefore, there is an immense effort
+tailoring catalytic systems that stabilize noble metal single atoms and
+nanoparticles at high temperature. In this section, high entropy oxides
+are being discussed in the catalysis ﬁeld where they have shown their
+superiority in thermal/photo and electro-catalysis for a versatile spec-
+trum of reaction spanning from oxidation to reduction.
+6.3. CO oxidation
+Chen et al. [44] reported a successful trial of synthesizing (0.3 wt%
+PtNiMgCuCoZn)Ox, an entropy stabilized oxide, which had rock-salt sin-
+gle phase, by the method of Pt co-deposition. In the synthesis procedure,
+the transition metals precursors were dissolved in distilled water and
+stirred, then the noble metal precursor was added to the prepared solu-
+tion (one pot synthesis). The material exhibited high dispersion of Pt
+which conﬁrmed that the six (6) cations crystalized homogenously to
+form a high entropy oxide. The study showed that elevating by changing
+the heat related synthesis condition (the calcination temperature), it
+can give rise to a uniform phase in the material, but at the same time
+can affect negatively the catalytic activity for CO oxidation due to
+sintering, as shown in Fig. 13(A). The as-prepared catalyst shows supe-
+rior performance compared to the heat-treated material and could
+achieve complete CO conversion at 155 °C. The study also pointed out
+at the effect of changing the synthesis method on the catalysts, and
+proved, through BET studies, as shown in Fig. 13(B), that the co-
+precipitated (NiMgCuCoZn)Ox had higher surface area (~28 m2 g-1)
+than the ball milled (NiMgCuCoZn)Ox (~2 m2 g-1) due to the recrystalli-
+zation of the material upon calcination. The synthesis technique was in-
+spired by published
+literature where
+it
+was shown that by
+encapsulating the metal nanoparticles (MNP) in mesoporous supports
+e.g. silica, the MNP becomes sintering-resistant (Fig. 13(C)). This can
+be extended to Noble metal-free catalysts e.g. Ni-based catalysts,
+where the Ni metal can be incorporated into the oxide matrix.
+Chen et al. [69] expanded their work in improving HEOs for CO oxi-
+dation, where they functionalized Transition Metals-HEO promoted cat-
+alysts for this purpose. In this case, (NiMgCuZnCo)O HEO was
+synthesized using ball milling and crystalized into rock-salt single
+phase structure. In order to have deeper insights to the promoted HEO
+system, CuCeO2, ZnCeO2, CuZnCeO2 and CeO2 were evaluated in terms
+of their catalytic performance and compared to the current novel
+targeted catalysts CuCeOx(NiMgCuZnCo)O and (CeNiMgCuZnCo)Ox
+with 10-40 mol% of Ce and CeO2. It was reported that Cu20mol%CeOx-
+(NiMgCuZnCo)O exhibited the highest CO conversion to CO2 which
+reached to 100% at 200 °C. It also recorded the highest stability at
+900 °C, after have been tested for ﬁve cycles reaction. The suggested rea-
+son behind the superior performance of CuCeOx(NiMgCuZnCo)O was
+the ability of the HEO to disperse Cu into CeO2 which prevent it from
+deactivating at high temperatures and preserve its stability.
+In another study by Okejiri et al. [56], the catalytic performance for
+CO oxidation over BaSrBi(ZrHfTiFe)O3 and 0.2 wt% Ru/BaSrBi
+(ZrHfTiFe)O3 was examined. These types of materials are considered
+high entropy perovskite oxides and in the particular study they were
+prepared by sonochemical methods with the employment of the acous-
+tic cavitation method. The results were compared with BaRuO3, the lat-
+ter being a conventional catalyst where the Ru supported catalyst
+exhibited the best activity due to the uniform dispersion of the noble
+metal and the high BET surface area, 85.5 m2 g-1. In contrast to
+BaRuO3 and BaSrBi(ZrHfTiFe)O3 catalysts, the 0.2 wt% Ru/BaSrBi
+(ZrHfTiFe)O3 one could accomplish the complete conversion of CO at
+118 °C, where the two other catalysts failed to reach more than 65%
+CO conversion even at temperatures higher than 250 °C.
+Fracchia et al. [138] expanded the exploration of CO oxidation reaction
+on (NiMgCuZnCo)O catalyst that synthesized by the sol-gel method, by
+investigating the mechanistic perspective through operando soft X-ray
+absorption spectroscopy in which the electronic conﬁgurations of the par-
+ticipating components were studied. It should be mentioned that the 5-
+element HEO catalyst had achieved the complete conversion of CO to
+CO2 at approximately 250 °C, without any recorded signiﬁcance of deacti-
+vation that can be caused by the existing moisture. By comparing the cat-
+alytic performance of the HEO systems (NiMgCuZnCo)O that were
+synthesized by co-precipitation [44] and milling methods [44,69] , it can
+be noticed that the sol-gel method [138] achieved the complete conver-
+sion at a temperature which is signiﬁcantly lower than the other catalysts
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+18
+
+
+=== PAGE 19 ===
+
+synthesized by the mentioned methods. For the (NiMgCuZnCo)O- sol-gel
+studied by Fracchia et al., Cu reduced sites were responsible for carrying
+the reaction forward by adsorbing CO molecules that donate electrons
+to Cu at temperatures lower than 150 °C.
+Zhang et al. [126] tested the ability of combining high entropy oxides
+(CuNiFeCoMg)Ox with mesoporous materials (Al2O3) and the feasibility
+of using them for CO oxidation reaction, where they reported the suc-
+cess of the experiment with a complete oxidation of CO at 260 °C and
+high stability that lasted for 48 h due to the outstanding resistivity to
+SO2 contaminations. The catalyst exhibited a surface area, pore volume,
+and average pore size of 198 m2 g-1, 0.24 cm3 g-1 and 4.8 nm, respec-
+tively. It was reported that the (CuNiFeCoMg)Ox- Al2O3 had lower sur-
+face area compared to the mesoporous Al2O3 (~644 m2 g-1) due to the
+formation of the single crystalline phase process which was attributed
+to the HEOs that eventually suppressed the pores paths.
+A comprehensive summary of the recently investigated high
+entropy-based catalysts for CO oxidation along with the reaction condi-
+tions and the maximum catalytic performance (maximum CO conver-
+sion and its corresponding temperature) is reported in Table. 2
+6.4. Critical comparison; HEO vs. their non-HEO analogues in CO oxidation
+reaction
+In an attempt to compare the HEO with their non-HEO analogues,
+Fig. 15(A) depicts a comparison from a catalytic perspective for the
+high entropy oxides and the regular metal oxides (low- and medium-
+entropy) that are reported in the literature for the CO oxidation reac-
+tion. The chart shows the temperatures at which the catalysts converted
+50% and 100% of CO into CO2, namely T50 and T100, respectively. Clearly,
+HEOs ((PtNiMgCuCoZn)Ox, Cu20CeOx-(NiMgCuZnCo)O, Ru/BaSrBi
+(ZrHfTiFe)O3 and (CuNiFeCoMg)Ox- Al2O3) achieved these conversions
+at lower temperatures (T50~ 120,100, 90 and 230 °C and T100~155, 200,
+118 and 260 °C) compared to their conventional analogue metal oxides
+(PtSnO2 [178], (Ce-Sm-20Cu)O [171], BaRuO3 [56] and Co3O4-Al2O3
+[126]) (T50~155,140, 253 and 255 °C and T100~ 180, 230, NA and 278 °C).
+6.5. CO2 hydrogenation
+Reducing CO2 to CO by H2 was also investigated using Noble
+Metals-HEOs. On the contrary to the used HEO catalysts, Chen et al.
+[53] prepared (2–5 wt%) Ru/Pt-(NiMgCuZnCo)O catalyst under ambient
+conditions, and showed the effect of the gained maximized entropy on
+the loading and dispersion of the noble metals. Although 5wt%(Heat
+Treated at 500 °C) Pt-(NiMgCuZnCo)O was the only catalyst that could
+reduce up to 47.8% of CO2 , but all the synthesized systems exhibited
+high selectivity to CO 95%, and high catalytic stability that could reach
+up to 12 hours at 500 °C without any signiﬁcant fall backs in their per-
+formance. This result was justiﬁed using HAADF-STEM characterization
+that showed neither aggregations nor segregations of the loaded Pt/Ru
+in (NiMgCuZnCo)O, and the HEOs’ latent properties that enable them
+to perform actively at harsh temperature conditions, and behave as a
+stabilizing support which disperse the active noble metals as
+nanoclusters (2–3 nm) and single atoms. Towards CO as a main product,
+the reported systems can be further employed to be active for the re-
+verse water gas shift reaction, or the systems compositions can be
+tuned and be exploited to convert CO2 to CH4.
+6.6. Oxidative desulfurization
+Desulfurization process is very important in oil industry, for purify-
+ing the emissions of fuel burning from sulfur oxide that will eventually
+poison the rain and increase its acidity [28,179]. Therefore, towards the
+removal of dibenzthiophene (DBT) and its derivatives from fuels at high
+temperatures, Deng et al. [54] synthesized high entropy oxide catalyst
+with MoNiCuZnCoOx composition using ball milling followed by heat
+treating at T ≥900 °C. The applied process eventually led to the forma-
+tion of rock-salt single phase structure. The study showed the
+Table 2
+Summary of the up to date reported high entropy oxides (HEO) catalysts for CO oxidation.
+Catalyst
+Reaction conditions
+Temperature
+( °C)
+CO
+Conversion
+(%)
+Stability (h)
+Ref.
+(CuNiFeCoMg)Ox- Al2O3
+Masscatalyst=20 mg, feed gas of 1% CO balanced with dry air (<4
+ppmwater)
+Flow rate=10 mL/min, GHSV= 30 000 mL/gcat h
+260
+100
+48 at 255 °C
+[126]
+Reduced (0.3wt%PtNiMgCuCoZn)Ox
+As-prepared (0.3wt%PtNiMgCuCoZn)
+Ox
+Masscatalyst:=20 mg, Flow rate:=12.5 mL/min and 1 vol% CO balance in
+air.
+155
+245
+100
+100
+40 at 135 °C
+NA
+[44]
+(NiMgCuCoZn)Ox-CP
+(NiMgCuCoZn)Ox-BM
+Masscatalyst= 20 mg, Flow rate: 12.5 mL/min and 1 vol% CO balance in air.
+305
+305
+100
+100
+NA
+NA
+[44]
+Ru/BaSrBi(ZrHfTiFe)O3
+BaSrBi(ZrHfTiFe)O3
+Masscatalyst=20 mg, Feed gas of ~1% CO balanced with dry air
+118
+>300
+100
+~38
+NA
+NA
+[56]
+Cu5%CeOx-(NiMgCuZnCo)O
+Cu10%CeOx-(NiMgCuZnCo)O
+Cu20%CeOx-(NiMgCuZnCo)O
+Cu20%CeOx-(NiMgCuZnCo)Oa
+Cu30%CeOx-(NiMgCuZnCo)O
+Cu40%CeOx-(NiMgCuZnCo)O
+(% = mol % of Ce)
+Masscatalyst= 20 mg, Flow rate: 12.5 mL/min and 1 vol% CO balance in air.
+~263
+250
+200
+~225
+250
+~363
+100
+20 at 180 °C and
+190 °Cb
+[69]
+(NiMgCuZnCo)O
+Masscatalyst= 20 mg, Flow rate: 12.5 mL/min and 1 vol% CO balance in air.
+320
+100
+NA
+[69]
+(NiMgCuZnCo)O
+-
+~250
+100
+NA
+[138]
+As prepared 1wt%Au/(NiMgCuCoZn)Ox
+Treated at 700 °C 1wt%
+Au/(NiMgCuCoZn)Ox
+Re-treated at 900 °C
+1wt%Au/(NiMgCuCoZn)Ox
+Masscatalyst= 40 mg, Flow rate: 12.5 mL/min and 1 vol% CO balance in air.
+~240
+~325
+~400
+100
+NA
+[63]
+(CeZrHfTiLa)Ox
+1wt%Pd1@ (CeZrHfTiLa)Ox
+Masscatalyst=20 mg, feed gas of 1% CO balanced with air, GHSV= 40 000
+mL/gcat h
+~275
+170
+100
+100 at 170 °C
+[127]
+a Heat treated at 900 °C for 4 h.
+b Catalytic stability tests were carried only for Cu20%CeOx-(NiMgCuZnCo)O and Cu20%CeOx-(NiMgCuZnCo)O⁎, at 180 °C and 190 °C, respectively.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+19
+
+
+=== PAGE 20 ===
+
+contribution of maximized entropy to oxidative desulfurization catalytic
+reaction by comparing the performance evaluation of the single and
+multi-phase samples which were heat treated at T ≥900 °C and T <
+900 °C, respectively. The results showed that MoNiCuZnCoOx-900 °C
+and MoNiCuZnCoOx-1000 °C exhibited a superior activity in which they
+removed 100% of sulfur in 3–3.5 h, at 120 °C. In contrary,
+MoNiCuZnCoOx-800 °C removed only 58% of sulfur after 4 h of the reac-
+tion. The reason of this difference is that high entropy oxide which was
+achieved in the single phase samples (MoNiCuZnCoOx-900 °C and
+MoNiCuZnCoOx-1000 °C) prevented the materials’ components from
+clustering and promoted the dispersion and stability of Mo at high tem-
+peratures which directly affected the number of exposed reduced sites
+that participated in the reaction. Another comparison was held for binary
+(MoCo-900 °C), ternary (NiCuZn-900 °C), physically mixed (MoCo-
+900 °C and NiCuZn-900 °C) and high entropy (MoNiCuZnCoOx-900 °C)
+catalytic systems whereas obviously depicted in Fig. 14(A) and
+(B) MoNiCuZnCoOx-900 °C showed enhanced activity. The signiﬁcant
+role of Mo in the oxidative desulfurization reaction was investigated by
+comparing the catalytic activity of with/without Mo alloy systems,
+where it was noted that NiCuZnCo system experienced a sharp drop in
+the activity, and removed only about 22% of sulfur. HEOs in this study
+were reported to have better performance than H5PV2Mo10O40/SiO2
+[180], CNT-SZ [181] (which is CNT purchased from Nanotech Port Co.,
+Shen zhen-China and was labelled after the producers initials).
+Heteropoly acid, Cu NPs/g-BN [182] and MIL-101(Cr) [183], because
+they were able to remove 100% of sulfur in almost half of the time dura-
+tion recorded for the previous catalysts.
+6.7. Critical comparison; HEO vs. their non HEO analogues in oxidative de-
+sulfurization reaction
+As depicted in Fig. 15(B), a critical comparison is presented regard-
+ing the removal of sulfur completely (100%) at 120 °C for the catalysts
+MoNiCuZnCoOx, MIL-101(Cr), H5PV2Mo10O40/SiO2 [180] and Cu NPs/
+g-BN [182], where the HEO was the fastest to ﬁnish the reaction (3 h)
+and MIL-101(Cr) [183] was the slowest with 25 h to complete the reac-
+tion. Besides, the HEO studied catalysts showed good stability where
+they were re-used for six (6) times with exhibiting negligible fall back
+in their performance.
+6.8. CH4 partial oxidation
+A technical report that was published by Stanford University for
+Global Climate and Energy project [137] demonstrated the utilization of
+HEO for CH4 partial oxidation. It showed that (MgNiZnCuCo)Ox,
+(MgTiZnCuCo)Ox (AlFeCrGaTi)Ox, (FeCoMgNiMn)Ox, (MgCaNiCoFeMn)
+Ox and Cu nanoparticles supported by the previous catalysts resulted in
+oxidizing CH4 partially to CO2 and CO in temperatures that ranged be-
+tween 25–500 °C. The research was targeting producing methanol out
+of CH4, but it concluded that the used elements played an important
+role in determining the route of the reaction where the excessive amount
+of active O in the tested HEOs redirected the selectivity from methanol to
+carbon monoxide and carbon dioxide. Besides, the metal-oxygen bond-
+ing, and the condition of the high temperature was able only to activate
+the methane molecule without any signiﬁcant effect on producing the de-
+sired reaction yield.
+6.9. Alcohol oxidation
+Feng et al. [151] prepared an improved mesoporous lamellar high en-
+tropy oxides catalyst (CoNiCuMgZnO) which successfully facilitated the
+oxidation of benzyl alcohol and converted 98% of the aromatic alcohol
+to mainly benzoic acid, benzaldehyde, and benzyl benzoate at 120 °C in
+2 h only. The reported catalyst showed superior performance in terms
+of stability and activity compared to Au/Pd-TiO2 that achieved a maxi-
+mum conversion of 91.6% of benzyl alcohol in a four times longer duration
+period. The prominent catalytic activity was explained by the existence of
+the increased oxygen vacancies sites in the structure of the holey HEO
+which was synthesized by an anchoring-merging process with graphene
+oxide that in its turn increased the number of the reduced sites of the cat-
+alyst and enhanced the hydrogen and M-O bonds between the functional
+group of the alcoholic molecules (-OH) and the exposed surface oxygen
+atoms and reduced catalytic sites. In addition, the surface area
+(~42 m2 g-1) and the pore volume of 0.106 cm3 g-1 of the novel material
+contributed to the better activity due to the strengthening of the energy
+of adsorption of benzyl alcohol. The study focused also on recording the
+effect of changing the composition of the elements, where decreasing all
+the elements by 10% increased the time required to achieve the chemical
+equilibrium by one hour. On the other hand, decreasing the composition
+of one element at a time by 30% affected the selectivity that was shifted to
+benzaldehyde and incremented the time needed to achieve the chemical
+equilibrium by 7 times.
+6.10. Critical comparison; HEO vs. their oxides analogues in alcohol oxida-
+tion reaction
+Fig. 15(C) demonstrates a comparison between the Holey Lamellar
+HEO (CoNiCuMgZnO) [151], 2.5%Au2.5%Pd/TiO2 [184], Au8%/U3O8
+[185] and Au/CeO2 [186] where as previously mentioned, the HEO con-
+verted 98% of benzyl alcohol which was from a catalytic point of view
+better than the rest 3 catalysts (~55–90%).
+6.11. Photocatalysis
+High entropy oxides were also reported by Edalati et al. [150] for the
+application of photocatalysis, in particular for hydrogen evolution dur-
+ing water splitting in which TiHfZrNbTaO11 optical properties were in-
+vestigated for this purpose. The catalyst had mixed phases that were
+revealed to be 60 mol% monoclinic perovskite and the rest was ortho-
+rhombic perovskite. The high entropy material exhibited a band gap
+value which was within the range of the visible light (~2.9 eV) when
+its cations oxides possessed band gaps between 3.1–5.7 eV. The material
+was tested for the desired reaction by exposing it for 180 minutes to UV
+light. It was observed that after the 30th minute, the time of exposure
+and the released hydrogen were linearly increasing.
+Another recently published photocatalytic application was reported
+by Anandkumar et al. [121] where Gd0.2La0.2Ce0.2Hf0.2Zr0.2O2 and
+Gd0.2La0.2Y0.2Hf0.2Zr0.2O2 with Eg= 2.52 and 3.09 eV, respectively,
+were used to degrade the 70% of methylene blue (MB) dye in a
+timeframe of approximately 180 min and reduce 100% of Cr(VI) to Cr
+(III) in a time duration of 90–100 min. Cr and MB are considered as
+main contamination sources of drinking water and converting them
+to less toxic species by cost and time effective materials is a challenge
+to be addressed. It should be noted that the reported HEO were able
+to function efﬁciently by exposing them to sunlight due to their ability
+to absorb high wavelengths.
+6.12. Critical comparison; HEO vs. their oxides analogues in photocatalysis
+Fig. 16 shows better performance of HEO [150] as the production of
+H2 during water splitting was approximated with 0.056 mmol/h.gcat. On
+the other hand, the rest of the catalysts (TiO2 [187], Sb2Ti1.0 O5 [188] and
+RuO2/n-MgFe2O4/ CaFe2O4/Pt [189]) had a total production of H2 per
+hour that ranged between 0.011-0.055 mmol/h.gcat.
+6.13. Electrocatalysis
+6.13.1. Water oxidation
+(CoCuFeMnNi)3O4 is a spinel high entropy oxide electrocatalyst re-
+ported by Wang et al. [104] that was suggested to be applied for water
+oxidation after supporting it by multi walled carbon nanotubes. The cat-
+alyst exhibited improved performance compared to the unsupported
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+20
+
+
+=== PAGE 21 ===
+
+high entropy oxide in terms of conductivity, tuned mass transfer be-
+tween the electrolyte and the electrode (~10 mA cm-2 at 1.58 V in 1 M
+KOH) (Rp and Rs of 0.74 Ω and 21.67 Ω).
+6.13.2. Critical comparison; HEO vs. their non-HEO analogues in
+electrocatalysis
+Fig. 17 compares the following electrocatalysts ((CoCuFeMnNi)3O4 /
+MWCNT [104], CoFe2O4@Co–Fe–Bi nanoarray [190] , Cu/CuO [191], and
+Fe1.1Co1.9O4 [192] in terms of their tafel slope, as the lowest value re-
+quired to increase the rate of the electrocatalytic reaction of water oxi-
+dation was attributed to the HEO/MWCNT (59.5 mv/dec) and the rest
+of the catalysts exhibited the following values of the slope respectively,
+127, 114 and 61 mV/dec.
+7. Computational studies
+This section presents the computational studies that have been
+employed so far to unravel the properties which are directly related to
+the structure and catalytic performance of the high entropy oxides.
+Modelling high entropy oxides unit cells with taking into consideration
+all the possible conﬁgurations with the intrinsic oxygen vacancies is still
+not reported in literature; though such a study is expected to enlighten
+the HEO potential as catalysts. To the best of our knowledge, over the
+last ﬁve years, few computational studies of high entropy oxides were
+published in the ﬁeld, highlighting the difﬁculty dealing with such com-
+plex structures. As explained previously, the population and mobility of
+the oxygen vacancies play a crucial role in improving the performance
+of the catalysts. Density Functional Theory (DFT) is a powerful tool
+used to validate the experimental results by studying the low (e.g.
+CeO2 and CeSmCuO) and medium entropy (e.g. BaSrCoFeO) [193] ox-
+ides at their atomistic level and calculate the energy of formation of ox-
+ygen vacancies, located at the most preferable sites, and their behavior
+under strain. Up to date publications show a clear gap in describing
+high entropy oxides’ oxygen vacancies quantitatively by DFT. In what
+follows, the use of computational tools on difference aspects of HEO is
+discussed; from the point of formation (mixing) to intrinsic properties
+(e.g. band gap).
+7.1. HEO mixing behavior
+A case study published by Zhong et al. [194] where a new computa-
+tional approach applied by CALculation of PHAse Diagram (CALPHAD)
+was adapted to evaluate the difference between the mixing in the
+high entropy ceramics and the high entropy alloys on the simple perov-
+skite model (LaMnO3±δ). The study deﬁned clearly that mixing in
+HEOs stands for the disorder of the cations, anions and defects sites
+while in the HEAs it only refers to the disorder of the main constituents
+that contributes with more than 5 mol% in the material. The study
+highlighted the difﬁculty of recording the mixing in high entropy ce-
+ramics in general due to the different contribution of the lattice constit-
+uents (cations and anions) and the lattice defect chemistry.
+7.2. Phase stability
+From a thermodynamic point a view, Anand et al. [26] conducted a
+computational study and investigated the effect of decreasing/changing
+the number of components/ composition of HEO (NiMgCoCuZn)O on
+the enthalpy and conﬁgurational entropy through optimized lattice
+conﬁgurations of cations and anions. In terms of the compositions,
+(CoCuMgNi)O and (CoMgNiZn)O achieved the lowest mixing en-
+thalpies. And, in terms of the number of components, it was observed
+that adding Ca to the system as in (CaCoCuNiZn)O increased the mixing
+enthalpy which indicated its favorability to form secondary phases
+[195]. It was proved that the HEO system is entropy stabilized since
+the enthalpy contribution was positive and signiﬁcantly low. Decreasing
+the number of cations from 5 to 4 affects directly on lowering the
+mixing entropy and increasing the enthalpy, which requires greater
+temperature compensation to stabilize the phase of the system and
+drive it to lower free energy. Changing the composition to include Ca
+among the cations instead of Mg directs the system to be out of the ho-
+mogenous phase due to the high enthalpy that requires higher temper-
+ature to stabilize it. The study can help in constructing unit cells for
+simulation through the bonding and segregation information provided.
+Another computational study by Jiang et al. [87] investigated the local
+distortion in the pyrochlore type of HEO Nd2(Ta0.2Sc0.2Sn0.2Hf0.2Zr0.2)
+2O7 and Nd2(Ti0.2Nb0.2Sn0.2Hf0.2Zr0.2)2O7+x where modeling with pair
+distribution function, special quasirandom structures, DFT-Ab initio mo-
+lecular dynamics, Reverse Monte Carlo method, and Metropolis Monte
+Carlo simulations were presented. The main ﬁndings of the study
+were as follows: 1) the average structure of the simulated materials
+was orthorhombic (space-group Imma), 2) the participating cations de-
+termine the nature of the local distortion, as TiO6 was found to experi-
+ence a high distortion and a short range order of Ti in Nd2
+(Ti0.2Nb0.2Sn0.2Hf0.2Zr0.2)2O7+x, while Nd2(Ta0.2Sc0.2Sn0.2Hf0.2Zr0.2)2O7
+was found to have a uniform and highly disordered structure. Further-
+more, the study emphasized on the importance of local distortion com-
+putational studies that will enable tailoring the properties of HEO.
+7.3. Adsorption energies studies
+Feng et al. [151] augmented their experimental results (Thermal Ca-
+talysis: Alcohol Oxidation section) with performing computational
+analysis on the atomistic level of the material and density functional
+theory calculations by using Vienna Ab initio Simulation Package
+(VASP) as a functioned tool to investigate the adsorption energy of ben-
+zyl alcohol molecules that is affected directly by the number of the
+existing oxygen vacancies in the novel holey lamellar high entropy
+oxide catalyst. The simulated FCC surface (111) was obtained after opti-
+mizing the atomic positions by the conjugate gradient algorithm. It
+consisted from 160 total number of atoms (16 atoms for each of the 5
+cations and 80 atoms for the anion), with a lattice parameter of
+4.23 Å. The research showed the signiﬁcant role of the increased oxygen
+vacancies sites in enhancing the performance of the holey catalyst (Ea
+benzyl molecule = 1.43 eV) compared to the bulk HEO (Ea=0.27 eV)
+which clearly demonstrates the higher stability of the molecule on the
+holey slab as shown in Fig. 18(A) and (B).
+7.4. Compression/pressure in HEO
+A DFT study conducted by Rak et al. [66] which focused on calculat-
+ing the charge transfer and compensation in the high entropy oxide
+(

@@ -1,0 +1,68 @@
+# =========================================================================
+# CALPHADHEACalc - Comprehensive .gitignore
+# High-Entropy Alloy Multi-Physics Workstation & Standalone Web Suite
+# =========================================================================
+
+# MATLAB Temporary & Autosave Files
+*.asv
+*.m~
+*.slxc
+*.mat.bak
+*.mex*
+*.tmp
+crash_dump*
+*.dmr
+mccExcludedFiles.log
+readme.txt
+
+# Python Caches & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Temporary Scratch & Diagnostic Files
+scratch/
+temp_*
+*.log
+*.bak
+
+# Windows OS System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor & IDE Directories
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Large Local Exports (Keep repository lightweight for git clone)
+CALPHAD_Worksheet_*.csv
+OriginPlot_Test_Export.png
+test_universal_export.png
+
+# Temporary Screenshots & Diagnostic Render Artifacts
+frame_*.png
+page_*.png
+alfecrconi_page_*.png
+test_flask_*.png
+OriginPlot_*.png
+Isopleth_Plot_*.png
+crop_ref.png
+flask_anim.gif
+*_snapshot.png
+*.raw.pdf
+*.lnk
+task_plan.md
+findings.md
+progress.md

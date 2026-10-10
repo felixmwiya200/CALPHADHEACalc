@@ -1,0 +1,288 @@
+3. High entropy stabilization: Concepts and terminologies
+3.1. High entropy alloys vs. high entropy oxides
+Building a comparison between metal-oxides (HEO) and alloys
+(HEA), based on the concepts of alloys, reveals outstanding properties
+of the counterpart oxides. As discussed by Rost et al. [7], considering
+one atom in HEO system shows that it has less total entropy compared
+to HEA system due to the existence of arranged arrays of oxygen atoms.
+To further understand the concept of entropy acting as a driving force,
+let’s assume a binary metallic system as start point which consists of A
+and B components in an ideal solution. The interaction energy between
+the atoms will be given by the following equation: EA−B ¼ EA−AþEB−B
+2
+where the enthalpy change of mixing is zero and therefore all the
+Fig. 4. The formation concept of Entropy Stabilized Oxides (ESO) on commonly reported systems following different preparation pathways. *Reproduced under the terms of the Creative
+Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [55]. Copyright (2013), published by the American Institute of Physics.
+Fig. 5. Sub-families of high entropy ceramics.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+5
+
+
+=== PAGE 6 ===
+
+atoms are contributing to the solution equally while being driven by the
+maximum entropy. On the other hand, the structure of metal-oxides is
+featured by having oxygen anions that are surrounding the cations by
+a speciﬁc co-ordination number (CN), therefore there is no direct inter-
+action between any two adjacent cations since they are separated by
+anion layers. In this case, all the cations are considered to contribute
+to the lattice equally, therefore, by recalling the basic thermodynamics
+concepts, the whole system will be driven to its maximum entropy.
+3.2. Entropy stabilized oxides (ESO) vs. high entropy oxides (HEO)
+Also, it is important to draw the attention that even though “high-
+entropy and entropy-stabilization are often used interchangeably, they
+are fundamentally different” [17]. The concept of high entropy reﬂects
+that the system simply has high conﬁgurational entropy without any
+consideration to the endothermicity or exothermicity of the system
+[7,17,19]. However, entropy stabilization indicates that the system
+needs to possess both high conﬁgurational entropy and positive en-
+thalpy of formation (+ΔH) which means that the entropy drives the
+thermodynamic state of stability [17]. It should also be noted that
+many studies reported did not verify the entropic stabilization of their
+materials since the reversibility tests and the Differential Scanning Cal-
+orimetry (DSC) characterization were not discussed [45,56]. Overall,
+conﬁgurational disorder gives a way to discover new different phases
+of crystalline matter and ﬁnd new opportunities for property
+engineering.
+3.3. Reversibility
+Based on Rost et al. [7] study, reversibility of the ESO was deﬁned by
+subjecting the material’s pellets to calcination in air (~ 700–1100 °C)
+and following it by quenching at room temperature. The sample was
+characterized by X-ray diffraction as shown in Fig. 6 where the detected
+peaks demonstrated the existence of minor phases at lower tempera-
+tures of the heat treatment. Multi-phases of rocksalt and tenorite were
+observed after 700 °C, as the tenorite peaks intensity decreased with
+the signiﬁcant increase of temperature to crystalize into rocksalt single
+phase between 850 and 900 °C. Since reversibility is a requirement for
+entropy driven transitions, low temperature should transform the pel-
+lets back to multi-phase state, as demonstrated in Fig. 4.
+3.4. High vs. medium vs. low entropy oxides
+In Section 2, Fig. 3 shows the three classiﬁcations of the metal-oxide
+systems as Cantor et al. [11] and Yeh at al. [12] had established. Low en-
+tropy oxides are deﬁned to be composed out of less than 3 different
+cations, where their conﬁgurational entropy values are less than 1 R
+[41]. Similarly, for the medium entropy oxides systems, the conﬁgura-
+tional disorder values usually range between 1 R up to 1.5 R which indi-
+cates that they consist of 3 to 4 different cations [10,41]. While the high
+entropy oxides are distinguished by being composed from 5 or more
+different cations and as a result, their mixing entropy will be greater
+than 1.5 R. (R=8.314 J/K.mol) [10]. Rost et al. [7] and Djenadic et al.
+[48] studied the effect of changing the composition and the number of
+components in the HEO system from two different perspectives which
+were the change in entropy that affected the phases and the structure,
+respectively. Starting by Rost et al. [7] composition test on the MgO,
+CoO, NiO, CuO and ZnO system is conducted to further check the
+phase transition. If the entropy is the driving force then changing the
+cation ratios will alter the transition temperature, and equi-molarity
+will lead to the lowest transformation temperature. When there is a de-
+viation from equi-molarity, number of the conﬁgurational microstates
+(Ω) are reduced according to Sconf = kB log (Ω) and this will therefore
+increase the transition temperature as Sconf(xi) is linked logarithmically
+to the mole fraction. The study showed that conﬁgurational entropy for
+the solution that has N species and each individual species was alerted
+with keeping the rest equimolar. A couple of dependencies were ob-
+served, entropy increase as species are added and it was the maximum
+when all of them have the same fraction. In both cases, ideal random
+mixing is assumed. Composition-varying experiments were preformed
+to observe the single phase rocksalt formation trends where all the
+sets are equilibrated at 875 °C for 12 hours and removing any compo-
+nent ends with distorting the lattice by minor multi-phases.
+4. High entropy oxides synthesis methods
+4.1. HEO selection rules
+Rost et al. [7], Chen et al. [44] and Djenadic et al. [48] reported the de-
+sign rules of their HEO systems where the cations have an overarching
+role on the properties and behavior of the materials. Therefore, the dif-
+ference of the cationic radii of the components should be relatively
+small in order to have a single-phase oxide. Besides, at least one of the
+cations’ crystal structure should be different and the overall system
+should have distinctive electronegativity. Intensive solubility of the
+components was also considered to be a selection rule. Also, as a mini-
+mum, one binary oxide system should not have a complete miscibility
+gap at 0.5 mole fraction. In summary, the geometric and electrical bal-
+ance factors [27] are critical factors for determining the constituents of
+the HEO systems where the uniformity of crystal structures, electro-
+negativities and coordination numbers is avoided while designing.
+Fig. 6. Reversibility test x-ray diffraction results. Reproduced under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [7]. Copyright
+(2015), the authors, published by Springer Nature.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+6
+
+
+=== PAGE 7 ===
+
+4.2. Reported synthetic techniques
+Studies have developed the methods of HEO synthesis starting from
+solid state and thermal treatment at high temperatures, and as recently
+published by ambient temperature conditions, without the need for
+calcination [53]. Among the different synthetic approaches reported in
+the literature for achieving HEO systems, wet chemical methods [57],
+sono-chemical method [56], nebulized (NSP) [48] and ﬂame spray
+[58] pyrolysis (FSP), pulse-laser ablation, solid-state method [7], sol
+−gel auto-combustion [59] and epitaxial growth [25,60] were the
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+7
+
+
+=== PAGE 8 ===
+
+leading in the ﬁeld. Table 1 lists the high entropy oxide systems based
+on their synthetic technique along with the crystal structure obtained:
+Summarizing the main ﬁndings from the previous references, the
+following remarks can be done:
+Sono- and mechano-chemical methods succeeded in stabilizing the
+entropy without the need of the high temperature as in the solid state
+synthesis with metal salts precursors. The structures of the HEO re-
+ported so far are rock-salt, ﬂuorite, spinel, perovskites, aurivillius,
+pyrochlores, monoclinic, bixbyite, rutile and garnet.
+The harsh solid-state synthesis conditions enable the materials to
+gain outstanding properties such as: withstanding high temperature
+in the different applications compared to the conventional oxides. In
+other words, high entropy oxides are usually formed after being sub-
+jected to high temperatures that could reach up to 900 °C. Therefore,
+they can be the perfect candidates for excessive temperature applica-
+tions without losing their main properties.
+Morphology of different HEO materials varied with changing the
+synthesis method and the composition. As shown in Fig. 7(A–C), the
+same composition of the transition metal oxides (CoCuMgNiZn)O was
+synthesized using NSP, FSP and reverse co-precipitation (RCP) [17].
+The study had reported important observations on the SEM micro-
+graphs, the morphology was varying in size and distribution, where
+the shape was approximately uniﬁed for the different methods (spher-
+ical). RCP method yielded in having spherical agglomerates, with a con-
+siderably greater diameter (~50–150 nm) compared to FSP and NSP.
+NSP particles exhibited a wide spectrum of sizes (nano-microparticles)
+and a variation between spheres and cuboidals. Fig. 7(E) depicts the
+same composition of HEO which was synthesized by the same method
+(NSP), the morphology also varies between the cuboidal and the spher-
+ical with a broad size distribution [111]. In the Fig. 7(D), the
+(CeZrYLaGd)O material was synthesized by hydrothermal methods
+and clearly exhibited a homogeneous distribution of particles with the
+creation of pores due to the selected components [125]. SEM image
+over the (CoCuFeMnNi)O is shown in Fig. 7(F), and clearly its morphol-
+ogy deviates compared to the one in Fig. 7(C) although they share the
+same synthesis method (RCP) due to the change in the composition
+(addition of Fe and Mn instead of Mg and Zn) [104]. Fig. 7(J) depicts a
+clear Ce decomposition and the possible reasons were the following:
+the miscibility gap between the liquid and solid phase that was formed
+upon sintering at high temperatures, or the composed solid solution is
+deviating from ideality and considered to be sub-regular, where the
+Gibbs free energy curve is asymmetric [17]. Having the material devi-
+ant from the homogeneous phase (phase impurities) can cause draw-
+backs on the catalytic performance by deactivating the catalyst under
+stream. Fig. 7(G–I) and (K–M) demonstrate the different morphol-
+ogies that HEO systems can possess through reactive spark plasma
+sintering, precipitation, solid state and the oxidation of high entropy
+alloys as precursors and should be studied thoroughly to explain the
+role of the particles size and distribution in the catalytic applications
+[74,82,104,123,129,150].
+A direct link between the synthesis methods and the textural prop-
+erties of the catalysts was noticed. For instance, ball milling of
+NiCoMgZnCuO achieved a BET surface area of 2 m2/g [44], while
+coprecipitation (using precipitating agent NaOH and CTAB) of the
+same system of transition metals recorded higher BET surface area
+(28 m2/g) [44]. Another observation should be raised, generally high en-
+tropy oxides basic preparation (solid state) methods depend on high
+temperature to crystallize the material that also tend to limit the size
+of the powder particles (sintering cannot be avoided) and prevent it
+from forming nanoparticles [22]. However, NSP and FSP methods are
+suggested semi-effective solutions to reach the nano-scale particles
+due to the short retention time of the material [22]. But, it should be
+noted that agglomeration of particles is also inevitable which can
+again limit the NSP and FSP techniques [22].
+4.3. Use of descriptors for evaluating the synthesizability of the HEO
+In the literature there are reported models where they try to use
+descriptors so to evaluate the solubility of the mixing elements. The de-
+scriptor approach can ﬁnd its routes back in the William Hume-Rothery
+work with the establishment of Hume-Rothery rules [152]. Some de-
+scriptors are based on the mixing enthalpy, such as the ones deﬁned
+by Liu et al. [153] which is described by the following equation:
+δ ¼
+R⁎
+
+
+ΔR⁎
+
+	2
+Z
+G
+ð10Þ
+where R is the lattice constant,
+R⁎
+
+
+is the average effective lattice con-
+stant, and (ΔR⁎)2 is the difference in the effective lattice constant. Z is
+the formula units per unit cell and G is the shear modulus. A combina-
+tion of elements where high atomic solubility is achieved is giving rise
+to a small value of δ parameter (low lattice strain). In the case of perov-
+skite oxides, it is reported that a Goldschmidt tolerance factor close to
+one is important, though not the sole criterion, to receive single phase
+perovskite HEO.
+Towards pointing out the importance of entropy in these structures,
+there is an effort to establish entropy-based descriptors. In the case of
+High Entropy Carbides (HEC), as proposed by K. Vecchio et al. [9] the
+‘entropy forming ability’ (EFA) can predict the ability to achieve HEC.
+The EFA formula is given by the equation:
+EFA ¼
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+∑
+n
+i¼1
+gi Hi−Hmix
+ð
+Þ
+∑n
+i¼1gi
+
+
+−1
+v
+u
+u
+u
+u
+t
+0
+B
+B
+B
+@
+1
+C
+C
+C
+A
+−1
+ð11Þ
+Where n are the atom conﬁgurations and Hi is the enthalpy for the dif-
+ferent conﬁgurations. So, it can be said that the EFA is based on the dis-
+tribution ﬁeld of the enthalpy.
+The accuracy of the descriptor dictates the accuracy of the predic-
+tion. There are many descriptors developed but they face criticism for
+a variety of reasons; for instance, some descriptors can have more
+than one deﬁnition (e.g. atomic size), whereas the kinetics and the pres-
+ence of any competitive phase are not included in the phase stability
+prediction. Weaknesses like the ones just mentioned make the descrip-
+tors to be treated as ‘empirical’ ones.
+Fig. 7. SEM micrographs of HEO systems synthesized by different methods. (A) (CoCuMgNiZn)O by Reverse Coprecipitation, (B) (CoCuMgNiZn)O by Flame Spray Pyrolysis,
+(C) (CoCuMgNiZn)O by Nebulized Spray Pyrolysis, (D) (CeZrYLaGd)O by Hydrothermal methods, (E) (CoCuMgNiZn)O by Nebulized Spray Pyrolysis, (F)(CoCuFeMnNi)O by Reverse
+Coprecipitation, (G) Sr((Zr0.94Y0.06)0.2Sn0.2Ti0.2Hf0.2Mn0.2)O3−x by Reactive Spark Plasma Sintering, (H) (Na0.2K0.2Ca0.2La0.2Ce0.2)TiO3 by Solid State synthesis, (I) TiZrHfNbTaO11 by
+Oxidation of High Entropy Alloys Precursors, (J) (Ce0.2Zr0.2Hf0.2Sn0.2Ti0.2)O2 by Solid State synthesis, (K) (Sc0.2Ce0.2Pr0.2Gd0.2Ho0.2)2O3±δ by Precipitation, (L) NiMgCoCuZnO by spark
+plasma sintering, (M) CoCuFeMnNiO/MultiwalledCarbon Nanotubes by Reverse Coprecipitation. (A–C) Adapted with permission. [58] Copyright (2017), Elsevier. (D) Adapted from.
+[125] Copyright (2020), MDPI. (E) Adapted under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [111]. Copyright (2018), the
+authors, published by Springer Nature. (F,M) Adapted with permission. [104] Copyright (2019), The Royal Society of Chemistry. (G) Reproduced under the terms of the Creative
+Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [129]. Copyright (2019), the authors, published by Taylor & Francis Online. (H) Adapted from [82]. Copyright
+(2020), MDPI. (I) Adapted with permission. [150] Copyright (2020), The Royal Society of Chemistry. (J) Adapted with permission. [17] Copyright (2018), Elsevier. (K) Reproduced
+under the terms of the Creative Commons CC-BY 3.0 license (https://creativecommons.org/licenses/by/3.0//) [123]. Copyright (2019), the authors, published by IOP Publishing Ltd.
+(L) Reproduced under the terms of the Creative Commons CC-BY license (https://creativecommons.org/licenses/by/4.0/) [74]. Copyright (2018), the authors, published by Taylor &
+Francis Online.
+S.H. Albedwawi, A. AlJaberi, G.N. Haidemenopoulos et al.
+Materials and Design 202 (2021) 109534
+8
+
+
+=== PAGE 9 ===
+

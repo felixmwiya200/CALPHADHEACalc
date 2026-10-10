@@ -1,0 +1,1 @@
+(function(){'use strict';var a,b=document.currentScript,c=b&&b.getAttribute("data-payload")||"{}";if(a=JSON.parse(c).YGMNid)try{a=window.localStorage.getItem("GqGm3b")!=="false"}catch(d){a=!0}a&&document.body.classList.add("ssr-nav-open");}).call(this);

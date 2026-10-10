@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<title>CALPHADHEACalc</title>
+<hta:application 
+  id="oSplash" 
+  applicationname="MaterialSplash" 
+  border="none" 
+  caption="no" 
+  contextmenu="no"
+  innerborder="no"
+  maximizebutton="no"
+  minimizebutton="no"
+  navigable="no"
+  scroll="no"
+  scrollflat="yes"
+  selection="no"
+  showintaskbar="yes" 
+  singleinstance="yes" 
+  sysmenu="no" 
+  windowstate="normal"
+  icon="resources/app_icon.ico"
+/>
+<link rel="shortcut icon" href="resources/app_icon.ico" type="image/x-icon"/>
+<link rel="icon" href="resources/app_icon.png" type="image/png"/>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #191F26;
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #container {
+    width: 520px;
+    height: 480px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #283340;
+    background-color: #191F26;
+    opacity: 0.05;
+    filter: alpha(opacity=5);
+    transition: opacity 0.15s ease-out;
+  }
+  .flask-svg {
+    width: 150px;
+    height: 210px;
+    overflow: visible;
+  }
+  .loading-text {
+    font-size: 17px;
+    letter-spacing: 1.8px;
+    color: #F1F5F9;
+    margin-top: 14px;
+    font-weight: 400;
+  }
+  .status-title {
+    font-size: 11.5px;
+    color: #94A3B8;
+    margin-top: 8px;
+    letter-spacing: 0.2px;
+  }
+  .status-detail {
+    font-size: 10px;
+    color: #64748B;
+    margin-top: 4px;
+    letter-spacing: 0.1px;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <svg class="flask-svg" viewBox="0 0 140 200" fill="none">
+    <defs>
+      <!-- Glowing Cyan to Azure Liquid Gradient -->
+      <linearGradient id="flaskLiquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0AF0FF"/>
+        <stop offset="100%" stop-color="#0072DF"/>
+      </linearGradient>
+
+      <!-- Inner cavity clip path -->
+      <clipPath id="flaskInnerClip">
+        <path d="M 54,24 L 54,76 C 54,88 24,98 24,126 C 24,156 37,169 50,169 L 90,169 C 103,169 116,156 116,126 C 116,98 86,88 86,76 L 86,24 Z" />
+      </clipPath>
+    </defs>
+
+    <!-- Rising Sloshing Liquid inside Flask (starts empty at Y=169, rises to Y=26 when 100% full) -->
+    <g clip-path="url(#flaskInnerClip)">
+      <g id="flaskLiquidGroup" transform="translate(0, 169)">
+        <path id="liquidWavePath" d="M -40,0 Q 15,-7 70,0 T 180,0 L 180,240 L -40,240 Z" fill="url(#flaskLiquidGrad)" />
+        <!-- Crest highlight -->
+        <path id="liquidCrestPath" d="M -40,0 Q 15,-7 70,0 T 180,0" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" />
+      </g>
+    </g>
+
+    <!-- Crisp White Outer Florence Flask Outline (Open Mouth at Top) -->
+    <path d="M 47,16 C 50,21 54,23 54,28 L 54,76 C 54,88 22,98 22,126 C 22,158 36,172 50,172 L 90,172 C 104,172 118,158 118,126 C 118,98 86,88 86,76 L 86,28 C 86,23 90,21 93,16" 
+          fill="none" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+
+  <div class="loading-text">loading<span id="dotsSpan"></span></div>
+  <div class="status-title" id="statusTitleMsg">Initializing High-Entropy Alloy Core... 0%</div>
+  <div class="status-detail" id="statusDetailMsg">Mounting secure local memory and configuration...</div>
+  <div style="font-size: 10px; color: #64748B; margin-top: 12px; text-align: center; line-height: 1.4;">
+    CALPHADHEACalc v3.4.0 &bull; Felix Mwiya &bull; Guidance: Prof. Sheela Singh<br>
+    SRM University-AP, Andhra Pradesh, India
+  </div>
+</div>
+
+<script>
+(function() {
+  // Window geometry
+  var W = 520, H = 480;
+  window.resizeTo(W, H);
+  window.moveTo(Math.round((screen.width - W) / 2), Math.round((screen.height - H) / 2));
+
+  var container = document.getElementById('container');
+  var liquidGroup = document.getElementById('flaskLiquidGroup');
+  var wavePath = document.getElementById('liquidWavePath');
+  var crestPath = document.getElementById('liquidCrestPath');
+  var dotsSpan = document.getElementById('dotsSpan');
+  var titleMsg = document.getElementById('statusTitleMsg');
+  var detailMsg = document.getElementById('statusDetailMsg');
+
+  // Fade in
+  var opacity = 0.05;
+  var isExiting = false;
+  var currentPct = 0;
+  var targetPct = 0;
+  var tickCount = 0;
+  var wavePhase = 0;
+
+  // Locate IPC File
+  var fso = null;
+  var ipcPath = "";
+  try {
+    fso = new ActiveXObject("Scripting.FileSystemObject");
+    var wsh = new ActiveXObject("WScript.Shell");
+    var tempDir = wsh.ExpandEnvironmentStrings("%TEMP%");
+    ipcPath = fso.BuildPath(tempDir, "mat_splash_ipc.txt");
+  } catch(e) {}
+
+  // 40 FPS animation loop (25ms)
+  var timer = setInterval(function() {
+    tickCount++;
+    wavePhase += 0.09;
+    if (wavePhase > 62.8) wavePhase -= 62.8;
+
+    // Fade-in
+    if (!isExiting && opacity < 1.0) {
+      opacity += 0.15;
+      if (opacity > 1.0) opacity = 1.0;
+      container.style.opacity = opacity;
+      container.style.filter = 'alpha(opacity=' + Math.round(opacity * 100) + ')';
+    }
+
+    // Smooth percentage interpolation
+    if (Math.abs(targetPct - currentPct) > 0.1) {
+      currentPct += (targetPct - currentPct) * 0.18;
+    } else {
+      currentPct = targetPct;
+    }
+
+    // Update liquid fill height:
+    // Empty: Y = 169 (0%)
+    // Full:  Y = 26  (100%)
+    var clampedP = Math.max(0, Math.min(100, currentPct));
+    var curY = 169 - (clampedP / 100) * (169 - 26);
+    liquidGroup.setAttribute('transform', 'translate(0, ' + curY.toFixed(2) + ')');
+
+    // Dynamic wave slosh
+    var waveAmp = (clampedP > 94) ? 1.4 : (clampedP < 8 ? 1.5 : 3.8);
+    var dy1 = Math.sin(wavePhase) * waveAmp;
+    var dy2 = Math.cos(wavePhase * 1.3) * (waveAmp * 0.6);
+    var dStr = "M -40,0 Q 15," + (-7 + dy1).toFixed(1) + " 70," + (dy2).toFixed(1) + " T 180,0";
+    wavePath.setAttribute('d', dStr + " L 180,240 L -40,240 Z");
+    crestPath.setAttribute('d', dStr);
+
+    // Animated dots: cycling every 300ms
+    var dotNum = Math.floor(tickCount / 12) % 4;
+    var dotStr = "";
+    for (var d = 0; d < dotNum; d++) dotStr += ".";
+    dotsSpan.innerHTML = dotStr;
+
+    // Poll IPC file every 50ms (every 2 ticks)
+    if (tickCount % 2 === 0 && fso && ipcPath && fso.FileExists(ipcPath)) {
+      try {
+        var file = fso.OpenTextFile(ipcPath, 1, false);
+        if (!file.AtEndOfStream) {
+          var l1 = file.ReadLine();
+          var l2 = (!file.AtEndOfStream) ? file.ReadLine() : "";
+          var l3 = (!file.AtEndOfStream) ? file.ReadLine() : "";
+          file.Close();
+
+          if (l1) {
+            var val = l1.replace(/^\s+|\s+$/g, '').toUpperCase();
+            if (val === "EXIT") {
+              targetPct = 100;
+              if (currentPct >= 96 || tickCount > 80) {
+                isExiting = true;
+              }
+            } else {
+              var p = parseFloat(val);
+              if (!isNaN(p)) targetPct = Math.max(0, Math.min(100, p));
+            }
+          }
+          if (l2) {
+            titleMsg.innerHTML = l2 + " • " + Math.round(currentPct) + "%";
+          }
+          if (l3) {
+            detailMsg.innerHTML = l3;
+          }
+        } else {
+          file.Close();
+        }
+      } catch(e) {}
+    }
+
+    // Smooth exit
+    if (isExiting) {
+      opacity -= 0.12;
+      if (opacity <= 0.04) {
+        clearInterval(timer);
+        window.close();
+        return;
+      }
+      container.style.opacity = Math.max(0, opacity);
+      container.style.filter = 'alpha(opacity=' + Math.max(0, Math.round(opacity * 100)) + ')';
+    }
+
+    // Safety timeout: auto close after 25s
+    if (tickCount > 25 * 40) {
+      isExiting = true;
+    }
+  }, 25);
+})();
+</script>
+</body>
+</html>
