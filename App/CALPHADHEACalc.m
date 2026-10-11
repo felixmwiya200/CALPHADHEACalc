@@ -3613,10 +3613,15 @@ classdef CALPHADHEACalc < handle
         end
 
         function onGlobalKeyPress(app, evt)
-            if isempty(evt) || ~isprop(evt, 'Key'), return; end
+            if isempty(evt), return; end
+            if ~isprop(evt, 'Key') && ~isfield(evt, 'Key'), return; end
             k = lower(evt.Key);
-            isCtrl = any(strcmpi(evt.Modifier, 'control'));
-            isAlt = any(strcmpi(evt.Modifier, 'alt'));
+            modList = {};
+            if isprop(evt, 'Modifier') || isfield(evt, 'Modifier')
+                modList = evt.Modifier;
+            end
+            isCtrl = any(strcmpi(modList, 'control'));
+            isAlt = any(strcmpi(modList, 'alt'));
 
             if isCtrl
                 switch k
