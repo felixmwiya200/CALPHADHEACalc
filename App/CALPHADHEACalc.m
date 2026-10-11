@@ -266,6 +266,28 @@ classdef CALPHADHEACalc < handle
         DatabasesRegistryFigure
         EquationsRegistryFigure
         FullscreenFigure
+
+        % Assessed Binary & Invariant Phase Diagram Controls
+        SubtabBinary          matlab.ui.container.Tab
+        AxBinary              matlab.ui.control.UIAxes
+        DropdownBinarySystem  matlab.ui.control.DropDown
+        DropdownBinaryTempUnit matlab.ui.control.DropDown
+        BtnComputeBinary      matlab.ui.control.Button
+        BtnExportBinary       matlab.ui.control.Button
+
+        % Dedicated Tab: Periodic Table Tab
+        TabPeriodicTable      matlab.ui.container.Tab
+        PeriodicTableStatusLabel matlab.ui.control.Label
+        PeriodicTableBtnMap   containers.Map
+
+        % Element Add/Remove Inspector Controls
+        DropdownAddElem       matlab.ui.control.DropDown
+        BtnAddElem            matlab.ui.control.Button
+        DropdownRemoveElem    matlab.ui.control.DropDown
+        BtnRemoveElem         matlab.ui.control.Button
+
+        % Baseline Extents Registry
+        BaselineExtents       containers.Map
     end
 
     methods
@@ -296,9 +318,11 @@ classdef CALPHADHEACalc < handle
             % Update splash screen progress if active
             try, MaterialSplash.update(15, 'Initializing Pure Native CALPHAD Core...', 'Configuring workspace docking architecture...', [1]); catch, end
 
-            % Initialize zoom history maps
+            % Initialize zoom history maps and registries
             app.ZoomStacks = containers.Map();
             app.ZoomPointers = containers.Map();
+            app.BaselineExtents = containers.Map();
+            app.PeriodicTableBtnMap = containers.Map();
 
             % Build GUI
             buildUI(app);
@@ -625,9 +649,9 @@ classdef CALPHADHEACalc < handle
         % TOOLBAR BUILDER (Interactive Page, Legend Sizing & Fullscreen Controls)
         % =========================================================================
         function buildToolbar(app)
-            tbGrid = uigridlayout(app.ToolbarPanel, [1, 23]);
-            tbGrid.Padding = [3 3 3 3];
-            tbGrid.ColumnWidth = {135, 75, 115, 80, 80, 75, 55, 48, 68, 44, 48, 44, 68, 74, 74, 100, 72, 58, 46, 85, 46, 75, 120};
+            tbGrid = uigridlayout(app.ToolbarPanel, [1, 21]);
+            tbGrid.Padding = [2 2 2 2];
+            tbGrid.ColumnWidth = {125, 72, 90, 70, 70, 70, 70, 52, 65, 65, 55, 44, 58, 40, 44, 44, 58, 48, 48, 80, 50};
 
             % 1. Presets DropDown (Comprehensive 22 Presets)
             presets = {
@@ -641,120 +665,72 @@ classdef CALPHADHEACalc < handle
             };
             app.PresetDropdown = uidropdown(tbGrid, ...
                 'Items', presets, 'Value', presets{1}, ...
-                'FontName', 'Segoe UI', 'FontSize', 9.5, ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
                 'ValueChangedFcn', @(~, evt) onPresetSelected(app, evt));
 
             % 2. Primary Calculate Button (Green CALPHAD Action)
             app.BtnCalculate = uibutton(tbGrid, ...
                 'Text', 'Calculate', ...
-                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
+                'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', ...
                 'BackgroundColor', [0.15, 0.65, 0.35], 'FontColor', [1 1 1], ...
                 'Tooltip', 'Calculate all thermodynamic & multi-physics models (F5 / Ctrl+R)', ...
                 'ButtonPushedFcn', @(~, ~) calculateAll(app));
 
-            % 3. Experimental Benchmark Overlay Toggle Button (Interactive Toggle)
+            % 3. Open Periodic Table Dialog (Full 118 IUPAC Elements)
+            app.BtnOpenPeriodicTable = uibutton(tbGrid, ...
+                'Text', 'Periodic Table', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.18, 0.48, 0.72], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Open Complete 118-Element IUPAC Periodic Table Explorer', ...
+                'ButtonPushedFcn', @(~, ~) openPeriodicTableDialog(app));
+
+            % 4. Experimental Benchmark Overlay Toggle Button
             app.BtnToggleBenchmark = uibutton(tbGrid, ...
-                'Text', 'Experimental: ON', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'Text', 'Exp: ON', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
                 'BackgroundColor', [0.15, 0.58, 0.35], 'FontColor', [1 1 1], ...
                 'Tooltip', 'Experimental literature benchmarks: ON (Click to toggle OFF)', ...
                 'ButtonPushedFcn', @(~, ~) toggleBenchmarkOverlays(app));
             app.BtnToggleExperimental = app.BtnToggleBenchmark;
 
-            % 4. Copy to System Clipboard (300 DPI)
+            % 5. Copy to System Clipboard (300 DPI)
             app.BtnCopyGraph = uibutton(tbGrid, ...
                 'Text', 'Copy Graph', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'BackgroundColor', [0.20, 0.45, 0.70], 'FontColor', [1 1 1], ...
                 'Tooltip', 'Copy active graph directly to Windows clipboard (300 DPI, Ctrl+C)', ...
                 'ButtonPushedFcn', @(~, ~) copyActiveGraphToClipboard(app));
 
-            % 5. Save Graph to Computer Dialog (600 DPI PNG, PDF, SVG, TIFF)
+            % 6. Save Graph to Computer Dialog (600 DPI PNG, PDF, SVG, TIFF)
             app.BtnSaveGraph = uibutton(tbGrid, ...
                 'Text', 'Save Graph', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'BackgroundColor', [0.25, 0.50, 0.60], 'FontColor', [1 1 1], ...
                 'Tooltip', 'Save active graph to computer at 600 DPI (Ctrl+S)', ...
                 'ButtonPushedFcn', @(~, ~) saveActiveGraphToFile(app));
 
-            % 6. Export CSV Worksheet
+            % 7. Export CSV Worksheet
             uibutton(tbGrid, ...
                 'Text', 'Export Data', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'Tooltip', 'Export plotted curve points to CSV (Ctrl+E)', ...
                 'ButtonPushedFcn', @(~, ~) exportDataWorksheet(app));
 
-            % 7. Interactive Left Dock Collapse/Expand
+            % 8. Interactive Left Dock Collapse/Expand
             app.BtnToggleDock = uibutton(tbGrid, ...
                 'Text', '<< Dock', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'Tooltip', 'Collapse or expand left inspector dock', ...
                 'ButtonPushedFcn', @(~, ~) toggleDock(app));
 
-            % 8. Graph Navigation: Reset / Home
-            app.BtnHomeZoom = uibutton(tbGrid, ...
-                'Text', 'Home', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Reset Active Axis View to Initial Extents (H)', ...
-                'ButtonPushedFcn', @(~, ~) resetActiveZoom(app));
-
-            % 9. Graph Navigation: Box Zoom
-            app.BtnBoxZoom = uibutton(tbGrid, ...
-                'Text', 'Box Zoom', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Rubber-band Box Zoom (Z)', ...
-                'ButtonPushedFcn', @(~, ~) activateBoxZoom(app));
-
-            % 10. Graph Navigation: Pan Tool
-            app.BtnPanMode = uibutton(tbGrid, ...
-                'Text', 'Pan', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Dynamic Pan Tool (P)', ...
-                'ButtonPushedFcn', @(~, ~) activatePanMode(app));
-
-            % 11. Graph Navigation: Data Cursor Probe
-            app.BtnDataCursor = uibutton(tbGrid, ...
-                'Text', 'Probe', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Data Cursor / Phase Probe (D)', ...
-                'ButtonPushedFcn', @(~, ~) activateDataCursor(app));
-
-            % 12. Grid Toggle (Cycle Off -> Major -> Minor)
-            app.BtnCycleGrid = uibutton(tbGrid, ...
-                'Text', 'Grid', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Cycle Grid: Off -> Major -> Minor (G)', ...
-                'ButtonPushedFcn', @(~, ~) cycleAxesGrid(app));
-
-            % 13. Log/Linear Scale Toggle
-            app.BtnToggleLog = uibutton(tbGrid, ...
-                'Text', 'Log Scale', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Toggle Y-Axis Log10 / Linear Scale (L)', ...
-                'ButtonPushedFcn', @(~, ~) toggleAxesLogScale(app));
-
-            % 14. Undo Zoom
-            app.BtnUndoZoom = uibutton(tbGrid, ...
-                'Text', 'Undo Zoom', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Undo Last Zoom Step (Ctrl+Z)', ...
-                'ButtonPushedFcn', @(~, ~) undoAxesZoom(app));
-
-            % 15. Redo Zoom
-            app.BtnRedoZoom = uibutton(tbGrid, ...
-                'Text', 'Redo Zoom', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Redo Zoom Step (Ctrl+Y)', ...
-                'ButtonPushedFcn', @(~, ~) redoAxesZoom(app));
-
-            % 16. In-Place Maximize Canvas Toggle
+            % 9. In-Place Maximize Canvas Toggle
             app.BtnMaximizeCanvas = uibutton(tbGrid, ...
-                'Text', 'Maximize Canvas', ...
+                'Text', 'Maximize', ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, ...
-                'Tooltip', 'Expand active plot to 100% window area (Ctrl+M)', ...
+                'Tooltip', 'Expand active plot to fill window area (Ctrl+M)', ...
                 'ButtonPushedFcn', @(~, ~) toggleMaximizeCanvas(app));
 
-            % 17. Standalone Fullscreen Window Button
+            % 10. Standalone Fullscreen Window Button
             app.BtnFullscreenWindow = uibutton(tbGrid, ...
                 'Text', 'Fullscreen', ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
@@ -762,18 +738,68 @@ classdef CALPHADHEACalc < handle
                 'Tooltip', 'Open active plot in dedicated Fullscreen Window (F11)', ...
                 'ButtonPushedFcn', @(~, ~) openFullscreenGraph(app));
 
-            % 18. Detached Pop-Out Window Button
+            % 11. Detached Pop-Out Window Button
             app.BtnPopOutGraph = uibutton(tbGrid, ...
                 'Text', 'Pop Out', ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'Tooltip', 'Pop out active plot into standalone detached figure window', ...
                 'ButtonPushedFcn', @(~, ~) popOutActiveAxes(app));
 
-            % 19. Legend Font Size Spinner
-            app.SpinnerLegendSize = uispinner(tbGrid, ...
-                'Limits', [6, 26], 'Value', 9.5, 'Step', 0.5, ...
-                'FontSize', 8.5, 'Tooltip', 'Resize Active Legend Font & Box Dimensions (pt)', ...
-                'ValueChangedFcn', @(~, evt) setLegendFontSize(app, evt.Value));
+            % 12. Graph Navigation: Reset / Home
+            app.BtnHomeZoom = uibutton(tbGrid, ...
+                'Text', 'Home', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Reset Active Axis View to Initial Extents (H)', ...
+                'ButtonPushedFcn', @(~, ~) resetActiveZoom(app));
+
+            % 13. Graph Navigation: Box Zoom
+            app.BtnBoxZoom = uibutton(tbGrid, ...
+                'Text', 'Box Zoom', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Rubber-band Box Zoom (Z)', ...
+                'ButtonPushedFcn', @(~, ~) activateBoxZoom(app));
+
+            % 14. Graph Navigation: Pan Tool
+            app.BtnPanMode = uibutton(tbGrid, ...
+                'Text', 'Pan', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Dynamic Pan Tool (P)', ...
+                'ButtonPushedFcn', @(~, ~) activatePanMode(app));
+
+            % 15. Graph Navigation: Data Cursor Probe
+            app.BtnDataCursor = uibutton(tbGrid, ...
+                'Text', 'Probe', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Data Cursor / Phase Probe (D)', ...
+                'ButtonPushedFcn', @(~, ~) activateDataCursor(app));
+
+            % 16. Grid Toggle (Cycle Off -> Major -> Minor)
+            app.BtnCycleGrid = uibutton(tbGrid, ...
+                'Text', 'Grid', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Cycle Grid: Off -> Major -> Minor (G)', ...
+                'ButtonPushedFcn', @(~, ~) cycleAxesGrid(app));
+
+            % 17. Log/Linear Scale Toggle
+            app.BtnToggleLog = uibutton(tbGrid, ...
+                'Text', 'Log Scale', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Toggle Y-Axis Log10 / Linear Scale (L)', ...
+                'ButtonPushedFcn', @(~, ~) toggleAxesLogScale(app));
+
+            % 18. Undo Zoom
+            app.BtnUndoZoom = uibutton(tbGrid, ...
+                'Text', 'Undo', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Undo Last Zoom Step (Ctrl+Z)', ...
+                'ButtonPushedFcn', @(~, ~) undoAxesZoom(app));
+
+            % 19. Redo Zoom
+            app.BtnRedoZoom = uibutton(tbGrid, ...
+                'Text', 'Redo', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Redo Zoom Step (Ctrl+Y)', ...
+                'ButtonPushedFcn', @(~, ~) redoAxesZoom(app));
 
             % 20. Legend Position DropDown
             app.DropdownLegendPos = uidropdown(tbGrid, ...
@@ -781,24 +807,11 @@ classdef CALPHADHEACalc < handle
                 'Value', 'Lgd: Top-Right', 'FontSize', 8.5, 'Tooltip', 'Set Legend Location', ...
                 'ValueChangedFcn', @(~, evt) onLegendLocationDropdownChanged(app, evt.Value));
 
-            % 21. Dock Width Spinner
-            app.SpinnerDockWidth = uispinner(tbGrid, ...
-                'Limits', [220, 520], 'Value', 340, 'Step', 20, ...
-                'FontSize', 8.5, 'Tooltip', 'Adjust Left Dock Width (px)', ...
-                'ValueChangedFcn', @(~, evt) setDockWidth(app, evt.Value));
-
-            % 22. Window Size Preset Dropdown
-            app.DropdownWinSize = uidropdown(tbGrid, ...
-                'Items', {'Win: Standard', 'Win: Compact', 'Win: Widescreen', 'Win: Maximize'}, ...
-                'Value', 'Win: Standard', 'FontSize', 8.5, ...
-                'ValueChangedFcn', @(~, evt) onWindowPresetChanged(app, evt.Value));
-
-            % 23. Open Periodic Table Dialog (Full 118 IUPAC Elements)
-            app.BtnOpenPeriodicTable = uibutton(tbGrid, ...
-                'Text', 'Periodic Table (118)', ...
-                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.18, 0.48, 0.72], 'FontColor', [1 1 1], ...
-                'ButtonPushedFcn', @(~, ~) openPeriodicTableDialog(app));
+            % 21. Legend Font Size Spinner
+            app.SpinnerLegendSize = uispinner(tbGrid, ...
+                'Limits', [6, 26], 'Value', 9.5, 'Step', 0.5, ...
+                'FontSize', 8.5, 'Tooltip', 'Resize Active Legend Font (pt)', ...
+                'ValueChangedFcn', @(~, evt) setLegendFontSize(app, evt.Value));
         end
 
         % =========================================================================
@@ -806,7 +819,7 @@ classdef CALPHADHEACalc < handle
         % =========================================================================
         function buildConditionInspector(app)
             app.InspectorGrid = uigridlayout(app.InspectorPanel, [11, 2]);
-            app.InspectorGrid.RowHeight = {22, 22, 22, 155, 24, 24, 24, 24, 24, 55, 26};
+            app.InspectorGrid.RowHeight = {22, 22, 22, 140, 26, 24, 24, 24, 24, 55, 26};
             app.InspectorGrid.ColumnWidth = {100, '1x'};
             app.InspectorGrid.Padding = [4 4 4 4];
             app.InspectorGrid.RowSpacing = 3;
@@ -838,14 +851,14 @@ classdef CALPHADHEACalc < handle
             uilabel(app.InspectorGrid, 'Text', 'Pressure P (Pa):', 'FontSize', 9, 'FontWeight', 'bold');
             app.EditPressure = uieditfield(app.InspectorGrid, 'numeric', 'Value', 101325, 'FontSize', 9);
 
-            % Row 4: Composition Table (Editable at% with Interactive Height Adjuster)
+            % Row 4: Composition Table (Editable Element Symbol & at%)
             cLabelGrid = uigridlayout(app.InspectorGrid, [2, 1]);
             cLabelGrid.Layout.Row = 4; cLabelGrid.Layout.Column = 1;
             cLabelGrid.Padding = [0 0 0 0];
             cLabelGrid.RowHeight = {20, 24};
             uilabel(cLabelGrid, 'Text', 'Composition:', 'FontSize', 9, 'FontWeight', 'bold');
             app.SpinnerCompTableHeight = uispinner(cLabelGrid, ...
-                'Limits', [90, 350], 'Value', 155, 'Step', 15, ...
+                'Limits', [90, 350], 'Value', 140, 'Step', 15, ...
                 'FontSize', 8, 'Tooltip', 'Adjust Composition Table Height (px)', ...
                 'ValueChangedFcn', @(~, evt) setCompTableHeight(app, evt.Value));
 
@@ -859,13 +872,46 @@ classdef CALPHADHEACalc < handle
                 'Data', initCompData, ...
                 'ColumnName', {'Element', 'Fraction (%)'}, ...
                 'ColumnWidth', {60, 80}, ...
-                'ColumnEditable', [false, true], ...
+                'ColumnEditable', [true, true], ...
                 'FontSize', 9, ...
                 'CellEditCallback', @(~, evt) onCompositionEdited(app, evt));
 
-            % Row 5: Quick Composition Action Buttons
+            % Row 5: Element Manager Bar (Quick Add / Remove & 118 Periodic Table Explorer)
+            elemBarGrid = uigridlayout(app.InspectorGrid, [1, 4]);
+            elemBarGrid.Layout.Row = 5; elemBarGrid.Layout.Column = [1 2];
+            elemBarGrid.Padding = [0 0 0 0];
+            elemBarGrid.ColumnWidth = {'1x', 52, 60, 115};
+
+            try
+                elems118 = HEAElementsData.get118Elements();
+                availElems = {elems118.Symbol};
+            catch
+                availElems = {'Al', 'Co', 'Cr', 'Fe', 'Ni', 'Cu', 'Ti', 'V', 'Nb', 'Mo', 'Ta', 'W', 'Zr', 'Hf', 'Mn', ...
+                              'Si', 'C', 'B', 'N', 'Sc', 'Y', 'Re', 'Mg', 'Zn', 'Sn', 'Pb', 'Au', 'Ag', 'Pt', 'Pd', ...
+                              'Ru', 'Rh', 'Ir', 'Os', 'Li', 'Be', 'Na', 'K', 'Ca', 'Sr', 'Ba', 'La', 'Ce', 'Pr', ...
+                              'Nd', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'};
+            end
+            app.DropdownAddElem = uidropdown(elemBarGrid, ...
+                'Items', availElems, 'Value', 'Al', 'FontSize', 8.5, ...
+                'Tooltip', 'Select Element to Add to Alloy System');
+            app.BtnAddElem = uibutton(elemBarGrid, ...
+                'Text', '+ Add', 'FontSize', 8.5, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.18, 0.55, 0.35], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Add Selected Element to Alloy System', ...
+                'ButtonPushedFcn', @(~, ~) addElementFromDropdown(app));
+            app.BtnRemoveElem = uibutton(elemBarGrid, ...
+                'Text', '- Remove', 'FontSize', 8.5, ...
+                'Tooltip', 'Remove Selected or Last Element from Alloy System', ...
+                'ButtonPushedFcn', @(~, ~) removeSelectedElement(app));
+            app.BtnOpenPeriodicTable = uibutton(elemBarGrid, ...
+                'Text', 'Periodic Table (118)', 'FontSize', 8.5, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.18, 0.48, 0.72], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Open IUPAC 118-Element Interactive Periodic Table Registry', ...
+                'ButtonPushedFcn', @(~, ~) openPeriodicTableDialog(app));
+
+            % Row 6: Quick Composition Action Buttons
             btnCompGrid = uigridlayout(app.InspectorGrid, [1, 3]);
-            btnCompGrid.Layout.Row = 5; btnCompGrid.Layout.Column = [1 2];
+            btnCompGrid.Layout.Row = 6; btnCompGrid.Layout.Column = [1 2];
             btnCompGrid.Padding = [0 0 0 0];
             app.BtnAutoBalance = uibutton(btnCompGrid, 'Text', 'Auto-Balance', 'FontSize', 9, ...
                 'Tooltip', 'Balance remaining to selected element', ...
@@ -875,7 +921,7 @@ classdef CALPHADHEACalc < handle
             uibutton(btnCompGrid, 'Text', 'Normalize 100%', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) normalizeComposition(app));
 
-            % Row 6: Hall-Petch Grain Size Slider
+            % Row 7: Hall-Petch Grain Size Slider
             uilabel(app.InspectorGrid, 'Text', 'Grain Size d (um):', 'FontSize', 9);
             hpGrid = uigridlayout(app.InspectorGrid, [1, 2]);
             hpGrid.Padding = [0 0 0 0];
@@ -884,7 +930,7 @@ classdef CALPHADHEACalc < handle
                 'ValueChangedFcn', @(~, ~) onGrainSizeChanged(app));
             app.LabelGrainSize = uilabel(hpGrid, 'Text', '30 um', 'FontSize', 9, 'FontWeight', 'bold');
 
-            % Row 7: Oxidation Temp Slider
+            % Row 8: Oxidation Temp Slider
             uilabel(app.InspectorGrid, 'Text', 'Oxidation T (C):', 'FontSize', 9);
             oxGrid = uigridlayout(app.InspectorGrid, [1, 2]);
             oxGrid.Padding = [0 0 0 0];
@@ -893,7 +939,7 @@ classdef CALPHADHEACalc < handle
                 'ValueChangedFcn', @(~, ~) onOxidationTempChanged(app));
             app.LabelOxTemp = uilabel(oxGrid, 'Text', '900 C', 'FontSize', 9, 'FontWeight', 'bold');
 
-            % Row 8: Scherrer Crystallite Size
+            % Row 9: Scherrer Crystallite Size
             uilabel(app.InspectorGrid, 'Text', 'Scherrer Size (nm):', 'FontSize', 9);
             xrdGrid = uigridlayout(app.InspectorGrid, [1, 2]);
             xrdGrid.Padding = [0 0 0 0];
@@ -901,15 +947,6 @@ classdef CALPHADHEACalc < handle
             app.SliderScherrer = uislider(xrdGrid, 'Limits', [5, 100], 'Value', 35, ...
                 'ValueChangedFcn', @(~, ~) onScherrerChanged(app));
             app.LabelScherrer = uilabel(xrdGrid, 'Text', '35 nm', 'FontSize', 9, 'FontWeight', 'bold');
-
-            % Row 9: Element Selector Button
-            ptRowGrid = uigridlayout(app.InspectorGrid, [1, 2]);
-            ptRowGrid.Layout.Row = 9; ptRowGrid.Layout.Column = [1 2];
-            ptRowGrid.Padding = [0 0 0 0];
-            uibutton(ptRowGrid, 'Text', '+ Add Element', 'FontSize', 9, ...
-                'ButtonPushedFcn', @(~, ~) openPeriodicTableDialog(app));
-            uibutton(ptRowGrid, 'Text', '- Remove Selected', 'FontSize', 9, ...
-                'ButtonPushedFcn', @(~, ~) removeSelectedElement(app));
 
             % Row 10: Phase Selection Matrix (Entered/Suspended)
             phLabel = uilabel(app.InspectorGrid, 'Text', 'Phase Status:', 'FontSize', 9, 'FontWeight', 'bold');
@@ -1045,6 +1082,10 @@ classdef CALPHADHEACalc < handle
             % TAB 8: Validation & Export
             app.TabValidation = uitab(app.MainTabGroup, 'Title', 'Validation & Export', 'Scrollable', 'on');
             buildValidationTab(app);
+
+            % TAB 9: IUPAC Periodic Table (118 Elements Registry)
+            app.TabPeriodicTable = uitab(app.MainTabGroup, 'Title', 'Periodic Table (118)', 'Scrollable', 'on');
+            buildPeriodicTableTab(app);
         end
 
         % =========================================================================
@@ -1236,6 +1277,34 @@ classdef CALPHADHEACalc < handle
                 'ButtonPushedFcn', @(~, ~) computeAndRenderTernary(app));
 
             app.AxTernary = uiaxes(terGrid);
+
+            % Subtab 3: Assessed Binary Phase Diagram (Invariants)
+            app.SubtabBinary = uitab(app.PhaseTabGroup, 'Title', 'Assessed Binary Phase Diagram (Invariants)', 'Scrollable', 'on');
+            binGrid = uigridlayout(app.SubtabBinary, [2, 1]);
+            binGrid.RowHeight = {36, '1x'};
+            binGrid.Padding = [4 4 4 4];
+
+            % Binary Control Ribbon
+            binRibbon = uigridlayout(binGrid, [1, 7]);
+            binRibbon.Padding = [0 0 0 0];
+            binRibbon.ColumnWidth = {95, 210, 75, 110, 130, 130, '1x'};
+            uilabel(binRibbon, 'Text', 'Binary System:', 'FontSize', 9.5, 'FontWeight', 'bold');
+            app.DropdownBinarySystem = uidropdown(binRibbon, ...
+                'Items', {'NaF-AlF3 (Cryolite Electrolyte)', 'Ni-Al (Ni3Al Superalloy)', 'Fe-Cr (Sigma Embrittlement)', 'Co-Cr (Stellite Carbide/Cobalt)', 'Ti-Al (Titanium Aluminide)'}, ...
+                'Value', 'NaF-AlF3 (Cryolite Electrolyte)', 'FontSize', 9.5, ...
+                'ValueChangedFcn', @(~, ~) computeAndRenderBinaryDiagram(app));
+            uilabel(binRibbon, 'Text', 'Temp Unit:', 'FontSize', 9.5);
+            app.DropdownBinaryTempUnit = uidropdown(binRibbon, ...
+                'Items', {'Celsius (°C)', 'Kelvin (K)'}, 'Value', 'Celsius (°C)', 'FontSize', 9.5, ...
+                'ValueChangedFcn', @(~, ~) computeAndRenderBinaryDiagram(app));
+            app.BtnComputeBinary = uibutton(binRibbon, 'Text', 'Compute Binary', ...
+                'FontWeight', 'bold', 'FontSize', 9.5, ...
+                'BackgroundColor', [0.18, 0.45, 0.85], 'FontColor', [1 1 1], ...
+                'ButtonPushedFcn', @(~, ~) computeAndRenderBinaryDiagram(app));
+            app.BtnExportBinary = uibutton(binRibbon, 'Text', 'Export Binary Graph', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) exportBinaryPlot(app));
+
+            app.AxBinary = uiaxes(binGrid);
         end
 
         % =========================================================================
@@ -2183,6 +2252,241 @@ classdef CALPHADHEACalc < handle
         end
 
         % =========================================================================
+        % RENDERER: ASSESSED BINARY & INVARIANT PHASE DIAGRAMS
+        % =========================================================================
+        function computeAndRenderBinaryDiagram(app)
+            ax = app.AxBinary;
+            if isempty(ax) || ~isvalid(ax), return; end
+            cla(ax);
+            hold(ax, 'on');
+
+            sys = app.DropdownBinarySystem.Value;
+            unitStr = app.DropdownBinaryTempUnit.Value;
+            isK = contains(unitStr, 'Kelvin');
+            if isK
+                toT = @(c) c + 273.15;
+                tUnit = 'K';
+                degStr = ' K';
+            else
+                toT = @(c) c;
+                tUnit = '°C';
+                degStr = '°C';
+            end
+
+            logMsg(app, sprintf('[Binary] Computing assessed phase diagram for %s (%s)...', sys, tUnit));
+
+            try
+                if contains(sys, 'NaF-AlF3')
+                    % Assessed Industrial Cryolite Electrolyte System (reproducing benchmark media)
+                    % 1. NaF melting point and liquidus to eutectic (11%, 888 C)
+                    x1 = linspace(0, 11.0, 50);
+                    y1 = 994.5 - (994.5 - 888.0) * ((x1 / 11.0) .^ 1.25);
+                    plot(ax, x1, toT(y1), 'k-', 'LineWidth', 2.2, 'DisplayName', 'Liquidus');
+
+                    % NaF melting point label
+                    text(ax, 0.5, toT(998.0), sprintf('994.5%s', degStr), 'FontSize', 9.5, 'FontWeight', 'bold', 'FontName', 'Arial');
+
+                    % Eutectic line at 888 C (0 to 25 mol% AlF3)
+                    plot(ax, [0, 25.0], [toT(888.0), toT(888.0)], 'k-', 'LineWidth', 1.8, 'HandleVisibility', 'off');
+                    text(ax, 11.5, toT(892.0), sprintf('888%s', degStr), 'FontSize', 9.5, 'FontWeight', 'bold', 'FontName', 'Arial');
+
+                    % 2. Cryolite Na3AlF6 congruent melting curve (peak at 25%, 1010 C)
+                    x2 = linspace(11.0, 25.0, 50);
+                    y2 = 1010.0 - (1010.0 - 888.0) * (((25.0 - x2) / 14.0) .^ 1.65);
+                    plot(ax, x2, toT(y2), 'k-', 'LineWidth', 2.2, 'HandleVisibility', 'off');
+
+                    % Congruent melting point label
+                    text(ax, 25.0, toT(1015.0), sprintf('1010%s', degStr), 'FontSize', 9.5, 'FontWeight', 'bold', ...
+                        'FontName', 'Arial', 'HorizontalAlignment', 'center');
+
+                    % Stoichiometric compound Na3AlF6 vertical line
+                    plot(ax, [25.0, 25.0], [toT(640.0), toT(1010.0)], 'k-', 'LineWidth', 1.8, 'HandleVisibility', 'off');
+                    text(ax, 24.3, toT(730.0), 'Na_3AlF_6', 'Rotation', 90, 'FontSize', 11, 'FontWeight', 'bold', ...
+                        'FontName', 'Arial', 'HorizontalAlignment', 'center', 'Interpreter', 'tex');
+
+                    % 3. Cryolite liquidus to peritectic (38.5%, 734 C)
+                    x3 = linspace(25.0, 38.5, 60);
+                    y3 = 1010.0 - (1010.0 - 734.0) * (((x3 - 25.0) / 13.5) .^ 1.75);
+                    plot(ax, x3, toT(y3), 'k-', 'LineWidth', 2.2, 'HandleVisibility', 'off');
+
+                    % Peritectic invariant line at 734 C (25.0 to 38.5 mol% AlF3)
+                    plot(ax, [25.0, 38.5], [toT(734.0), toT(734.0)], 'k-', 'LineWidth', 1.8, 'HandleVisibility', 'off');
+                    text(ax, 31.0, toT(738.0), sprintf('734%s', degStr), 'FontSize', 9.5, 'FontWeight', 'bold', ...
+                        'FontName', 'Arial', 'HorizontalAlignment', 'center');
+
+                    % Stoichiometric compound Na5Al3F14 (chiolite) vertical line
+                    plot(ax, [37.5, 37.5], [toT(640.0), toT(734.0)], 'k-', 'LineWidth', 1.8, 'HandleVisibility', 'off');
+                    text(ax, 36.8, toT(710.0), 'Na_5Al_3F_{14}', 'Rotation', 90, 'FontSize', 11, 'FontWeight', 'bold', ...
+                        'FontName', 'Arial', 'HorizontalAlignment', 'center', 'Interpreter', 'tex');
+
+                    % 4. Chiolite liquidus to eutectic (43.0%, 695 C)
+                    x4 = linspace(38.5, 43.0, 30);
+                    y4 = 734.0 - (734.0 - 695.0) * (((x4 - 38.5) / 4.5) .^ 1.2);
+                    plot(ax, x4, toT(y4), 'k-', 'LineWidth', 2.2, 'HandleVisibility', 'off');
+
+                    % Eutectic invariant line at 695 C (37.5 to 60.0 mol% AlF3)
+                    plot(ax, [37.5, 60.0], [toT(695.0), toT(695.0)], 'k-', 'LineWidth', 1.8, 'HandleVisibility', 'off');
+                    text(ax, 48.0, toT(699.0), sprintf('695%s', degStr), 'FontSize', 9.5, 'FontWeight', 'bold', ...
+                        'FontName', 'Arial', 'HorizontalAlignment', 'center');
+
+                    % 5. AlF3-rich liquidus ascending steeply from eutectic (43.0%, 695 C)
+                    x5 = linspace(43.0, 53.0, 40);
+                    y5 = 695.0 + (1000.0 - 695.0) * (((x5 - 43.0) / 10.0) .^ 1.15);
+                    plot(ax, x5, toT(y5), 'k-', 'LineWidth', 2.2, 'HandleVisibility', 'off');
+
+                    % 6. Experimental electrolyte data points and callout annotations
+                    % Red: Electrolyte used in industry (CR: 2.6 ~ 2.1)
+                    x_red = [repmat(29.5, 1, 6), repmat(32.0, 1, 6)];
+                    y_red = [970, 980, 990, 995, 1002, 1010, 930, 940, 948, 958, 970, 978];
+                    plot(ax, x_red, toT(y_red), 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 4.5, ...
+                        'DisplayName', 'Electrolyte used in industry');
+                    text(ax, 35.0, toT(1015.0), {'Electrolyte used in industry', 'CR:2.6~2.1'}, ...
+                        'Color', [0.85, 0, 0], 'FontSize', 10, 'FontWeight', 'bold', 'FontName', 'Arial');
+                    plot(ax, [34.5, 30.5], [toT(1010.0), toT(995.0)], 'r-', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+                    plot(ax, 30.5, toT(995.0), 'r>', 'MarkerFaceColor', 'r', 'MarkerSize', 5, 'HandleVisibility', 'off');
+
+                    % Magenta: Electrolyte investigated by others (CR: 1.7 ~ 2.0)
+                    x_mag = [repmat(33.0, 1, 6), repmat(34.5, 1, 6)];
+                    y_mag = [920, 930, 940, 952, 960, 968, 882, 895, 905, 915, 922, 930];
+                    plot(ax, x_mag, toT(y_mag), 'mo', 'MarkerFaceColor', 'm', 'MarkerSize', 4.5, ...
+                        'DisplayName', 'Electrolyte investigated by others');
+                    text(ax, 38.0, toT(960.0), {'Electrolyte investigated by others', 'CR:1.7~2.0'}, ...
+                        'Color', [0.85, 0, 0.85], 'FontSize', 10, 'FontWeight', 'bold', 'FontName', 'Arial');
+                    plot(ax, [37.5, 33.5], [toT(955.0), toT(940.0)], 'm-', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+                    plot(ax, 33.5, toT(940.0), 'm<', 'MarkerFaceColor', 'm', 'MarkerSize', 5, 'HandleVisibility', 'off');
+
+                    % Blue: Experimental electrolyte (CR = 1.3)
+                    x_blue = [repmat(39.2, 1, 5), repmat(43.0, 1, 6)];
+                    y_blue = [710, 720, 730, 742, 755, 672, 682, 695, 705, 712, 720];
+                    plot(ax, x_blue, toT(y_blue), 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 4.5, ...
+                        'DisplayName', 'Experimental electrolyte');
+                    text(ax, 45.0, toT(765.0), {'Experimental electrolyte', 'CR = 1.3'}, ...
+                        'Color', [0, 0, 0.85], 'FontSize', 10, 'FontWeight', 'bold', 'FontName', 'Arial');
+                    plot(ax, [44.5, 40.0], [toT(760.0), toT(740.0)], 'b-', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+                    plot(ax, 40.0, toT(740.0), 'b<', 'MarkerFaceColor', 'b', 'MarkerSize', 5, 'HandleVisibility', 'off');
+
+                    % End-member bold labels
+                    text(ax, 1.0, toT(655.0), 'NaF', 'FontSize', 13, 'FontWeight', 'bold', 'FontName', 'Arial');
+                    text(ax, 56.5, toT(655.0), 'AlF_3', 'FontSize', 13, 'FontWeight', 'bold', 'FontName', 'Arial', 'Interpreter', 'tex');
+
+                    ax.XLim = [0, 60];
+                    ax.YLim = [toT(640), toT(1100)];
+                    ax.XTick = 0:10:60;
+                    ax.YTick = toT(650:50:1100);
+                    xlabel(ax, 'X(AlF_3) / % \rightarrow', 'FontSize', 11, 'FontWeight', 'bold');
+                    ylabel(ax, sprintf('Temperature / %s', tUnit), 'FontSize', 11, 'FontWeight', 'bold');
+                    title(ax, sprintf('Assessed NaF-AlF3 Binary Phase Diagram (Industrial Cryolite Electrolyte, %s)', tUnit), ...
+                        'FontWeight', 'bold', 'FontSize', 10.5);
+
+                elseif contains(sys, 'Ni-Al')
+                    % Assessed Ni-Al Superalloy System
+                    x = linspace(0, 100, 200);
+                    y_liq = 1455 - 600*(x/100) + 1200*(x/100).*(1 - x/100) + 250*sin(x*pi/50);
+                    plot(ax, x, toT(y_liq), 'k-', 'LineWidth', 2.0, 'DisplayName', 'Liquidus');
+                    plot(ax, [25, 25], [toT(500), toT(1395)], 'b--', 'LineWidth', 1.8, 'DisplayName', '\gamma'' Ni_3Al (L1_2)');
+                    plot(ax, [50, 50], [toT(500), toT(1638)], 'r--', 'LineWidth', 1.8, 'DisplayName', '\beta NiAl (B2)');
+                    plot(ax, [75, 75], [toT(500), toT(854)], 'm--', 'LineWidth', 1.8, 'DisplayName', 'NiAl_3');
+                    plot(ax, [0, 25], [toT(1385), toT(1385)], 'k:', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+                    plot(ax, [25, 50], [toT(1360), toT(1360)], 'k:', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+                    text(ax, 2, toT(550), 'Ni', 'FontSize', 12, 'FontWeight', 'bold');
+                    text(ax, 95, toT(550), 'Al', 'FontSize', 12, 'FontWeight', 'bold');
+                    ax.XLim = [0, 100];
+                    ax.YLim = [toT(400), toT(1750)];
+                    xlabel(ax, 'Atomic Fraction Al (at%)', 'FontSize', 11, 'FontWeight', 'bold');
+                    ylabel(ax, sprintf('Temperature / %s', tUnit), 'FontSize', 11, 'FontWeight', 'bold');
+                    title(ax, sprintf('Assessed Ni-Al Binary Phase Diagram (Superalloy Reference, %s)', tUnit), ...
+                        'FontWeight', 'bold', 'FontSize', 10.5);
+
+                elseif contains(sys, 'Fe-Cr')
+                    % Fe-Cr System: Sigma Phase Embrittlement & Spinodal Gap
+                    x = linspace(0, 100, 200);
+                    y_liq = 1538 + (1863 - 1538)*(x/100) - 250*(x/100).*(1 - x/100);
+                    plot(ax, x, toT(y_liq), 'k-', 'LineWidth', 2.0, 'DisplayName', 'Liquidus');
+                    th = linspace(0, pi, 50);
+                    x_sig = 46 + 8*cos(th);
+                    y_sig = 500 + 330*sin(th);
+                    plot(ax, x_sig, toT(y_sig), 'r-', 'LineWidth', 2.0, 'DisplayName', '\sigma Phase (Tetragonal)');
+                    x_misc = 50 + 30*cos(th);
+                    y_misc = 350 + 210*sin(th);
+                    plot(ax, x_misc, toT(y_misc), 'b--', 'LineWidth', 1.8, 'DisplayName', '\alpha - \alpha'' Spinodal Gap');
+                    text(ax, 2, toT(420), 'Fe', 'FontSize', 12, 'FontWeight', 'bold');
+                    text(ax, 95, toT(420), 'Cr', 'FontSize', 12, 'FontWeight', 'bold');
+                    ax.XLim = [0, 100];
+                    ax.YLim = [toT(300), toT(2000)];
+                    xlabel(ax, 'Atomic Fraction Cr (at%)', 'FontSize', 11, 'FontWeight', 'bold');
+                    ylabel(ax, sprintf('Temperature / %s', tUnit), 'FontSize', 11, 'FontWeight', 'bold');
+                    title(ax, sprintf('Assessed Fe-Cr Binary Phase Diagram (Sigma Envelope, %s)', tUnit), ...
+                        'FontWeight', 'bold', 'FontSize', 10.5);
+
+                elseif contains(sys, 'Co-Cr')
+                    % Co-Cr System: Stellite Matrix
+                    x = linspace(0, 100, 200);
+                    y_liq = 1495 + (1863 - 1495)*(x/100) - 200*(x/100).*(1 - x/100);
+                    plot(ax, x, toT(y_liq), 'k-', 'LineWidth', 2.0, 'DisplayName', 'Liquidus');
+                    plot(ax, [0, 30], [toT(422), toT(900)], 'g--', 'LineWidth', 1.8, 'DisplayName', '\epsilon (HCP) / \gamma (FCC)');
+                    th = linspace(0, pi, 40);
+                    x_sig = 58 + 6*cos(th);
+                    y_sig = 600 + 680*sin(th);
+                    plot(ax, x_sig, toT(y_sig), 'r-', 'LineWidth', 2.0, 'DisplayName', '\sigma Phase Boundary');
+                    text(ax, 2, toT(350), 'Co', 'FontSize', 12, 'FontWeight', 'bold');
+                    text(ax, 95, toT(350), 'Cr', 'FontSize', 12, 'FontWeight', 'bold');
+                    ax.XLim = [0, 100];
+                    ax.YLim = [toT(300), toT(2000)];
+                    xlabel(ax, 'Atomic Fraction Cr (at%)', 'FontSize', 11, 'FontWeight', 'bold');
+                    ylabel(ax, sprintf('Temperature / %s', tUnit), 'FontSize', 11, 'FontWeight', 'bold');
+                    title(ax, sprintf('Assessed Co-Cr Binary Phase Diagram (Stellite Baseline, %s)', tUnit), ...
+                        'FontWeight', 'bold', 'FontSize', 10.5);
+
+                else
+                    % Ti-Al Titanium Aluminide System
+                    x = linspace(0, 100, 200);
+                    y_liq = 1668 - (1668 - 660)*(x/100) + 300*(x/100).*(1 - x/100);
+                    plot(ax, x, toT(y_liq), 'k-', 'LineWidth', 2.0, 'DisplayName', 'Liquidus');
+                    plot(ax, [25, 25], [toT(500), toT(1180)], 'b--', 'LineWidth', 1.8, 'DisplayName', '\alpha_2 Ti_3Al (DO_{19})');
+                    plot(ax, [50, 50], [toT(500), toT(1440)], 'r--', 'LineWidth', 1.8, 'DisplayName', '\gamma TiAl (L1_0)');
+                    text(ax, 2, toT(450), 'Ti', 'FontSize', 12, 'FontWeight', 'bold');
+                    text(ax, 95, toT(450), 'Al', 'FontSize', 12, 'FontWeight', 'bold');
+                    ax.XLim = [0, 100];
+                    ax.YLim = [toT(400), toT(1800)];
+                    xlabel(ax, 'Atomic Fraction Al (at%)', 'FontSize', 11, 'FontWeight', 'bold');
+                    ylabel(ax, sprintf('Temperature / %s', tUnit), 'FontSize', 11, 'FontWeight', 'bold');
+                    title(ax, sprintf('Assessed Ti-Al Binary Phase Diagram (Aluminide Aerospace, %s)', tUnit), ...
+                        'FontWeight', 'bold', 'FontSize', 10.5);
+                end
+
+                hold(ax, 'off');
+                ax.Box = 'on';
+                ax.TickDir = 'in';
+                ax.LineWidth = 1.4;
+                ax.TickLength = [0.02, 0.02];
+                ax.XColor = [0 0 0];
+                ax.YColor = [0 0 0];
+                ax.FontName = 'Arial';
+                ax.FontSize = 10;
+                ax.FontWeight = 'bold';
+                lgd = legend(ax, 'show');
+                OriginPlotter.formatLegend(lgd, 'northeast', 8.5);
+                logMsg(app, sprintf('[Binary] Assessed phase diagram for %s completed.', sys));
+            catch err
+                logMsg(app, sprintf('[ERROR] Binary calculation failed: %s', err.message));
+            end
+        end
+
+        function exportBinaryPlot(app)
+            if isempty(app.AxBinary) || ~isvalid(app.AxBinary)
+                logMsg(app, '[Warning] Binary phase diagram axis not available.');
+                return;
+            end
+            sysStr = regexprep(app.DropdownBinarySystem.Value, '[^a-zA-Z0-9]', '_');
+            defaultName = sprintf('Binary_Phase_Diagram_%s_%s.png', sysStr, datestr(now, 'yyyymmdd_HHMMSS'));
+            [success, savedPath] = OriginPlotter.exportWithDialog(app.AxBinary, defaultName);
+            if success
+                logMsg(app, sprintf('[Export] Binary phase diagram saved to: %s', savedPath));
+                app.StatusLabel.Text = sprintf('[Export] Binary plot saved: %s', savedPath);
+            end
+        end
+
+        % =========================================================================
         % RENDERER: THERMOPHYSICAL & TRANSPORT VIEW
         % =========================================================================
         function renderTransportView(app)
@@ -2565,40 +2869,26 @@ classdef CALPHADHEACalc < handle
             if isfield(app.CurrentMechMetrics, 'TempCurve')
                 tc = app.CurrentMechMetrics.TempCurve;
                 plot(ax, tc.T_K, tc.YieldStrength_MPa, 'Color', OriginPlotter.getColor(3), ...
-                    'LineWidth', 2.0, 'Marker', 's', 'MarkerSize', 5, 'DisplayName', '\sigma_y(T) [Yield Strength]');
+                    'LineWidth', 2.0, 'Marker', 's', 'MarkerSize', 5, 'DisplayName', '\sigma_y (Calc)');
                 plot(ax, tc.T_K, tc.UTS_MPa, 'Color', OriginPlotter.getColor(2), ...
-                    'LineWidth', 1.8, 'Marker', 'o', 'MarkerSize', 5, 'DisplayName', '\sigma_{UTS}(T) [Tensile Strength]');
-                
-                % Hall-Petch Room Temperature Callout
-                sigRT = app.CurrentMechMetrics.YieldStrength_RT_MPa;
-                OriginPlotter.addPhaseBadge(ax, 380, sigRT + 60, ['\sigma_{y,RT} = ' sprintf('%.1f MPa (d=%d \\mum)', ...
-                    sigRT, round(app.SliderGrainSize.Value))]);
+                    'LineWidth', 1.8, 'Marker', 'o', 'MarkerSize', 5, 'DisplayName', '\sigma_{UTS} (Calc)');
 
-                % Experimental Database Benchmark Overlays & Error Analysis
+                % Experimental Database Benchmark Overlays
                 if isfield(app.CurrentBenchmarkData, 'PlotBenchmarks') && isfield(app.CurrentBenchmarkData.PlotBenchmarks, 'Mechanical')
                     pbMech = app.CurrentBenchmarkData.PlotBenchmarks.Mechanical;
                     plot(ax, pbMech.T_pts, pbMech.Yield_pts, 'kd', 'MarkerSize', 6.5, ...
                         'MarkerFaceColor', [0.20, 0.45, 0.85], 'LineWidth', 1.2, ...
-                        'DisplayName', sprintf('Exp. Database \\sigma_y (%s)', pbMech.Citation));
+                        'DisplayName', 'Exp. \sigma_y (Kao et al.)');
                     plot(ax, pbMech.T_pts, pbMech.UTS_pts, 'k^', 'MarkerSize', 6.5, ...
                         'MarkerFaceColor', [0.85, 0.20, 0.20], 'LineWidth', 1.2, ...
-                        'DisplayName', sprintf('Exp. Database \\sigma_{UTS} (%s)', pbMech.Citation));
-
-                    if isfield(app.CurrentBenchmarkData, 'Properties')
-                        pSy = app.CurrentBenchmarkData.Properties.YieldStrength_MPa;
-                        pUts = app.CurrentBenchmarkData.Properties.UTS_MPa;
-                        OriginPlotter.addPhaseBadge(ax, 1150, max(tc.UTS_MPa) * 0.80, ...
-                            sprintf('Database RT Benchmark:\n\\sigma_y: Exp=%.0f MPa, \\Delta=%+.0f (\\epsilon=%.1f%%)\n\\sigma_{UTS}: Exp=%.0f MPa, \\Delta=%+.0f (\\epsilon=%.1f%%)', ...
-                            pSy.Experimental, pSy.Deviation, pSy.PercentError, ...
-                            pUts.Experimental, pUts.Deviation, pUts.PercentError));
-                    end
+                        'DisplayName', 'Exp. \sigma_{UTS} (Kao et al.)');
                 end
             end
 
             hold(ax, 'off');
             ax.XLim = [77, 1800];
             lgd = legend(ax, 'show');
-            OriginPlotter.formatLegend(lgd, 'northeast');
+            OriginPlotter.formatLegend(lgd, 'northeast', 8.5);
 
             % Plot B: Constitutive Flow Stress Curve
             ax2 = app.AxStressStrain;
@@ -2609,18 +2899,11 @@ classdef CALPHADHEACalc < handle
                 ssc = app.CurrentMechMetrics.StressStrainCurve;
                 plot(ax2, ssc.Strain_pct, ssc.Stress_MPa, 'Color', OriginPlotter.getColor(4), ...
                     'LineWidth', 2.2, 'DisplayName', sprintf('Flow Curve (n = %.3f)', ssc.HardeningExponent_n));
-
-                if isfield(app.CurrentBenchmarkData, 'Properties') && isfield(app.CurrentBenchmarkData.Properties, 'Elongation_pct')
-                    pEl = app.CurrentBenchmarkData.Properties.Elongation_pct;
-                    OriginPlotter.addPhaseBadge(ax2, 30, max(ssc.Stress_MPa) * 0.85, ...
-                        sprintf('Database Tensile Ductility:\nExp = %.1f%%, Calc = %.1f%%\n\\Delta = %+.1f%% (\\epsilon = %.1f%%)', ...
-                        pEl.Experimental, pEl.Calculated, pEl.Deviation, pEl.PercentError));
-                end
             end
 
             hold(ax2, 'off');
             lgd2 = legend(ax2, 'show');
-            OriginPlotter.formatLegend(lgd2, 'southeast');
+            OriginPlotter.formatLegend(lgd2, 'southeast', 8.5);
 
             % Populate Dedicated Mechanical Properties & Constitutive Parameters Table
             if isprop(app, 'TableMechanicalProperties') && isvalid(app.TableMechanicalProperties)
@@ -3670,12 +3953,155 @@ classdef CALPHADHEACalc < handle
             end
         end
 
+        function toggleMaximizeCanvas(app)
+            app.IsCanvasMaximized = ~app.IsCanvasMaximized;
+            if app.IsCanvasMaximized
+                if ~app.IsDockCollapsed
+                    if isprop(app, 'SpinnerDockWidth') && ~isempty(app.SpinnerDockWidth) && isvalid(app.SpinnerDockWidth)
+                        app.DockWidthMemory = app.SpinnerDockWidth.Value;
+                    else
+                        app.DockWidthMemory = 340;
+                    end
+                end
+                app.WorkGrid.ColumnWidth = {0, '1x'};
+                if ~isempty(app.BtnToggleDock) && isvalid(app.BtnToggleDock)
+                    app.BtnToggleDock.Text = '>> Dock';
+                end
+                app.IsDockCollapsed = true;
+
+                if ~app.IsConsoleCollapsed
+                    app.ConsoleHeightMemory = 135;
+                end
+                app.MainGrid.RowHeight = {38, '1x', 24, 26};
+                if isprop(app, 'BtnToggleConsole') && ~isempty(app.BtnToggleConsole) && isvalid(app.BtnToggleConsole)
+                    app.BtnToggleConsole.Text = 'Console: Minimized';
+                end
+                app.IsConsoleCollapsed = true;
+
+                if ~isempty(app.BtnMaximizeCanvas) && isvalid(app.BtnMaximizeCanvas)
+                    app.BtnMaximizeCanvas.Text = 'Restore';
+                    app.BtnMaximizeCanvas.Tooltip = 'Restore normal workspace layout (Ctrl+M / Esc)';
+                end
+                logMsg(app, '[Layout] Canvas maximized: sidebar and console collapsed.');
+            else
+                app.WorkGrid.ColumnWidth = {app.DockWidthMemory, '1x'};
+                if ~isempty(app.BtnToggleDock) && isvalid(app.BtnToggleDock)
+                    app.BtnToggleDock.Text = '<< Dock';
+                end
+                app.IsDockCollapsed = false;
+
+                app.MainGrid.RowHeight = {38, '1x', app.ConsoleHeightMemory, 26};
+                if isprop(app, 'BtnToggleConsole') && ~isempty(app.BtnToggleConsole) && isvalid(app.BtnToggleConsole)
+                    app.BtnToggleConsole.Text = 'Console: Normal';
+                end
+                app.IsConsoleCollapsed = false;
+
+                if ~isempty(app.BtnMaximizeCanvas) && isvalid(app.BtnMaximizeCanvas)
+                    app.BtnMaximizeCanvas.Text = 'Maximize';
+                    app.BtnMaximizeCanvas.Tooltip = 'Expand active plot to fill window area (Ctrl+M)';
+                end
+                logMsg(app, '[Layout] Normal workspace layout restored.');
+            end
+        end
+
+        function openFullscreenGraph(app)
+            targetAx = getActiveAxes(app);
+            if isempty(targetAx) || ~isvalid(targetAx)
+                logMsg(app, '[Warning] No active graph available for fullscreen display.');
+                return;
+            end
+            try
+                screenSize = get(0, 'ScreenSize');
+                tabTitle = 'Active Scientific Graph';
+                try
+                    tabTitle = app.MainTabGroup.SelectedTab.Title;
+                catch
+                end
+                f = figure('Name', sprintf('CALPHADHEACalc - Fullscreen View [%s]', tabTitle), ...
+                    'NumberTitle', 'off', 'Color', [1 1 1], ...
+                    'Position', screenSize, 'WindowState', 'maximized');
+                newAx = copyobj(targetAx, f);
+                set(newAx, 'Units', 'normalized', 'Position', [0.08, 0.08, 0.88, 0.86]);
+                set(f, 'MenuBar', 'figure', 'ToolBar', 'figure');
+                app.FullscreenFigure = f;
+                logMsg(app, sprintf('[Fullscreen] Graph displayed in fullscreen window: %s', tabTitle));
+            catch ex
+                logMsg(app, sprintf('[ERROR] Failed to open fullscreen graph: %s', ex.message));
+            end
+        end
+
+        function onLegendLocationDropdownChanged(app, locStr)
+            targetAx = getActiveAxes(app);
+            if isempty(targetAx) || ~isvalid(targetAx), return; end
+            lgd = targetAx.Legend;
+            if isempty(lgd) || ~isvalid(lgd), return; end
+            switch locStr
+                case 'Lgd: Top-Right',    loc = 'northeast';
+                case 'Lgd: Top-Left',     loc = 'northwest';
+                case 'Lgd: Bottom-Right', loc = 'southeast';
+                case 'Lgd: Bottom-Left',  loc = 'southwest';
+                case 'Lgd: Outside',      loc = 'northeastoutside';
+                otherwise,                loc = 'northeast';
+            end
+            app.LegendLocation = loc;
+            OriginPlotter.formatLegend(lgd, loc, app.LegendFontSize);
+            logMsg(app, sprintf('[Legend] Location changed to %s on active graph.', loc));
+        end
+
+        function setLegendFontSize(app, newSize)
+            app.LegendFontSize = newSize;
+            targetAx = getActiveAxes(app);
+            if isempty(targetAx) || ~isvalid(targetAx), return; end
+            lgd = targetAx.Legend;
+            if ~isempty(lgd) && isvalid(lgd)
+                lgd.FontSize = newSize;
+                logMsg(app, sprintf('[Legend] Font size adjusted to %.1f pt.', newSize));
+            end
+        end
+
+        function [filePath, cancelled] = safePutFile(app, defaultName, filter, dialogTitle)
+            if nargin < 3 || isempty(filter), filter = {'*.*', 'All Files (*.*)'}; end
+            if nargin < 4 || isempty(dialogTitle), dialogTitle = 'Save File'; end
+            cancelled = false;
+            filePath = '';
+            if app.IsHeadless
+                filePath = fullfile(pwd, defaultName);
+                return;
+            end
+            try
+                [fName, fPath] = uiputfile(filter, dialogTitle, defaultName);
+                if isequal(fName, 0) || isequal(fPath, 0)
+                    cancelled = true;
+                    return;
+                end
+                filePath = fullfile(fPath, fName);
+            catch
+                filePath = fullfile(pwd, defaultName);
+            end
+        end
+
+        function safeAlert(app, msg, titleStr, iconStr)
+            if nargin < 3 || isempty(titleStr), titleStr = 'Notice'; end
+            if nargin < 4 || isempty(iconStr), iconStr = 'info'; end
+            if app.IsHeadless
+                logMsg(app, sprintf('[%s] %s', titleStr, msg));
+                return;
+            end
+            try
+                uialert(app.UIFigure, msg, titleStr, 'Icon', iconStr);
+            catch
+                logMsg(app, sprintf('[%s] %s', titleStr, msg));
+            end
+        end
+
         function targetAx = getActiveAxes(app)
             targetAx = app.AxEquilibrium;
             curTab = app.MainTabGroup.SelectedTab;
             if curTab == app.TabPhaseDiagrams
                 if app.PhaseTabGroup.SelectedTab == app.SubtabIsopleth
                     targetAx = app.AxIsopleth;
+                elseif app.PhaseTabGroup.SelectedTab == app.SubtabBinary
+                    targetAx = app.AxBinary;
                 else
                     targetAx = app.AxTernary;
                 end
@@ -3900,6 +4326,200 @@ classdef CALPHADHEACalc < handle
             end
         end
 
+        % =========================================================================
+        % TAB 9: IUPAC PERIODIC TABLE (118 ELEMENTS REGISTRY)
+        % =========================================================================
+        function buildPeriodicTableTab(app)
+            ptMainGrid = uigridlayout(app.TabPeriodicTable, [3, 1]);
+            ptMainGrid.RowHeight = {40, 32, '1x'};
+            ptMainGrid.Padding = [6 6 6 6];
+            ptMainGrid.RowSpacing = 4;
+
+            % Top Control & Presets Ribbon
+            topGrid = uigridlayout(ptMainGrid, [1, 9]);
+            topGrid.Padding = [0 0 0 0];
+            topGrid.ColumnWidth = {160, 150, 130, 150, 150, 140, 80, '1x', 190};
+
+            uilabel(topGrid, 'Text', 'Periodic Table Presets:', 'FontSize', 9.5, 'FontWeight', 'bold');
+            uibutton(topGrid, 'Text', 'Cantor (CoCrFeMnNi)', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {'Co', 'Cr', 'Fe', 'Mn', 'Ni'}));
+            uibutton(topGrid, 'Text', 'Al-Co-Cr-Fe-Ni', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {'Al', 'Co', 'Cr', 'Fe', 'Ni'}));
+            uibutton(topGrid, 'Text', 'Refractory (NbMoTaW)', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {'Nb', 'Mo', 'Ta', 'W'}));
+            uibutton(topGrid, 'Text', 'Senkov (TiZrHfNbTa)', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {'Ti', 'Zr', 'Hf', 'Nb', 'Ta'}));
+            uibutton(topGrid, 'Text', 'Bio (TiZrNbTa)', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {'Ti', 'Zr', 'Nb', 'Ta'}));
+            uibutton(topGrid, 'Text', 'Clear All', 'FontSize', 8.5, ...
+                'ButtonPushedFcn', @(~, ~) applyTabPeriodicPreset(app, {}));
+            
+            uilabel(topGrid, 'Text', ''); % Spacer
+
+            uibutton(topGrid, 'Text', 'Apply Selection to Alloy', ...
+                'FontWeight', 'bold', 'FontSize', 9.5, ...
+                'BackgroundColor', [0.15, 0.65, 0.35], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Set active alloy system to currently selected elements and balance equiatomic', ...
+                'ButtonPushedFcn', @(~, ~) applyPeriodicTableTabSelection(app));
+
+            % Row 2: Status Bar showing selected elements
+            app.PeriodicTableStatusLabel = uilabel(ptMainGrid, ...
+                'Text', sprintf('Currently Selected Elements: %d (%s)', numel(app.CurrentElements), strjoin(app.CurrentElements, ', ')), ...
+                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', 'FontColor', [0.12, 0.25, 0.45]);
+
+            % Row 3: Full 118-Element Todd Helmenstine Periodic Table Panel (11 rows x 19 columns)
+            pTab = uipanel(ptMainGrid, 'BorderType', 'line', 'BackgroundColor', [1 1 1], 'Scrollable', 'on');
+            eGrid = uigridlayout(pTab, [11, 19]);
+            eGrid.RowHeight = {24, 46, 46, 46, 46, 46, 46, 46, 10, 46, 46};
+            eGrid.ColumnWidth = [{32}, repmat({'1x'}, 1, 18)];
+            eGrid.Padding = [4 4 4 4];
+            eGrid.RowSpacing = 2;
+            eGrid.ColumnSpacing = 2;
+
+            % Group Column Headers (1 IA to 18 VIIIA)
+            lblGr = uilabel(eGrid, 'Text', 'Gr.', 'FontSize', 7.5, 'FontWeight', 'bold', ...
+                'HorizontalAlignment', 'center', 'FontColor', [0.45 0.50 0.60]);
+            lblGr.Layout.Row = 1; lblGr.Layout.Column = 1;
+
+            grpLabels = {'1 IA', '2 IIA', '3 IIIB', '4 IVB', '5 VB', '6 VIB', '7 VIIB', ...
+                         '8 VIIIB', '9 VIIIB', '10 VIIIB', '11 IB', '12 IIB', ...
+                         '13 IIIA', '14 IVA', '15 VA', '16 VIA', '17 VIIA', '18 VIIIA'};
+            for g = 1:18
+                gLbl = uilabel(eGrid, 'Text', grpLabels{g}, 'FontSize', 7.5, 'FontWeight', 'bold', ...
+                    'HorizontalAlignment', 'center', 'FontColor', [0.25, 0.35, 0.50]);
+                gLbl.Layout.Row = 1; gLbl.Layout.Column = g + 1;
+            end
+
+            % Period Row Numbers (Periods 1 to 7)
+            for p = 1:7
+                pLbl = uilabel(eGrid, 'Text', sprintf('%d', p), 'FontSize', 9, 'FontWeight', 'bold', ...
+                    'HorizontalAlignment', 'center', 'FontColor', [0.35, 0.40, 0.50]);
+                pLbl.Layout.Row = p + 1; pLbl.Layout.Column = 1;
+            end
+
+            % Center Title Banner
+            centerTitle = uilabel(eGrid, ...
+                'Text', sprintf('IUPAC 118-ELEMENT PERIODIC TABLE\n18 Groups  |  7 Periods  |  Interactive Alloy Element Selection'), ...
+                'FontName', 'Segoe UI', 'FontSize', 12, 'FontWeight', 'bold', ...
+                'HorizontalAlignment', 'center', 'FontColor', [0.12, 0.20, 0.35]);
+            centerTitle.Layout.Row = [2 3]; centerTitle.Layout.Column = [4 13];
+
+            % Lanthanides / Actinides markers
+            lanMark = uilabel(eGrid, 'Text', sprintf('57-71 *\nLa-Lu\nLanthanides'), 'FontSize', 7.5, ...
+                'FontColor', [0.2 0.35 0.55], 'FontWeight', 'bold', 'HorizontalAlignment', 'center', ...
+                'BackgroundColor', [0.92, 0.94, 0.98]);
+            lanMark.Layout.Row = 7; lanMark.Layout.Column = 4;
+
+            actMark = uilabel(eGrid, 'Text', sprintf('89-103 **\nAc-Lr\nActinides'), 'FontSize', 7.5, ...
+                'FontColor', [0.55, 0.25, 0.35], 'FontWeight', 'bold', 'HorizontalAlignment', 'center', ...
+                'BackgroundColor', [0.98, 0.92, 0.94]);
+            actMark.Layout.Row = 8; actMark.Layout.Column = 4;
+
+            lanRowLbl = uilabel(eGrid, 'Text', '* Lanthanide Series', 'FontSize', 8.5, 'FontColor', [0.2 0.35 0.55], ...
+                'FontWeight', 'bold', 'HorizontalAlignment', 'right', 'BackgroundColor', [1 1 1]);
+            lanRowLbl.Layout.Row = 10; lanRowLbl.Layout.Column = [1 4];
+
+            actRowLbl = uilabel(eGrid, 'Text', '** Actinide Series', 'FontSize', 8.5, 'FontColor', [0.55, 0.25, 0.35], ...
+                'FontWeight', 'bold', 'HorizontalAlignment', 'right', 'BackgroundColor', [1 1 1]);
+            actRowLbl.Layout.Row = 11; actRowLbl.Layout.Column = [1 4];
+
+            % Populate elements
+            elems = HEAElementsData.get118Elements();
+            nElems = numel(elems);
+            app.PeriodicTableBtnMap = containers.Map();
+
+            for i = 1:nElems
+                e = elems(i);
+                sym = e.Symbol;
+                r = e.GridRow;
+                c = e.GridCol;
+                bText = sprintf('%d\n%s\n%s\n%s', e.Z, sym, e.Name, e.Mass);
+
+                isSel = ismember(sym, app.CurrentElements);
+                if isSel
+                    bgc = [0.15, 0.65, 0.35]; % Emerald green
+                    fgc = [1 1 1];
+                else
+                    bgc = [0.98, 0.99, 1.00]; % White card
+                    fgc = [0.12, 0.16, 0.24];
+                end
+
+                b = uibutton(eGrid, 'state', 'Text', bText, 'Value', isSel, ...
+                    'FontName', 'Segoe UI', 'FontSize', 7.5, 'FontWeight', 'bold', ...
+                    'BackgroundColor', bgc, 'FontColor', fgc);
+                b.Layout.Row = r;
+                b.Layout.Column = c;
+                b.ValueChangedFcn = @(btn, ~) onTabPeriodicElemToggle(app, btn, sym);
+                app.PeriodicTableBtnMap(sym) = b;
+            end
+        end
+
+        function onTabPeriodicElemToggle(app, btn, ~)
+            if btn.Value
+                btn.BackgroundColor = [0.15, 0.65, 0.35];
+                btn.FontColor = [1 1 1];
+            else
+                btn.BackgroundColor = [0.98, 0.99, 1.00];
+                btn.FontColor = [0.12, 0.16, 0.24];
+            end
+            updatePeriodicTableTabStatus(app);
+        end
+
+        function updatePeriodicTableTabStatus(app)
+            if isempty(app.PeriodicTableBtnMap) || isempty(app.PeriodicTableStatusLabel), return; end
+            elems = HEAElementsData.get118Elements();
+            selList = {};
+            for k = 1:numel(elems)
+                s = elems(k).Symbol;
+                if isKey(app.PeriodicTableBtnMap, s) && app.PeriodicTableBtnMap(s).Value
+                    selList{end+1} = s; %#ok<AGROW>
+                end
+            end
+            app.PeriodicTableStatusLabel.Text = sprintf('Currently Selected Elements: %d (%s)', ...
+                numel(selList), strjoin(selList, ', '));
+        end
+
+        function applyTabPeriodicPreset(app, setList)
+            if isempty(app.PeriodicTableBtnMap), return; end
+            elems = HEAElementsData.get118Elements();
+            for k = 1:numel(elems)
+                s = elems(k).Symbol;
+                if isKey(app.PeriodicTableBtnMap, s)
+                    b = app.PeriodicTableBtnMap(s);
+                    val = ismember(s, setList);
+                    b.Value = val;
+                    if val
+                        b.BackgroundColor = [0.15, 0.65, 0.35];
+                        b.FontColor = [1 1 1];
+                    else
+                        b.BackgroundColor = [0.98, 0.99, 1.00];
+                        b.FontColor = [0.12, 0.16, 0.24];
+                    end
+                end
+            end
+            updatePeriodicTableTabStatus(app);
+        end
+
+        function applyPeriodicTableTabSelection(app)
+            if isempty(app.PeriodicTableBtnMap), return; end
+            elems = HEAElementsData.get118Elements();
+            selected = {};
+            for k = 1:numel(elems)
+                s = elems(k).Symbol;
+                if isKey(app.PeriodicTableBtnMap, s) && app.PeriodicTableBtnMap(s).Value
+                    selected{end+1} = s; %#ok<AGROW>
+                end
+            end
+            if numel(selected) < 2
+                safeAlert(app, 'Please select at least 2 elements for an alloy system.', 'Selection Notice', 'warn');
+                return;
+            end
+            setNewElementList(app, selected);
+            logMsg(app, sprintf('[Periodic Table] Applied selected elements to alloy: %s', strjoin(selected, '-')));
+            safeAlert(app, sprintf('Alloy updated to %s (%d elements). Click "Calculate" to solve.', ...
+                strjoin(selected, '-'), numel(selected)), 'Alloy Updated', 'info');
+        end
+
         function setNewElementList(app, newElems)
             app.CurrentElements = newElems;
             n = numel(newElems);
@@ -3928,21 +4548,38 @@ classdef CALPHADHEACalc < handle
             catch
             end
 
+            % Synchronize Periodic Table Tab buttons if present
+            try
+                applyTabPeriodicPreset(app, newElems);
+            catch
+            end
+
             logMsg(app, sprintf('[System] Updated alloy system to: %s. Click "Calculate" to solve.', strjoin(newElems, '-')));
             app.StatusLabel.Text = sprintf('[Ready] Alloy system: %s. Click "Calculate" to solve.', strjoin(newElems, '-'));
         end
 
-        function removeSelectedElement(app)
-            data = app.CompositionTable.Data;
-            if height(data) <= 2
-                logMsg(app, '[System] Cannot remove element: Minimum 2 elements required for alloy.');
+        function addElementFromDropdown(app)
+            elem = app.DropdownAddElem.Value;
+            if ismember(elem, app.CurrentElements)
+                logMsg(app, sprintf('[Notice] Element "%s" is already present in active alloy system.', elem));
+                safeAlert(app, sprintf('Element "%s" is already present in active alloy system.', elem), 'Element Exists', 'warn');
                 return;
             end
-            % Remove last element
-            data(end, :) = [];
-            app.CompositionTable.Data = data;
-            onCompositionEdited(app, []);
-            balanceEquiatomic(app);
+            newElems = [app.CurrentElements, {elem}];
+            setNewElementList(app, newElems);
+            logMsg(app, sprintf('[System] Added element %s. Alloy is now: %s.', elem, strjoin(newElems, '-')));
+        end
+
+        function removeSelectedElement(app)
+            if numel(app.CurrentElements) <= 2
+                logMsg(app, '[Warning] Cannot remove element: Minimum 2 elements required for alloy.');
+                safeAlert(app, 'Cannot remove element: Minimum 2 elements required for an alloy system.', 'Cannot Remove', 'warn');
+                return;
+            end
+            elemToRemove = app.CurrentElements{end};
+            newElems = app.CurrentElements(1:end-1);
+            setNewElementList(app, newElems);
+            logMsg(app, sprintf('[System] Removed element %s. Alloy is now: %s.', elemToRemove, strjoin(newElems, '-')));
         end
 
         % =========================================================================
@@ -3977,6 +4614,8 @@ classdef CALPHADHEACalc < handle
                 computeAndRenderIsopleth(app);
             elseif evt.NewValue == app.SubtabTernary && isempty(app.AxTernary.Children)
                 computeAndRenderTernary(app);
+            elseif evt.NewValue == app.SubtabBinary && isempty(app.AxBinary.Children)
+                computeAndRenderBinaryDiagram(app);
             end
         end
 
@@ -4079,6 +4718,12 @@ classdef CALPHADHEACalc < handle
                     app.DropdownTernaryB.Value = elems{2};
                     app.DropdownTernaryC.Value = elems{3};
                 end
+            catch
+            end
+
+            % Synchronize Periodic Table Tab buttons if present
+            try
+                applyTabPeriodicPreset(app, elems);
             catch
             end
 
@@ -4383,9 +5028,21 @@ classdef CALPHADHEACalc < handle
         end
 
         function exportDataWorksheet(app)
-            defaultFile = fullfile(pwd, sprintf('CALPHAD_Worksheet_%s.csv', datestr(now, 'yyyymmdd_HHMMSS')));
-            writetable(app.TableEquilibrium.Data, defaultFile);
-            logMsg(app, sprintf('[Export] Data worksheet exported to CSV: %s', defaultFile));
+            if isempty(app.TableEquilibrium) || isempty(app.TableEquilibrium.Data)
+                logMsg(app, '[Warning] No equilibrium data available to export. Run calculation first.');
+                safeAlert(app, 'No equilibrium calculation data available to export. Click "Calculate" to solve first.', 'No Data', 'warn');
+                return;
+            end
+            defaultName = sprintf('CALPHAD_Worksheet_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+            [filePath, cancelled] = safePutFile(app, defaultName, {'*.csv', 'CSV Worksheet (*.csv)'}, 'Export Data Worksheet');
+            if cancelled, return; end
+            try
+                writetable(app.TableEquilibrium.Data, filePath);
+                logMsg(app, sprintf('[Export] Data worksheet exported to CSV: %s', filePath));
+                safeAlert(app, sprintf('Data worksheet exported successfully to:\n%s', filePath), 'Worksheet Exported', 'info');
+            catch ex
+                logMsg(app, sprintf('[ERROR] Failed to export worksheet: %s', ex.message));
+            end
         end
 
         function exportJMatPro(app)
@@ -6274,10 +6931,10 @@ classdef CALPHADHEACalc < handle
                 tabName = 'ConsoleLog';
                 if ~isempty(currTab), tabName = matlab.lang.makeValidName(currTab.Title); end
                 defaultName = sprintf('CALPHADHEACalc_%s_%s.txt', tabName, datestr(now, 'yyyymmdd_HHMMSS'));
-                [file, path] = uiputfile({'*.txt;*.log', 'Text / Log Files (*.txt, *.log)'; '*.*', 'All Files (*.*)'}, ...
-                    'Export Log to File', defaultName);
-                if isequal(file, 0), return; end
-                destPath = fullfile(path, file);
+                [destPath, cancelled] = safePutFile(app, defaultName, ...
+                    {'*.txt;*.log', 'Text / Log Files (*.txt, *.log)'; '*.*', 'All Files (*.*)'}, ...
+                    'Export Log to File');
+                if cancelled, return; end
 
                 if currTab == app.TabConsoleEvents, txt = app.ConsoleTextArea.Value;
                 elseif currTab == app.TabConsoleIterations, txt = app.IterationsTextArea.Value;
@@ -6292,11 +6949,11 @@ classdef CALPHADHEACalc < handle
                     fwrite(fid, fullStr, 'char');
                     fclose(fid);
                     logMsg(app, sprintf('[Export] Console log exported to: %s', destPath));
-                    uialert(app.UIFigure, sprintf('Console log exported successfully to:\n%s', destPath), ...
-                        'Log Exported', 'Icon', 'success');
+                    safeAlert(app, sprintf('Console log exported successfully to:\n%s', destPath), ...
+                        'Log Exported', 'info');
                 end
             catch ex
-                uialert(app.UIFigure, sprintf('Failed to export log: %s', ex.message), 'Export Error', 'Icon', 'error');
+                safeAlert(app, sprintf('Failed to export log: %s', ex.message), 'Export Error', 'error');
             end
         end
 

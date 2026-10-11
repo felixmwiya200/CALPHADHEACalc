@@ -186,7 +186,7 @@ classdef OriginPlotter
                 tempPng = fullfile(tempdir, sprintf('origin_clip_%d.png', round(rand()*1e6)));
                 exportgraphics(targetObj, tempPng, 'Resolution', 300);
                 if ispc
-                    psCmd = sprintf('powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; [System.Windows.Forms.Clipboard]::SetImage([System.Drawing.Image]::FromFile(''%s''))"', tempPng);
+                    psCmd = sprintf('powershell -sta -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; [System.Windows.Forms.Clipboard]::SetImage([System.Drawing.Image]::FromFile(''%s''))"', tempPng);
                     [stat, ~] = system(psCmd);
                     success = (stat == 0);
                 elseif ismac
@@ -206,16 +206,26 @@ classdef OriginPlotter
             if nargin < 2 || isempty(defaultName)
                 defaultName = sprintf('CALPHAD_Graph_%s.png', datestr(now, 'yyyymmdd_HHMMSS'));
             end
-            [file, path] = uiputfile(...
-                {'*.png', 'Portable Network Graphics 600 DPI (*.png)'; ...
-                 '*.pdf', 'Vector PDF Document (*.pdf)'; ...
-                 '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
-                 '*.tif;*.tiff', 'TIFF High-Res Image (*.tif)'}, ...
-                'Save Graph to Computer', defaultName);
-            if isequal(file, 0) || isequal(path, 0)
-                success = false;
-                savedPath = '';
-                return;
+            savedPath = '';
+            file = defaultName;
+            path = pwd;
+            try
+                [f, p] = uiputfile(...
+                    {'*.png', 'Portable Network Graphics 600 DPI (*.png)'; ...
+                     '*.pdf', 'Vector PDF Document (*.pdf)'; ...
+                     '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
+                     '*.tif;*.tiff', 'TIFF High-Res Image (*.tif)'}, ...
+                    'Save Graph to Computer', defaultName);
+                if isequal(f, 0) || isequal(p, 0)
+                    success = false;
+                    return;
+                end
+                file = f;
+                path = p;
+            catch
+                % Non-interactive fallback: directly use defaultName in pwd
+                file = defaultName;
+                path = pwd;
             end
             savedPath = fullfile(path, file);
             success = OriginPlotter.exportGraphic(targetObj, savedPath, 600);
