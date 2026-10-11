@@ -43,7 +43,6 @@ To propose a modification:
    ```
 
 4. **Adhere to Code Quality Standards**
-   - **Zero Emojis**: In accordance with CAE desktop software conventions (OriginLab, Thermo-Calc, Pandat), emojis are strictly prohibited across all code, UI labels, tooltips, dialogs, and commit messages.
    - **First-Principles Citations**: Any new physical equation or parameter must include formal literature citations (Author, Year, Journal, Volume, Pages, DOI).
    - **Dual Compatibility**: Modifications to calculation engines must maintain synchronization between the native MATLAB app (`App/CALPHADHEACalc.m`, `App/HEAThermoEngine.m`) and the standalone web suite (`index.html`, `App/ui/index.html`).
 
@@ -69,9 +68,24 @@ To propose a modification:
 
 ---
 
-## 4. Developer Certificate of Origin (DCO)
+---
 
-By submitting a Pull Request, you certify that:
-- The contribution was created by you, in whole or in part, or you have the necessary intellectual property rights to submit it.
-- The contribution is provided under the terms of the project's open-source license.
-- You grant the project maintainers full authorization to redistribute and maintain the code.
+## 4. Contributor License Agreement (CLA)
+
+To ensure the long-term stewardship, distribution, and binary packaging of the Project, **all contributors must sign the [CALPHADHEACalc Contributor License Agreement (CLA)](CLA.md)** before any Pull Request can be merged.
+
+### What the CLA Does
+- **You Retain Your Copyright**: You keep full copyright ownership in your original contributions.
+- **Open-Source Protection**: Your contribution is distributed under the project's open-source license.
+- **Distribution & Sublicensing Grant**: You grant the project maintainers the standard non-exclusive permissions to compile, package, sublicense, and distribute derivative works of the Project.
+
+### How to Sign the CLA
+1. **Automated Pull Request Check (Recommended)**: When you open a Pull Request, the automated CLA bot will verify your signature. If this is your first contribution, reply to the bot's comment with:
+   ```
+   I have read the CALPHADHEACalc Contributor License Agreement and I hereby agree to its terms.
+   ```
+2. **Git Commit Sign-Off**: Add a `Signed-off-by` trailer to every git commit using `git commit -s`:
+   ```bash
+   git commit -s -m "feat(thermo): add high-temperature refractory solvus model"
+   ```
+3. **Corporate Contributions**: If contributing on behalf of an employer or institution, review the Corporate CLA provisions in [`CLA.md`](CLA.md).

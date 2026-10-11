@@ -211,11 +211,11 @@ classdef HEAApplicationDatabase
                     'thermal fatigue, and abrasive contact. Requires Vickers hardness HV > 500, yield strength > 1200 MPa, ', ...
                     'high shear modulus, and resistance to thermal softening.'];
             criteria = {
-                'VickersHardness_HV',  0.30, 'max',  350.0,  620.0, 'HV';
-                'YieldStrength_RT',    0.25, 'max',  850.0, 1500.0, 'MPa';
-                'UTS_RT_MPa',          0.15, 'max', 1100.0, 1800.0, 'MPa';
-                'ShearModulus_GPa',    0.15, 'max',   70.0,   95.0, 'GPa';
-                'ThermalStability_K',  0.15, 'max',  950.0, 1250.0, 'K'
+                'VickersHardness_HV',  0.30, 'max',  300.0,  600.0, 'HV';
+                'YieldStrength_RT',    0.25, 'max',  700.0, 1400.0, 'MPa';
+                'UTS_RT_MPa',          0.15, 'max',  950.0, 1600.0, 'MPa';
+                'ShearModulus_GPa',    0.15, 'max',   65.0,   95.0, 'GPa';
+                'ThermalStability_K',  0.15, 'max',  900.0, 1250.0, 'K'
             };
             app = HEAApplicationDatabase.createBaseApp('TOOLING_HOT_DIE', ...
                 'High-Hardness Wear Tooling & Hot Stamping Dies', 'Manufacturing & Tooling', ...

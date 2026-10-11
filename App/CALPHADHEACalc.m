@@ -344,17 +344,15 @@ classdef CALPHADHEACalc < handle
             % Load Initial Alloy
             setAlloyPreset(app, initialAlloy);
 
-            if app.IsHeadless
-                calculateAll(app);
-            else
-                % In interactive software mode: wait for user input!
-                app.StatusLabel.Text = '[Ready] CALPHADHEACalc software ready. Click "Calculate" to solve.';
-                logMsg(app, '[Ready] Software mounted with SGTE database. Waiting for user input. Click "Calculate" to solve.');
+            % Compute initial alloy multi-physics state
+            calculateAll(app);
+            if ~app.IsHeadless
+                app.StatusLabel.Text = sprintf('[Ready] Equilibrium solved for %s. All multi-physics models synchronized.', initialAlloy);
+                logMsg(app, sprintf('[Ready] Initial calculation completed for %s. All multi-physics models synchronized.', initialAlloy));
             end
 
             if ~app.IsHeadless
                 app.UIFigure.Visible = 'on';
-                figure(app.UIFigure); % Bring to front
             end
 
             % Complete splash screen and close cleanly
@@ -1894,6 +1892,9 @@ classdef CALPHADHEACalc < handle
         end
 
         function renderCurrentTab(app)
+            if ~app.HasCalculatedOnce && ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
+                calculateAll(app);
+            end
             curTab = app.MainTabGroup.SelectedTab;
             if isempty(curTab), return; end
             
@@ -2878,6 +2879,11 @@ classdef CALPHADHEACalc < handle
         % RENDERER: MECHANICAL PERFORMANCE & DEFORMATION VIEW
         % =========================================================================
         function renderMechanicalView(app)
+            if (isempty(app.CurrentMechMetrics) || ~isfield(app.CurrentMechMetrics, 'YieldStrength_RT_MPa')) && ...
+                    ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
+                calculateAll(app);
+            end
+
             % Plot A: sigma_y(T) and UTS(T)
             ax = app.AxMechanical;
             cla(ax);
@@ -2907,8 +2913,12 @@ classdef CALPHADHEACalc < handle
 
             hold(ax, 'off');
             ax.XLim = [77, 1800];
-            lgd = legend(ax, 'show');
-            OriginPlotter.formatLegend(lgd, 'northeast', 8.5);
+            if ~isempty(ax.Children)
+                lgd = legend(ax, 'show');
+                OriginPlotter.formatLegend(lgd, 'northeast', 8.5);
+            else
+                legend(ax, 'off');
+            end
 
             % Plot B: Constitutive Flow Stress Curve
             ax2 = app.AxStressStrain;
@@ -2922,8 +2932,12 @@ classdef CALPHADHEACalc < handle
             end
 
             hold(ax2, 'off');
-            lgd2 = legend(ax2, 'show');
-            OriginPlotter.formatLegend(lgd2, 'southeast', 8.5);
+            if ~isempty(ax2.Children)
+                lgd2 = legend(ax2, 'show');
+                OriginPlotter.formatLegend(lgd2, 'southeast', 8.5);
+            else
+                legend(ax2, 'off');
+            end
 
             % Populate Dedicated Mechanical Properties & Constitutive Parameters Table
             if isprop(app, 'TableMechanicalProperties') && isvalid(app.TableMechanicalProperties)
@@ -3333,7 +3347,12 @@ classdef CALPHADHEACalc < handle
         % =========================================================================
         function renderApplicationsView(app)
             if isempty(app.CurrentAppScores)
-                return;
+                if ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
+                    calculateAll(app);
+                end
+                if isempty(app.CurrentAppScores)
+                    return;
+                end
             end
 
             % Update Applications Ranked Table
@@ -3733,7 +3752,9 @@ classdef CALPHADHEACalc < handle
                 logMsg(app, sprintf('[Layout] Left sidebar expanded to %d px.', app.DockWidthMemory));
             else
                 % Collapse
-                app.DockWidthMemory = app.SpinnerDockWidth.Value;
+                if isprop(app, 'SpinnerDockWidth') && ~isempty(app.SpinnerDockWidth) && isvalid(app.SpinnerDockWidth)
+                    app.DockWidthMemory = app.SpinnerDockWidth.Value;
+                end
                 app.WorkGrid.ColumnWidth = {0, '1x'};
                 app.BtnToggleDock.Text = '>> Dock';
                 app.IsDockCollapsed = true;
@@ -4757,8 +4778,9 @@ classdef CALPHADHEACalc < handle
         function onPresetSelected(app, evt)
             presetName = evt.Value;
             setAlloyPreset(app, presetName);
-            logMsg(app, sprintf('[System] Loaded preset: %s. Click "Calculate" to solve.', presetName));
-            app.StatusLabel.Text = sprintf('[Ready] Preset "%s" loaded. Click "Calculate" to solve.', presetName);
+            calculateAll(app);
+            logMsg(app, sprintf('[System] Loaded and solved preset: %s.', presetName));
+            app.StatusLabel.Text = sprintf('[Ready] Preset "%s" solved. Multi-physics models synchronized.', presetName);
         end
 
         function setAlloyPreset(app, presetStr)

@@ -206,9 +206,10 @@ classdef HEAMechanicalEngine
                 delta_sigma_ss_MPa = TaylorFactor * tau_y_RT_MPa;
 
             else % Duplex (FCC+BCC)
-                f_bcc = (7.80 - VEC_val) / (7.80 - 6.87);
+                f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
                 tau_y0_MPa = 350.0;
                 Tc_K = 280.0;
+                Delta_Eb_J = ((1 - f_bcc) * 0.274 + f_bcc * 2.00) * (alpha_line^(1/3)) * G_eff_Pa * b3 * (nu_factor^(2/3)) * (misfit_sum^(1/3));
                 d_ss_fcc = 110.0;
                 d_ss_bcc = 420.0;
                 delta_sigma_ss_MPa = (1 - f_bcc) * d_ss_fcc + f_bcc * d_ss_bcc;
@@ -235,7 +236,7 @@ classdef HEAMechanicalEngine
             if f_B2 == 0 && f_L12 == 0 && f_sigma == 0
                 idxAl = find(strcmp(elemList, 'Al'), 1);
                 if ~isempty(idxAl) && c(idxAl) > 0.08
-                    f_B2 = min(0.60, max(0.0, (c(idxAl) - 0.08) * 3.8));
+                    f_B2 = min(0.65, max(0.0, (c(idxAl) - 0.08) * 4.2));
                 end
                 idxCr = find(strcmp(elemList, 'Cr'), 1);
                 idxFe = find(strcmp(elemList, 'Fe'), 1);
@@ -244,11 +245,11 @@ classdef HEAMechanicalEngine
                 end
             end
 
-            f_ppt_total = min(0.70, f_B2 + f_L12 + f_sigma);
+            f_ppt_total = min(0.75, f_B2 + f_L12 + f_sigma);
             delta_sigma_ppt_MPa = 0.0;
             if f_ppt_total > 0.005
-                % Coherent order/cutting strengthening in HEAs (APB shear mechanism, capped at 420 MPa)
-                delta_sigma_ppt_MPa = min(420.0, f_ppt_total * 720.0);
+                % Coherent order/cutting strengthening in HEAs (APB shear + spinodal B2 decomposition)
+                delta_sigma_ppt_MPa = min(580.0, f_ppt_total * 850.0);
             end
 
             % 4. Total Yield Strength: Root-Mean-Square (RMS / Power-Law q=1.8) Superposition
@@ -267,21 +268,22 @@ classdef HEAMechanicalEngine
                 sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.20, 1);
                 elongation_pct = round(max(2.0, 10.0 - 12.0 * f_ppt_total), 1);
             else % Duplex
-                f_bcc = (7.80 - VEC_val) / (7.80 - 6.87);
+                f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
                 ratio_uts = (1 - f_bcc) * 2.30 + f_bcc * 1.22;
                 sig_uts_RT_MPa = round(sig_y_RT_MPa * ratio_uts, 1);
-                elongation_pct = round(max(6.0, (1 - f_bcc) * 45.0 + f_bcc * 6.0), 1);
+                elongation_pct = round(max(4.0, (1 - f_bcc) * 45.0 + f_bcc * 6.0 - 15.0 * f_B2), 1);
             end
 
-            % 6. Vickers Microhardness (HV) via Calibrated Tabor Conversion
+            % 6. Vickers Microhardness (HV) via Calibrated Tabor Conversion with B2/Order Hardening
             if strcmp(dominantStructure, 'FCC')
-                HV_val = round(0.30 * sig_y_RT_MPa + 72.0, 0);
+                HV_base = 0.30 * sig_y_RT_MPa + 72.0;
             elseif strcmp(dominantStructure, 'BCC')
-                HV_val = round(0.36 * sig_y_RT_MPa + 55.0, 0);
+                HV_base = 0.36 * sig_y_RT_MPa + 65.0;
             else
-                f_bcc = (7.80 - VEC_val) / (7.80 - 6.87);
-                HV_val = round((1 - f_bcc) * (0.30 * sig_y_RT_MPa + 72.0) + f_bcc * (0.36 * sig_y_RT_MPa + 55.0), 0);
+                f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
+                HV_base = (1 - f_bcc) * (0.30 * sig_y_RT_MPa + 72.0) + f_bcc * (0.36 * sig_y_RT_MPa + 65.0);
             end
+            HV_val = round(HV_base + f_B2 * 120.0 + f_sigma * 150.0, 0);
 
             % 7. Fracture Toughness K1c / KJc & Pugh Ratio
             Pugh_Ratio = round(B_eff_GPa / G_eff_GPa, 2);
