@@ -1,13 +1,13 @@
 ---
 title: "CALPHADHEACalc: Attached Thermodynamic Databases and Governing Equations Reference Manual"
-description: "Authoritative documentation of the 8 attached thermodynamic/kinetic databases, physical property models, and governing constitutive equations implemented in the CALPHADHEACalc workstation."
+description: "Authoritative documentation of the 8 attached thermodynamic/kinetic databases, physical property models, and governing constitutive equations implemented in the CALPHADHEACalc software."
 ---
 
 # CALPHADHEACalc: Attached Databases and Governing Equations Reference Manual
 
 ## 1. Executive Architecture Overview
 
-CALPHADHEACalc is a native computational materials workstation engineered for high-entropy alloys (HEAs) and multi-principal element alloys (MPEAs). The software couples phenomenological thermodynamic databases, semi-empirical thermochemical formulations, and continuum constitutive relations across six coupled physical domains:
+CALPHADHEACalc is a native computational materials software engineered for high-entropy alloys (HEAs) and multi-principal element alloys (MPEAs). The software couples phenomenological thermodynamic databases, semi-empirical thermochemical formulations, and continuum constitutive relations across six coupled physical domains:
 
 1. **Solution Thermodynamics**: Multicomponent Gibbs free energy minimization, Redlich-Kister binary excess terms, and Muggianu ternary extrapolations.
 2. **Empirical HEA Descriptors**: Miedema macroscopic atom enthalpy, configurational entropy, Yang-Zhang $\Omega$ parameter, atomic size mismatch $\delta$, and Valence Electron Concentration (VEC).
@@ -16,7 +16,7 @@ CALPHADHEACalc is a native computational materials workstation engineered for hi
 5. **Electrochemical Aqueous Corrosion**: ASTM G102 equivalent weight, Faraday penetration rates, modified High-Entropy Pitting Resistance Equivalent Numbers ($\text{PREN}_{\text{HEA}}$), and micro-galvanic cell driving potentials.
 6. **Kinematic X-Ray Crystallography**: Bragg-Brentano powder diffraction, structure factors $F_{hkl}$, and Scherrer crystallite size/microstrain line broadening.
 
-The workstation integrates an embedded **Attached Databases Registry** (`showDatabasesRegistryDialog`) and a **Governing Equations Reference** (`showEquationsRegistryDialog`) directly within its desktop interface, enabling interactive inspection of all models during active calculations.
+The software integrates an embedded **Attached Databases Registry** (`showDatabasesRegistryDialog`) and a **Governing Equations Reference** (`showEquationsRegistryDialog`) directly within its desktop interface, enabling interactive inspection of all models during active calculations.
 
 ```mermaid
 flowchart TD
@@ -44,10 +44,10 @@ flowchart TD
         E5["HEAApplicationScorer.m<br>Industrial Suitability Scoring"]
     end
 
-    subgraph UI["CALPHADHEACalc Native Workstation"]
+    subgraph UI["CALPHADHEACalc Native Software"]
         direction TB
         W1["OriginPlotter 11 Canvases"]
-        W2["Interactive Terminal REPL"]
+        W2["Terminal REPL"]
         W3["Multi-Language Script Runner"]
         W4["Experimental Benchmark Overlays"]
     end
@@ -106,7 +106,7 @@ The `HEAOxideDatabase` provides thermodynamic and kinetic parameters for 54 cand
 ```mermaid
 sequenceDiagram
     autonumber
-    participant UI as CALPHAD Workstation GUI
+    participant UI as CALPHAD Software GUI
     participant Thermo as HEAThermoEngine
     participant Mech as HEAMechanicalEngine
     participant Ox as HEAOxidationEngine

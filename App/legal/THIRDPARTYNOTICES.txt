@@ -7,7 +7,7 @@ Host Institution: Department of Mechanical Engineering, School of Engineering an
                   SRM University-AP, Andhra Pradesh, India
 Formal Academic Citation:
   Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics
-  Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering,
+  Thermodynamic Properties Software (v3.4.0). Department of Mechanical Engineering,
   School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
 Standard: ISO/IEC 5230:2020 (OpenChain) Specification
 Date: 2026-10-09

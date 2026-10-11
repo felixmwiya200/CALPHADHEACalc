@@ -12,8 +12,8 @@ function export_verification_snapshots()
     drawnow;
     pause(0.5);
 
-    % 1. Export Main Workstation View (Cantor alloy, Tab 1)
-    mainPath = fullfile(artDir, 'calphad_workstation_main_view.png');
+    % 1. Export Main Software View (Cantor alloy, Tab 1)
+    mainPath = fullfile(artDir, 'calphad_software_main_view.png');
     exportapp(app.UIFigure, mainPath);
     fprintf('Exported: %s\n', mainPath);
 

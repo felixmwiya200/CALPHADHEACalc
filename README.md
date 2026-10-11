@@ -1,7 +1,7 @@
-# CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic & Property Software
+# CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Zero MATLAB Required](https://img.shields.io/badge/Zero_MATLAB_Required-Web_&_Desktop_App-success.svg)](#running-without-matlab)
+[![Standalone Web & Desktop](https://img.shields.io/badge/Standalone-Web_&_Desktop_App-success.svg)](#running-without-matlab)
 [![GitHub Pages](https://img.shields.io/badge/Live_Web_App-GitHub_Pages-2ea44f.svg)](#1-live-web-app-in-your-browser)
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2024b%20%7C%20R2026a-0076A8.svg)](https://www.mathworks.com/products/matlab.html)
 [![OriginLab Style](https://img.shields.io/badge/Graphics-OriginLab_600_DPI-8B0000.svg)](#high-density-scientific-visualization)
@@ -119,11 +119,11 @@ Full mathematical derivations and code-path citations are documented in the [Att
 
 ```text
 CALPHADHEACalc/
-├── index.html                           # Zero-MATLAB standalone web application
+├── index.html                           # Standalone web application
 ├── docs/                                # GitHub Pages deployment directory
 │   └── index.html                       # Mirror for GitHub Pages
-├── CALPHADHEACalc_Desktop.bat           # Zero-MATLAB native desktop window launcher
-├── CALPHADHEACalc_Desktop.vbs           # Zero-MATLAB silent desktop launcher
+├── CALPHADHEACalc_Desktop.bat           # Native desktop window launcher
+├── CALPHADHEACalc_Desktop.vbs           # Silent desktop launcher
 ├── compile_calphad_exe.m                # Standalone Windows .exe compiler script
 ├── CONTRIBUTING.md                      # Contribution guidelines & maintainer approval policy
 ├── BRANCH_PROTECTION.md                 # Step-by-step GitHub branch protection setup
@@ -178,13 +178,13 @@ CALPHADHEACalc/
 If you use CALPHADHEACalc in academic research, alloy design, or industrial publications, please cite:
 
 ### APA Format
-> Mwiya, F., & Singh, S. (2026). *CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Software* (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
+> Mwiya, F., & Singh, S. (2026). *CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software* (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
 
 ### BibTeX
 ```bibtex
 @software{Mwiya_CALPHADHEACalc_2026,
   author       = {Mwiya, Felix and Singh, Sheela},
-  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Software}},
+  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software}},
   version      = {3.4.0},
   year         = {2026},
   institution  = {Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP},

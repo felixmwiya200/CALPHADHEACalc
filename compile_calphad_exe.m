@@ -1,5 +1,5 @@
 % compile_calphad_exe.m - Automates Compilation of Standalone Windows .EXE
-% Builds CALPHADHEACalc.exe requiring ZERO MATLAB license for end-users.
+% Builds CALPHADHEACalc.exe for end-users.
 % End-users run the executable using the free royalty-free MATLAB Runtime (MCR).
 
 function compile_calphad_exe()
@@ -26,8 +26,8 @@ function compile_calphad_exe()
     if ~hasCompiler
         warning(['MATLAB Compiler toolbox license not detected on this machine.\n', ...
                  'Generating Windows Desktop Launcher and Web Distribution packages instead.']);
-        fprintf('End-users can run the application with ZERO MATLAB via:\n');
-        fprintf('  1. GitHub Pages live web URL (zero installation)\n');
+        fprintf('End-users can run the application via:\n');
+        fprintf('  1. GitHub Pages live web URL\n');
         fprintf('  2. CALPHADHEACalc_Desktop.bat (Native Windows desktop window)\n');
         fprintf('  3. Double-clicking index.html in any web browser\n');
         return;

@@ -1,7 +1,7 @@
 % test_calphad_hea_calc.m - End-to-End Verification of CALPHADHEACalc Desktop App
 function test_calphad_hea_calc()
     fprintf('=================================================================\n');
-    fprintf('      TESTING PURE NATIVE MATLAB CALPHADHEACALC WORKSTATION      \n');
+    fprintf('      TESTING PURE NATIVE MATLAB CALPHADHEACALC SOFTWARE      \n');
     fprintf('=================================================================\n\n');
 
     % Test 1: Headless Instantiation & Initial State
@@ -234,7 +234,7 @@ function test_calphad_hea_calc()
     assert(strcmp(tabs(5).Title, 'Academic Citations & Provenance'), 'Tab 5 must be Academic Citations & Provenance.');
 
     % Verify Developer and Supervisor credits and exact formal citation in Tab 1
-    expectedCitation = 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.';
+    expectedCitation = 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.';
     expectedTitle = 'Materials computational research engineer and lead developer';
     allLabels = findall(tabs(1), 'Type', 'uilabel');
     allLabelTexts = {allLabels.Text};
@@ -423,6 +423,6 @@ function test_calphad_hea_calc()
     delete(legacyApp.UIFigure);
 
     fprintf('\n=================================================================\n');
-    fprintf('    ALL CALPHADHEACALC WORKSTATION TESTS PASSED (100%%) (20/20)   \n');
+    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (20/20)   \n');
     fprintf('=================================================================\n');
 end

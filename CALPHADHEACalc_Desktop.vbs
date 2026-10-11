@@ -1,4 +1,4 @@
-' CALPHADHEACalc 2026 - Silent Desktop Launcher (Zero MATLAB Required)
+' CALPHADHEACalc 2026 - Silent Desktop Launcher
 Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 strDir = objFSO.GetParentFolderName(WScript.ScriptFullName)

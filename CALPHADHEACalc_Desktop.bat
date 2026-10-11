@@ -4,7 +4,7 @@ title CALPHADHEACalc 2026 - High-Entropy Alloy Application
 cd /d "%~dp0"
 
 :: -----------------------------------------------------------------------------
-:: CALPHADHEACalc Standalone Native Desktop Launcher (Zero MATLAB Required)
+:: CALPHADHEACalc Standalone Native Desktop Launcher
 :: Launches the high-density CALPHAD materials suite in native desktop app window
 :: -----------------------------------------------------------------------------
 

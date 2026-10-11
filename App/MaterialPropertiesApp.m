@@ -1,5 +1,5 @@
 classdef MaterialPropertiesApp < CALPHADHEACalc
-    % MaterialPropertiesApp - CALPHADHEACalc 2026 Workstation Primary Entry Point
+    % MaterialPropertiesApp - CALPHADHEACalc 2026 Software Primary Entry Point
     % 100% Pure Native MATLAB CAE Desktop Architecture mirroring Pandat PanGUI & Thermo-Calc.
     %
     % Authors & Academic Provenance:
@@ -10,7 +10,7 @@ classdef MaterialPropertiesApp < CALPHADHEACalc
     %
     % Formal Citation:
     %   Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics
-    %   Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering,
+    %   Thermodynamic Properties Software (v3.4.0). Department of Mechanical Engineering,
     %   School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
     %
     % Key Architecture:

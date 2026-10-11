@@ -158,7 +158,7 @@ classdef CALPHADHEACalc < handle
         BtnExportConsoleLog   matlab.ui.control.Button
         ConsoleContextMenu    matlab.ui.container.ContextMenu
 
-        % Interactive Terminal Tab
+        % Terminal Tab
         TabConsoleTerminal    matlab.ui.container.Tab
         TerminalOutputArea    matlab.ui.control.TextArea
         TerminalInputField    matlab.ui.control.EditField
@@ -323,9 +323,9 @@ classdef CALPHADHEACalc < handle
             if app.IsHeadless
                 calculateAll(app);
             else
-                % In interactive workstation mode: wait for user input!
-                app.StatusLabel.Text = '[Ready] CALPHADHEACalc workstation ready. Click "Calculate" to solve.';
-                logMsg(app, '[Ready] Workstation mounted with SGTE database. Waiting for user input. Click "Calculate" to solve.');
+                % In interactive software mode: wait for user input!
+                app.StatusLabel.Text = '[Ready] CALPHADHEACalc software ready. Click "Calculate" to solve.';
+                logMsg(app, '[Ready] Software mounted with SGTE database. Waiting for user input. Click "Calculate" to solve.');
             end
 
             if ~app.IsHeadless
@@ -353,7 +353,7 @@ classdef CALPHADHEACalc < handle
             y = max(30, (screenSize(4) - h) / 2);
 
             app.UIFigure = uifigure(...
-                'Name', 'CALPHADHEACalc 2026 - High-Entropy Alloy Thermodynamic & Property Calc', ...
+                'Name', 'CALPHADHEACalc 2026 - High-Entropy Alloy Thermodynamic Properties Calc', ...
                 'Position', [x, y, w, h], ...
                 'Color', [0.94, 0.95, 0.96], ...
                 'Visible', 'off', ...
@@ -575,8 +575,8 @@ classdef CALPHADHEACalc < handle
                 'ContextMenu', app.ConsoleContextMenu, ...
                 'Value', {'[Physics Diagnostics] Click "Calculate" to view granular constitutive formulas and intermediate parameters.'});
 
-            % Mini-Tab 4: Interactive Command Terminal (REPL)
-            app.TabConsoleTerminal = uitab(app.ConsoleTabGroup, 'Title', 'Interactive Terminal');
+            % Mini-Tab 4: Terminal (REPL)
+            app.TabConsoleTerminal = uitab(app.ConsoleTabGroup, 'Title', 'Terminal');
             buildTerminalTab(app);
 
             % Mini-Tab 5: Multi-Language Script Runner
@@ -4632,7 +4632,7 @@ classdef CALPHADHEACalc < handle
                 'ButtonPushedFcn', @(~, ~) openAttachmentFolder(app, 'AlFeCrCoNi_Manual_Calculation_Report.pdf'));
 
             % Attachment Card 3: Architecture Report DOCX
-            card3 = uipanel(docsGrid, 'Title', 'Attachment 3: High-Entropy Alloy Workstation Engineering Architecture Report (DOCX)', ...
+            card3 = uipanel(docsGrid, 'Title', 'Attachment 3: High-Entropy Alloy Software Engineering Architecture Report (DOCX)', ...
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1]);
             c3Grid = uigridlayout(card3, [2, 2]);
             c3Grid.ColumnWidth = {'1x', 190};
@@ -4641,7 +4641,7 @@ classdef CALPHADHEACalc < handle
 
             p3 = resolveAttachmentPath(app, 'HEA_App_Development_Report_Updated.docx');
             if exist(p3, 'file') == 2, stat3 = 'Attached & Verified on Disk'; else, stat3 = 'File Not Found'; end
-            uilabel(c3Grid, 'Text', sprintf('File: HEA_App_Development_Report_Updated.docx | Size: 62 KB | Status: %s\nScope: Workstation architecture, 100%% pure native MATLAB CAE design, Origin vector plotting pipeline, and multi-physics solver verification', stat3), ...
+            uilabel(c3Grid, 'Text', sprintf('File: HEA_App_Development_Report_Updated.docx | Size: 62 KB | Status: %s\nScope: Software architecture, 100%% pure native MATLAB CAE design, Origin vector plotting pipeline, and multi-physics solver verification', stat3), ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontColor', [0.2, 0.25, 0.3]);
             uibutton(c3Grid, 'Text', 'Open Architecture Report (DOCX)', ...
                 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', ...
@@ -4884,7 +4884,7 @@ classdef CALPHADHEACalc < handle
             hGrid.RowSpacing = 2;
             uilabel(hGrid, 'Text', 'CALPHADHEACALC 2026', ...
                 'FontName', 'Segoe UI', 'FontSize', 14, 'FontWeight', 'bold', 'FontColor', [0.10, 0.20, 0.38]);
-            uilabel(hGrid, 'Text', 'High-Entropy Alloy Multi-Physics Workstation & CAE Thermodynamic Engine | Version 3.4.0 (Build 2026.10)', ...
+            uilabel(hGrid, 'Text', 'High-Entropy Alloy Multi-Physics Software & CAE Thermodynamic Engine | Version 3.4.0 (Build 2026.10)', ...
                 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontColor', [0.35, 0.45, 0.58]);
 
             % --- Tab Group ---
@@ -4901,7 +4901,7 @@ classdef CALPHADHEACalc < handle
 
             % Sub-banner
             uilabel(authGrid, ...
-                'Text', 'CALPHADHEACalc Workstation — Conceived, Architected & Engineered at SRM University-AP', ...
+                'Text', 'CALPHADHEACalc Software — Conceived, Architected & Engineered at SRM University-AP', ...
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', 'FontColor', [0.12, 0.22, 0.38]);
 
             % Cards Grid (Left: Felix Mwiya | Right: Prof. Sheela Singh)
@@ -4964,7 +4964,7 @@ classdef CALPHADHEACalc < handle
             ccGrid.Padding = [8 6 8 6];
             ccGrid.RowSpacing = 4;
 
-            exactCitationText = 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.';
+            exactCitationText = 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.';
 
             txtCitBox = uitextarea(ccGrid, ...
                 'Value', {exactCitationText}, ...
@@ -5044,11 +5044,11 @@ classdef CALPHADHEACalc < handle
             sGrid.Padding = [6 6 6 6];
 
             specData = {
-                'Workstation Engine', 'CALPHADHEACalc 2026 Multi-Physics Thermodynamic Suite'
+                'Software Engine', 'CALPHADHEACalc 2026 Multi-Physics Thermodynamic Suite'
                 'Lead Developer', 'Felix Mwiya (Materials computational research engineer and lead developer)'
                 'Academic Guidance', 'Prof. (Dr.) Sheela Singh (SRM University-AP)'
                 'Host Institution', 'Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP'
-                'Formal Citation', 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0).'
+                'Formal Citation', 'Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0).'
                 'Platform Architecture', '100% Pure Native MATLAB App Designer Architecture (uifigure / uigridlayout)'
                 'Browser Dependency', 'Zero Chromium Webview (Eliminated for 100% Native Desktop CAE Stability)'
                 'Plotting Engine', 'OriginLab-Style Boxed 4-Sided Inward-Tick Vector Canvas (OriginPlotter, 600 DPI Export)'
@@ -5077,7 +5077,7 @@ classdef CALPHADHEACalc < handle
             dGrid.Padding = [8 8 8 8];
             dGrid.RowSpacing = 6;
 
-            uilabel(dGrid, 'Text', 'Integrated Attachments Manifest (Stored locally in workstation workspace):', ...
+            uilabel(dGrid, 'Text', 'Integrated Attachments Manifest (Stored locally in software workspace):', ...
                 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', 'FontColor', [0.15, 0.22, 0.35]);
 
             % Item 1
@@ -5106,7 +5106,7 @@ classdef CALPHADHEACalc < handle
             g3.ColumnWidth = {'1x', 160};
             g3.Padding = [6 4 6 4];
             p3 = resolveAttachmentPath(app, 'HEA_App_Development_Report_Updated.docx');
-            uilabel(g3, 'Text', sprintf('Workstation Engineering Development Report (62 KB, DOCX)\nLocation: %s', p3), 'FontSize', 8.5);
+            uilabel(g3, 'Text', sprintf('Software Engineering Development Report (62 KB, DOCX)\nLocation: %s', p3), 'FontSize', 8.5);
             uibutton(g3, 'Text', 'Open Report (DOCX)', 'FontWeight', 'bold', 'BackgroundColor', [0.35, 0.40, 0.55], 'FontColor', [1 1 1], ...
                 'ButtonPushedFcn', @(~, ~) openFileAttachment(app, 'HEA_App_Development_Report_Updated.docx'));
 
@@ -5121,7 +5121,7 @@ classdef CALPHADHEACalc < handle
                 'ACADEMIC CITATIONS & THERMODYNAMIC PROVENANCE'
                 '---------------------------------------------------------------------------------------------------------'
                 ''
-                '[0] Mwiya, F., & Singh, S. (2026). "CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0)."'
+                '[0] Mwiya, F., & Singh, S. (2026). "CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0)."'
                 '    Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.'
                 ''
                 '[1] Dinsdale, A. T. (1991). "SGTE data for pure elements."'
@@ -5238,7 +5238,7 @@ classdef CALPHADHEACalc < handle
             hGrid.RowSpacing = 2;
             uilabel(hGrid, 'Text', 'HOW TO CITE CALPHADHEACALC 2026', ...
                 'FontName', 'Segoe UI', 'FontSize', 13, 'FontWeight', 'bold', 'FontColor', [0.10, 0.20, 0.38]);
-            uilabel(hGrid, 'Text', 'Please cite this workstation in publications, theses, conference papers, and engineering reports.', ...
+            uilabel(hGrid, 'Text', 'Please cite this software in publications, theses, conference papers, and engineering reports.', ...
                 'FontName', 'Segoe UI', 'FontSize', 9, 'FontColor', [0.35, 0.45, 0.58]);
 
             % --- Body Panel ---
@@ -5262,13 +5262,13 @@ classdef CALPHADHEACalc < handle
                 'RIS Format (EndNote / Mendeley / Zotero)'
             };
 
-            apaCite = sprintf('Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.');
+            apaCite = sprintf('Mwiya, F., & Singh, S. (2026). CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.');
 
-            ieeeCite = sprintf('F. Mwiya and S. Singh, "CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation," ver. 3.4.0, Dept. Mech. Eng., School of Eng. and Sci., SRM Univ.-AP, Andhra Pradesh, India, 2026.');
+            ieeeCite = sprintf('F. Mwiya and S. Singh, "CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software," ver. 3.4.0, Dept. Mech. Eng., School of Eng. and Sci., SRM Univ.-AP, Andhra Pradesh, India, 2026.');
 
             bibtexSoftCite = sprintf(['@software{Mwiya_CALPHADHEACalc_2026,\n' ...
                 '  author       = {Mwiya, Felix and Singh, Sheela},\n' ...
-                '  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation}},\n' ...
+                '  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software}},\n' ...
                 '  version      = {3.4.0},\n' ...
                 '  year         = {2026},\n' ...
                 '  institution  = {Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP},\n' ...
@@ -5278,15 +5278,15 @@ classdef CALPHADHEACalc < handle
 
             bibtexMiscCite = sprintf(['@misc{Mwiya_CALPHADHEACalc_2026,\n' ...
                 '  author       = {Mwiya, Felix and Singh, Sheela},\n' ...
-                '  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation (v3.4.0)}},\n' ...
-                '  howpublished = {MATLAB CAE Workstation, Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India},\n' ...
+                '  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software (v3.4.0)}},\n' ...
+                '  howpublished = {MATLAB CAE Software, Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India},\n' ...
                 '  year         = {2026}\n' ...
                 '}']);
 
             risCite = sprintf(['TY  - COMP\n' ...
                 'AU  - Mwiya, Felix\n' ...
                 'AU  - Singh, Sheela\n' ...
-                'TI  - CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation\n' ...
+                'TI  - CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic Properties Software\n' ...
                 'ET  - 3.4.0\n' ...
                 'PY  - 2026\n' ...
                 'PB  - Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP\n' ...
@@ -6312,7 +6312,7 @@ classdef CALPHADHEACalc < handle
                 sections{end+1} = '==================== TAB 3: DETAILED DIAGNOSTICS ====================';
                 sections = [sections; app.DetailsTextArea.Value(:)];
                 sections{end+1} = newline;
-                sections{end+1} = '==================== TAB 4: INTERACTIVE TERMINAL ====================';
+                sections{end+1} = '==================== TAB 4: TERMINAL ====================';
                 sections = [sections; app.TerminalOutputArea.Value(:)];
                 sections{end+1} = newline;
                 sections{end+1} = '==================== TAB 5: SCRIPT RUNNER OUTPUT ====================';
@@ -6819,8 +6819,8 @@ classdef CALPHADHEACalc < handle
 
                 case 'MATLAB (CALPHAD Toolpack)'
                     content = { ...
-                        '% MATLAB Script: CALPHAD Multi-Physics Workstation Automation', ...
-                        '% Instantiate headless CALPHADHEACalc workstation engine', ...
+                        '% MATLAB Script: CALPHAD Multi-Physics Software Automation', ...
+                        '% Instantiate headless CALPHADHEACalc software engine', ...
                         'app = CALPHADHEACalc(''Cantor (CoCrFeMnNi)'', true);', ...
                         'app.calculateAll();', ...
                         '', ...
