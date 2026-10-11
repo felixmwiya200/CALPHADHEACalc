@@ -80,3 +80,9 @@ App/extracted_text.txt
 temp_runs/
 test_tmp/
 archive/
+
+# Confidential Commercial Strategy & PDF Dossiers
+CALPHADHEACalc_3_Year_Commercial_SpinOff_Plan.pdf
+CALPHADHEACalc_3_Year_Plan.html
+scratch_generate_pdf.py
+
