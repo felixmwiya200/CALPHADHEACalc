@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title CALPHADHEACalc 2026 - High-Entropy Alloy Workstation
+title CALPHADHEACalc 2026 - High-Entropy Alloy Application
 cd /d "%~dp0"
 
 :: -----------------------------------------------------------------------------
