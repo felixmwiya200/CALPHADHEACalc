@@ -1,23 +1,23 @@
-# CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic & Property Workstation
+# CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic & Property Software
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Zero MATLAB Required](https://img.shields.io/badge/Zero_MATLAB_Required-Web_&_Desktop_App-success.svg)](#running-without-matlab-zero-installation)
-[![GitHub Pages](https://img.shields.io/badge/Live_Web_App-GitHub_Pages-2ea44f.svg)](#1-live-web-app-browser-zero-installation)
+[![Zero MATLAB Required](https://img.shields.io/badge/Zero_MATLAB_Required-Web_&_Desktop_App-success.svg)](#running-without-matlab)
+[![GitHub Pages](https://img.shields.io/badge/Live_Web_App-GitHub_Pages-2ea44f.svg)](#1-live-web-app-in-your-browser)
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2024b%20%7C%20R2026a-0076A8.svg)](https://www.mathworks.com/products/matlab.html)
 [![OriginLab Style](https://img.shields.io/badge/Graphics-OriginLab_600_DPI-8B0000.svg)](#high-density-scientific-visualization)
 [![Tests Passing](https://img.shields.io/badge/Test_Suite-20%2F20_PASS_(100%25)-brightgreen.svg)](#automated-test-suite)
 
-> **CALPHADHEACalc** is an open-source, multi-physics thermodynamic simulation and alloy design workstation engineered for High-Entropy Alloys (HEAs) and Multi-Principal Element Alloys (MPEAs). It integrates phenomenological Gibbs free energy minimization, empirical Miedema models, Varvenne-Curtin solid solution strengthening, Hall-Petch grain size scaling, Wagner parabolic oxidation kinetics, ASTM G102 electrochemical corrosion prediction, and kinematic X-ray powder diffraction into a unified CAE suite mirroring Pandat PanGUI and Thermo-Calc.
+> **CALPHADHEACalc** is an open-source, multi-physics thermodynamic simulation and alloy design software engineered for High-Entropy Alloys (HEAs) and Multi-Principal Element Alloys (MPEAs). It integrates phenomenological Gibbs free energy minimization, empirical Miedema models, Varvenne-Curtin solid solution strengthening, Hall-Petch grain size scaling, Wagner parabolic oxidation kinetics, ASTM G102 electrochemical corrosion prediction, and kinematic X-ray powder diffraction into a unified CAE suite mirroring Pandat PanGUI and Thermo-Calc.
 
 ---
 
-## Running WITHOUT MATLAB (Zero Installation)
+## Running WITHOUT MATLAB
 
 > [!TIP]
 > **No MATLAB License or Installation Required!**  
 > Anyone accessing this repository can run CALPHADHEACalc immediately using either the **interactive web suite** or the **native Windows desktop app mode** with **zero dependencies**.
 
-### 1. Live Web App in Your Browser (Zero Installation)
+### 1. Live Web App in Your Browser
 Click the live GitHub Pages link to run the complete simulation suite directly in your browser:
 * **Live Web App**: [https://felixmwiya200.github.io/CALPHADHEACalc/](https://felixmwiya200.github.io/CALPHADHEACalc/) *(or configure via repository Settings > Pages)*
 * Compatible with all modern browsers: Chrome, Edge, Firefox, Safari on Windows, macOS, Linux, and mobile devices.
@@ -29,7 +29,7 @@ index.html
 ```
 The entire application loads locally in your default web browser completely offline.
 
-### 3. Native Windows Desktop App (Zero MATLAB)
+### 3. Native Windows Desktop App
 For Windows users who want a dedicated standalone desktop window without browser toolbars:
 ```text
 Double-click: CALPHADHEACalc_Desktop.bat
@@ -47,7 +47,7 @@ For users running the compiled native executable (`CALPHADHEACalc.exe`):
 
 ## Running with MATLAB (For Developers & Researchers)
 
-To run the native MATLAB App Designer CAE workstation:
+To run the native MATLAB App Designer CAE application:
 
 1. Clone the repository:
    ```bash
@@ -55,7 +55,7 @@ To run the native MATLAB App Designer CAE workstation:
    cd CALPHADHEACalc
    ```
 2. Open MATLAB (R2023b, R2024b, or newer) and navigate to the repository directory.
-3. Launch the workstation:
+3. Launch the application:
    ```matlab
    CALPHADHEACalc
    ```
@@ -85,7 +85,7 @@ This repository is publicly shared and open-sourced under the **Apache 2.0 Licen
 
 ```
 +--------------------------------------------------------------------------------------------------------+
-|                                  CALPHADHEACalc MULTI-PHYSICS WORKSTATION                              |
+|                                  CALPHADHEACalc MULTI-PHYSICS SOFTWARE                                 |
 +--------------------------------------------------------------------------------------------------------+
 |  1. Phase Equilibria     | CALPHAD Gibbs free energy minimization, Redlich-Kister excess, Solvus T    |
 |  2. Phase Diagrams       | 2D Isopleth (T-x) sections and isothermal Gibbs ternary composition space  |
@@ -141,7 +141,7 @@ CALPHADHEACalc/
 │   └── workflows/
 │       └── deploy-pages.yml             # Automated GitHub Pages CI/CD workflow
 └── App/
-    ├── CALPHADHEACalc.m                 # Master workstation application (uifigure)
+    ├── CALPHADHEACalc.m                 # Master application (uifigure)
     ├── HEAThermoEngine.m                # CALPHAD Gibbs minimization & Miedema engine
     ├── HEAMechanicalEngine.m            # Varvenne-Curtin & Hall-Petch mechanical engine
     ├── HEAOxidationEngine.m             # Wagner parabolic oxidation & Ellingham engine
@@ -178,13 +178,13 @@ CALPHADHEACalc/
 If you use CALPHADHEACalc in academic research, alloy design, or industrial publications, please cite:
 
 ### APA Format
-> Mwiya, F., & Singh, S. (2026). *CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation* (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
+> Mwiya, F., & Singh, S. (2026). *CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Software* (v3.4.0). Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP, Andhra Pradesh, India.
 
 ### BibTeX
 ```bibtex
 @software{Mwiya_CALPHADHEACalc_2026,
   author       = {Mwiya, Felix and Singh, Sheela},
-  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Workstation}},
+  title        = {{CALPHADHEACalc: High-Entropy Alloy Multi-Physics Thermodynamic and Property Software}},
   version      = {3.4.0},
   year         = {2026},
   institution  = {Department of Mechanical Engineering, School of Engineering and Sciences, SRM University-AP},
