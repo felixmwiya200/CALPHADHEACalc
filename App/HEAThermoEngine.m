@@ -1340,6 +1340,11 @@ classdef HEAThermoEngine
             Tm_vals = zeros(n, 1);
             dH_fus_vals = zeros(n, 1);
             rho0_vals = zeros(n, 1);
+            k0_vals = zeros(n, 1);
+            Cp0_vals = zeros(n, 1);
+            rho_e0_vals = zeros(n, 1);
+            E0_vals = zeros(n, 1);
+            nu0_vals = zeros(n, 1);
             
             for i = 1:n
                 el = strtrim(elements{i});
@@ -1352,9 +1357,16 @@ classdef HEAThermoEngine
                     Tm_vals(i) = p.Tm;
                     dH_fus_vals(i) = p.dH_fus;
                     rho0_vals(i) = p.rho0;
+                    k0_vals(i) = p.k0;
+                    Cp0_vals(i) = p.Cp0;
+                    rho_e0_vals(i) = p.rho_e0;
+                    E0_vals(i) = p.E0;
+                    nu0_vals(i) = p.nu0;
                 else
                     M(i) = 55.0; r(i) = 130; chi(i) = 1.8; VEC_vals(i) = 6.0;
                     Tm_vals(i) = 1800; dH_fus_vals(i) = 15; rho0_vals(i) = 8.0;
+                    k0_vals(i) = 20.0; Cp0_vals(i) = 25.0; rho_e0_vals(i) = 100.0;
+                    E0_vals(i) = 200.0; nu0_vals(i) = 0.30;
                 end
             end
             
@@ -1576,6 +1588,27 @@ classdef HEAThermoEngine
             r_O_pm = 140.0; % Shannon ionic radius for O2- (6-fold coordination)
             tol_factor_t = round((r_bar + r_O_pm) / (sqrt(2) * (0.65 * r_bar + r_O_pm)), 3);
 
+            % Thermophysical & Transport Properties Calculation
+            % 1. Theoretical Crystallographic Mass Density rho (g/cm^3)
+            V_mol = M ./ max(0.1, rho0_vals);
+            V_mol_bar = sum(x .* V_mol);
+            rho_calc = M_bar / max(0.1, V_mol_bar);
+
+            % 2. Thermal Conductivity k (W/(m*K)) with HEA scattering correction
+            k_rule = sum(x .* k0_vals);
+            k_calc = max(8.5, min(45.0, 0.22 * k_rule + 6.5 * max(0.2, 1.0 - delta_size / 12.0)));
+
+            % 3. Specific Heat Capacity Cp (J/(kg*K))
+            Cp_mol = sum(x .* Cp0_vals);
+            Cp_calc = (Cp_mol * 1000.0) / max(1.0, M_bar);
+
+            % 4. Electrical Resistivity rho_e (micro-Ohm*cm) with disorder scattering
+            rho_e_rule = sum(x .* rho_e0_vals);
+            rho_e_calc = min(180.0, max(40.0, rho_e_rule + 15.0 * delta_size));
+
+            % 5. Thermal Diffusivity alpha (m^2/s)
+            alpha_calc = k_calc / max(1.0, (rho_calc * 1e3 * Cp_calc));
+
             metrics = struct();
             metrics.VEC = VEC;
             metrics.Phase = phaseStr;
@@ -1594,6 +1627,19 @@ classdef HEAThermoEngine
             metrics.DeltaH_mix = DeltaHmix;
             metrics.Delta_size = delta_size;
             metrics.Delta_chi  = delta_chi;
+
+            % Thermophysical properties
+            metrics.Density = round(rho_calc, 2);
+            metrics.Density_g_cm3 = round(rho_calc, 2);
+            metrics.ThermalConductivity = round(k_calc, 1);
+            metrics.ThermalConductivity_W_mK = round(k_calc, 1);
+            metrics.Cp = round(Cp_calc, 1);
+            metrics.SpecificHeat_J_kgK = round(Cp_calc, 1);
+            metrics.ElectricalResistivity = round(rho_e_calc, 1);
+            metrics.Resistivity_uOhm_cm = round(rho_e_calc, 1);
+            metrics.ThermalDiffusivity = alpha_calc;
+            metrics.E0 = sum(x .* E0_vals);
+            metrics.nu0 = sum(x .* nu0_vals);
 
             % Learned High-Entropy Oxide & Ceramic Descriptors (Albedwawi et al. 2021)
             metrics.DeltaS_cat = DeltaS_cat;

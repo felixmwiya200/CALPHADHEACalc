@@ -1576,7 +1576,7 @@ classdef CALPHADHEACalc < handle
         % =========================================================================
         function buildValidationTab(app)
             valGrid = uigridlayout(app.TabValidation, [2, 2]);
-            valGrid.RowHeight = {'1x', 140};
+            valGrid.RowHeight = {'1x', 240};
             valGrid.ColumnWidth = {'1.25x', '0.75x'};
             valGrid.Padding = [8 8 8 8];
             valGrid.RowSpacing = 6;
@@ -1593,8 +1593,8 @@ classdef CALPHADHEACalc < handle
                 'ColumnWidth', {160, 115, 115, 105, 75, 130, 'auto'}, ...
                 'RowName', {}, 'FontName', 'Segoe UI', 'FontSize', 9);
 
-            % Literature Search Actions
-            litGrid = uigridlayout(p1Grid, [1, 3]);
+            % Literature Search & Refresh Actions
+            litGrid = uigridlayout(p1Grid, [1, 4]);
             litGrid.Padding = [0 0 0 0];
             uibutton(litGrid, 'Text', 'Search Google Scholar', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) searchOnlineScholar(app));
@@ -1602,20 +1602,30 @@ classdef CALPHADHEACalc < handle
                 'ButtonPushedFcn', @(~, ~) searchOnlineScienceDirect(app));
             uibutton(litGrid, 'Text', 'Search CrossRef DOIs', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) searchOnlineCrossRef(app));
+            uibutton(litGrid, 'Text', 'Refresh Benchmarks', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) renderValidationView(app));
 
             % Panel 2: CALPHAD Multi-Physics Database Verification
             p2 = uipanel(valGrid, 'Title', 'CALPHAD Multi-Physics Database Verification', ...
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold');
-            p2Grid = uigridlayout(p2, [1, 1]);
+            p2Grid = uigridlayout(p2, [2, 1]);
+            p2Grid.RowHeight = {'1x', 30};
             p2Grid.Padding = [2 2 2 2];
 
-            app.TextValidationAudit = uitextarea(p2Grid, 'Editable', 'off', 'FontName', 'Consolas', 'FontSize', 9.5);
+            app.TextValidationAudit = uitextarea(p2Grid, 'Editable', 'on', 'FontName', 'Consolas', 'FontSize', 9.5);
+
+            auditBtnGrid = uigridlayout(p2Grid, [1, 2]);
+            auditBtnGrid.Padding = [0 0 0 0];
+            uibutton(auditBtnGrid, 'Text', 'Copy Audit Certificate', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) copyAuditToClipboard(app));
+            uibutton(auditBtnGrid, 'Text', 'Open Audit in Pop-up', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) openAuditViewerModal(app));
 
             % Panel 3: COMSOL Multiphysics Code Vault (Piecewise & Smooth Steps)
             p3 = uipanel(valGrid, 'Title', 'COMSOL Multiphysics Code Vault (Piecewise & Smooth Steps)', ...
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold');
             p3Grid = uigridlayout(p3, [3, 1]);
-            p3Grid.RowHeight = {28, '1x', 30};
+            p3Grid.RowHeight = {28, '1x', 32};
             p3Grid.Padding = [2 2 2 2];
 
             cPropGrid = uigridlayout(p3Grid, [1, 2]);
@@ -1637,14 +1647,20 @@ classdef CALPHADHEACalc < handle
                 'FontSize', 9, ...
                 'ValueChangedFcn', @(~, ~) generateComsolPiecewise(app));
 
-            app.ComsolCodeArea = uitextarea(p3Grid, 'Editable', 'off', 'FontName', 'Consolas', 'FontSize', 9);
+            app.ComsolCodeArea = uitextarea(p3Grid, 'Editable', 'on', 'FontName', 'Consolas', 'FontSize', 9);
 
-            cBtnGrid = uigridlayout(p3Grid, [1, 2]);
+            cBtnGrid = uigridlayout(p3Grid, [1, 5]);
             cBtnGrid.Padding = [0 0 0 0];
-            uibutton(cBtnGrid, 'Text', 'Generate COMSOL Piecewise', 'FontSize', 9, ...
+            uibutton(cBtnGrid, 'Text', 'Generate Code', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) generateComsolPiecewise(app));
-            uibutton(cBtnGrid, 'Text', 'Copy to Clipboard', 'FontSize', 9, ...
+            uibutton(cBtnGrid, 'Text', 'Copy All', 'FontSize', 9, 'FontWeight', 'bold', ...
                 'ButtonPushedFcn', @(~, ~) copyComsolToClipboard(app));
+            uibutton(cBtnGrid, 'Text', 'Select All', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) selectAllComsolCode(app));
+            uibutton(cBtnGrid, 'Text', 'Pop-up Viewer', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) openComsolViewerModal(app));
+            uibutton(cBtnGrid, 'Text', 'Save to File', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) exportComsolToFile(app));
 
             % Panel 4: Universal Export Hub
             expPanel = uipanel(valGrid, 'Title', 'Universal Publication & CAE Export Hub', ...
@@ -2766,7 +2782,8 @@ classdef CALPHADHEACalc < handle
                 plot(ax, T_K, yFit, 'Color', OriginPlotter.getColor(2), 'LineStyle', '--', 'LineWidth', 1.5, 'DisplayName', 'Analytical / CFD Fit');
 
                 % Experimental Database Benchmark Overlays & Error Comparison
-                if isfield(app.CurrentBenchmarkData, 'PlotBenchmarks') && isfield(app.CurrentBenchmarkData.PlotBenchmarks, 'Transport')
+                if app.ShowBenchmarkOverlays && isfield(app.CurrentBenchmarkData, 'PlotBenchmarks') && ...
+                        isfield(app.CurrentBenchmarkData.PlotBenchmarks, 'Transport')
                     pbTr = app.CurrentBenchmarkData.PlotBenchmarks.Transport;
                     if contains(propStr, 'Conductivity')
                         tValid = pbTr.T_pts >= T_min & pbTr.T_pts <= T_max;
@@ -2869,19 +2886,22 @@ classdef CALPHADHEACalc < handle
             if isfield(app.CurrentMechMetrics, 'TempCurve')
                 tc = app.CurrentMechMetrics.TempCurve;
                 plot(ax, tc.T_K, tc.YieldStrength_MPa, 'Color', OriginPlotter.getColor(3), ...
-                    'LineWidth', 2.0, 'Marker', 's', 'MarkerSize', 5, 'DisplayName', '\sigma_y (Calc)');
+                    'LineWidth', 2.0, 'Marker', 'none', 'DisplayName', '\sigma_y (Model Calc.)');
                 plot(ax, tc.T_K, tc.UTS_MPa, 'Color', OriginPlotter.getColor(2), ...
-                    'LineWidth', 1.8, 'Marker', 'o', 'MarkerSize', 5, 'DisplayName', '\sigma_{UTS} (Calc)');
+                    'LineWidth', 1.8, 'Marker', 'none', 'DisplayName', '\sigma_{UTS} (Model Calc.)');
 
-                % Experimental Database Benchmark Overlays
-                if isfield(app.CurrentBenchmarkData, 'PlotBenchmarks') && isfield(app.CurrentBenchmarkData.PlotBenchmarks, 'Mechanical')
+                % Experimental Database Benchmark Overlays (Discrete markers with error bars)
+                if app.ShowBenchmarkOverlays && isfield(app.CurrentBenchmarkData, 'PlotBenchmarks') && ...
+                        isfield(app.CurrentBenchmarkData.PlotBenchmarks, 'Mechanical')
                     pbMech = app.CurrentBenchmarkData.PlotBenchmarks.Mechanical;
-                    plot(ax, pbMech.T_pts, pbMech.Yield_pts, 'kd', 'MarkerSize', 6.5, ...
-                        'MarkerFaceColor', [0.20, 0.45, 0.85], 'LineWidth', 1.2, ...
-                        'DisplayName', 'Exp. \sigma_y (Kao et al.)');
-                    plot(ax, pbMech.T_pts, pbMech.UTS_pts, 'k^', 'MarkerSize', 6.5, ...
-                        'MarkerFaceColor', [0.85, 0.20, 0.20], 'LineWidth', 1.2, ...
-                        'DisplayName', 'Exp. \sigma_{UTS} (Kao et al.)');
+                    yErr = pbMech.Yield_pts * 0.05;
+                    utsErr = pbMech.UTS_pts * 0.05;
+                    errorbar(ax, pbMech.T_pts, pbMech.Yield_pts, yErr, 'kd', 'MarkerSize', 7, ...
+                        'MarkerFaceColor', [0.20, 0.45, 0.85], 'LineWidth', 1.2, 'CapSize', 4, ...
+                        'DisplayName', sprintf('Exp. \\sigma_y (%s)', pbMech.Citation));
+                    errorbar(ax, pbMech.T_pts, pbMech.UTS_pts, utsErr, 'k^', 'MarkerSize', 7, ...
+                        'MarkerFaceColor', [0.85, 0.20, 0.20], 'LineWidth', 1.2, 'CapSize', 4, ...
+                        'DisplayName', sprintf('Exp. \\sigma_{UTS} (%s)', pbMech.Citation));
                 end
             end
 
@@ -3394,17 +3414,13 @@ classdef CALPHADHEACalc < handle
         % RENDERER: VALIDATION & EXPORT (EXPERIMENTAL BENCHMARK AUDIT)
         % =========================================================================
         function renderValidationView(app)
-            if isempty(fieldnames(app.CurrentBenchmarkData))
-                try
+            try
+                if ~isempty(app.CurrentElements)
                     app.CurrentBenchmarkData = HEABenchmarkDatabase.getBenchmark(...
                         app.CurrentElements, app.CurrentFractions, app.CurrentThermoMetrics, ...
                         app.CurrentMechMetrics, app.CurrentOxMetrics, app.CurrentCorrosionMetrics, ...
                         app.CurrentXRDMetrics);
-                catch
-                    return;
                 end
-            end
-            try
                 if isprop(app, 'TableValidationMetrics') && isvalid(app.TableValidationMetrics)
                     app.TableValidationMetrics.Data = app.CurrentBenchmarkData.TableData;
                 end
@@ -3582,6 +3598,125 @@ classdef CALPHADHEACalc < handle
                 txt = strjoin(app.ComsolCodeArea.Value, newline);
                 clipboard('copy', txt);
                 logMsg(app, '[COMSOL] Piecewise code copied to system clipboard.');
+            catch err
+                logMsg(app, sprintf('[ERROR] Failed to copy COMSOL code: %s', err.message));
+            end
+        end
+
+        function selectAllComsolCode(app)
+            try
+                focus(app.ComsolCodeArea);
+                txt = strjoin(app.ComsolCodeArea.Value, newline);
+                clipboard('copy', txt);
+                logMsg(app, '[COMSOL] Code area focused and all text copied to clipboard.');
+            catch err
+                logMsg(app, sprintf('[ERROR] Select all failed: %s', err.message));
+            end
+        end
+
+        function exportComsolToFile(app)
+            try
+                defaultFile = sprintf('COMSOL_Piecewise_%s.txt', datestr(now, 'yyyymmdd_HHMMSS'));
+                [fName, pName] = uiputfile({'*.txt;*.m;*.comsol', 'COMSOL Files (*.txt, *.m, *.comsol)'; '*.*', 'All Files (*.*)'}, ...
+                    'Save COMSOL Code', defaultFile);
+                if isequal(fName, 0) || isequal(pName, 0)
+                    return;
+                end
+                fullP = fullfile(pName, fName);
+                fid = fopen(fullP, 'w');
+                if fid == -1
+                    uialert(app.UIFigure, sprintf('Could not open file "%s" for writing.', fullP), 'File Error');
+                    return;
+                end
+                txt = strjoin(app.ComsolCodeArea.Value, newline);
+                fprintf(fid, '%s\n', txt);
+                fclose(fid);
+                logMsg(app, sprintf('[COMSOL] Exported piecewise code to "%s".', fullP));
+            catch err
+                logMsg(app, sprintf('[ERROR] Failed to save COMSOL file: %s', err.message));
+            end
+        end
+
+        function openComsolViewerModal(app)
+            try
+                fig = uifigure('Name', 'COMSOL Multiphysics Code Vault Viewer', ...
+                    'Position', [250, 150, 750, 580], 'Color', [0.96, 0.97, 0.98]);
+                g = uigridlayout(fig, [3, 1]);
+                g.RowHeight = {36, '1x', 36};
+                g.Padding = [12 12 12 12];
+                g.RowSpacing = 8;
+
+                uilabel(g, 'Text', 'COMSOL Multiphysics Material Model Definition Code', ...
+                    'FontName', 'Segoe UI', 'FontSize', 12, 'FontWeight', 'bold');
+
+                txtArea = uitextarea(g, 'Value', app.ComsolCodeArea.Value, ...
+                    'Editable', 'on', 'FontName', 'Consolas', 'FontSize', 10);
+
+                bBar = uigridlayout(g, [1, 4]);
+                bBar.ColumnWidth = {'1x', 140, 140, 100};
+                bBar.Padding = [0 0 0 0];
+                uilabel(bBar, 'Text', 'Highlight text with mouse cursor, or use buttons to copy/save.', ...
+                    'FontAngle', 'italic', 'FontSize', 9, 'FontColor', [0.3 0.3 0.3]);
+                uibutton(bBar, 'Text', 'Copy All', 'FontWeight', 'bold', ...
+                    'ButtonPushedFcn', @(~, ~) clipboard('copy', strjoin(txtArea.Value, newline)));
+                uibutton(bBar, 'Text', 'Save File (.txt)', ...
+                    'ButtonPushedFcn', @(~, ~) app.saveModalTextToFile(txtArea.Value, 'COMSOL_Piecewise_Code.txt'));
+                uibutton(bBar, 'Text', 'Close', 'ButtonPushedFcn', @(~, ~) delete(fig));
+            catch err
+                logMsg(app, sprintf('[ERROR] Failed to open COMSOL viewer: %s', err.message));
+            end
+        end
+
+        function copyAuditToClipboard(app)
+            try
+                txt = strjoin(app.TextValidationAudit.Value, newline);
+                clipboard('copy', txt);
+                logMsg(app, '[Validation] Audit certificate copied to system clipboard.');
+            catch err
+                logMsg(app, sprintf('[ERROR] Failed to copy audit text: %s', err.message));
+            end
+        end
+
+        function openAuditViewerModal(app)
+            try
+                fig = uifigure('Name', 'CALPHAD Multi-Physics Database Verification Audit', ...
+                    'Position', [250, 150, 750, 580], 'Color', [0.96, 0.97, 0.98]);
+                g = uigridlayout(fig, [3, 1]);
+                g.RowHeight = {36, '1x', 36};
+                g.Padding = [12 12 12 12];
+                g.RowSpacing = 8;
+
+                uilabel(g, 'Text', 'CALPHAD & ASTM Multi-Physics Verification Audit Certificate', ...
+                    'FontName', 'Segoe UI', 'FontSize', 12, 'FontWeight', 'bold');
+
+                txtArea = uitextarea(g, 'Value', app.TextValidationAudit.Value, ...
+                    'Editable', 'on', 'FontName', 'Consolas', 'FontSize', 10);
+
+                bBar = uigridlayout(g, [1, 4]);
+                bBar.ColumnWidth = {'1x', 140, 140, 100};
+                bBar.Padding = [0 0 0 0];
+                uilabel(bBar, 'Text', 'Highlight text with mouse cursor, or use buttons to copy/save.', ...
+                    'FontAngle', 'italic', 'FontSize', 9, 'FontColor', [0.3 0.3 0.3]);
+                uibutton(bBar, 'Text', 'Copy All', 'FontWeight', 'bold', ...
+                    'ButtonPushedFcn', @(~, ~) clipboard('copy', strjoin(txtArea.Value, newline)));
+                uibutton(bBar, 'Text', 'Save File (.txt)', ...
+                    'ButtonPushedFcn', @(~, ~) app.saveModalTextToFile(txtArea.Value, 'CALPHAD_Audit_Certificate.txt'));
+                uibutton(bBar, 'Text', 'Close', 'ButtonPushedFcn', @(~, ~) delete(fig));
+            catch err
+                logMsg(app, sprintf('[ERROR] Failed to open Audit viewer: %s', err.message));
+            end
+        end
+
+        function saveModalTextToFile(~, valCell, defaultName)
+            try
+                [fName, pName] = uiputfile({'*.txt', 'Text Files (*.txt)'; '*.*', 'All Files (*.*)'}, 'Save As', defaultName);
+                if isequal(fName, 0) || isequal(pName, 0), return; end
+                fullP = fullfile(pName, fName);
+                fid = fopen(fullP, 'w');
+                if fid ~= -1
+                    fprintf(fid, '%s\n', strjoin(valCell, newline));
+                    fclose(fid);
+                end
             catch
             end
         end
