@@ -11,18 +11,39 @@
 
 ---
 
-## Running WITHOUT MATLAB
+## Software Architecture: Two Application Editions
 
-> [!TIP]
-> **No MATLAB License or Installation Required!**  
-> Anyone accessing this repository can run CALPHADHEACalc immediately using either the **interactive web suite** or the **native Windows desktop app mode** with **zero dependencies**.
+CALPHADHEACalc is distributed in two distinct editions tailored for different research and computational workflows:
 
-### 1. Live Web App in Your Browser
-Click the live GitHub Pages link to run the complete simulation suite directly in your browser:
-* **Live Web App**: [https://felixmwiya200.github.io/CALPHADHEACalc/](https://felixmwiya200.github.io/CALPHADHEACalc/) *(or configure via repository Settings > Pages)*
-* Compatible with all modern browsers: Chrome, Edge, Firefox, Safari on Windows, macOS, Linux, and mobile devices.
+1. **Desktop Application Edition (Recommended for Primary Research & Alloy Design)**
+2. **Web Version Edition (Quick Preview, Demonstrations & Exploratory Screening)**
 
-### 2. Software Installation (1-Click Install Scripts)
+> [!IMPORTANT]
+> **Recommendation: Use the Desktop Application for Primary Work**  
+> While the Web Version provides an instant, zero-installation preview in your browser, **the Desktop Application is strongly recommended for all research, alloy development, peer-reviewed publications, and engineering simulations**. The Desktop Application delivers full numerical precision, unrestricted local compute performance, access to complete assessed CALPHAD and SGTE thermodynamic databases, native batch macro automation, local encrypted data vault security, and 600 DPI publication-grade vector figure exports.
+
+### Comparison Matrix: Desktop Application vs. Web Version
+
+| Capability / Metric | Desktop Application (Recommended) | Web Version (Quick Preview) |
+| :--- | :--- | :--- |
+| **Primary Intended Use** | Rigorous alloy design, CAE modeling, journal publications | Quick screening, classroom education, demonstrations |
+| **Numerical Engine** | Full native multi-physics solvers (MATLAB / C++ / compiled core) | Client-side JavaScript standalone estimation core |
+| **Assessed Databases** | Complete SGTE 45-element unary, PanHEA Redlich-Kister, 54 candidate oxides | Core elemental parameters and standard alloy presets |
+| **Compute Performance** | Unrestricted memory and CPU threading; no browser timeouts | Subject to browser tab memory limits and sandbox throttling |
+| **Publication Graphics** | 600 DPI OriginLab boxed frames, inward ticks, SVG/PDF/EMF vector export | HTML5 canvas export at screen resolution |
+| **Crystallography & XRD** | Kinematic structure factors, full Cromer-Mann coefficients | Analytical pseudo-Voigt profile synthesis |
+| **File I/O & Automation** | Native local filesystem access, batch macros (TCM, MATLAB, Python) | Browser sandbox, local blob downloads |
+| **Data Privacy & Security** | Local AES-256 encrypted security vault; 100% offline air-gapped | Runs in browser session; no persistent encrypted vault |
+| **License Requirement** | **No MATLAB license required** for standalone installer or Runtime `.exe` | **No license or installation required** |
+| **Supported Platforms** | Windows (1-click installer & `.exe`), Linux & macOS (`install.sh`), MATLAB | Any modern web browser (Edge, Chrome, Firefox, Safari) |
+
+---
+
+### Edition 1: Desktop Application (Recommended)
+
+The Desktop Application provides the complete, unconstrained multi-physics simulation suite mirroring Pandat PanGUI and Thermo-Calc Graphical Mode.
+
+#### Method A: 1-Click Local Installation Suite
 To install CALPHADHEACalc locally and set up desktop shortcuts and environment paths:
 
 * **Windows 1-Click Installer**:
@@ -30,7 +51,7 @@ To install CALPHADHEACalc locally and set up desktop shortcuts and environment p
   ```powershell
   .\install.ps1
   ```
-  This automatically verifies repository modules, detects available runtimes (Node.js, MATLAB, Edge/Chrome), creates Desktop & Start Menu shortcuts with the official application icon, and registers MATLAB search paths.
+  This automatically verifies repository modules, detects available runtimes (Node.js, MATLAB, Edge/Chrome), creates Desktop and Start Menu shortcuts with the official application icon, and registers search paths.
 
 * **Linux & macOS Installer**:
   ```bash
@@ -39,56 +60,51 @@ To install CALPHADHEACalc locally and set up desktop shortcuts and environment p
   ```
   Configures executable permissions, tests runtimes, and creates desktop application entries.
 
-* **MATLAB Native Installation**:
-  In the MATLAB command prompt:
-  ```matlab
-  install
-  ```
-  Permanently registers `App/`, `materials_data/`, and `scripts/` in your MATLAB path, runs the multi-physics engine self-test, and prepares the software for launching.
+* **Dedicated Windows Desktop Window**:
+  Double-click `CALPHADHEACalc_Desktop.bat` (or `CALPHADHEACalc_Desktop.vbs` for silent launch) to run the software in a dedicated, borderless CAE application window powered by the native Microsoft Edge WebView2 / Chrome application framework.
 
-### 3. Offline Web App from Cloned Repository
-If you cloned or downloaded this repository, simply double-click:
-```text
-index.html
-```
-The entire application loads locally in your default web browser completely offline.
+#### Method B: Native MATLAB App Designer Suite (For Researchers & Developers)
+If you have MATLAB (R2023b, R2024b, or newer):
 
-### 4. Native Windows Desktop App
-For Windows users who want a dedicated standalone desktop window without browser toolbars:
-```text
-Double-click: CALPHADHEACalc_Desktop.bat
-(or double-click CALPHADHEACalc_Desktop.vbs for silent launch)
-```
-This launches the interface in a borderless, dedicated CAE application window utilizing the native Microsoft Edge WebView2 / Chrome application framework.
-
-### 5. Standalone Windows Executable (`.exe`) via MATLAB Runtime
-For users running the compiled native executable (`CALPHADHEACalc.exe`):
-* **Requires NO MATLAB license.**
-* Requires only the **free, royalty-free MATLAB Runtime (MCR)** available from MathWorks:  
-  [Download Free MATLAB Runtime](https://www.mathworks.com/products/compiler/matlab-runtime.html)
-
----
-
-## Running with MATLAB (For Developers & Researchers)
-
-To run the native MATLAB App Designer CAE application:
-
-1. Clone the repository:
+1. Clone or download the repository:
    ```bash
    git clone https://github.com/felixmwiya200/CALPHADHEACalc.git
    cd CALPHADHEACalc
    ```
-2. Open MATLAB (R2023b, R2024b, or newer) and navigate to the repository directory.
-3. Launch the application:
+2. In the MATLAB command prompt, run the 1-click installer:
+   ```matlab
+   install
+   ```
+   Permanently registers `App/`, `materials_data/`, and `scripts/` in your MATLAB path, runs the multi-physics engine self-test, and prepares the software.
+3. Launch the master interface:
    ```matlab
    CALPHADHEACalc
    ```
-   Or launch with a specific alloy preset:
+   Or launch directly into a validated alloy system:
    ```matlab
    CALPHADHEACalc('Cantor (CoCrFeMnNi)');
    CALPHADHEACalc('Al0.3CoCrFeNi');
    CALPHADHEACalc('NbMoTaW (Refractory 4-Elem)');
    ```
+
+#### Method C: Standalone Windows Executable (`.exe`) via Free MATLAB Runtime
+For users who do not have a MATLAB license installed:
+* **Requires NO MATLAB license.**
+* Run `CALPHADHEACalc.exe` using the **free, royalty-free MATLAB Runtime (MCR)** available from MathWorks:  
+  [Download Free MATLAB Runtime](https://www.mathworks.com/products/compiler/matlab-runtime.html)
+* To compile the executable from source, execute `compile_calphad_exe.m`.
+
+---
+
+### Edition 2: Web Version (Quick Preview & Screening)
+
+The Web Version is intended for instant access, rapid demonstration, and quick alloy composition screening without downloading or installing any software.
+
+* **Live Web App**: [https://felixmwiya200.github.io/CALPHADHEACalc/](https://felixmwiya200.github.io/CALPHADHEACalc/)
+* **Offline In-Browser Mode**:  
+  If you have downloaded or cloned this repository, simply double-click `index.html` to open the web version locally in any browser completely offline.
+* **Key Use Cases**:  
+  Classroom demonstrations, initial stoichiometry adjustments, quick checking of mixing enthalpy and entropy, and exploratory phase estimation on mobile or secondary devices.
 
 ---
 
