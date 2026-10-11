@@ -45,7 +45,7 @@ To propose a modification:
 4. **Adhere to Code Quality Standards**
    - **Zero Emojis**: In accordance with CAE desktop software conventions (OriginLab, Thermo-Calc, Pandat), emojis are strictly prohibited across all code, UI labels, tooltips, dialogs, and commit messages.
    - **First-Principles Citations**: Any new physical equation or parameter must include formal literature citations (Author, Year, Journal, Volume, Pages, DOI).
-   - **Dual Compatibility**: Modifications to calculation engines must maintain synchronization between the native MATLAB app (`App/CALPHADHEACalc.m`, `App/HEAThermoEngine.m`) and the zero-MATLAB standalone web suite (`index.html`, `App/ui/index.html`).
+   - **Dual Compatibility**: Modifications to calculation engines must maintain synchronization between the native MATLAB app (`App/CALPHADHEACalc.m`, `App/HEAThermoEngine.m`) and the standalone web suite (`index.html`, `App/ui/index.html`).
 
 5. **Run the Automated Test Suite**  
    Ensure all 20 end-to-end verification tests pass with zero warnings or errors:

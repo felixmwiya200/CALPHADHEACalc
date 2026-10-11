@@ -10,7 +10,7 @@ assignees: ''
 A clear and concise description of the bug.
 
 ### Environment
-- **Execution Mode**: [Native MATLAB Desktop Workstation / Standalone Web App (Zero MATLAB)]
+- **Execution Mode**: [Native MATLAB Desktop / Standalone Web App]
 - **Operating System**: [Windows 10/11, macOS, Linux]
 - **Browser (if web app)**: [Chrome, Edge, Firefox, Safari]
 - **MATLAB Version (if native desktop)**: [e.g. R2024b, R2026a, or None]

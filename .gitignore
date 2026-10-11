@@ -61,8 +61,22 @@ Isopleth_Plot_*.png
 crop_ref.png
 flask_anim.gif
 *_snapshot.png
+github_*.png
+token_*.png
 *.raw.pdf
 *.lnk
 task_plan.md
 findings.md
 progress.md
+
+# Scratch text & extraction dumps (Prevent accidental secret leaks)
+App/script_*.txt
+App/script_keyword_*.txt
+App/extracted_wiz.json
+App/chat_*.json
+App/chat_*.txt
+App/extracted_text.txt
+*.trn
+temp_runs/
+test_tmp/
+archive/

@@ -8,7 +8,7 @@ Please provide a concise summary of the changes made and the rationale behind th
   - [ ] Database parameter update or benchmark validation
   - [ ] UI / UX enhancement (OriginLab / Pandat styling)
   - [ ] Documentation / Wiki addition
-  - [ ] Zero-MATLAB web suite synchronization
+  - [ ] Standalone web suite synchronization
 
 ## Physical & Mathematical Foundation
 
