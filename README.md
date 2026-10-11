@@ -22,14 +22,38 @@ Click the live GitHub Pages link to run the complete simulation suite directly i
 * **Live Web App**: [https://felixmwiya200.github.io/CALPHADHEACalc/](https://felixmwiya200.github.io/CALPHADHEACalc/) *(or configure via repository Settings > Pages)*
 * Compatible with all modern browsers: Chrome, Edge, Firefox, Safari on Windows, macOS, Linux, and mobile devices.
 
-### 2. Offline Web App from Cloned Repository
+### 2. Software Installation (1-Click Install Scripts)
+To install CALPHADHEACalc locally and set up desktop shortcuts and environment paths:
+
+* **Windows 1-Click Installer**:
+  Double-click `install.bat` (or `setup.bat`), or run in PowerShell:
+  ```powershell
+  .\install.ps1
+  ```
+  This automatically verifies repository modules, detects available runtimes (Node.js, MATLAB, Edge/Chrome), creates Desktop & Start Menu shortcuts with the official application icon, and registers MATLAB search paths.
+
+* **Linux & macOS Installer**:
+  ```bash
+  chmod +x install.sh
+  ./install.sh
+  ```
+  Configures executable permissions, tests runtimes, and creates desktop application entries.
+
+* **MATLAB Native Installation**:
+  In the MATLAB command prompt:
+  ```matlab
+  install
+  ```
+  Permanently registers `App/`, `materials_data/`, and `scripts/` in your MATLAB path, runs the multi-physics engine self-test, and prepares the software for launching.
+
+### 3. Offline Web App from Cloned Repository
 If you cloned or downloaded this repository, simply double-click:
 ```text
 index.html
 ```
 The entire application loads locally in your default web browser completely offline.
 
-### 3. Native Windows Desktop App
+### 4. Native Windows Desktop App
 For Windows users who want a dedicated standalone desktop window without browser toolbars:
 ```text
 Double-click: CALPHADHEACalc_Desktop.bat
@@ -37,7 +61,7 @@ Double-click: CALPHADHEACalc_Desktop.bat
 ```
 This launches the interface in a borderless, dedicated CAE application window utilizing the native Microsoft Edge WebView2 / Chrome application framework.
 
-### 4. Standalone Windows Executable (`.exe`) via MATLAB Runtime
+### 5. Standalone Windows Executable (`.exe`) via MATLAB Runtime
 For users running the compiled native executable (`CALPHADHEACalc.exe`):
 * **Requires NO MATLAB license.**
 * Requires only the **free, royalty-free MATLAB Runtime (MCR)** available from MathWorks:  
@@ -119,7 +143,16 @@ Full mathematical derivations and code-path citations are documented in the [Att
 
 ```text
 CALPHADHEACalc/
-├── index.html                           # Standalone web application
+├── install.bat                          # 1-Click Windows batch installer (Desktop/Start Menu shortcuts)
+├── setup.bat                            # Alias launcher for install.bat
+├── install.ps1                          # Modern PowerShell installer script
+├── install.m                            # Native MATLAB installer and automated engine self-test
+├── setup.m                              # Alias launcher for install.m
+├── install.sh                           # Cross-platform Linux and macOS installer script
+├── uninstall.bat                        # Clean shortcut & path uninstaller (Batch)
+├── uninstall.ps1                        # Clean shortcut & path uninstaller (PowerShell)
+├── package.json                         # Node.js project metadata and npm task runner
+├── index.html                           # Standalone web application (100% offline)
 ├── docs/                                # GitHub Pages deployment directory
 │   └── index.html                       # Mirror for GitHub Pages
 ├── CALPHADHEACalc_Desktop.bat           # Native desktop window launcher
@@ -142,6 +175,7 @@ CALPHADHEACalc/
 │       └── deploy-pages.yml             # Automated GitHub Pages CI/CD workflow
 └── App/
     ├── CALPHADHEACalc.m                 # Master application (uifigure)
+    ├── install.m                        # Local MATLAB installer in App
     ├── HEAThermoEngine.m                # CALPHAD Gibbs minimization & Miedema engine
     ├── HEAMechanicalEngine.m            # Varvenne-Curtin & Hall-Petch mechanical engine
     ├── HEAOxidationEngine.m             # Wagner parabolic oxidation & Ellingham engine

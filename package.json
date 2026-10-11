@@ -1,0 +1,28 @@
+{
+  "name": "calphadheacalc",
+  "version": "3.4.0",
+  "description": "High-Entropy Alloy Multi-Physics Thermodynamic properties Software (CALPHAD, Miedema, Varvenne-Curtin, Wagner, ASTM G102, XRD)",
+  "main": "scripts/server.js",
+  "scripts": {
+    "start": "node scripts/server.js",
+    "test": "node scripts/test_server_stream.js",
+    "desktop": "CALPHADHEACalc_Desktop.bat",
+    "install:desktop": "powershell -ExecutionPolicy Bypass -File install.ps1"
+  },
+  "keywords": [
+    "calphad",
+    "high-entropy-alloys",
+    "thermodynamics",
+    "miedema",
+    "materials-science",
+    "ansys-fluent-logging",
+    "astm-g102",
+    "xrd"
+  ],
+  "author": "Felix Mwiya & Prof. Sheela Singh, SRM University-AP",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/felixmwiya200/CALPHADHEACalc.git"
+  }
+}
