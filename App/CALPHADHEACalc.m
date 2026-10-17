@@ -341,15 +341,12 @@ classdef CALPHADHEACalc < handle
                 'TabApplications', true, ...
                 'TabValidation', true);
 
-            % Load Initial Alloy
+            % Load Initial Alloy Preset into composition dock
             setAlloyPreset(app, initialAlloy);
 
-            % Compute initial alloy multi-physics state
-            calculateAll(app);
-            if ~app.IsHeadless
-                app.StatusLabel.Text = sprintf('[Ready] Equilibrium solved for %s. All multi-physics models synchronized.', initialAlloy);
-                logMsg(app, sprintf('[Ready] Initial calculation completed for %s. All multi-physics models synchronized.', initialAlloy));
-            end
+            % Do not preload calculations. Only calculate when user hits Calculate button.
+            app.StatusLabel.Text = '[Ready] CALPHADHEACalc software ready. Click "Calculate" (or press F5) to solve.';
+            logMsg(app, '[Ready] Software mounted with SGTE database. Waiting for user input. Click "Calculate" to solve.');
 
             if ~app.IsHeadless
                 app.UIFigure.Visible = 'on';
@@ -1892,9 +1889,6 @@ classdef CALPHADHEACalc < handle
         end
 
         function renderCurrentTab(app)
-            if ~app.HasCalculatedOnce && ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
-                calculateAll(app);
-            end
             curTab = app.MainTabGroup.SelectedTab;
             if isempty(curTab), return; end
             
@@ -1955,6 +1949,13 @@ classdef CALPHADHEACalc < handle
         % RENDERERS FOR VISUAL CANVASES & DATA TABLES
         % =========================================================================
         function renderPhaseDiagramsView(app)
+            if ~app.HasCalculatedOnce
+                cla(app.AxIsopleth);
+                legend(app.AxIsopleth, 'off');
+                cla(app.AxTernary);
+                legend(app.AxTernary, 'off');
+                return;
+            end
             % Automatically renders both pseudo-binary isopleth and equilateral ternary sections
             try
                 computeAndRenderIsopleth(app);
@@ -1971,6 +1972,14 @@ classdef CALPHADHEACalc < handle
         function renderEquilibriumView(app)
             ax = app.AxEquilibrium;
             cla(ax);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics)) || ~isfield(app.CurrentThermoMetrics, 'T_Solidus')
+                legend(ax, 'off');
+                if isprop(app, 'TableEquilibrium') && isvalid(app.TableEquilibrium)
+                    app.TableEquilibrium.Data = table([0], [0], [0], [0], [0], ...
+                        'VariableNames', {'Temperature_K', 'f_FCC_pct', 'f_BCC_pct', 'f_LIQUID_pct', 'DeltaG_mix_kJ_mol'});
+                end
+                return;
+            end
             hold(ax, 'on');
 
             % PanHEA Equilibrium Phase Fractions vs Temperature (CALPHAD Solvi & Minimization)
@@ -2509,6 +2518,10 @@ classdef CALPHADHEACalc < handle
         function renderTransportView(app)
             ax = app.AxTransport;
             cla(ax);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics))
+                legend(ax, 'off');
+                return;
+            end
             hold(ax, 'on');
 
             propStr = app.DropdownTransportProp.Value;
@@ -2879,14 +2892,31 @@ classdef CALPHADHEACalc < handle
         % RENDERER: MECHANICAL PERFORMANCE & DEFORMATION VIEW
         % =========================================================================
         function renderMechanicalView(app)
-            if (isempty(app.CurrentMechMetrics) || ~isfield(app.CurrentMechMetrics, 'YieldStrength_RT_MPa')) && ...
-                    ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
-                calculateAll(app);
-            end
-
             % Plot A: sigma_y(T) and UTS(T)
             ax = app.AxMechanical;
             cla(ax);
+            ax2 = app.AxStressStrain;
+            cla(ax2);
+
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentMechMetrics)) || ~isfield(app.CurrentMechMetrics, 'YieldStrength_RT_MPa')
+                legend(ax, 'off');
+                legend(ax2, 'off');
+                if isprop(app, 'TableMechanicalProperties') && isvalid(app.TableMechanicalProperties)
+                    if app.CalculationFailed
+                        app.TableMechanicalProperties.Data = {'Computation Error', '-', 'ERROR', '-', app.CalculationErrorMessage};
+                    else
+                        app.TableMechanicalProperties.Data = { ...
+                            '0.2% Offset Yield Strength (RT)',        '\sigma_y',        '-', 'MPa', 'Click "Calculate" (or press F5) in toolbar to solve.'; ...
+                            'Ultimate Tensile Strength (UTS)',         '\sigma_{UTS}',    '-', 'MPa', 'Click "Calculate" (or press F5) in toolbar to solve.'; ...
+                            'Vickers Microhardness',                   'HV',              '-', 'HV',  'Click "Calculate" (or press F5) in toolbar to solve.'; ...
+                            'Tensile Ductility / Uniform Elongation',  '\epsilon_u',      '-', '%',   'Click "Calculate" (or press F5) in toolbar to solve.'; ...
+                            'Plane-Strain Fracture Toughness',         'K_{1c}',          '-', 'MPa\cdot m^{0.5}', 'Click "Calculate" (or press F5) in toolbar to solve.' ...
+                        };
+                    end
+                end
+                return;
+            end
+
             hold(ax, 'on');
 
             if isfield(app.CurrentMechMetrics, 'TempCurve')
@@ -2993,6 +3023,10 @@ classdef CALPHADHEACalc < handle
         function renderOxidationView(app)
             ax = app.AxOxidation;
             cla(ax);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentOxMetrics)) || ~isfield(app.CurrentOxMetrics, 'ExposureHours')
+                legend(ax, 'off');
+                return;
+            end
             hold(ax, 'on');
 
             if isfield(app.CurrentOxMetrics, 'ExposureHours')
@@ -3029,8 +3063,12 @@ classdef CALPHADHEACalc < handle
             end
 
             hold(ax, 'off');
-            lgd = legend(ax, 'show');
-            OriginPlotter.formatLegend(lgd, 'northeast');
+            if ~isempty(ax.Children)
+                lgd = legend(ax, 'show');
+                OriginPlotter.formatLegend(lgd, 'northeast');
+            else
+                legend(ax, 'off');
+            end
         end
 
         function onOxidationHoursChanged(app)
@@ -3041,6 +3079,13 @@ classdef CALPHADHEACalc < handle
         function renderCorrosionView(app)
             ax = app.AxCorrosion;
             cla(ax);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentCorrosionMetrics))
+                legend(ax, 'off');
+                if isprop(app, 'TableCorrosionSummary') && isvalid(app.TableCorrosionSummary)
+                    app.TableCorrosionSummary.Data = table({'PREN'; 'Equivalent Weight'; 'Corrosion Rate'}, {'-'; '-'; 'Click "Calculate" (F5) to solve'}, 'VariableNames', {'Metric', 'Value'});
+                end
+                return;
+            end
             hold(ax, 'on');
 
             try
@@ -3082,8 +3127,12 @@ classdef CALPHADHEACalc < handle
 
                 OriginPlotter.formatAxes(ax, 'Alloy Components', 'Standard Reduction Potential E^\circ [V vs SCE]', 'Micro-Galvanic Coupling Matrix');
                 hold(ax, 'off');
-                lgd = legend(ax, 'show');
-                OriginPlotter.formatLegend(lgd, 'northeast');
+                if ~isempty(ax.Children)
+                    lgd = legend(ax, 'show');
+                    OriginPlotter.formatLegend(lgd, 'northeast');
+                else
+                    legend(ax, 'off');
+                end
 
                 if ~isempty(app.CurrentCorrosionMetrics)
                     cm = app.CurrentCorrosionMetrics;
@@ -3109,6 +3158,10 @@ classdef CALPHADHEACalc < handle
                 return;
             end
             cla(ax);
+            if ~app.HasCalculatedOnce
+                legend(ax, 'off');
+                return;
+            end
             hold(ax, 'on');
 
             try
@@ -3209,6 +3262,10 @@ classdef CALPHADHEACalc < handle
         function renderXRDView(app)
             ax = app.AxXRD;
             cla(ax);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentXRDMetrics)) || ~isfield(app.CurrentXRDMetrics, 'TwoTheta_deg')
+                legend(ax, 'off');
+                return;
+            end
             hold(ax, 'on');
 
             hasExp = false;
@@ -3347,12 +3404,43 @@ classdef CALPHADHEACalc < handle
         % =========================================================================
         function renderApplicationsView(app)
             if isempty(app.CurrentAppScores)
-                if ~isempty(app.CurrentElements) && numel(app.CurrentElements) >= 2
-                    calculateAll(app);
-                end
-                if isempty(app.CurrentAppScores)
-                    return;
-                end
+                allApps = HEAApplicationDatabase.getAllApplications();
+                nApps = numel(allApps);
+                ranks = (1:nApps)';
+                names = {allApps.Name}';
+                sectors = {allApps.Sector}';
+                scores = zeros(nApps, 1);
+                tiers = repmat({'Awaiting Calculation'}, nApps, 1);
+                bottlenecks = repmat({'Click "Calculate" in toolbar to evaluate'}, nApps, 1);
+
+                tableData = table(ranks, names, sectors, scores, tiers, bottlenecks, ...
+                    'VariableNames', {'Rank', 'Application_Domain', 'Sector', 'Score_pct', 'Suitability_Tier', 'Limiting_Bottleneck'});
+                app.TableApplications.Data = tableData;
+
+                app.AppCardNameLabel.Text = 'HEA Industrial Applications Hub';
+                app.AppCardBadgeLabel.Text = 'AWAITING CALCULATION';
+                app.AppCardBadgeLabel.FontColor = [0.4 0.4 0.4];
+                app.AppCardVetoLabel.Text = 'Click "Calculate" (or press F5) in toolbar to evaluate suitability across all 10 industrial domains.';
+                app.AppCardVetoLabel.FontColor = [0.3 0.3 0.3];
+                app.AppCardTuningArea.Value = {
+                    'System is currently in ready state.'
+                    'Configure your alloy components in the dock and click "Calculate" (or press F5) in the toolbar.'
+                    ''
+                    'The engine will evaluate multi-criteria suitability for:'
+                    '  * Cryogenic Storage Tanks (LNG / Liquid H2)'
+                    '  * Aerospace & Gas Turbine High-Temperature Blades'
+                    '  * Nuclear Cladding & Gen-IV Structural Components'
+                    '  * Biomedical Implants & Bone Plates'
+                    '  * Marine Valves & Subsea Desalination'
+                    '  * Hot Stamping Dies & High-Hardness Tooling'
+                    '  * Refractory Thermal Shields (>1400 K)'
+                    '  * Hydrogen Energy Storage & Solid Hydrides'
+                    '  * High-Entropy Environmental Barrier Coatings'
+                    '  * Ballistic Armor & Hypervelocity Impact Shields'
+                };
+                cla(app.AxAppRadar);
+                legend(app.AxAppRadar, 'off');
+                return;
             end
 
             % Update Applications Ranked Table
@@ -3433,6 +3521,21 @@ classdef CALPHADHEACalc < handle
         % RENDERER: VALIDATION & EXPORT (EXPERIMENTAL BENCHMARK AUDIT)
         % =========================================================================
         function renderValidationView(app)
+            if ~app.HasCalculatedOnce
+                if isprop(app, 'TableValidationMetrics') && isvalid(app.TableValidationMetrics)
+                    app.TableValidationMetrics.Data = {'Awaiting Calculation', '-', '-', '-', '-', 'READY', 'Click "Calculate" in toolbar to audit against experimental database'};
+                end
+                if isprop(app, 'TextValidationAudit') && isvalid(app.TextValidationAudit)
+                    app.TextValidationAudit.Value = {
+                        'CALPHADHEACalc Experimental Validation Engine'
+                        ''
+                        'Status: Awaiting Calculation'
+                        'Configure alloy composition and click "Calculate" (or press F5) in the toolbar'
+                        'to audit against 12,427 peer-reviewed experimental HEA benchmarks.'
+                    };
+                end
+                return;
+            end
             try
                 if ~isempty(app.CurrentElements)
                     app.CurrentBenchmarkData = HEABenchmarkDatabase.getBenchmark(...
@@ -4766,6 +4869,7 @@ classdef CALPHADHEACalc < handle
         end
 
         function onPhaseTabSelectionChanged(app, evt)
+            if ~app.HasCalculatedOnce, return; end
             if evt.NewValue == app.SubtabIsopleth && isempty(app.AxIsopleth.Children)
                 computeAndRenderIsopleth(app);
             elseif evt.NewValue == app.SubtabTernary && isempty(app.AxTernary.Children)
@@ -4778,9 +4882,8 @@ classdef CALPHADHEACalc < handle
         function onPresetSelected(app, evt)
             presetName = evt.Value;
             setAlloyPreset(app, presetName);
-            calculateAll(app);
-            logMsg(app, sprintf('[System] Loaded and solved preset: %s.', presetName));
-            app.StatusLabel.Text = sprintf('[Ready] Preset "%s" solved. Multi-physics models synchronized.', presetName);
+            logMsg(app, sprintf('[System] Loaded preset: %s. Click "Calculate" to solve.', presetName));
+            app.StatusLabel.Text = sprintf('[Ready] Preset "%s" loaded. Click "Calculate" to solve.', presetName);
         end
 
         function setAlloyPreset(app, presetStr)
@@ -4884,6 +4987,17 @@ classdef CALPHADHEACalc < handle
             catch
             end
 
+            app.HasCalculatedOnce = false;
+            app.CurrentThermoMetrics = struct();
+            app.CurrentMechMetrics = struct();
+            app.CurrentOxMetrics = struct();
+            app.CurrentCorrosionMetrics = struct();
+            app.CurrentXRDMetrics = struct();
+            app.CurrentAppScores = [];
+            app.CurrentBenchmarkData = struct();
+            f = fieldnames(app.TabDirtyFlags);
+            for k = 1:numel(f), app.TabDirtyFlags.(f{k}) = true; end
+
             logMsg(app, sprintf('[System] Loaded alloy preset: %s', strjoin(elems, '-')));
         end
 
@@ -4893,7 +5007,18 @@ classdef CALPHADHEACalc < handle
             fracs = double(data.MoleFraction_at_pct);
             app.CurrentFractions = fracs / sum(fracs);
             app.DropdownBalanceElem.Items = app.CurrentElements;
+            app.HasCalculatedOnce = false;
+            app.CurrentThermoMetrics = struct();
+            app.CurrentMechMetrics = struct();
+            app.CurrentOxMetrics = struct();
+            app.CurrentCorrosionMetrics = struct();
+            app.CurrentXRDMetrics = struct();
+            app.CurrentAppScores = [];
+            app.CurrentBenchmarkData = struct();
+            f = fieldnames(app.TabDirtyFlags);
+            for k = 1:numel(f), app.TabDirtyFlags.(f{k}) = true; end
             logMsg(app, '[System] Composition modified. Click "Calculate" to solve.');
+            app.StatusLabel.Text = '[Ready] Composition modified. Click "Calculate" to solve.';
         end
 
         function balanceSelectedElem(app)
@@ -4972,6 +5097,7 @@ classdef CALPHADHEACalc < handle
         function onGrainSizeChanged(app)
             d = round(app.SliderGrainSize.Value);
             app.LabelGrainSize.Text = sprintf('%d um', d);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics)), return; end
             mOpts = struct('GrainSize_um', d);
             app.CurrentMechMetrics = HEAMechanicalEngine.computeMechanicalProperties(...
                 app.CurrentElements, app.CurrentFractions, app.CurrentThermoMetrics, mOpts);
@@ -4983,6 +5109,7 @@ classdef CALPHADHEACalc < handle
         function onOxidationTempChanged(app)
             T_ox = round(app.SliderOxTemp.Value);
             app.LabelOxTemp.Text = sprintf('%d C', T_ox);
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics)), return; end
             oxOpts = struct('Temperature_C', T_ox, 'ExposureHours', app.SliderOxHours.Value);
             app.CurrentOxMetrics = HEAOxidationEngine.computeOxidationKinetics(...
                 app.CurrentElements, app.CurrentFractions, app.CurrentThermoMetrics, oxOpts);
@@ -5000,6 +5127,8 @@ classdef CALPHADHEACalc < handle
 
             strainPct = app.SliderXRDStrain.Value;
             app.LabelXRDStrain.Text = sprintf('%.2f %%', strainPct);
+
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics)), return; end
 
             srcVal = app.DropdownXRDSource.Value;
             if contains(srcVal, 'Co')

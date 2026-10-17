@@ -5,7 +5,7 @@ function test_calphad_hea_calc()
     fprintf('=================================================================\n\n');
 
     % Test 1: Headless Instantiation & Initial State
-    fprintf('--- Test 1: Headless Instantiation & Initial Computation ---\n');
+    fprintf('--- Test 1: Headless Instantiation & Initial State ---\n');
     t0 = tic;
     app = CALPHADHEACalc('Cantor (CoCrFeMnNi)', true);
     elapsedInit = toc(t0);
@@ -16,6 +16,16 @@ function test_calphad_hea_calc()
     assert(~isempty(app.CompositionTable), 'CompositionTable must be created.');
     assert(~isempty(app.ConsoleTextArea), 'ConsoleTextArea must be created.');
     assert(~isempty(app.TableApplications), 'TableApplications must be created.');
+
+    % Verify NO preloading on startup (calculation only occurs when user hits Calculate)
+    assert(~app.HasCalculatedOnce, 'Must NOT preload calculation on startup.');
+    assert(isempty(fieldnames(app.CurrentThermoMetrics)), 'Must NOT preload thermodynamic metrics on startup.');
+    fprintf('  Verified: Zero preloading on startup. Awaiting Calculate button trigger.\n');
+
+    % Explicitly trigger calculation (simulating user hitting Calculate button)
+    app.calculateAll();
+    assert(app.HasCalculatedOnce, 'Must be marked calculated after calculateAll.');
+    fprintf('  Explicit Calculate trigger executed successfully!\n');
 
     % Test 2: Multiphysics Engines State
     fprintf('\n--- Test 2: In-Memory Multi-Physics Results Integrity ---\n');
@@ -149,6 +159,7 @@ function test_calphad_hea_calc()
     fprintf('\n--- Test 11: MaterialPropertiesApp & CALPHADStudioApp Inheritance ---\n');
     wrapperApp = MaterialPropertiesApp([], false, true);
     assert(isa(wrapperApp, 'CALPHADHEACalc'), 'MaterialPropertiesApp must inherit from CALPHADHEACalc.');
+    wrapperApp.calculateAll();
     assert(~isempty(wrapperApp.CurrentAppScores), 'Wrapper must compute application scores.');
 
     legacyApp = CALPHADStudioApp([], true);

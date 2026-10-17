@@ -10,6 +10,7 @@ function generate_validation_snapshots()
 
     fprintf('Generating validation benchmark graphics for Cantor alloy...\n');
     app = CALPHADHEACalc('Cantor (CoCrFeMnNi)', true);
+    app.calculateAll();
 
     % 1. AxEquilibrium Snapshot
     try
