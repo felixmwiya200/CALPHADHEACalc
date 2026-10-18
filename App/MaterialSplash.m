@@ -16,8 +16,10 @@ classdef MaterialSplash < handle
             splashInstance = fb;
         end
         
-        function isRunning = start()
+        function isRunning = start(enableSplash)
+            if nargin < 1, enableSplash = false; end
             isRunning = false;
+            if ~enableSplash, return; end
             ipc = MaterialSplash.IpcFile;
             
             % Initialize IPC file with initial state
@@ -124,19 +126,10 @@ classdef MaterialSplash < handle
                 MaterialSplash.getSetFallback([]);
             end
             
-            % Clean up after short delay so fade-out finishes
+            % Clean up IPC file directly
             try
-                tClean = timer('StartDelay', 1.0, 'ExecutionMode', 'singleShot', ...
-                    'TimerFcn', @(~,~) deleteIpcFile());
-                start(tClean);
+                if exist(ipc, 'file'), delete(ipc); end
             catch
-            end
-            
-            function deleteIpcFile()
-                try
-                    if exist(ipc, 'file'), delete(ipc); end
-                catch
-                end
             end
         end
     end

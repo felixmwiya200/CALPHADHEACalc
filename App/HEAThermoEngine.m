@@ -1708,12 +1708,8 @@ classdef HEAThermoEngine
             metrics.DeltaH_elastic = calphadMetrics.DeltaH_elastic;
             metrics.DeltaH_total = round(DeltaHmix + calphadMetrics.DeltaH_elastic, 3);
             
-            % Peer-Reviewed Experimental HEA Database Validation (12,427 records)
-            try
-                metrics.ExperimentalValidation = HEAExperimentalDatabase.query(elements, x);
-            catch
-                metrics.ExperimentalValidation = struct('Matched', false, 'TotalMatches', 0);
-            end
+            % Experimental Validation summary placeholder (queried on-demand in Validation tab)
+            metrics.ExperimentalValidation = struct('Matched', false, 'TotalMatches', 0);
             
             % Corrosion Resistance & Passivation Prediction from Thermodynamic Properties
             corrosionMetrics = HEAThermoEngine.computeCorrosionMetrics(elements, x, metrics);

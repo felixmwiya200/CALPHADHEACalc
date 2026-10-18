@@ -2186,6 +2186,15 @@ classdef CALPHADHEACalc < handle
         % RENDERER: ISOPLETH SECTION (T - x)
         % =========================================================================
         function computeAndRenderIsopleth(app)
+            ax = app.AxIsopleth;
+            if isempty(ax) || ~isvalid(ax), return; end
+            cla(ax);
+            if ~app.HasCalculatedOnce
+                legend(ax, 'off');
+                return;
+            end
+            hold(ax, 'on');
+
             solute = app.DropdownIsoplethSolute.Value;
             if isempty(solute)
                 if ~isempty(app.CurrentElements)
@@ -2201,10 +2210,6 @@ classdef CALPHADHEACalc < handle
                 app.EditIsoplethXMax.Value = 0.40;
             end
             logMsg(app, sprintf('[Isopleth] Computing pseudo-binary section for solute %s (0 to %.2f)...', solute, xMax));
-
-            ax = app.AxIsopleth;
-            cla(ax);
-            hold(ax, 'on');
 
             try
                 iso = HEAThermoEngine.computeIsoplethSection(app.CurrentElements, app.CurrentFractions, solute, [0, xMax], 15);
@@ -2283,6 +2288,11 @@ classdef CALPHADHEACalc < handle
         function computeAndRenderTernary(app)
             ax = app.AxTernary;
             if isempty(ax) || ~isvalid(ax), return; end
+            cla(ax);
+            if ~app.HasCalculatedOnce
+                legend(ax, 'off');
+                return;
+            end
 
             viewMode = '4-Panel Isothermal Grid (Zuo et al. 2022)';
             if isprop(app, 'DropdownTernaryViewMode') && ~isempty(app.DropdownTernaryViewMode.Value)
@@ -2711,6 +2721,10 @@ classdef CALPHADHEACalc < handle
             ax = app.AxBinary;
             if isempty(ax) || ~isvalid(ax), return; end
             cla(ax);
+            if ~app.HasCalculatedOnce
+                legend(ax, 'off');
+                return;
+            end
             hold(ax, 'on');
 
             sys = app.DropdownBinarySystem.Value;

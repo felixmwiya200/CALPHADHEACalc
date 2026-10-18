@@ -29,18 +29,26 @@ classdef HEAExperimentalDatabase < handle
     end
     
     methods (Static)
-        function instance = getInstance()
+        function instance = getInstance(forceLoad)
             persistent dbInstance;
-            if isempty(dbInstance) || ~isvalid(dbInstance) || ~dbInstance.IsLoaded
+            if nargin < 1, forceLoad = false; end
+            if isempty(dbInstance) || ~isvalid(dbInstance)
                 dbInstance = HEAExperimentalDatabase();
+            end
+            if forceLoad && ~dbInstance.IsLoaded
                 dbInstance.loadDatabase();
             end
             instance = dbInstance;
         end
         
-        function res = query(elements, at_fractions)
-            % Static convenience query method
-            db = HEAExperimentalDatabase.getInstance();
+        function res = query(elements, at_fractions, forceLoad)
+            % Static convenience query method - lazy: only loads on command
+            if nargin < 3, forceLoad = false; end
+            db = HEAExperimentalDatabase.getInstance(forceLoad);
+            if ~db.IsLoaded
+                res = struct('Matched', false, 'TotalMatches', 0, 'ObservedPhases', '', 'DOI', '', 'Alloy', '');
+                return;
+            end
             res = db.findMatch(elements, at_fractions);
         end
     end
@@ -69,7 +77,6 @@ classdef HEAExperimentalDatabase < handle
                     obj.AlloyElemMap = cached.AlloyElemMap;
                     obj.FormulaLookupMap = cached.FormulaLookupMap;
                     obj.IsLoaded = true;
-                    fprintf('HEAExperimentalDatabase: Loaded %d experimental HEA records from cache.\n', obj.RowCount);
                     return;
                 catch
                 end
@@ -114,7 +121,6 @@ classdef HEAExperimentalDatabase < handle
             % Build fast index
             obj.buildIndices();
             obj.IsLoaded = true;
-            fprintf('HEAExperimentalDatabase: Loaded %d experimental HEA records successfully.\n', obj.RowCount);
 
             % Cache to .mat for instant sub-100ms loading on subsequent runs
             try

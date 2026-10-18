@@ -8,6 +8,11 @@ classdef HEAHighThroughputScreener
 
         function lib = getMasterLibrary()
             % Returns the canonical 51-alloy master library spanning all 11 HEA classes
+            persistent cachedMasterLib;
+            if ~isempty(cachedMasterLib)
+                lib = cachedMasterLib;
+                return;
+            end
             lib = struct(...
                 'Name', {}, 'Formula', {}, 'Class', {}, 'Elements', {}, 'Fractions', {}, 'Citation', {}, 'DOI', {} ...
             );
@@ -146,6 +151,7 @@ classdef HEAHighThroughputScreener
                 {'Ni', 'Cr', 'Fe', 'Nb', 'Mo', 'Ti', 'Al', 'Co'}, [52.5, 19.0, 18.5, 5.1, 3.0, 0.9, 0.5, 1.0], 'AMS 5662 / Special Metals', 'AMS 5662');
             addAlloy('Ti-6Al-4V (Aerospace Ref)', 'Ti89.5Al6.0V4.3Fe0.2', 'Reference Benchmark', ...
                 {'Ti', 'Al', 'V', 'Fe'}, [89.5, 6.0, 4.25, 0.25], 'ASTM B265 / Donachie (2000)', 'ASTM B265');
+            cachedMasterLib = lib;
         end
 
         function tbl = screenAll(userOpts)
