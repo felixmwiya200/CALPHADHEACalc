@@ -24,7 +24,7 @@ MaterialSplash.start();
 fprintf('\n=======================================================================\n');
 fprintf('  CALPHADHEACALC 2026 (v3.4.0) — HIGH-ENTROPY ALLOY SOFTWARE\n');
 fprintf('  Materials computational research engineer and lead developer: Felix Mwiya\n');
-fprintf('  Under the guidance of Prof. (Dr.) Sheela Singh\n');
+fprintf('  Research Guide: Prof. (Dr.) Sheela Singh\n');
 fprintf('  Department of Mechanical Engineering, School of Engineering and Sciences\n');
 fprintf('  SRM University-AP, Andhra Pradesh, India\n');
 fprintf('=======================================================================\n');

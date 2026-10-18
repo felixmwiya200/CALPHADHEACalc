@@ -43,6 +43,7 @@ classdef CALPHADHEACalc < handle
         SliderScherrer        matlab.ui.control.Slider
         LabelScherrer         matlab.ui.control.Label
         BtnCalculate          matlab.ui.control.Button
+        BtnScreenAll          matlab.ui.control.Button
         SpinnerMaxIters       matlab.ui.control.Spinner
         DropdownTolerance     matlab.ui.control.DropDown
         CheckNotifyComplete   matlab.ui.control.CheckBox
@@ -653,20 +654,22 @@ classdef CALPHADHEACalc < handle
         % TOOLBAR BUILDER (Interactive Page, Legend Sizing & Fullscreen Controls)
         % =========================================================================
         function buildToolbar(app)
-            tbGrid = uigridlayout(app.ToolbarPanel, [1, 21]);
+            tbGrid = uigridlayout(app.ToolbarPanel, [1, 22]);
             tbGrid.Padding = [2 2 2 2];
-            tbGrid.ColumnWidth = {125, 72, 90, 70, 70, 70, 70, 52, 65, 65, 55, 44, 58, 40, 44, 44, 58, 48, 48, 80, 50};
+            tbGrid.ColumnWidth = {140, 68, 96, 85, 62, 68, 68, 68, 52, 60, 60, 52, 42, 55, 38, 42, 42, 55, 45, 45, 80, 50};
 
-            % 1. Presets DropDown (Comprehensive 22 Presets)
-            presets = {
-                'Cantor (CoCrFeMnNi)', 'Al0.3CoCrFeNi', 'Al0.5CoCrFeNi', 'Al0.7CoCrFeNi', 'Al1.0CoCrFeNi', ...
-                'CoCrNi (Cryogenic MEA)', 'Fe50Mn30Co10Cr10 (TRIP-HEA)', 'Fe40Mn20Cr20Ni20 (TWIP-HEA)', ...
-                'AlCoCrFeNi2.1 (Eutectic HEA)', 'TiZrNbTa (Bio-HEA)', 'TiZrHfNbTa (Refractory Senkov)', ...
-                'NbMoTaW (Refractory 4-Elem)', 'VNbMoTaW (Refractory 5-Elem)', 'FeCrAl-HEA (Nuclear Cladding)', ...
-                'CoCrFeNi (Cantor Base)', 'CMSX-4 Superalloy', 'MoNbTaTiW Refractory', ...
-                'Cobalt Aluminide (CoAl)', 'Nickel Aluminide (NiAl)', 'Al-Co Binary Reference', ...
-                'HfNbTaTiZr Biocompatible', 'CuFeNiMnCr High-Conductivity'
-            };
+            % 1. Presets DropDown (51 Landmark HEA Archetypes across All 11 Classes)
+            try
+                libMaster = HEAHighThroughputScreener.getMasterLibrary();
+                presets = {libMaster.Name};
+            catch
+                presets = {
+                    'Cantor (CoCrFeMnNi)', 'Al0.3CoCrFeNi', 'Al0.5CoCrFeNi', 'Al0.7CoCrFeNi', 'Al1.0CoCrFeNi', ...
+                    'CoCrNi (Cryogenic MEA)', 'Fe50Mn30Co10Cr10 (TRIP)', 'Fe40Mn20Cr20Ni20 (TWIP)', ...
+                    'AlCoCrFeNi2.1 (Eutectic HEA)', 'Ti25Zr25Nb25Ta25 (Bio-HEA)', 'TiZrHfNbTa (Ductile RHEA)', ...
+                    'NbMoTaW (Refractory 4-Elem)', 'VNbMoTaW (Refractory 5-Elem)'
+                };
+            end
             app.PresetDropdown = uidropdown(tbGrid, ...
                 'Items', presets, 'Value', presets{1}, ...
                 'FontName', 'Segoe UI', 'FontSize', 9, ...
@@ -680,7 +683,15 @@ classdef CALPHADHEACalc < handle
                 'Tooltip', 'Calculate all thermodynamic & multi-physics models (F5 / Ctrl+R)', ...
                 'ButtonPushedFcn', @(~, ~) calculateAll(app));
 
-            % 3. Open Periodic Table Dialog (Full 118 IUPAC Elements)
+            % 3. High-Throughput Screening Button (Screen All 51 Alloys)
+            app.BtnScreenAll = uibutton(tbGrid, ...
+                'Text', 'Screen All HEAs', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.38, 0.28, 0.65], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Run High-Throughput Multi-Physics Screening across all 51 HEA classes', ...
+                'ButtonPushedFcn', @(~, ~) openHighThroughputScreeningDialog(app));
+
+            % 4. Open Periodic Table Dialog (Full 118 IUPAC Elements)
             app.BtnOpenPeriodicTable = uibutton(tbGrid, ...
                 'Text', 'Periodic Table', ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
@@ -1009,6 +1020,7 @@ classdef CALPHADHEACalc < handle
             % Databases & System
             uitreenode(proj, 'Text', 'Attached Databases Registry (8 Active)', 'Tag', 'DatabasesRegistry');
             uitreenode(proj, 'Text', 'Governing Equations Reference', 'Tag', 'EquationsRegistry');
+            uitreenode(proj, 'Text', 'High-Throughput 51-Alloy Screening Engine', 'Tag', 'ScreeningRegistry');
             uitreenode(proj, 'Text', 'Database: PanHEA-2026.tdb (SGTE / Dinsdale)', 'Tag', 'DB');
             uitreenode(proj, 'Text', 'Components: 45 Supported IUPAC Elements', 'Tag', 'Components');
             uitreenode(proj, 'Text', 'Phase Models: 28 Solution & Intermetallics', 'Tag', 'Phases');
@@ -1550,16 +1562,22 @@ classdef CALPHADHEACalc < handle
             lpGrid.RowHeight = {30, '1x'};
             lpGrid.Padding = [2 2 2 2];
 
-            % Sector Filter Bar
-            filterGrid = uigridlayout(lpGrid, [1, 2]);
+            % Sector Filter Bar & Screener Action
+            filterGrid = uigridlayout(lpGrid, [1, 3]);
             filterGrid.Padding = [0 0 0 0];
-            filterGrid.ColumnWidth = {90, '1x'};
+            filterGrid.ColumnWidth = {90, '1x', 145};
             uilabel(filterGrid, 'Text', 'Sector Filter:', 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold');
             rawSectors = HEAApplicationDatabase.getSectors();
             sectors = [{'All Sectors'}, reshape(rawSectors, 1, [])];
             app.DropdownAppSector = uidropdown(filterGrid, ...
                 'Items', sectors, 'Value', 'All Sectors', ...
                 'FontSize', 9.5, 'ValueChangedFcn', @(~, ~) filterApplicationsTable(app));
+            uibutton(filterGrid, ...
+                'Text', 'Screen All 51 HEAs', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.38, 0.28, 0.65], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Run High-Throughput Screening across all 51 HEA compositions', ...
+                'ButtonPushedFcn', @(~, ~) openHighThroughputScreeningDialog(app));
 
             % Applications Table
             app.TableApplications = uitable(lpGrid, ...
@@ -1638,7 +1656,7 @@ classdef CALPHADHEACalc < handle
                 'Data', {'Awaiting Calculation', '-', '-', '-', '-', 'READY', 'Click "Calculate" in toolbar to audit against experimental database'});
 
             % Literature Search & Refresh Actions
-            litGrid = uigridlayout(p1Grid, [1, 4]);
+            litGrid = uigridlayout(p1Grid, [1, 5]);
             litGrid.Padding = [0 0 0 0];
             uibutton(litGrid, 'Text', 'Search Google Scholar', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) searchOnlineScholar(app));
@@ -1648,6 +1666,10 @@ classdef CALPHADHEACalc < handle
                 'ButtonPushedFcn', @(~, ~) searchOnlineCrossRef(app));
             uibutton(litGrid, 'Text', 'Refresh Benchmarks', 'FontSize', 9, ...
                 'ButtonPushedFcn', @(~, ~) renderValidationView(app));
+            uibutton(litGrid, 'Text', 'Screen All 51 HEAs', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.38, 0.28, 0.65], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Run High-Throughput Screening across all 51 HEA landmark alloys', ...
+                'ButtonPushedFcn', @(~, ~) openHighThroughputScreeningDialog(app));
 
             % Panel 2: CALPHAD Multi-Physics Database Verification
             p2 = uipanel(valGrid, 'Title', 'CALPHAD Multi-Physics Database Verification', ...
@@ -2680,7 +2702,6 @@ classdef CALPHADHEACalc < handle
             s3 = v3*(1-hSlice) + vTop*hSlice;
             patch(ax, [s1(1), s2(1), s3(1)], [s1(2), s2(2), s3(2)], [0.85, 0.15, 0.15], ...
                 'FaceAlpha', 0.4, 'EdgeColor', [0.85, 0.15, 0.15], 'LineWidth', 1.2, 'HandleVisibility', 'off');
-        end
         end
 
         % =========================================================================
@@ -5057,6 +5078,192 @@ classdef CALPHADHEACalc < handle
         end
 
         % =========================================================================
+        % HIGH-THROUGHPUT HEA SCREENING ENGINE (51 Landmark Alloys Across All 11 Classes)
+        % =========================================================================
+        function dlg = openHighThroughputScreeningDialog(app)
+            % Modal window for High-Throughput HEA Screening across all 51 benchmark alloys
+            screenSize = get(0, 'ScreenSize');
+            w = 1180; h = 740;
+            x = max(20, (screenSize(3) - w) / 2);
+            y = max(40, (screenSize(4) - h) / 2);
+
+            dlg = uifigure('Name', 'CALPHAD High-Throughput HEA Screening Engine (51 Landmark Alloys Across All 11 Classes)', ...
+                'Position', [x, y, w, h], 'Color', [0.95, 0.96, 0.98]);
+
+            mainLayout = uigridlayout(dlg, [3, 1]);
+            mainLayout.RowHeight = {44, '1x', 40};
+            mainLayout.Padding = [10 10 10 10];
+            mainLayout.RowSpacing = 6;
+
+            % 1. TOP HEADER & FILTER BAR
+            headerGrid = uigridlayout(mainLayout, [1, 6]);
+            headerGrid.Layout.Row = 1;
+            headerGrid.Padding = [0 0 0 0];
+            headerGrid.ColumnWidth = {270, 200, 140, 190, 130, '1x'};
+
+            uilabel(headerGrid, 'Text', 'High-Throughput HEA Screening Matrix', ...
+                'FontName', 'Segoe UI', 'FontSize', 13, 'FontWeight', 'bold', 'FontColor', [0.15, 0.20, 0.35]);
+
+            classItems = { ...
+                'All HEA Classes (51 Alloys)', ...
+                '3d Transition (FCC)', ...
+                'Refractory (BCC)', ...
+                'Lightweight & Low-Density', ...
+                'Eutectic (EHEA)', ...
+                'Precious / Noble Metals', ...
+                'Biomedical (Non-Toxic)', ...
+                'Hexagonal Close-Packed (HCP)', ...
+                'High-Entropy Superalloys (HESA)', ...
+                'Intermetallics / Laves', ...
+                'Interstitial-Alloyed', ...
+                'Magnetic & References' ...
+            };
+            filterDropdown = uidropdown(headerGrid, ...
+                'Items', classItems, 'Value', classItems{1}, ...
+                'FontName', 'Segoe UI', 'FontSize', 9.5, 'Tooltip', 'Filter by HEA Class');
+
+            btnRun = uibutton(headerGrid, ...
+                'Text', 'Re-run Screening', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.15, 0.65, 0.35], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Recompute multi-physics across all 51 alloys in memory');
+
+            btnLoad = uibutton(headerGrid, ...
+                'Text', 'Load Selected into Workstation', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.18, 0.48, 0.72], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Load selected alloy into main CALPHAD workstation and solve');
+
+            btnExport = uibutton(headerGrid, ...
+                'Text', 'Export CSV...', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'BackgroundColor', [0.20, 0.45, 0.70], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Export comparative 51-alloy screening matrix to CSV');
+
+            % 2. CENTER CONTENT (Tabbed: Table Matrix vs Ashby Plot)
+            centerTabGroup = uitabgroup(mainLayout);
+            centerTabGroup.Layout.Row = 2;
+
+            tabTable = uitab(centerTabGroup, 'Title', 'Multi-Physics Comparative Matrix (51 Alloys)');
+            tGrid = uigridlayout(tabTable, [1, 1]);
+            tGrid.Padding = [2 2 2 2];
+
+            screenTable = uitable(tGrid, ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'SelectionType', 'row');
+
+            tabAshby = uitab(centerTabGroup, 'Title', 'Ashby Property Map (Yield Strength vs Density)');
+            ashbyGrid = uigridlayout(tabAshby, [1, 1]);
+            ashbyGrid.Padding = [4 4 4 4];
+            ashbyAxes = uiaxes(ashbyGrid);
+
+            % 3. BOTTOM STATUS BAR
+            statusGrid = uigridlayout(mainLayout, [1, 2]);
+            statusGrid.Layout.Row = 3;
+            statusGrid.Padding = [0 0 0 0];
+            statusGrid.ColumnWidth = {'1x', 90};
+
+            lblStatus = uilabel(statusGrid, ...
+                'Text', 'Status: Ready. 51 Landmark Alloys loaded across all 11 High-Entropy Alloy classes.', ...
+                'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontColor', [0.25, 0.35, 0.45]);
+
+            uibutton(statusGrid, 'Text', 'Close', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'ButtonPushedFcn', @(~, ~) delete(dlg));
+
+            % Internal screening data storage
+            fullTableData = [];
+
+            function runScreening()
+                lblStatus.Text = 'Computing multi-physics across all 51 HEAs in memory...';
+                drawnow();
+                try
+                    fullTableData = HEAHighThroughputScreener.screenAll();
+                    updateFilteredTable();
+                    renderAshbyPlot();
+                    lblStatus.Text = sprintf('Completed: %d alloys evaluated with complete multi-physics. Select an alloy row to load.', height(fullTableData));
+                catch err
+                    lblStatus.Text = ['Screening warning: ' err.message];
+                end
+            end
+
+            function updateFilteredTable()
+                if isempty(fullTableData), return; end
+                val = filterDropdown.Value;
+                displayTbl = fullTableData;
+                if ~contains(val, 'All')
+                    if contains(val, '3d Transition'), mask = contains(displayTbl.Class, '3d Transition');
+                    elseif contains(val, 'Refractory'), mask = contains(displayTbl.Class, 'Refractory');
+                    elseif contains(val, 'Lightweight'), mask = contains(displayTbl.Class, 'Lightweight');
+                    elseif contains(val, 'Eutectic'), mask = contains(displayTbl.Class, 'Eutectic');
+                    elseif contains(val, 'Noble'), mask = contains(displayTbl.Class, 'Noble');
+                    elseif contains(val, 'Biomedical'), mask = contains(displayTbl.Class, 'Biomedical');
+                    elseif contains(val, 'HCP'), mask = contains(displayTbl.Class, 'HCP');
+                    elseif contains(val, 'Superalloy'), mask = contains(displayTbl.Class, 'Superalloy');
+                    elseif contains(val, 'Intermetallic'), mask = contains(displayTbl.Class, 'Intermetallic');
+                    elseif contains(val, 'Interstitial'), mask = contains(displayTbl.Class, 'Interstitial');
+                    elseif contains(val, 'Magnetic'), mask = contains(displayTbl.Class, 'Magnetic') | contains(displayTbl.Class, 'Reference');
+                    else, mask = true(height(displayTbl), 1);
+                    end
+                    displayTbl = displayTbl(mask, :);
+                end
+                screenTable.Data = displayTbl(:, {'Index', 'AlloyName', 'Formula', 'Class', 'Structure', ...
+                    'VEC', 'Delta_pct', 'Tm_K', 'Density_g_cm3', 'YieldStrength_MPa', 'UTS_MPa', ...
+                    'Elongation_pct', 'Hardness_HV', 'SpecificStrength_kNm_kg', 'OxidationScale', 'PREN', 'TopApplication', 'Score_pct'});
+            end
+
+            function renderAshbyPlot()
+                if isempty(fullTableData), return; end
+                HEAHighThroughputScreener.plotAshby(ashbyAxes, fullTableData);
+            end
+
+            function loadSelectedAlloy()
+                sel = screenTable.Selection;
+                if isempty(sel) || isempty(fullTableData)
+                    uialert(dlg, 'Please select an alloy row in the table first.', 'Selection Required');
+                    return;
+                end
+                rowIdx = sel(1);
+                curData = screenTable.Data;
+                selectedName = curData.AlloyName{rowIdx};
+                
+                lib = HEAHighThroughputScreener.getMasterLibrary();
+                found = false;
+                for k = 1:numel(lib)
+                    if strcmp(lib(k).Name, selectedName)
+                        setAlloyPreset(app, lib(k).Name);
+                        calculateAll(app);
+                        found = true;
+                        break;
+                    end
+                end
+                if found
+                    lblStatus.Text = sprintf('Successfully loaded "%s" into main workstation.', selectedName);
+                    uialert(dlg, sprintf('Loaded "%s" into main CALPHAD workstation.\nMulti-physics calculations updated.', selectedName), 'Alloy Loaded', 'Icon', 'success');
+                end
+            end
+
+            function exportCSV()
+                if isempty(fullTableData)
+                    runScreening();
+                end
+                [file, path] = uiputfile('*.csv', 'Save HEA High-Throughput Screening Table', 'HEA_HighThroughput_Screening_Matrix.csv');
+                if isequal(file, 0), return; end
+                fullPath = fullfile(path, file);
+                writetable(fullTableData, fullPath);
+                lblStatus.Text = sprintf('Exported screening matrix to %s', file);
+            end
+
+            filterDropdown.ValueChangedFcn = @(~, ~) updateFilteredTable();
+            btnRun.ButtonPushedFcn = @(~, ~) runScreening();
+            btnLoad.ButtonPushedFcn = @(~, ~) loadSelectedAlloy();
+            btnExport.ButtonPushedFcn = @(~, ~) exportCSV();
+
+            % Initial execution
+            runScreening();
+        end
+
+        % =========================================================================
         % COMPLETE 118-ELEMENT IUPAC PERIODIC TABLE MODAL DIALOG
         % (Matches Todd Helmenstine 1-118 IUPAC layout with 18 Groups & 7 Periods)
         % =========================================================================
@@ -5537,6 +5744,7 @@ classdef CALPHADHEACalc < handle
                 case 'TabValidation',     switchToTab(app, app.TabValidation);
                 case 'DatabasesRegistry', showDatabasesRegistryDialog(app);
                 case 'EquationsRegistry', showEquationsRegistryDialog(app);
+                case 'ScreeningRegistry', openHighThroughputScreeningDialog(app);
             end
         end
 
@@ -5571,10 +5779,27 @@ classdef CALPHADHEACalc < handle
         end
 
         function setAlloyPreset(app, presetStr)
-            switch presetStr
-                case {'Cantor (CoCrFeMnNi)', 'CoCrFeMnNi'}
-                    elems = {'Co', 'Cr', 'Fe', 'Mn', 'Ni'};
-                    fracs = [20.0, 20.0, 20.0, 20.0, 20.0];
+            % Check master screening library first (51 landmark archetypes across all 11 classes)
+            matchedLib = false;
+            try
+                libMaster = HEAHighThroughputScreener.getMasterLibrary();
+                for k = 1:numel(libMaster)
+                    if strcmpi(strtrim(libMaster(k).Name), strtrim(presetStr)) || ...
+                       strcmpi(strtrim(libMaster(k).Formula), strtrim(presetStr))
+                        elems = libMaster(k).Elements;
+                        fracs = libMaster(k).Fractions;
+                        matchedLib = true;
+                        break;
+                    end
+                end
+            catch
+            end
+
+            if ~matchedLib
+                switch presetStr
+                    case {'Cantor (CoCrFeMnNi)', 'CoCrFeMnNi'}
+                        elems = {'Co', 'Cr', 'Fe', 'Mn', 'Ni'};
+                        fracs = [20.0, 20.0, 20.0, 20.0, 20.0];
                 case 'Al0.3CoCrFeNi'
                     elems = {'Al', 'Co', 'Cr', 'Fe', 'Ni'};
                     fracs = [6.98, 23.25, 23.25, 23.25, 23.25];
@@ -5641,6 +5866,7 @@ classdef CALPHADHEACalc < handle
                 otherwise
                     elems = {'Co', 'Cr', 'Fe', 'Mn', 'Ni'};
                     fracs = [20.0, 20.0, 20.0, 20.0, 20.0];
+            end
             end
 
             app.CurrentElements = elems;
@@ -6405,6 +6631,7 @@ classdef CALPHADHEACalc < handle
             mApps = uimenu(app.UIFigure, 'Text', 'Applications');
             uimenu(mApps, 'Text', 'Open HEA Applications Hub', 'MenuSelectedFcn', @(~, ~) switchToTab(app, app.TabApplications));
             uimenu(mApps, 'Text', 'Rank All 10 Industrial Domains', 'MenuSelectedFcn', @(~, ~) calculateAll(app));
+            uimenu(mApps, 'Text', 'High-Throughput 51-Alloy Screening Matrix...', 'Separator', 'on', 'MenuSelectedFcn', @(~, ~) openHighThroughputScreeningDialog(app));
 
             % Help Menu
             mHelp = uimenu(app.UIFigure, 'Text', 'Help');

@@ -88,9 +88,24 @@ classdef HEAThermoEngine
             % Lanthanides & Rare-Earth Additions
             setE('La', [138.91, 187, 1.10, 3,  1193, 6.2,  6.162,  5.2, 27.1, 0.005, 13.4,  61.5,  37,  0.28,  720]);
             setE('Ce', [140.12, 182, 1.12, 3,  1068, 5.5,  6.770,  6.3, 26.9, 0.005, 11.3,  82.8,  34,  0.24,  700]);
+            setE('Pr', [140.91, 182, 1.13, 3,  1208, 6.9,  6.770,  6.7, 27.2, 0.005, 12.5,  70.0,  37,  0.28,  710]);
             setE('Nd', [144.24, 182, 1.14, 3,  1297, 7.1,  7.010,  6.7, 27.4, 0.005, 16.5,  64.3,  41,  0.28,  690]);
-            setE('Gd', [157.25, 180, 1.20, 3,  1585, 10.0, 7.900,  9.4, 37.0, 0.005, 10.5, 131.0,  55,  0.26,  810]);
             setE('Sm', [150.36, 180, 1.17, 3,  1345, 8.6,  7.520, 12.7, 29.5, 0.005, 13.3,  94.0,  50,  0.27,  850]);
+            setE('Eu', [151.96, 204, 1.20, 2,  1099, 9.2,  5.244, 35.0, 27.7, 0.005, 13.9,  90.0,  14,  0.15,  450]);
+            setE('Gd', [157.25, 180, 1.20, 3,  1585, 10.0, 7.900,  9.4, 37.0, 0.005, 10.5, 131.0,  55,  0.26,  810]);
+            setE('Tb', [158.93, 178, 1.20, 3,  1629, 10.8, 8.230, 10.3, 28.9, 0.005, 11.1, 115.0,  56,  0.26,  820]);
+            setE('Dy', [162.50, 177, 1.22, 3,  1680, 11.1, 8.540,  9.9, 27.7, 0.005, 10.7,  92.6,  61,  0.25,  830]);
+            setE('Ho', [164.93, 176, 1.23, 3,  1734, 12.2, 8.790, 11.2, 27.2, 0.005, 16.2,  81.4,  65,  0.23,  850]);
+            setE('Er', [167.26, 175, 1.24, 3,  1802, 19.9, 9.066, 12.2, 28.1, 0.005, 14.5,  86.0,  70,  0.24,  860]);
+            setE('Tm', [168.93, 174, 1.25, 3,  1818, 16.8, 9.320, 13.3, 27.0, 0.005, 16.9,  67.6,  74,  0.21,  870]);
+            setE('Yb', [173.05, 194, 1.10, 2,  1097,  7.7, 6.900, 26.3, 26.7, 0.005, 38.5,  25.0,  18,  0.21,  550]);
+            setE('Lu', [174.97, 173, 1.27, 3,  1925, 18.6, 9.841,  9.9, 26.9, 0.005, 16.4,  58.2,  69,  0.26,  900]);
+
+            % Light Alkaline & Main Group Elements
+            setE('Be', [9.0120, 112, 1.57, 2,  1560, 12.2, 1.850, 11.3, 16.4, 0.008, 200.0,  3.6, 287,  0.03, 1100]);
+            setE('Ca', [40.078, 197, 1.00, 2,  1115,  8.5, 1.550, 22.3, 25.9, 0.008, 201.0,  3.4,  20,  0.31,  380]);
+            setE('Sr', [87.620, 215, 0.95, 2,  1050,  7.4, 2.640, 22.5, 26.8, 0.008,  35.4, 13.2,  16,  0.28,  320]);
+            setE('Ba', [137.33, 222, 0.89, 2,  1000,  8.0, 3.620, 20.6, 28.1, 0.008,  18.4, 33.2,  13,  0.28,  260]);
 
             % Main-Group, Post-Transition & Additional Alloying
             setE('Ga', [69.723, 135, 1.81, 3,   303,  5.6, 5.910, 18.0, 25.9, 0.008,  40.6, 17.4,  30,  0.35,  710]);
@@ -1655,6 +1670,8 @@ classdef HEAThermoEngine
             metrics.Delta_size = delta_size;
             metrics.Delta_chi  = delta_chi;
             metrics.delta      = delta_size;
+            metrics.Delta      = delta_size;
+            metrics.Tm         = Tm_avg;
             metrics.dH_mix     = DeltaHmix;
             metrics.dS_mix     = DeltaSmix;
             metrics.density    = round(rho_calc, 2);
@@ -1666,6 +1683,7 @@ classdef HEAThermoEngine
             % Thermophysical properties
             metrics.Density = round(rho_calc, 2);
             metrics.Density_g_cm3 = round(rho_calc, 2);
+            metrics.rho0 = round(rho_calc, 2);
             metrics.ThermalConductivity = round(k_calc, 1);
             metrics.ThermalConductivity_W_mK = round(k_calc, 1);
             metrics.Cp = round(Cp_calc, 1);
@@ -2333,20 +2351,32 @@ classdef HEAThermoEngine
             E_corr_pred = -0.350 + passiv_driving - galv_depress;
             E_corr_pred = max(-0.65, min(0.05, E_corr_pred));
             
-            % 8. Predicted Corrosion Current Density (i_corr in micro-A/cm^2) & Corrosion Rate (mm/year)
-            % Calibrated against authoritative peer-reviewed data (Shi et al. 2017, Qiu et al. 2013, Li et al. 2025)
             passivator_wt = getWt('Cr') + getWt('Ti') + getWt('Ta') + getWt('Nb') + 1.5 * getWt('Mo');
+            noble_wt = getWt('Ru') + getWt('Rh') + getWt('Pd') + getWt('Os') + getWt('Ir') + getWt('Pt') + getWt('Au') + getWt('Ag');
+            mg_wt = getWt('Mg');
             
-            if passivator_wt >= 12.0
+            if noble_wt >= 40.0
+                % Noble Metal HEAs: immune/noble in neutral chloride solutions
+                E_corr_pred = 0.220 + 0.180 * (noble_wt / 100.0);
+                i_base = 0.008; % micro-A/cm^2 (practically zero corrosion)
+                f_microcell = 1.0 + 0.10 * (1.0 - I_phase) * (DeltaE_galv / 1.40);
+                i_corr_nacl = i_base * f_microcell;
+            elseif mg_wt >= 20.0
+                % Magnesium-rich LWHEAs: active dissolution in aqueous NaCl
+                E_corr_pred = -1.350 + 0.30 * (1.0 - mg_wt / 100.0);
+                f_microcell = 1.0 + 1.2 * (1.0 - I_phase) * DeltaE_galv;
+                i_corr_nacl = 28.0 * f_microcell;
+            elseif passivator_wt >= 12.0
                 i_base = 0.42 * exp(-(pren_eff - 18.0) / 24.0);
                 % Micro-galvanic coupling in multiphase structures (predominantly driven by Al/Cu partitioning)
                 al_cu_factor = max(0.0, (getWt('Al') + getWt('Cu')) / 10.0);
                 f_microcell = 1.0 + 0.38 * (1.0 - I_phase) * (DeltaE_galv / 1.40) * min(1.0, al_cu_factor);
                 i_corr_nacl = i_base * f_microcell;
             else
-                i_corr_nacl = 3.50 * (1.0 + 3.0 * (1.0 - I_phase) * DeltaE_galv);
+                f_microcell = 1.0 + 2.0 * (1.0 - I_phase) * DeltaE_galv;
+                i_corr_nacl = 3.50 * f_microcell;
             end
-            i_corr_nacl = max(0.008, min(60.0, i_corr_nacl));
+            i_corr_nacl = max(0.001, min(60.0, i_corr_nacl));
             
             % Faraday's Law ASTM G102: CR (mm/year) = 3.27e-3 * i_corr * EW / rho
             CR_nacl = 3.27e-3 * (i_corr_nacl * EW) / max(1.0, rho_alloy);

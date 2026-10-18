@@ -412,22 +412,34 @@ classdef HEABenchmarkDatabase
                         end
                     end
                     
-                    % Determine phase structure from VEC
+                    % Determine phase structure from VEC & HCP elements
                     vec_val = 8.0;
                     if isfield(thermoMetrics, 'VEC'), vec_val = thermoMetrics.VEC; end
                     
-                    if vec_val >= 7.80 % FCC
+                    isHCP = any(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','re','os','ru'})) && ...
+                            (sum(x(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','re','os','ru'}))) >= 0.50);
+                    
+                    if isHCP
+                        sy_bench = 480.0;
+                        uts_bench = 795.0;
+                        elong_bench = 14.0;
+                        hv_bench = 220.0;
+                        k1c_bench = 45.0;
+                        a_bench = 3.650;
+                    elseif vec_val >= 7.80 % FCC
                         sy_bench = max(200.0, round(E_mix * 1.35));
                         uts_bench = round(sy_bench * 2.45);
                         elong_bench = 48.0;
                         hv_bench = round(0.30 * sy_bench + 72.0);
                         k1c_bench = 210.0;
+                        a_bench = 3.590;
                     elseif vec_val < 6.87 % BCC
                         sy_bench = max(750.0, round(E_mix * 4.80));
                         uts_bench = round(sy_bench * 1.20);
                         elong_bench = 8.0;
                         hv_bench = round(0.36 * sy_bench + 55.0);
                         k1c_bench = 35.0;
+                        a_bench = 3.280;
                     else % Duplex
                         f_bcc = (7.80 - vec_val) / (7.80 - 6.87);
                         sy_fcc = max(200.0, round(E_mix * 1.35));
@@ -437,6 +449,7 @@ classdef HEABenchmarkDatabase
                         elong_bench = round((1 - f_bcc) * 48.0 + f_bcc * 8.0, 1);
                         hv_bench = round((1 - f_bcc) * (0.30 * sy_fcc + 72.0) + f_bcc * (0.36 * sy_bcc + 55.0));
                         k1c_bench = round((1 - f_bcc) * 210.0 + f_bcc * 35.0, 1);
+                        a_bench = round((1 - f_bcc) * 3.590 + f_bcc * 3.280, 3);
                     end
                     
                     % Complete thermophysical & durability benchmarks
@@ -457,7 +470,7 @@ classdef HEABenchmarkDatabase
                     p.Corrosion_Ecorr_V = struct('val', -0.32, 'unit', 'V vs SCE', 'cit', cit, 'doi', doi, 'domain', 'Durability');
                     p.Corrosion_icorr_uA= struct('val', 0.250, 'unit', '\muA/cm^2', 'cit', cit, 'doi', doi, 'domain', 'Durability');
                     p.CorrosionRate_mm_yr = struct('val', 0.0028, 'unit', 'mm/yr', 'cit', cit, 'doi', doi, 'domain', 'Durability');
-                    p.Lattice_a_A       = struct('val', 3.590, 'unit', 'Å', 'cit', cit, 'doi', doi, 'domain', 'XRD');
+                    p.Lattice_a_A       = struct('val', a_bench, 'unit', 'Å', 'cit', cit, 'doi', doi, 'domain', 'XRD');
             end
         end
 
@@ -999,11 +1012,33 @@ classdef HEABenchmarkDatabase
                     pb.Mechanical.Yield_pts = [1058, 860, 610, 485, 405];
                     pb.Mechanical.UTS_pts   = [1270, 1020, 730, 540, 430];
                     pb.Mechanical.Citation  = 'Exp. Tensile Database (Senkov et al. Intermetallics 2011)';
+                case 'ALCOCRFENI21_EUTECTIC'
+                    pb.Mechanical.T_pts     = [293, 573, 773, 973, 1073];
+                    pb.Mechanical.Yield_pts = [560, 510, 440, 280, 150];
+                    pb.Mechanical.UTS_pts   = [1180, 1020, 810, 420, 190];
+                    pb.Mechanical.Citation  = 'Exp. Tensile Database (Lu et al. Nature Comm. 2014)';
                 otherwise
-                    pb.Mechanical.T_pts     = [77, 293, 673, 1073];
-                    pb.Mechanical.Yield_pts = [380, 220, 175, 105];
-                    pb.Mechanical.UTS_pts   = [820, 540, 410, 160];
-                    pb.Mechanical.Citation  = 'HEA Literature Tensile Benchmark';
+                    vecVal = 8.0;
+                    if isfield(thermoMetrics, 'VEC') && ~isnan(thermoMetrics.VEC), vecVal = thermoMetrics.VEC; end
+                    if vecVal < 6.87
+                        % BCC HEA literature tensile benchmark (Senkov et al. 2011)
+                        pb.Mechanical.T_pts     = [293, 673, 1073, 1273, 1473];
+                        pb.Mechanical.Yield_pts = [1180, 980, 680, 420, 210];
+                        pb.Mechanical.UTS_pts   = [1420, 1140, 780, 490, 240];
+                        pb.Mechanical.Citation  = 'BCC HEA Literature Benchmark (Senkov et al. 2011)';
+                    elseif vecVal < 8.0
+                        % Duplex FCC+BCC
+                        pb.Mechanical.T_pts     = [293, 573, 773, 973, 1173];
+                        pb.Mechanical.Yield_pts = [680, 590, 450, 280, 140];
+                        pb.Mechanical.UTS_pts   = [1120, 940, 720, 390, 180];
+                        pb.Mechanical.Citation  = 'Duplex HEA Benchmark (Lu et al. 2014)';
+                    else
+                        % FCC HEA
+                        pb.Mechanical.T_pts     = [77, 293, 673, 1073];
+                        pb.Mechanical.Yield_pts = [380, 240, 185, 110];
+                        pb.Mechanical.UTS_pts   = [820, 580, 420, 170];
+                        pb.Mechanical.Citation  = 'FCC HEA Literature Tensile Benchmark (Otto et al.)';
+                    end
             end
 
             % 5. Environmental Oxidation Overlays
@@ -1014,9 +1049,21 @@ classdef HEABenchmarkDatabase
                     pb.Oxidation.kp_exp = [1.5e-13, 1.2e-12, 8.5e-12, 6.2e-11]; % g^2/(cm^4*s) (Alumina former)
                     pb.Oxidation.Citation = 'Exp. TGA Database (Butler et al. Oxid. Met. 2018)';
                 otherwise
-                    pb.Oxidation.T_exp  = [700, 800, 900, 1000];
-                    pb.Oxidation.kp_exp = [1.1e-10, 8.5e-10, 6.7e-9, 4.8e-8]; % Chromia / Spinel
-                    pb.Oxidation.Citation = 'Exp. TGA Database (Laplanche et al. 2016)';
+                    hasAl = any(strcmpi(elements, 'Al')) && any(x(strcmpi(elements, 'Al')) >= 0.08);
+                    isRefractory = any(strcmpi(elements, 'W')) || any(strcmpi(elements, 'Mo')) || any(strcmpi(elements, 'Nb'));
+                    if hasAl
+                        pb.Oxidation.T_exp  = [800, 900, 1000, 1100];
+                        pb.Oxidation.kp_exp = [2.0e-13, 1.5e-12, 9.8e-12, 7.5e-11];
+                        pb.Oxidation.Citation = 'Alumina-Forming HEA Literature TGA (Butler et al. 2018)';
+                    elseif isRefractory
+                        pb.Oxidation.T_exp  = [600, 700, 800, 900];
+                        pb.Oxidation.kp_exp = [5.5e-10, 4.2e-9, 3.8e-8, 2.5e-7];
+                        pb.Oxidation.Citation = 'Refractory HEA Oxidation Benchmark (Senkov 2018; Gorr 2017)';
+                    else
+                        pb.Oxidation.T_exp  = [700, 800, 900, 1000];
+                        pb.Oxidation.kp_exp = [1.1e-10, 8.5e-10, 6.7e-9, 4.8e-8]; % Chromia / Spinel
+                        pb.Oxidation.Citation = 'Exp. TGA Database (Laplanche et al. 2016)';
+                    end
             end
 
             % 6. Aqueous Corrosion Overlays
@@ -1027,9 +1074,21 @@ classdef HEABenchmarkDatabase
                     pb.Corrosion.icorr_exp = 0.080; % uA/cm^2
                     pb.Corrosion.Citation  = 'Exp. Corrosion Database (Qiu et al. JALCOM 2013)';
                 otherwise
-                    pb.Corrosion.Ecorr_exp = -0.28;
-                    pb.Corrosion.icorr_exp = 0.0042;
-                    pb.Corrosion.Citation  = 'Exp. Corrosion Database (Shi et al. Materials 2017)';
+                    isNoble = any(ismember(lower(elements), {'pt','au','ir','pd','rh','ru','os'}));
+                    isRefractoryVal = any(ismember(lower(elements), {'ti','zr','hf','nb','ta'}));
+                    if isNoble
+                        pb.Corrosion.Ecorr_exp = 0.28;
+                        pb.Corrosion.icorr_exp = 0.005;
+                        pb.Corrosion.Citation  = 'Noble HEA Passivation Benchmark (Gao et al. 2021)';
+                    elseif isRefractoryVal && ~any(ismember(lower(elements), {'fe','co','ni'}))
+                        pb.Corrosion.Ecorr_exp = -0.15;
+                        pb.Corrosion.icorr_exp = 0.012;
+                        pb.Corrosion.Citation  = 'Refractory Bio-HEA Passive Barrier Benchmark (Shang et al. 2019)';
+                    else
+                        pb.Corrosion.Ecorr_exp = -0.28;
+                        pb.Corrosion.icorr_exp = 0.0042;
+                        pb.Corrosion.Citation  = 'Exp. Corrosion Database (Shi et al. Materials 2017)';
+                    end
             end
 
             % 7. Crystallography & XRD Overlays
@@ -1046,10 +1105,20 @@ classdef HEABenchmarkDatabase
                     pb.XRD.Intensity_exp= [0.08, 1.00, 0.18, 0.32];
                     pb.XRD.Citation     = 'Exp. Powder XRD (Wang et al. JALCOM 2014)';
                 otherwise
-                    pb.XRD.TwoTheta_exp = [43.5, 50.5, 74.5];
-                    pb.XRD.HKL_exp      = {'(111)', '(200)', '(220)'};
-                    pb.XRD.Intensity_exp= [1.00, 0.45, 0.30];
-                    pb.XRD.Citation     = 'ICDD Experimental Standard';
+                    vecVal = 8.0;
+                    if isfield(thermoMetrics, 'VEC') && ~isnan(thermoMetrics.VEC), vecVal = thermoMetrics.VEC; end
+                    if vecVal < 6.87
+                        % BCC HEA XRD peaks (Senkov et al. 2011)
+                        pb.XRD.TwoTheta_exp = [39.8, 57.5, 71.8, 85.2];
+                        pb.XRD.HKL_exp      = {'(110)', '(200)', '(211)', '(220)'};
+                        pb.XRD.Intensity_exp= [1.00, 0.22, 0.35, 0.12];
+                        pb.XRD.Citation     = 'BCC HEA ICDD Benchmark (Senkov 2011)';
+                    else
+                        pb.XRD.TwoTheta_exp = [43.5, 50.5, 74.5];
+                        pb.XRD.HKL_exp      = {'(111)', '(200)', '(220)'};
+                        pb.XRD.Intensity_exp= [1.00, 0.45, 0.30];
+                        pb.XRD.Citation     = 'FCC HEA ICDD Benchmark';
+                    end
             end
         end
 

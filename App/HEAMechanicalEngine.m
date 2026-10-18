@@ -127,13 +127,22 @@ classdef HEAMechanicalEngine
             end
 
             % Detect specific alloy families for physical calibration
-            refrElements = {'Nb', 'Mo', 'Ta', 'W', 'V', 'Ti', 'Zr', 'Hf'};
+            refrElements = {'Nb', 'Mo', 'Ta', 'W', 'V', 'Ti', 'Zr', 'Hf', 'Cr', 'Re'};
+            lanthanideElements = {'Sc', 'Y', 'La', 'Ce', 'Pr', 'Nd', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'};
+            nobleElements = {'Ru', 'Rh', 'Pd', 'Os', 'Ir', 'Pt', 'Au', 'Ag'};
+            lightElements = {'Li', 'Be', 'Mg', 'Al', 'Ca', 'Sr', 'Ba'};
+            interstitialElements = {'C', 'N', 'B', 'O'};
+
             isRefractory = sum(c(ismember(elemList, refrElements))) >= 0.50;
             isBiomedical = ismember('Ti', elemList) && any(ismember(elemList, {'Nb', 'Ta', 'Zr'})) && VEC_val >= 4.05 && VEC_val <= 4.45;
             isCoCrNi = numel(elemList) == 3 && all(ismember({'Co', 'Cr', 'Ni'}, elemList));
-            isEutectic = any(strcmp(elemList, 'Al')) && any(strcmp(elemList, 'Ni')) && ...
-                         VEC_val >= 7.3 && VEC_val <= 7.7 && any(strcmp(elemList, 'Co')) && ...
-                         any(strcmp(elemList, 'Cr')) && any(strcmp(elemList, 'Fe'));
+            isEutectic = (any(strcmp(elemList, 'Al')) && any(strcmp(elemList, 'Ni')) && VEC_val >= 7.3 && VEC_val <= 7.7) || ...
+                         (any(strcmp(elemList, 'Nb')) && any(strcmp(elemList, 'Ni')) && sum(c(ismember(elemList, {'Co', 'Cr', 'Fe', 'Ni'}))) >= 0.70);
+            isLanthanideHCP = sum(c(ismember(elemList, lanthanideElements))) >= 0.50;
+            isTransHCP = any(ismember(elemList, {'Re', 'Ru', 'Os'})) && sum(c(ismember(elemList, {'Re', 'Ru', 'Os', 'Ir', 'Pt'}))) >= 0.60;
+            isHCP = isLanthanideHCP || isTransHCP;
+            isLightweight = sum(c(ismember(elemList, lightElements))) >= 0.50 && ~isRefractory;
+            isNoble = sum(c(ismember(elemList, nobleElements))) >= 0.60;
 
             % Biomedical alloy electronic bond softening (Wang et al. 2019, bone-matching modulus ~65-75 GPa)
             if isBiomedical
@@ -143,7 +152,14 @@ classdef HEAMechanicalEngine
                 B_eff_GPa = E_eff_GPa / (3 * max(0.05, 1 - 2 * nu_eff));
             end
 
-            if VEC_val >= 7.80
+            if isHCP
+                dominantStructure = 'HCP';
+                TaylorFactor = 3.00;
+                a_lattice_nm = (2 * r_bar_pm * 1e-3);
+                b_nm = a_lattice_nm;
+                sig0_RT_MPa = max(110.0, sum(c .* sig0_vec));
+                ky_HP = 650.0; % MPa * um^0.5
+            elseif VEC_val >= 7.80
                 dominantStructure = 'FCC';
                 TaylorFactor = 3.06;
                 % Burgers vector b = a / sqrt(2), a = 2*sqrt(2)*r_bar
@@ -181,6 +197,15 @@ classdef HEAMechanicalEngine
                 delta_sigma_lam = 260.0; % Interlamellar constraint (lambda ~ 1 um)
                 sig0_RT_MPa = sig0_RT_MPa + delta_sigma_lam;
             end
+
+            % Interstitial carbon/nitrogen/boron/oxygen solute complex hardening (Raabe 2016 Nature, Lei 2018 Nature)
+            c_inter = sum(c(ismember(elemList, interstitialElements)));
+            if c_inter > 0
+                delta_sigma_interstitial = 280.0 * ((c_inter / 0.01)^0.65);
+            else
+                delta_sigma_interstitial = 0.0;
+            end
+            sig0_RT_MPa = sig0_RT_MPa + delta_sigma_interstitial;
             b_m = b_nm * 1e-9; % Burgers vector in meters
 
             % 1. Parameter-Free Solid Solution Strengthening (Varvenne-Luque-Curtin 2016)
@@ -221,6 +246,18 @@ classdef HEAMechanicalEngine
                 thermal_soften_factor = max(0.35, min(0.75, 1.0 - 0.45 * (temp_K / Tc_K)^(2/3)));
                 tau_y_RT_MPa = tau_y0_MPa * thermal_soften_factor;
                 delta_sigma_ss_MPa = min(220.0, max(50.0, TaylorFactor * tau_y_RT_MPa));
+
+            elseif strcmp(dominantStructure, 'HCP')
+                % HCP random solid solution model (Lanthanides & transition HCP)
+                tau_y0_Pa = 0.045 * (alpha_line^(-1/3)) * G_eff_Pa * (nu_factor^(4/3)) * (misfit_sum^(2/3));
+                tau_y0_MPa = tau_y0_Pa * 1e-6;
+                Delta_Eb_J = 0.50 * (alpha_line^(1/3)) * G_eff_Pa * b3 * (nu_factor^(2/3)) * (misfit_sum^(1/3));
+                k_B = 1.380649e-23;
+                ln_ratio = log(1e5 / max(1e-5, strainRate));
+                Tc_K = max(220.0, Delta_Eb_J / (k_B * ln_ratio));
+                thermal_soften_factor = max(0.35, min(0.80, 1.0 - 0.42 * (temp_K / Tc_K)^(2/3)));
+                tau_y_RT_MPa = max(60.0, min(200.0, tau_y0_MPa * thermal_soften_factor));
+                delta_sigma_ss_MPa = TaylorFactor * tau_y_RT_MPa;
 
             elseif strcmp(dominantStructure, 'BCC')
                 % Maresca-Curtin (2020) & Senkov BCC refractory model
@@ -339,6 +376,9 @@ classdef HEAMechanicalEngine
                 % Eutectic HEA (AlCoCrFeNi2.1): lamellar micro-composite (Lu et al. 2014)
                 sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.95, 1);
                 elongation_pct = 18.5;
+            elseif strcmp(dominantStructure, 'HCP')
+                sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.65, 1);
+                elongation_pct = round(max(8.0, 26.0 - 18.0 * f_ppt_total), 1);
             elseif strcmp(dominantStructure, 'FCC')
                 sig_uts_RT_MPa = round(sig_y_RT_MPa * 2.48, 1);
                 elongation_pct = round(max(20.0, 50.0 - 28.0 * f_ppt_total), 1);
@@ -360,7 +400,9 @@ classdef HEAMechanicalEngine
             end
 
             % 6. Vickers Microhardness (HV) via Calibrated Tabor Conversion with B2/Order Hardening
-            if strcmp(dominantStructure, 'FCC')
+            if strcmp(dominantStructure, 'HCP')
+                HV_base = 0.32 * sig_y_RT_MPa + 62.0;
+            elseif strcmp(dominantStructure, 'FCC')
                 HV_base = 0.30 * sig_y_RT_MPa + 72.0;
             elseif strcmp(dominantStructure, 'BCC')
                 HV_base = 0.36 * sig_y_RT_MPa + 65.0;
@@ -382,7 +424,9 @@ classdef HEAMechanicalEngine
             end
 
             % Fracture toughness calibrated to Gludovatz 2014 & literature benchmarks
-            if strcmp(dominantStructure, 'FCC')
+            if strcmp(dominantStructure, 'HCP')
+                K1c_MPa_m05 = max(25.0, 58.0 - 25.0 * f_ppt_total);
+            elseif strcmp(dominantStructure, 'FCC')
                 % Cantor alloy is ~217 MPa*m^0.5
                 K1c_MPa_m05 = max(80.0, 220.0 - 140.0 * f_ppt_total);
             elseif strcmp(dominantStructure, 'BCC')
@@ -494,11 +538,14 @@ classdef HEAMechanicalEngine
             mMetrics.Tolerance              = tolMech;
 
             % Direct top-level aliases for benchmark & inspector access
+            mMetrics.YieldStrength_MPa      = sig_y_RT_MPa;
+            mMetrics.UTS_MPa                = sig_uts_RT_MPa;
             mMetrics.YoungsModulus_GPa      = round(E_eff_GPa, 1);
             mMetrics.ShearModulus_GPa       = round(G_eff_GPa, 1);
             mMetrics.PoissonRatio           = round(nu_eff, 3);
             mMetrics.BulkModulus_GPa        = round(B_eff_GPa, 1);
             mMetrics.Elongation_pct         = elongation_pct;
+            mMetrics.TensileDuctility_pct   = elongation_pct;
             mMetrics.FractureToughness_K1c  = K1c_MPa_m05;
             mMetrics.PughRatio_B_over_G     = Pugh_Ratio;
             mMetrics.DuctilityCriterion     = ductilityClass;
@@ -562,17 +609,56 @@ classdef HEAMechanicalEngine
             setM('W',  183.84, 139,  9.47, 161,  411, 0.28, 980, 'BCC');
             setM('Re', 186.21, 137,  8.86, 178,  463, 0.30, 260, 'HCP');
 
-            % Light elements
+            % Precious / Platinum Group & Noble Metals
+            setM('Ru', 101.07, 134,  8.17, 173,  447, 0.30, 180, 'HCP');
+            setM('Rh', 102.91, 134,  8.28, 150,  380, 0.26, 120, 'FCC');
+            setM('Pd', 106.42, 137,  8.86,  44,  121, 0.39,  35, 'FCC');
+            setM('Ag', 107.87, 144, 10.27,  30,   83, 0.37,  20, 'FCC');
+            setM('Os', 190.23, 135,  8.42, 222,  562, 0.25, 240, 'HCP');
+            setM('Ir', 192.22, 136,  8.52, 210,  528, 0.26, 160, 'FCC');
+            setM('Pt', 195.08, 139,  9.09,  61,  168, 0.38,  40, 'FCC');
+            setM('Au', 196.97, 144, 10.21,  27,   78, 0.44,  15, 'FCC');
+
+            % Light elements (Alkaline & Main Group)
+            setM('Li',  6.941, 152, 13.02, 4.2,  4.9, 0.36,  15, 'BCC');
+            setM('Be',  9.012, 112,  4.85, 132,  287, 0.03, 120, 'HCP');
             setM('Al', 26.982, 143, 10.00,  26,   70, 0.35,  20, 'FCC');
             setM('Mg', 24.305, 160, 14.00,  17,   45, 0.29,  20, 'HCP');
-            setM('Si', 28.085, 118, 12.06,  40,  113, 0.28, 500, 'DIA');
+            setM('Ca', 40.078, 197, 26.20, 7.4,   20, 0.31,  12, 'FCC');
+            setM('Sr', 87.620, 215, 33.94, 6.0,   16, 0.28,  10, 'FCC');
+            setM('Ba', 137.33, 222, 38.16, 4.9,   13, 0.28,  10, 'BCC');
 
-            % Precious / others
-            setM('Ag', 107.87, 144, 10.27,  30,   83, 0.37,  20, 'FCC');
-            setM('Au', 196.97, 144, 10.21,  27,   78, 0.44,  15, 'FCC');
-            setM('Pd', 106.42, 137,  8.86,  44,  121, 0.39,  35, 'FCC');
-            setM('Pt', 195.08, 139,  9.09,  61,  168, 0.38,  40, 'FCC');
-            setM('Sn', 118.71, 140, 16.29,  18,   50, 0.36,  25, 'BCT');
+            % Rare Earth / Lanthanide HCP & DHCP Metals
+            setM('La', 138.91, 187, 22.39, 14.3, 36.6, 0.28, 120, 'DHCP');
+            setM('Ce', 140.12, 182, 20.69, 13.5, 33.6, 0.24, 110, 'FCC');
+            setM('Pr', 140.91, 182, 20.80, 14.8, 37.3, 0.28, 130, 'DHCP');
+            setM('Nd', 144.24, 182, 20.59, 16.3, 41.4, 0.28, 140, 'DHCP');
+            setM('Sm', 150.36, 180, 19.98, 19.5, 49.7, 0.27, 150, 'RHOMB');
+            setM('Eu', 151.96, 204, 28.97,  5.4, 13.9, 0.15,  40, 'BCC');
+            setM('Gd', 157.25, 180, 19.90, 21.8, 54.8, 0.26, 160, 'HCP');
+            setM('Tb', 158.93, 178, 19.30, 22.1, 55.7, 0.26, 170, 'HCP');
+            setM('Dy', 162.50, 177, 19.01, 24.7, 61.4, 0.25, 180, 'HCP');
+            setM('Ho', 164.93, 176, 18.74, 26.3, 64.8, 0.23, 190, 'HCP');
+            setM('Er', 167.26, 175, 18.46, 28.3, 69.9, 0.24, 200, 'HCP');
+            setM('Tm', 168.93, 174, 18.12, 30.5, 74.0, 0.21, 210, 'HCP');
+            setM('Yb', 173.05, 194, 24.84,  7.0, 18.1, 0.21,  45, 'FCC');
+            setM('Lu', 174.97, 173, 17.78, 27.2, 68.6, 0.26, 210, 'HCP');
+
+            % Post-transition, metalloids & others
+            setM('Si',  28.085, 118, 12.06,  40,  113, 0.28, 500, 'DIA');
+            setM('Ga',  69.723, 135, 11.80,  11,   30, 0.35,  20, 'ORTHO');
+            setM('Ge',  72.630, 122, 13.63,  41,  103, 0.26, 450, 'DIA');
+            setM('In', 114.82,  167, 15.76, 4.3,   11, 0.45,  10, 'TETR');
+            setM('Sn', 118.71,  140, 16.29,  18,   50, 0.36,  25, 'BCT');
+            setM('Sb', 121.76,  140, 18.19,  20,   55, 0.28,  80, 'RHOMB');
+            setM('Pb', 207.20,  175, 18.26, 5.6,   16, 0.44,  15, 'FCC');
+            setM('Bi', 208.98,  170, 21.32,  12,   32, 0.33,  35, 'RHOMB');
+
+            % Interstitials
+            setM('B',  10.810,   82,  4.60, 172,  400, 0.13, 1200, 'RHOMB');
+            setM('C',  12.011,   77,  5.30, 190,  450, 0.17, 1500, 'HEX');
+            setM('N',  14.007,   75, 13.70,   5,   10, 0.30,  200, 'MOL');
+            setM('O',  15.999,   73, 14.00,   5,   10, 0.30,  200, 'MOL');
         end
 
         function p = getDefaultProperties(sym)
