@@ -4,7 +4,7 @@ classdef MaterialPropertiesApp < CALPHADHEACalc
     %
     % Authors & Academic Provenance:
     %   Materials computational research engineer and lead developer: Felix Mwiya
-    %   Research Guidance: Prof. (Dr.) Sheela Singh
+    %   Research Guide: Prof. (Dr.) Sheela Singh
     %   Department of Mechanical Engineering, School of Engineering and Sciences,
     %   SRM University-AP, Andhra Pradesh, India.
     %

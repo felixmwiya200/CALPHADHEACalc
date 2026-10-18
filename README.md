@@ -216,7 +216,7 @@ CALPHADHEACalc/
 ## Authors & Academic Provenance
 
 * **Lead Architect & Computational Developer**: **Felix Mwiya**
-* **Research Guidance & Academic Supervision**: **Prof. (Dr.) Sheela Singh**
+* **Research Guide & Academic Supervision**: **Prof. (Dr.) Sheela Singh**
 * **Institutional Affiliation**:  
   Department of Mechanical Engineering, School of Engineering and Sciences,  
   SRM University-AP, Andhra Pradesh 522240, India.

@@ -131,7 +131,7 @@ classdef ThirdPartyLicenseRegistry
                     fprintf(fid, '================================================================================\n');
                     fprintf(fid, 'CALPHADHEACalc 2026 - THIRD-PARTY SOFTWARE, DATABASE & LEGAL NOTICES\n');
                     fprintf(fid, 'Lead Developer: Felix Mwiya (Materials computational research engineer and lead developer)\n');
-                    fprintf(fid, 'Academic Guidance: Prof. (Dr.) Sheela Singh, SRM University-AP\n');
+                    fprintf(fid, 'Academic Guide: Prof. (Dr.) Sheela Singh, SRM University-AP\n');
                     fprintf(fid, 'Date: %s\n', char(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss')));
                     fprintf(fid, '================================================================================\n\n');
                     for k = 1:numel(items)

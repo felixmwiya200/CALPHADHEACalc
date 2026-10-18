@@ -77,6 +77,8 @@ function test_calphad_hea_calc()
 
     fprintf('  d = 10 um: sigma_y = %.1f MPa  vs  d = 100 um: sigma_y = %.1f MPa\n', fineYS, coarseYS);
     assert(fineYS > coarseYS, 'Hall-Petch strengthening must produce higher yield strength for smaller grain size.');
+    app.SliderGrainSize.Value = 30.0;
+    app.onGrainSizeChanged();
 
     % Test 5: Dynamic Oxidation Temperature Slider (Wagner)
     fprintf('\n--- Test 5: Wagner Oxidation Temperature Slider Recalculation ---\n');
@@ -90,6 +92,8 @@ function test_calphad_hea_calc()
 
     fprintf('  T = 700 degC: kp = %.2e  vs  T = 1100 degC: kp = %.2e g^2/(cm^4*s)\n', kp_700, kp_1100);
     assert(kp_1100 > kp_700, 'Oxidation rate kp must increase with temperature via Arrhenius law.');
+    app.SliderOxTemp.Value = 900;
+    app.onOxidationTempChanged();
 
     % Test 6: XRD Crystallography Dynamic Peak Broadening (Scherrer)
     fprintf('\n--- Test 6: XRD Crystallography Peak Broadening Slider ---\n');
@@ -149,11 +153,20 @@ function test_calphad_hea_calc()
         toolingScore.Score_pct, toolingScore.Tier, app.CurrentMechMetrics.VickersHardness_HV);
     assert(toolingScore.Score_pct >= 60.0, 'Al1.0CoCrFeNi must score >= 60% for tooling.');
 
-    % Verify Phase Diagrams (AxIsopleth and AxTernary) are automatically populated
+    % Verify ALL Graphical Canvases across all tabs are automatically populated after calculateAll
+    assert(~isempty(app.AxEquilibrium.Children), 'AxEquilibrium must have plotted graphic children.');
     assert(~isempty(app.AxIsopleth.Children), 'AxIsopleth must have plotted graphic children.');
     assert(~isempty(app.AxTernary.Children), 'AxTernary must have plotted graphic children.');
-    fprintf('  Phase Diagrams verified: AxIsopleth (%d objects, mushy zone + liquidus/solidus), AxTernary (%d objects)\n', ...
-        numel(app.AxIsopleth.Children), numel(app.AxTernary.Children));
+    assert(~isempty(app.AxBinary.Children), 'AxBinary must have plotted graphic children.');
+    assert(~isempty(app.AxTransport.Children), 'AxTransport must have plotted graphic children.');
+    assert(~isempty(app.AxMechanical.Children), 'AxMechanical must have plotted graphic children.');
+    assert(~isempty(app.AxStressStrain.Children), 'AxStressStrain must have plotted graphic children.');
+    assert(~isempty(app.AxOxidation.Children), 'AxOxidation must have plotted graphic children.');
+    assert(~isempty(app.AxCorrosion.Children), 'AxCorrosion must have plotted graphic children.');
+    assert(~isempty(app.AxOxides.Children), 'AxOxides must have plotted graphic children.');
+    assert(~isempty(app.AxXRD.Children), 'AxXRD must have plotted graphic children.');
+    assert(~isempty(app.AxAppRadar.Children), 'AxAppRadar must have plotted graphic children.');
+    fprintf('  All 12 Graphical Canvases verified: automatically rendered and populated upon Calculate!\n');
 
     % Test 11: Wrapper & Backward Compatibility
     fprintf('\n--- Test 11: MaterialPropertiesApp & CALPHADStudioApp Inheritance ---\n');
@@ -306,6 +319,7 @@ function test_calphad_hea_calc()
     assert(contains(auditStr, 'CALPHAD-HEA MULTI-PHYSICS EXPERIMENTAL DATABASE AUDIT REPORT'), 'Audit report header must match.');
     assert(contains(auditStr, 'Overall Mean Error (MAPE)'), 'Audit report must report overall MAPE.');
     fprintf('  Audit certificate verified: Overall MAPE = %.2f%% across 4 physical domains.\n', app.CurrentBenchmarkData.OverallMAPE);
+    assert(app.CurrentBenchmarkData.OverallMAPE <= 2.0, sprintf('Overall MAPE must be <= 2.0%% after calibration, got %.2f%%.', app.CurrentBenchmarkData.OverallMAPE));
 
     % 15.4 Canvas Overlays Verification
     assert(~isempty(app.AxEquilibrium.Children), 'AxEquilibrium must contain graphic children.');
@@ -427,7 +441,59 @@ function test_calphad_hea_calc()
     assert(~isempty(app.AlloyFormulaLabel.Text), 'AlloyFormulaLabel must not be empty.');
     assert(~isempty(app.EngineContextLabel.Text), 'EngineContextLabel must not be empty.');
     assert(~isempty(app.CoordLabel.Text), 'CoordLabel must not be empty.');
-    fprintf('  Standard UI/UX navigation, workflow stepper, interaction tools, and 5-zone telemetry verified (100%%)!\n');
+    % Test 21: Iterative Multi-Physics Solver, Completion Notification & Consoles
+    fprintf('\n--- Test 21: Iterative Multi-Physics Solver, Notifications & Consoles ---\n');
+    % 21.1 Interactive Iteration & Tolerance Controls
+    assert(~isempty(app.SpinnerMaxIters), 'SpinnerMaxIters must exist.');
+    assert(~isempty(app.DropdownTolerance), 'DropdownTolerance must exist.');
+    assert(~isempty(app.CheckNotifyComplete), 'CheckNotifyComplete must exist.');
+    assert(~isempty(app.CheckPlayChime), 'CheckPlayChime must exist.');
+    
+    app.onMaxItersChanged(75);
+    assert(app.CurrentMaxIters == 75, 'CurrentMaxIters must be updated to 75.');
+    app.onToleranceChanged('1e-8 (Precision)');
+    assert(app.CurrentTolerance == 1e-8, 'CurrentTolerance must be updated to 1e-8.');
+
+    % Recalculate with updated iterative settings
+    app.calculateAll();
+
+    % 21.2 Iterations Console Verification (Residual Stream)
+    assert(~isempty(app.IterationsTextArea.Value), 'IterationsTextArea must be populated.');
+    iterText = strjoin(cellstr(app.IterationsTextArea.Value), newline);
+    assert(contains(iterText, 'ITERATIVE MULTI-PHYSICS CONVERGENCE MONITOR'), 'Iterations log must contain header.');
+    assert(contains(iterText, 'SOLVER STATUS: CONVERGED'), 'Iterations log must report convergence status.');
+    assert(contains(iterText, 'Continuity'), 'Iterations log must have Continuity column.');
+    fprintf('  Solver iterations & convergence telemetry log populated with live residual stream!\n');
+
+    % 21.3 Detailed Diagnostics Console Verification (9-Section Dossier)
+    assert(~isempty(app.DetailsTextArea.Value), 'DetailsTextArea must be populated.');
+    detailsText = strjoin(cellstr(app.DetailsTextArea.Value), newline);
+    assert(contains(detailsText, '1. ALLOY COMPOSITION & ATOMIC PARAMETERS'), 'Details must contain Section 1.');
+    assert(contains(detailsText, '2. CALPHAD THERMODYNAMIC EQUILIBRIA'), 'Details must contain Section 2.');
+    assert(contains(detailsText, '3. PHASE BOUNDARIES'), 'Details must contain Section 3.');
+    assert(contains(detailsText, '4. SOLID SOLUTION STRENGTHENING'), 'Details must contain Section 4.');
+    assert(contains(detailsText, '5. THERMOPHYSICAL TRANSPORT'), 'Details must contain Section 5.');
+    assert(contains(detailsText, '6. HIGH-TEMPERATURE OXIDATION'), 'Details must contain Section 6.');
+    assert(contains(detailsText, '7. ELECTROCHEMICAL POLARIZATION'), 'Details must contain Section 7.');
+    assert(contains(detailsText, '8. KINEMATIC POWDER XRD'), 'Details must contain Section 8.');
+    assert(contains(detailsText, '9. MULTI-CRITERIA INDUSTRIAL DOMAIN SUITABILITY'), 'Details must contain Section 9.');
+    fprintf('  Detailed calculations & physics diagnostics populated with full 9-section dossier!\n');
+
+    % 21.4 Status Telemetry & Completion Notification
+    assert(contains(app.StatusLabel.Text, '[CONVERGED]'), 'StatusLabel must display [CONVERGED] telemetry toast.');
+    assert(contains(app.StatusLabel.Text, 'Solved in'), 'StatusLabel must report iterations count.');
+    
+    % 21.5 Console Tab Selection Callback
+    app.onConsoleTabSelectionChanged(struct('NewValue', app.TabConsoleIterations));
+    app.onConsoleTabSelectionChanged(struct('NewValue', app.TabConsoleDetails));
+
+    % 21.6 Harmonic Audio Chime Synthesis Test
+    try
+        app.playCompletionChime(true);
+        fprintf('  Acoustic harmonic completion chime verified without audio errors!\n');
+    catch err
+        warning('Chime warning: %s', err.message);
+    end
 
     % Cleanup
     delete(app.UIFigure);
@@ -435,6 +501,6 @@ function test_calphad_hea_calc()
     delete(legacyApp.UIFigure);
 
     fprintf('\n=================================================================\n');
-    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (20/20)   \n');
+    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (21/21)   \n');
     fprintf('=================================================================\n');
 end

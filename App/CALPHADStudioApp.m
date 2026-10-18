@@ -4,7 +4,7 @@ classdef CALPHADStudioApp < CALPHADHEACalc
     %
     % Authors & Academic Credits:
     %   Materials computational research engineer and lead developer: Felix Mwiya
-    %   Under the guidance of Prof. (Dr.) Sheela Singh
+    %   Research Guide: Prof. (Dr.) Sheela Singh
     %   SRM University-AP, Andhra Pradesh, India
     %
     % Ensures legacy scripts and tests referencing CALPHADStudioApp continue
