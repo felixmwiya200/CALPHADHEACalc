@@ -297,6 +297,11 @@ classdef CALPHADHEACalc < handle
 
         % Baseline Extents Registry
         BaselineExtents       containers.Map
+
+        % Table Interactivity & Clipboard State
+        LastSelectedTable
+        LastSelectedIndices
+        LastSelectedCellValue char = ''
     end
 
     methods
@@ -1055,7 +1060,9 @@ classdef CALPHADHEACalc < handle
                 'FontName', 'Segoe UI', 'FontSize', 9.5);
             eqTGrid = uigridlayout(eqTablePanel, [1, 1]);
             eqTGrid.Padding = [0 0 0 0];
-            app.TableEquilibrium = uitable(eqTGrid, 'FontSize', 9);
+            app.TableEquilibrium = uitable(eqTGrid, 'FontSize', 9, ...
+                'CellSelectionCallback', @(~, evt) onGenericTableSelected(app, app.TableEquilibrium, evt));
+            app.TableEquilibrium.ContextMenu = createTableContextMenu(app, app.TableEquilibrium, 'CALPHAD_Equilibrium_Phases.csv');
 
             % TAB 2: Phase Diagrams (Isopleth & Ternary Gibbs)
             app.TabPhaseDiagrams = uitab(app.MainTabGroup, 'Title', 'Phase Diagrams (Isopleth & Ternary)', 'Scrollable', 'on');
@@ -1086,7 +1093,9 @@ classdef CALPHADHEACalc < handle
             app.TableMechanicalProperties = uitable(pMtGrid, ...
                 'ColumnName', {'Mechanical Property & Constitutive Metric', 'Symbol', 'Computed Value', 'Unit', 'Theoretical / Constitutive Model'}, ...
                 'ColumnWidth', {250, 110, 140, 110, 'auto'}, ...
-                'RowName', {}, 'FontName', 'Segoe UI', 'FontSize', 9);
+                'RowName', {}, 'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'CellSelectionCallback', @(~, evt) onGenericTableSelected(app, app.TableMechanicalProperties, evt));
+            app.TableMechanicalProperties.ContextMenu = createTableContextMenu(app, app.TableMechanicalProperties, 'HEA_Mechanical_Properties.csv');
 
             % TAB 5: Environmental Durability & Passivation
             app.TabEnvironmental = uitab(app.MainTabGroup, 'Title', 'Oxidation & Corrosion', 'Scrollable', 'on');
@@ -1522,7 +1531,9 @@ classdef CALPHADHEACalc < handle
                 'Text', 'PREN = 18.5 | ASTM G102 EW = 24.2 g/eq | icorr = 0.082 uA/cm^2 | Corrosion Rate = 0.0009 mm/yr (Grade A Passivation)', ...
                 'FontName', 'Consolas', 'FontSize', 9.5, 'FontColor', [0.15, 0.45, 0.25]);
 
-            app.TableCorrosionSummary = uitable(ciGrid, 'FontSize', 8.5);
+            app.TableCorrosionSummary = uitable(ciGrid, 'FontSize', 8.5, ...
+                'CellSelectionCallback', @(~, evt) onGenericTableSelected(app, app.TableCorrosionSummary, evt));
+            app.TableCorrosionSummary.ContextMenu = createTableContextMenu(app, app.TableCorrosionSummary, 'HEA_Corrosion_Metrics.csv');
 
             % Subtab 3: Candidate Oxides (Ellingham Diagram) - Displays All Possible Oxides
             app.SubtabOxides = uitab(app.EnvTabGroup, 'Title', 'Candidate Oxides (Ellingham Diagram)', 'Scrollable', 'on');
@@ -1541,7 +1552,9 @@ classdef CALPHADHEACalc < handle
                 'Text', 'Candidate Oxides: Loading database...', ...
                 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', 'FontColor', [0.12, 0.35, 0.65]);
 
-            app.TableOxidesSummary = uitable(oxdiGrid, 'FontSize', 8.5);
+            app.TableOxidesSummary = uitable(oxdiGrid, 'FontSize', 8.5, ...
+                'CellSelectionCallback', @(~, evt) onGenericTableSelected(app, app.TableOxidesSummary, evt));
+            app.TableOxidesSummary.ContextMenu = createTableContextMenu(app, app.TableOxidesSummary, 'HEA_Oxide_Thermodynamics.csv');
         end
 
         % =========================================================================
@@ -1558,8 +1571,8 @@ classdef CALPHADHEACalc < handle
                 'Title', 'Ranked Industrial Applications (Suitability Score out of 100%)', ...
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
                 'ForegroundColor', [0.15, 0.20, 0.30]);
-            lpGrid = uigridlayout(leftPanel, [2, 1]);
-            lpGrid.RowHeight = {30, '1x'};
+            lpGrid = uigridlayout(leftPanel, [3, 1]);
+            lpGrid.RowHeight = {30, '1x', 32};
             lpGrid.Padding = [2 2 2 2];
 
             % Sector Filter Bar & Screener Action
@@ -1579,13 +1592,44 @@ classdef CALPHADHEACalc < handle
                 'Tooltip', 'Run High-Throughput Screening across all 51 HEA compositions', ...
                 'ButtonPushedFcn', @(~, ~) openHighThroughputScreeningDialog(app));
 
-            % Applications Table
+            % Applications Table (with full text column widths and context menu)
             app.TableApplications = uitable(lpGrid, ...
                 'ColumnName', {'Rank', 'Application Domain', 'Sector', 'Score (%)', 'Suitability Tier', 'Limiting Bottleneck'}, ...
-                'ColumnWidth', {45, 175, 120, 75, 125, 130}, ...
+                'ColumnWidth', {45, 270, 140, 75, 130, 140}, ...
                 'ColumnEditable', false, ...
                 'FontSize', 9.5, ...
                 'CellSelectionCallback', @(~, evt) onAppRowSelected(app, evt));
+            app.TableApplications.ContextMenu = createTableContextMenu(app, app.TableApplications, 'HEA_Application_Rankings.csv');
+
+            % Applications Table Quick Action Bar
+            appBarGrid = uigridlayout(lpGrid, [1, 4]);
+            appBarGrid.Padding = [1 1 1 1];
+            appBarGrid.ColumnWidth = {'1x', '1x', '1x', '1.1x'};
+
+            uibutton(appBarGrid, ...
+                'Text', 'Copy Cell Value', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'Tooltip', 'Copy selected cell text to clipboard (Ctrl+C)', ...
+                'ButtonPushedFcn', @(~, ~) copySelectedTableCellOrRow(app, app.TableApplications, [], true));
+
+            uibutton(appBarGrid, ...
+                'Text', 'Copy Row', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'Tooltip', 'Copy selected application row to clipboard (Tab-delimited)', ...
+                'ButtonPushedFcn', @(~, ~) copySelectedTableRow(app, app.TableApplications));
+
+            uibutton(appBarGrid, ...
+                'Text', 'Copy Full Table', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'Tooltip', 'Copy all ranked applications to clipboard for Excel / Word', ...
+                'ButtonPushedFcn', @(~, ~) copyFullTableToClipboard(app, app.TableApplications));
+
+            uibutton(appBarGrid, ...
+                'Text', 'Export CSV...', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'BackgroundColor', [0.20, 0.45, 0.70], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Export application rankings to CSV file', ...
+                'ButtonPushedFcn', @(~, ~) exportTableToCSV(app, app.TableApplications, 'HEA_Application_Rankings.csv'));
 
             % Right Half: Application Performance Inspector Card
             rightPanel = uipanel(hubGrid, ...
@@ -1593,15 +1637,23 @@ classdef CALPHADHEACalc < handle
                 'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
                 'ForegroundColor', [0.15, 0.20, 0.30]);
             rpGrid = uigridlayout(rightPanel, [5, 1]);
-            rpGrid.RowHeight = {24, 22, '1.2x', 20, '1x'};
+            rpGrid.RowHeight = {26, 22, '1.2x', 20, '1x'};
             rpGrid.Padding = [6 6 6 6];
             rpGrid.RowSpacing = 4;
 
-            % Row 1: Application Name Header
-            app.AppCardNameLabel = uilabel(rpGrid, ...
+            % Row 1: Application Name Header & Quick Copy Title Button
+            nameGrid = uigridlayout(rpGrid, [1, 2]);
+            nameGrid.Padding = [0 0 0 0];
+            nameGrid.ColumnWidth = {'1x', 95};
+            app.AppCardNameLabel = uilabel(nameGrid, ...
                 'Text', 'Cryogenic Storage & LNG / Liquid H2 Fuel Tanks', ...
-                'FontName', 'Segoe UI', 'FontSize', 11.5, 'FontWeight', 'bold', ...
+                'FontName', 'Segoe UI', 'FontSize', 11, 'FontWeight', 'bold', ...
                 'FontColor', [0.1, 0.2, 0.4]);
+            uibutton(nameGrid, ...
+                'Text', 'Copy Title', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'Tooltip', 'Copy full application name to clipboard', ...
+                'ButtonPushedFcn', @(~, ~) copyAppCardTitle(app));
 
             % Row 2: Match Badge & Veto Audit
             badgeGrid = uigridlayout(rpGrid, [1, 2]);
@@ -1653,7 +1705,9 @@ classdef CALPHADHEACalc < handle
                 'ColumnName', {'Property', 'Calculated (Model)', 'Database (Exp.)', 'Deviation (\Delta)', '% Error', 'Status / Tolerance', 'Literature Citation / DOI'}, ...
                 'ColumnWidth', {160, 115, 115, 105, 75, 130, 'auto'}, ...
                 'RowName', {}, 'FontName', 'Segoe UI', 'FontSize', 9, ...
-                'Data', {'Awaiting Calculation', '-', '-', '-', '-', 'READY', 'Click "Calculate" in toolbar to audit against experimental database'});
+                'Data', {'Awaiting Calculation', '-', '-', '-', '-', 'READY', 'Click "Calculate" in toolbar to audit against experimental database'}, ...
+                'CellSelectionCallback', @(~, evt) onGenericTableSelected(app, app.TableValidationMetrics, evt));
+            app.TableValidationMetrics.ContextMenu = createTableContextMenu(app, app.TableValidationMetrics, 'HEA_Validation_Benchmarks.csv');
 
             % Literature Search & Refresh Actions
             litGrid = uigridlayout(p1Grid, [1, 5]);
@@ -4880,7 +4934,11 @@ classdef CALPHADHEACalc < handle
             if isCtrl
                 switch k
                     case 'c'
-                        copyActiveGraphToClipboard(app);
+                        if ~isempty(app.LastSelectedTable) && isvalid(app.LastSelectedTable) && ~isempty(app.LastSelectedIndices)
+                            copySelectedTableCellOrRow(app, app.LastSelectedTable, app.LastSelectedIndices, false);
+                        else
+                            copyActiveGraphToClipboard(app);
+                        end
                     case 's'
                         saveActiveGraphToFile(app);
                     case 'e'
@@ -5110,10 +5168,10 @@ classdef CALPHADHEACalc < handle
             mainLayout.RowSpacing = 6;
 
             % 1. TOP HEADER & FILTER BAR
-            headerGrid = uigridlayout(mainLayout, [1, 6]);
+            headerGrid = uigridlayout(mainLayout, [1, 7]);
             headerGrid.Layout.Row = 1;
             headerGrid.Padding = [0 0 0 0];
-            headerGrid.ColumnWidth = {270, 200, 140, 190, 130, '1x'};
+            headerGrid.ColumnWidth = {260, 180, 125, 175, 105, 105, '1x'};
 
             uilabel(headerGrid, 'Text', 'High-Throughput HEA Screening Matrix', ...
                 'FontName', 'Segoe UI', 'FontSize', 13, 'FontWeight', 'bold', 'FontColor', [0.15, 0.20, 0.35]);
@@ -5154,6 +5212,13 @@ classdef CALPHADHEACalc < handle
                 'BackgroundColor', [0.20, 0.45, 0.70], 'FontColor', [1 1 1], ...
                 'Tooltip', 'Export comparative 51-alloy screening matrix to CSV');
 
+            btnCopyTable = uibutton(headerGrid, ...
+                'Text', 'Copy Table', ...
+                'FontName', 'Segoe UI', 'FontSize', 9, ...
+                'BackgroundColor', [0.25, 0.45, 0.60], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Copy visible screening table to clipboard for Excel / Word', ...
+                'ButtonPushedFcn', @(~, ~) copyScreeningTableToClipboard());
+
             % 2. CENTER CONTENT (Tabbed: Table Matrix vs Ashby Plot)
             centerTabGroup = uitabgroup(mainLayout);
             centerTabGroup.Layout.Row = 2;
@@ -5164,7 +5229,18 @@ classdef CALPHADHEACalc < handle
 
             screenTable = uitable(tGrid, ...
                 'FontName', 'Segoe UI', 'FontSize', 9, ...
-                'SelectionType', 'row');
+                'SelectionType', 'cell');
+
+            % Enable right-click Context Menu on screening table
+            cmScreen = uicontextmenu(dlg);
+            uimenu(cmScreen, 'Text', 'Copy Cell Value (Ctrl+C)', 'MenuSelectedFcn', @(~, ~) copyScreeningCell());
+            uimenu(cmScreen, 'Text', 'Copy Selected Row (TSV)', 'MenuSelectedFcn', @(~, ~) copyScreeningRow());
+            uimenu(cmScreen, 'Text', 'Copy Full Table (TSV / Excel)', 'MenuSelectedFcn', @(~, ~) copyScreeningTableToClipboard());
+            uimenu(cmScreen, 'Text', 'Export to CSV...', 'Separator', 'on', 'MenuSelectedFcn', @(~, ~) exportCSV());
+            screenTable.ContextMenu = cmScreen;
+
+            % Enable Ctrl+C in screening dialog
+            dlg.WindowKeyPressFcn = @(~, evt) onDialogKeyPress(evt);
 
             tabAshby = uitab(centerTabGroup, 'Title', 'Ashby Property Map (Yield Strength vs Density)');
             ashbyGrid = uigridlayout(tabAshby, [1, 1]);
@@ -5261,11 +5337,139 @@ classdef CALPHADHEACalc < handle
                 if isempty(fullTableData)
                     runScreening();
                 end
-                [file, path] = uiputfile('*.csv', 'Save HEA High-Throughput Screening Table', 'HEA_HighThroughput_Screening_Matrix.csv');
-                if isequal(file, 0), return; end
-                fullPath = fullfile(path, file);
-                writetable(fullTableData, fullPath);
-                lblStatus.Text = sprintf('Exported screening matrix to %s', file);
+                if isempty(fullTableData)
+                    uialert(dlg, 'No screening data is available to export.', 'Export Notice', 'Icon', 'warning');
+                    return;
+                end
+                
+                defaultFile = sprintf('HEA_HighThroughput_Screening_Matrix_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+                targetFile = '';
+                
+                try
+                    [fName, fPath] = uiputfile({'*.csv', 'CSV Worksheet (*.csv)'; '*.*', 'All Files (*.*)'}, ...
+                        'Save HEA High-Throughput Screening Matrix', defaultFile);
+                    if ~isequal(fName, 0) && ~isequal(fPath, 0)
+                        targetFile = fullfile(fPath, fName);
+                    end
+                catch
+                    targetFile = fullfile(pwd, defaultFile);
+                end
+                
+                if isempty(targetFile)
+                    return;
+                end
+                
+                try
+                    exportTbl = fullTableData;
+                    if isvalid(screenTable) && ~isempty(screenTable.Data) && istable(screenTable.Data)
+                        exportTbl = screenTable.Data;
+                    end
+                    writetable(exportTbl, targetFile);
+                    lblStatus.Text = sprintf('Exported %d alloys to %s', height(exportTbl), targetFile);
+                    
+                    uiconfirm(dlg, sprintf('Screening matrix (%d alloys) exported successfully to:\n\n%s\n\nWould you like to open it now?', height(exportTbl), targetFile), ...
+                        'Export Complete', ...
+                        'Options', {'Open File', 'Show in Folder', 'OK'}, ...
+                        'DefaultOption', 'Open File', 'CancelOption', 'OK', ...
+                        'Icon', 'success', ...
+                        'CloseFcn', @(~, ev) handleFileOpenAction(ev, targetFile));
+                catch ex
+                    lblStatus.Text = sprintf('Export error: %s', ex.message);
+                    uialert(dlg, sprintf('Failed to save CSV file:\n%s\n\nIf the file is already open in Microsoft Excel, please close it and try again.', ex.message), ...
+                        'Export Error', 'Icon', 'error');
+                end
+            end
+
+            function handleFileOpenAction(ev, targetFile)
+                try
+                    if strcmp(ev.SelectedOption, 'Open File')
+                        winopen(targetFile);
+                    elseif strcmp(ev.SelectedOption, 'Show in Folder')
+                        folder = fileparts(targetFile);
+                        if isempty(folder), folder = pwd; end
+                        winopen(folder);
+                    end
+                catch
+                end
+            end
+
+            function copyScreeningTableToClipboard()
+                try
+                    if isempty(screenTable.Data)
+                        uialert(dlg, 'No table data available to copy.', 'Empty Table');
+                        return;
+                    end
+                    d = screenTable.Data;
+                    if istable(d)
+                        colHeaders = d.Properties.VariableNames;
+                        c = table2cell(d);
+                    else
+                        colHeaders = {};
+                        c = d;
+                    end
+                    tsv = {};
+                    if ~isempty(colHeaders)
+                        tsv{end+1} = strjoin(colHeaders, sprintf('\t'));
+                    end
+                    for r = 1:size(c, 1)
+                        rowVals = cellfun(@(x) char(string(x)), c(r, :), 'UniformOutput', false);
+                        tsv{end+1} = strjoin(rowVals, sprintf('\t'));
+                    end
+                    fullTsv = strjoin(tsv, newline);
+                    clipboard('copy', fullTsv);
+                    lblStatus.Text = sprintf('Copied %d alloys to clipboard (Excel / TSV format).', size(c, 1));
+                    uialert(dlg, sprintf('Screening table copied to clipboard (%d rows)!\nYou can now paste it directly into Excel or Word (Ctrl+V).', size(c, 1)), ...
+                        'Copied to Clipboard', 'Icon', 'info');
+                catch ex
+                    uialert(dlg, ['Copy error: ' ex.message], 'Copy Error');
+                end
+            end
+
+            function copyScreeningCell()
+                try
+                    sel = screenTable.Selection;
+                    if isempty(sel), return; end
+                    d = screenTable.Data;
+                    row = sel(1);
+                    col = 1;
+                    if numel(sel) >= 2, col = sel(2); end
+                    if istable(d)
+                        val = d{row, col};
+                    else
+                        val = d(row, col);
+                    end
+                    valStr = char(string(val));
+                    clipboard('copy', valStr);
+                    lblStatus.Text = sprintf('Copied cell [%d, %d]: "%s"', row, col, valStr);
+                catch
+                end
+            end
+
+            function copyScreeningRow()
+                try
+                    sel = screenTable.Selection;
+                    if isempty(sel), return; end
+                    d = screenTable.Data;
+                    row = sel(1);
+                    if istable(d)
+                        rowCells = table2cell(d(row, :));
+                    else
+                        rowCells = d(row, :);
+                    end
+                    rStrs = cellfun(@(x) char(string(x)), rowCells, 'UniformOutput', false);
+                    tsv = strjoin(rStrs, sprintf('\t'));
+                    clipboard('copy', tsv);
+                    lblStatus.Text = sprintf('Copied row %d to clipboard (TSV).', row);
+                catch
+                end
+            end
+
+            function onDialogKeyPress(evt)
+                if isempty(evt), return; end
+                isCtrl = any(strcmpi(evt.Modifier, 'control'));
+                if isCtrl && strcmpi(evt.Key, 'c')
+                    copyScreeningCell();
+                end
             end
 
             filterDropdown.ValueChangedFcn = @(~, ~) updateFilteredTable();
@@ -6084,10 +6288,28 @@ classdef CALPHADHEACalc < handle
         end
 
         function onAppRowSelected(app, evt)
-            if isempty(evt.Indices)
+            if isempty(evt) || isempty(evt.Indices)
                 return;
             end
+            app.LastSelectedTable = app.TableApplications;
+            app.LastSelectedIndices = evt.Indices;
+            
             selectedRow = evt.Indices(1, 1);
+            selectedCol = 1;
+            if size(evt.Indices, 2) >= 2, selectedCol = evt.Indices(1, 2); end
+            
+            try
+                data = app.TableApplications.Data;
+                if istable(data)
+                    val = data{selectedRow, selectedCol};
+                else
+                    val = data(selectedRow, selectedCol);
+                end
+                app.LastSelectedCellValue = char(string(val));
+                app.CoordLabel.Text = sprintf('Selected [%d, %d]: %s (Ctrl+C to copy)', selectedRow, selectedCol, app.LastSelectedCellValue);
+            catch
+            end
+            
             updateApplicationInspectorCard(app, selectedRow);
         end
 
@@ -6561,20 +6783,282 @@ classdef CALPHADHEACalc < handle
         end
 
         function exportDataWorksheet(app)
-            if isempty(app.TableEquilibrium) || isempty(app.TableEquilibrium.Data)
-                logMsg(app, '[Warning] No equilibrium data available to export. Run calculation first.');
-                safeAlert(app, 'No equilibrium calculation data available to export. Click "Calculate" to solve first.', 'No Data', 'warn');
+            % Determine active table based on selected tab or LastSelectedTable
+            targetTable = app.TableEquilibrium;
+            defaultName = sprintf('CALPHAD_Equilibrium_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+            
+            try
+                curTab = app.MainTabGroup.SelectedTab;
+                if curTab == app.TabApplications && isprop(app, 'TableApplications') && ~isempty(app.TableApplications.Data)
+                    targetTable = app.TableApplications;
+                    defaultName = sprintf('HEA_Application_Rankings_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+                elseif curTab == app.TabMechanical && isprop(app, 'TableMechanicalProperties') && ~isempty(app.TableMechanicalProperties.Data)
+                    targetTable = app.TableMechanicalProperties;
+                    defaultName = sprintf('HEA_Mechanical_Properties_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+                elseif curTab == app.TabEnvironmental && isprop(app, 'TableCorrosionSummary') && ~isempty(app.TableCorrosionSummary.Data)
+                    targetTable = app.TableCorrosionSummary;
+                    defaultName = sprintf('HEA_Corrosion_Metrics_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+                elseif curTab == app.TabValidation && isprop(app, 'TableValidationMetrics') && ~isempty(app.TableValidationMetrics.Data)
+                    targetTable = app.TableValidationMetrics;
+                    defaultName = sprintf('HEA_Validation_Benchmarks_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+                end
+            catch
+            end
+            
+            if isempty(targetTable) || isempty(targetTable.Data)
+                logMsg(app, '[Warning] No table data available to export in active tab. Run calculation first.');
+                safeAlert(app, 'No data available to export in the current view. Click "Calculate" to solve first.', 'No Data', 'warn');
                 return;
             end
-            defaultName = sprintf('CALPHAD_Worksheet_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
-            [filePath, cancelled] = safePutFile(app, defaultName, {'*.csv', 'CSV Worksheet (*.csv)'}, 'Export Data Worksheet');
-            if cancelled, return; end
+            
+            exportTableToCSV(app, targetTable, defaultName);
+        end
+
+        function copySelectedTableCellOrRow(app, targetTable, targetIndices, showModal)
+            if nargin < 2 || isempty(targetTable)
+                targetTable = app.LastSelectedTable;
+            end
+            if nargin < 3 || isempty(targetIndices)
+                targetIndices = app.LastSelectedIndices;
+            end
+            if nargin < 4, showModal = false; end
+            
+            if isempty(targetTable) || ~isvalid(targetTable)
+                if showModal, safeAlert(app, 'Please select a table cell or row first.', 'Selection Required', 'info'); end
+                return;
+            end
+            if isempty(targetIndices)
+                if showModal, safeAlert(app, 'Please click a table cell first to select it.', 'Selection Required', 'info'); end
+                return;
+            end
+            
             try
-                writetable(app.TableEquilibrium.Data, filePath);
-                logMsg(app, sprintf('[Export] Data worksheet exported to CSV: %s', filePath));
-                safeAlert(app, sprintf('Data worksheet exported successfully to:\n%s', filePath), 'Worksheet Exported', 'info');
+                data = targetTable.Data;
+                if isempty(data), return; end
+                
+                row = targetIndices(1, 1);
+                col = 1;
+                if size(targetIndices, 2) >= 2, col = targetIndices(1, 2); end
+                
+                if istable(data)
+                    cellVal = data{row, col};
+                elseif iscell(data)
+                    cellVal = data{row, col};
+                elseif isnumeric(data)
+                    cellVal = data(row, col);
+                else
+                    cellVal = '';
+                end
+                
+                strVal = char(string(cellVal));
+                clipboard('copy', strVal);
+                
+                msg = sprintf('Copied cell [%d, %d]: "%s"', row, col, strVal);
+                logMsg(app, ['[Clipboard] ' msg]);
+                app.CoordLabel.Text = msg;
+                if showModal
+                    safeAlert(app, sprintf('Cell value copied to clipboard:\n\n"%s"', strVal), 'Copied to Clipboard', 'info');
+                end
             catch ex
-                logMsg(app, sprintf('[ERROR] Failed to export worksheet: %s', ex.message));
+                logMsg(app, sprintf('[Clipboard Error] %s', ex.message));
+            end
+        end
+
+        function copySelectedTableRow(app, targetTable, targetIndices)
+            if nargin < 2 || isempty(targetTable)
+                targetTable = app.LastSelectedTable;
+            end
+            if nargin < 3 || isempty(targetIndices)
+                targetIndices = app.LastSelectedIndices;
+            end
+            if isempty(targetTable) || ~isvalid(targetTable) || isempty(targetIndices)
+                safeAlert(app, 'Please select a table row first.', 'Selection Required', 'info');
+                return;
+            end
+            
+            try
+                data = targetTable.Data;
+                if isempty(data), return; end
+                row = targetIndices(1, 1);
+                
+                if istable(data)
+                    c = table2cell(data(row, :));
+                elseif iscell(data)
+                    c = data(row, :);
+                elseif isnumeric(data)
+                    c = num2cell(data(row, :));
+                else
+                    return;
+                end
+                
+                rowStrs = cellfun(@(x) char(string(x)), c, 'UniformOutput', false);
+                tsvStr = strjoin(rowStrs, sprintf('\t'));
+                clipboard('copy', tsvStr);
+                
+                msg = sprintf('Copied row %d to clipboard (TSV)', row);
+                logMsg(app, ['[Clipboard] ' msg]);
+                app.CoordLabel.Text = msg;
+                safeAlert(app, sprintf('Row %d copied to clipboard (Tab-delimited for Excel):\n\n%s', row, tsvStr), 'Row Copied', 'info');
+            catch ex
+                logMsg(app, sprintf('[Clipboard Error] %s', ex.message));
+            end
+        end
+
+        function copyFullTableToClipboard(app, targetTable)
+            if nargin < 2 || isempty(targetTable)
+                targetTable = app.LastSelectedTable;
+            end
+            if isempty(targetTable) || ~isvalid(targetTable)
+                safeAlert(app, 'No active table available to copy.', 'Notice', 'info');
+                return;
+            end
+            
+            try
+                data = targetTable.Data;
+                if isempty(data)
+                    safeAlert(app, 'Table has no data to copy.', 'Empty Table', 'warn');
+                    return;
+                end
+                
+                tsvLines = {};
+                if ~isempty(targetTable.ColumnName)
+                    tsvLines{end+1} = strjoin(cellfun(@(x) char(string(x)), targetTable.ColumnName, 'UniformOutput', false), sprintf('\t'));
+                end
+                
+                if istable(data)
+                    c = table2cell(data);
+                elseif iscell(data)
+                    c = data;
+                elseif isnumeric(data)
+                    c = num2cell(data);
+                else
+                    return;
+                end
+                
+                for r = 1:size(c, 1)
+                    rStrs = cellfun(@(x) char(string(x)), c(r, :), 'UniformOutput', false);
+                    tsvLines{end+1} = strjoin(rStrs, sprintf('\t'));
+                end
+                
+                fullTsv = strjoin(tsvLines, newline);
+                clipboard('copy', fullTsv);
+                
+                msg = sprintf('Copied table (%d rows) to clipboard (Excel format)', size(c, 1));
+                logMsg(app, ['[Clipboard] ' msg]);
+                app.CoordLabel.Text = msg;
+                safeAlert(app, sprintf('Full table copied to system clipboard (%d rows)!\nYou can now paste it directly into Excel or Word (Ctrl+V).', size(c, 1)), 'Table Copied', 'info');
+            catch ex
+                logMsg(app, sprintf('[Clipboard Error] %s', ex.message));
+            end
+        end
+
+        function exportTableToCSV(app, targetTable, defaultName)
+            if isempty(targetTable) || ~isvalid(targetTable) || isempty(targetTable.Data)
+                safeAlert(app, 'No table data available to export.', 'No Data', 'warn');
+                return;
+            end
+            if nargin < 3 || isempty(defaultName)
+                defaultName = sprintf('CALPHAD_Table_%s.csv', datestr(now, 'yyyymmdd_HHMMSS'));
+            end
+            
+            [filePath, cancelled] = safePutFile(app, defaultName, {'*.csv', 'CSV Worksheet (*.csv)'; '*.*', 'All Files (*.*)'}, 'Export Table to CSV');
+            if cancelled || isempty(filePath), return; end
+            
+            try
+                data = targetTable.Data;
+                if istable(data)
+                    writetable(data, filePath);
+                elseif iscell(data)
+                    colNames = targetTable.ColumnName;
+                    if isempty(colNames)
+                        colNames = arrayfun(@(k) sprintf('Var%d', k), 1:size(data, 2), 'UniformOutput', false);
+                    else
+                        colNames = matlab.lang.makeValidName(colNames);
+                    end
+                    tOut = cell2table(data, 'VariableNames', colNames);
+                    writetable(tOut, filePath);
+                elseif isnumeric(data)
+                    writematrix(data, filePath);
+                end
+                
+                logMsg(app, sprintf('[Export] Table exported to CSV: %s', filePath));
+                msg = sprintf('Table exported successfully to:\n\n%s\n\nWould you like to open the file now?', filePath);
+                
+                if ~app.IsHeadless
+                    uiconfirm(app.UIFigure, msg, 'Export Complete', ...
+                        'Options', {'Open File', 'Show in Folder', 'OK'}, ...
+                        'DefaultOption', 'Open File', 'CancelOption', 'OK', ...
+                        'Icon', 'success', ...
+                        'CloseFcn', @(~, ev) onConfirmOpenFile(ev, filePath));
+                end
+            catch ex
+                logMsg(app, sprintf('[ERROR] Failed to export table to CSV: %s', ex.message));
+                safeAlert(app, sprintf('Failed to save CSV file:\n%s\n\nIf this file is currently open in Microsoft Excel, please close it and try again.', ex.message), 'Export Error', 'error');
+            end
+            
+            function onConfirmOpenFile(ev, fPath)
+                try
+                    if strcmp(ev.SelectedOption, 'Open File')
+                        winopen(fPath);
+                    elseif strcmp(ev.SelectedOption, 'Show in Folder')
+                        fDir = fileparts(fPath);
+                        if isempty(fDir), fDir = pwd; end
+                        winopen(fDir);
+                    end
+                catch
+                end
+            end
+        end
+
+        function copyAppCardTitle(app)
+            if isempty(app.AppCardNameLabel) || ~isvalid(app.AppCardNameLabel), return; end
+            titleStr = app.AppCardNameLabel.Text;
+            clipboard('copy', titleStr);
+            msg = sprintf('Copied application title: "%s"', titleStr);
+            logMsg(app, ['[Clipboard] ' msg]);
+            app.CoordLabel.Text = msg;
+            safeAlert(app, sprintf('Application domain name copied to clipboard:\n\n"%s"', titleStr), 'Title Copied', 'info');
+        end
+
+        function cm = createTableContextMenu(app, targetTable, defaultCsvName)
+            if nargin < 3 || isempty(defaultCsvName)
+                defaultCsvName = 'Table_Export.csv';
+            end
+            cm = uicontextmenu(app.UIFigure);
+            uimenu(cm, 'Text', 'Copy Cell Value (Ctrl+C)', ...
+                'MenuSelectedFcn', @(~, ~) copySelectedTableCellOrRow(app, targetTable, [], true));
+            uimenu(cm, 'Text', 'Copy Selected Row (TSV)', ...
+                'MenuSelectedFcn', @(~, ~) copySelectedTableRow(app, targetTable));
+            uimenu(cm, 'Text', 'Copy Full Table (TSV / Excel)', ...
+                'MenuSelectedFcn', @(~, ~) copyFullTableToClipboard(app, targetTable));
+            uimenu(cm, 'Text', 'Export Table to CSV...', 'Separator', 'on', ...
+                'MenuSelectedFcn', @(~, ~) exportTableToCSV(app, targetTable, defaultCsvName));
+            if ~isempty(targetTable) && isvalid(targetTable)
+                targetTable.ContextMenu = cm;
+            end
+        end
+
+        function onGenericTableSelected(app, targetTable, evt)
+            if isempty(evt) || isempty(evt.Indices), return; end
+            app.LastSelectedTable = targetTable;
+            app.LastSelectedIndices = evt.Indices;
+            try
+                row = evt.Indices(1, 1);
+                col = 1;
+                if size(evt.Indices, 2) >= 2, col = evt.Indices(1, 2); end
+                data = targetTable.Data;
+                if istable(data)
+                    val = data{row, col};
+                elseif iscell(data)
+                    val = data{row, col};
+                elseif isnumeric(data)
+                    val = data(row, col);
+                else
+                    val = '';
+                end
+                app.LastSelectedCellValue = char(string(val));
+                app.CoordLabel.Text = sprintf('Selected [%d, %d]: %s (Ctrl+C to copy)', row, col, app.LastSelectedCellValue);
+            catch
             end
         end
 
