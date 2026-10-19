@@ -133,8 +133,10 @@ classdef HEAMechanicalEngine
             lightElements = {'Li', 'Be', 'Mg', 'Al', 'Ca', 'Sr', 'Ba'};
             interstitialElements = {'C', 'N', 'B', 'O'};
 
+            toxicElements = {'Ni', 'Co', 'Cr', 'V'};
+            hasToxic = any(ismember(elemList, toxicElements));
             isRefractory = sum(c(ismember(elemList, refrElements))) >= 0.50;
-            isBiomedical = ismember('Ti', elemList) && any(ismember(elemList, {'Nb', 'Ta', 'Zr'})) && VEC_val >= 4.05 && VEC_val <= 4.45;
+            isBiomedical = ismember('Ti', elemList) && any(ismember(elemList, {'Nb', 'Ta', 'Zr'})) && ~hasToxic && VEC_val >= 4.0 && VEC_val <= 4.65;
             isCoCrNi = numel(elemList) == 3 && all(ismember({'Co', 'Cr', 'Ni'}, elemList));
             isEutectic = (any(strcmp(elemList, 'Al')) && any(strcmp(elemList, 'Ni')) && VEC_val >= 7.3 && VEC_val <= 7.7) || ...
                          (any(strcmp(elemList, 'Nb')) && any(strcmp(elemList, 'Ni')) && sum(c(ismember(elemList, {'Co', 'Cr', 'Fe', 'Ni'}))) >= 0.70);
@@ -144,7 +146,13 @@ classdef HEAMechanicalEngine
             isLightweight = sum(c(ismember(elemList, lightElements))) >= 0.50 && ~isRefractory;
             isNoble = sum(c(ismember(elemList, nobleElements))) >= 0.60;
 
-            % Biomedical alloy electronic bond softening (Wang et al. 2019, bone-matching modulus ~65-75 GPa)
+            % Group 6 (Cr, Mo, W) directional d-bonding induces high DBTT > 293 K and room-temp cleavage
+            c_Group6 = sum(c(ismember(elemList, {'W', 'Mo', 'Cr'})));
+            c_Group4 = sum(c(ismember(elemList, {'Ti', 'Zr', 'Hf'})));
+            isBrittleBCC = (c_Group6 >= 0.15) || (isRefractory && c_Group4 < 0.20 && VEC_val > 4.60);
+            isDuctileBCC = (isRefractory && (c_Group4 >= 0.25 || VEC_val <= 4.60) && c_Group6 < 0.15);
+
+            % Biomedical alloy electronic bond softening (Wang et al. 2019, bone-matching modulus ~65-78 GPa)
             if isBiomedical
                 soften = max(0.48, 1.0 - 0.42 * exp(-((VEC_val - 4.24) / 0.28)^2));
                 E_eff_GPa = E_eff_GPa * soften;
@@ -152,13 +160,25 @@ classdef HEAMechanicalEngine
                 B_eff_GPa = E_eff_GPa / (3 * max(0.05, 1 - 2 * nu_eff));
             end
 
-            if isHCP
+            if isLightweight
+                if VEC_val >= 8.0
+                    dominantStructure = 'FCC (Low-Density Multiphase)';
+                    TaylorFactor = 3.06;
+                else
+                    dominantStructure = 'BCC (Low-Density Multiphase)';
+                    TaylorFactor = 2.85;
+                end
+                a_lattice_nm = (4 * r_bar_pm * 1e-3) / sqrt(3);
+                b_nm = 2 * r_bar_pm * 1e-3;
+                sig0_RT_MPa = max(15.0, sum(c .* sig0_vec));
+                ky_HP = 280.0; % Light alloys (Al, Mg, Li)
+            elseif isHCP
                 dominantStructure = 'HCP';
                 TaylorFactor = 3.00;
                 a_lattice_nm = (2 * r_bar_pm * 1e-3);
                 b_nm = a_lattice_nm;
-                sig0_RT_MPa = max(110.0, sum(c .* sig0_vec));
-                ky_HP = 650.0; % MPa * um^0.5
+                sig0_RT_MPa = max(60.0, sum(c .* sig0_vec));
+                ky_HP = 550.0; % MPa * um^0.5
             elseif VEC_val >= 7.80
                 dominantStructure = 'FCC';
                 TaylorFactor = 3.06;
@@ -174,12 +194,11 @@ classdef HEAMechanicalEngine
                 a_lattice_nm = (4 * r_bar_pm * 1e-3) / sqrt(3);
                 b_nm = a_lattice_nm * sqrt(3) / 2; % = 2 * r_bar * 1e-3
                 if isRefractory
-                    % High Peierls kink-pair nucleation barrier (Maresca & Curtin 2020, Senkov 2011)
-                    sig0_RT_MPa = max(620.0, sum(c .* sig0_vec)); % ~650-900 MPa for BCC RHEAs
-                    ky_HP = 950.0; % MPa * um^0.5
+                    sig0_RT_MPa = sum(c .* sig0_vec);
+                    ky_HP = 650.0; % MPa * um^0.5 (Senkov 2011)
                 else
-                    sig0_RT_MPa = max(240.0, sum(c .* sig0_vec));
-                    ky_HP = 820.0;
+                    sig0_RT_MPa = sum(c .* sig0_vec);
+                    ky_HP = 550.0;
                 end
             else
                 dominantStructure = 'Duplex (FCC+BCC)';
@@ -188,8 +207,8 @@ classdef HEAMechanicalEngine
                 a_lattice_nm = (1 - f_BCC_est) * (2 * sqrt(2) * r_bar_pm * 1e-3) + ...
                                f_BCC_est * ((4 * r_bar_pm * 1e-3) / sqrt(3));
                 b_nm = 2 * r_bar_pm * 1e-3;
-                sig0_RT_MPa = (1 - f_BCC_est) * sum(c .* sig0_vec) + f_BCC_est * (isRefractory * 620.0 + ~isRefractory * 240.0);
-                ky_HP = (1 - f_BCC_est) * 494.0 + f_BCC_est * 850.0;
+                sig0_RT_MPa = sum(c .* sig0_vec);
+                ky_HP = (1 - f_BCC_est) * 494.0 + f_BCC_est * 650.0;
             end
 
             % Lamellar Eutectic strengthening contribution (Lu et al. 2014, AlCoCrFeNi2.1)
@@ -259,17 +278,30 @@ classdef HEAMechanicalEngine
                 tau_y_RT_MPa = max(60.0, min(200.0, tau_y0_MPa * thermal_soften_factor));
                 delta_sigma_ss_MPa = TaylorFactor * tau_y_RT_MPa;
 
-            elseif strcmp(dominantStructure, 'BCC')
-                % Maresca-Curtin (2020) & Senkov BCC refractory model
-                tau_y0_Pa = 0.040 * (alpha_line^(-1/3)) * G_eff_Pa * (nu_factor^(4/3)) * (misfit_sum^(2/3));
-                tau_y0_MPa = tau_y0_Pa * 1e-6;
-                Delta_Eb_J = 2.00 * (alpha_line^(1/3)) * G_eff_Pa * b3 * (nu_factor^(2/3)) * (misfit_sum^(1/3));
-                k_B = 1.380649e-23;
-                ln_ratio = log(1e5 / max(1e-5, strainRate));
-                Tc_K = max(350.0, Delta_Eb_J / (k_B * ln_ratio));
-                thermal_soften_factor = max(0.40, min(0.85, 1.0 - 0.40 * (temp_K / Tc_K)^(2/3)));
-                tau_y_RT_MPa = max(110.0, min(240.0, tau_y0_MPa * thermal_soften_factor));
-                delta_sigma_ss_MPa = TaylorFactor * tau_y_RT_MPa;
+            elseif strcmp(dominantStructure, 'BCC') || startsWith(dominantStructure, 'BCC')
+                if isLightweight
+                    % Lightweight alloys (Al-Li-Mg-Sc-Ti)
+                    tau_y0_Pa = 0.030 * (alpha_line^(-1/3)) * G_eff_Pa * (nu_factor^(4/3)) * (misfit_sum^(2/3));
+                    tau_y0_MPa = tau_y0_Pa * 1e-6;
+                    Delta_Eb_J = 0.40 * (alpha_line^(1/3)) * G_eff_Pa * b3 * (nu_factor^(2/3)) * (misfit_sum^(1/3));
+                    k_B = 1.380649e-23;
+                    ln_ratio = log(1e5 / max(1e-5, strainRate));
+                    Tc_K = max(220.0, Delta_Eb_J / (k_B * ln_ratio));
+                    thermal_soften_factor = max(0.40, min(0.85, 1.0 - 0.40 * (temp_K / Tc_K)^(2/3)));
+                    tau_y_RT_MPa = max(40.0, min(120.0, tau_y0_MPa * thermal_soften_factor));
+                    delta_sigma_ss_MPa = min(280.0, TaylorFactor * tau_y_RT_MPa);
+                else
+                    % Maresca-Curtin (2020) & Senkov BCC refractory model
+                    tau_y0_Pa = 0.040 * (alpha_line^(-1/3)) * G_eff_Pa * (nu_factor^(4/3)) * (misfit_sum^(2/3));
+                    tau_y0_MPa = tau_y0_Pa * 1e-6;
+                    Delta_Eb_J = 2.00 * (alpha_line^(1/3)) * G_eff_Pa * b3 * (nu_factor^(2/3)) * (misfit_sum^(1/3));
+                    k_B = 1.380649e-23;
+                    ln_ratio = log(1e5 / max(1e-5, strainRate));
+                    Tc_K = max(350.0, Delta_Eb_J / (k_B * ln_ratio));
+                    thermal_soften_factor = max(0.40, min(0.85, 1.0 - 0.40 * (temp_K / Tc_K)^(2/3)));
+                    tau_y_RT_MPa = max(110.0, min(260.0, tau_y0_MPa * thermal_soften_factor));
+                    delta_sigma_ss_MPa = TaylorFactor * tau_y_RT_MPa;
+                end
 
             else % Duplex (FCC+BCC)
                 f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
@@ -382,15 +414,21 @@ classdef HEAMechanicalEngine
             elseif strcmp(dominantStructure, 'FCC')
                 sig_uts_RT_MPa = round(sig_y_RT_MPa * 2.48, 1);
                 elongation_pct = round(max(20.0, 50.0 - 28.0 * f_ppt_total), 1);
-            elseif strcmp(dominantStructure, 'BCC')
-                if Pugh_Ratio_est >= 2.0 || (isRefractory && any(strcmp(elemList, 'Ti')) && any(strcmp(elemList, 'Zr')))
-                    % Ductile BCC Refractory HEA (TiZrHfNbTa): low shear modulus, high Pugh B/G > 2.0 (Senkov 2012)
+            elseif strcmp(dominantStructure, 'BCC') || startsWith(dominantStructure, 'BCC')
+                if isLightweight
+                    sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.28, 1);
+                    elongation_pct = round(max(3.0, min(15.0, 8.5 - 5.0 * f_ppt_total)), 1);
+                elseif isDuctileBCC
+                    % Ductile BCC Refractory HEA (TiZrHfNbTa family - Senkov 2011, 2012)
                     sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.22, 1);
-                    elongation_pct = round(max(20.0, 52.0 * (Pugh_Ratio_est / 2.3) - 20.0 * f_ppt_total), 1);
-                else
-                    % Standard high-strength brittle BCC refractory (NbMoTaW, NbMoTaWV - Senkov 2011)
+                    elongation_pct = round(max(25.0, min(55.0, 48.0 - 20.0 * f_ppt_total)), 1);
+                elseif isBrittleBCC
+                    % Standard high-strength brittle BCC refractory (NbMoTaW, NbMoTaWV, CrMoNbV - Senkov 2011)
                     sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.15, 1);
-                    elongation_pct = round(max(1.8, 4.5 - 4.0 * f_ppt_total), 1);
+                    elongation_pct = round(max(1.5, min(3.0, 2.5 - 2.0 * f_ppt_total)), 1);
+                else
+                    sig_uts_RT_MPa = round(sig_y_RT_MPa * 1.25, 1);
+                    elongation_pct = round(max(5.0, min(25.0, 14.0 * (Pugh_Ratio_est / 1.75) - 10.0 * f_ppt_total)), 1);
                 end
             else % Duplex
                 f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
@@ -404,11 +442,13 @@ classdef HEAMechanicalEngine
                 HV_base = 0.32 * sig_y_RT_MPa + 62.0;
             elseif strcmp(dominantStructure, 'FCC')
                 HV_base = 0.30 * sig_y_RT_MPa + 72.0;
-            elseif strcmp(dominantStructure, 'BCC')
-                HV_base = 0.36 * sig_y_RT_MPa + 65.0;
+            elseif isBrittleBCC
+                HV_base = 0.36 * sig_y_RT_MPa + 120.0; % High Peierls barrier & cleavage constraint (NbMoTaW ~505 HV)
+            elseif startsWith(dominantStructure, 'BCC')
+                HV_base = 0.34 * sig_y_RT_MPa + 65.0;
             else
                 f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
-                HV_base = (1 - f_bcc) * (0.30 * sig_y_RT_MPa + 72.0) + f_bcc * (0.36 * sig_y_RT_MPa + 65.0);
+                HV_base = (1 - f_bcc) * (0.30 * sig_y_RT_MPa + 72.0) + f_bcc * (0.34 * sig_y_RT_MPa + 65.0);
             end
             HV_val = round(HV_base + f_B2 * 120.0 + f_sigma * 150.0, 0);
 
@@ -417,27 +457,37 @@ classdef HEAMechanicalEngine
             % Cauchy pressure: C12 - C44 = B - (5/3)*G (in Voigt isotropic approximation)
             Cauchy_Pressure_GPa = round(B_eff_GPa - (5/3) * G_eff_GPa, 1);
 
-            if Pugh_Ratio > 1.75
-                ductilityClass = 'Ductile';
-            else
-                ductilityClass = 'Brittle';
-            end
-
             % Fracture toughness calibrated to Gludovatz 2014 & literature benchmarks
             if strcmp(dominantStructure, 'HCP')
                 K1c_MPa_m05 = max(25.0, 58.0 - 25.0 * f_ppt_total);
+                if Pugh_Ratio > 1.75, ductilityClass = 'Ductile'; else, ductilityClass = 'Moderate'; end
             elseif strcmp(dominantStructure, 'FCC')
                 % Cantor alloy is ~217 MPa*m^0.5
                 K1c_MPa_m05 = max(80.0, 220.0 - 140.0 * f_ppt_total);
-            elseif strcmp(dominantStructure, 'BCC')
-                % Refractory TiZrHfNbTa is ~50, NbMoTaW is ~10
-                if Pugh_Ratio > 2.0 && Cauchy_Pressure_GPa > 10
-                    K1c_MPa_m05 = 48.0; % Ductile refractory BCC
+                ductilityClass = 'Ductile';
+            elseif isLightweight
+                K1c_MPa_m05 = max(12.0, min(28.0, 22.0 - 10.0 * f_ppt_total));
+                ductilityClass = 'Moderate';
+            elseif isBrittleBCC
+                % Refractory NbMoTaW, CrMoNbV: room-temp cleavage fracture
+                K1c_MPa_m05 = max(8.0, min(15.0, 15.0 - 7.0 * f_ppt_total));
+                ductilityClass = 'Brittle (Room-Temp Cleavage, DBTT > 293 K)';
+            elseif isDuctileBCC
+                % Ductile refractory TiZrHfNbTa family
+                K1c_MPa_m05 = max(35.0, min(65.0, 50.0 - 15.0 * f_ppt_total));
+                ductilityClass = 'Ductile';
+            elseif startsWith(dominantStructure, 'BCC')
+                if Pugh_Ratio > 1.75
+                    K1c_MPa_m05 = max(20.0, min(45.0, 32.0 - 15.0 * f_ppt_total));
+                    ductilityClass = 'Ductile';
                 else
-                    K1c_MPa_m05 = max(6.0, 15.0 - 8.0 * f_ppt_total); % Brittle cleavage BCC
+                    K1c_MPa_m05 = max(10.0, min(25.0, 18.0 - 10.0 * f_ppt_total));
+                    ductilityClass = 'Brittle';
                 end
             else % Duplex
-                K1c_MPa_m05 = max(20.0, 160.0 - 150.0 * f_ppt_total);
+                f_bcc_d = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
+                K1c_MPa_m05 = max(20.0, (1 - f_bcc_d) * 220.0 + f_bcc_d * 40.0 - 150.0 * f_ppt_total);
+                if Pugh_Ratio > 1.75, ductilityClass = 'Ductile'; else, ductilityClass = 'Moderate'; end
             end
             K1c_MPa_m05 = round(K1c_MPa_m05, 1);
 
@@ -590,7 +640,7 @@ classdef HEAMechanicalEngine
             % Transition metals (3d)
             setM('Sc', 44.956, 162, 15.00,  29,   74, 0.28,  35, 'HCP');
             setM('Ti', 47.867, 147, 10.64,  44,  116, 0.32, 120, 'HCP');
-            setM('V',  50.942, 134,  8.32,  47,  128, 0.37, 750, 'BCC');
+            setM('V',  50.942, 134,  8.32,  47,  128, 0.37, 200, 'BCC');
             setM('Cr', 51.996, 128,  7.23, 115,  279, 0.21, 280, 'BCC');
             setM('Mn', 54.938, 127,  7.35,  79,  198, 0.26,  70, 'BCC');
             setM('Fe', 55.845, 126,  7.09,  82,  211, 0.29,  50, 'BCC');
@@ -602,11 +652,11 @@ classdef HEAMechanicalEngine
             % 4d / 5d Refractory metals (Calibrated Peierls-Nabarro friction barrier)
             setM('Y',  88.906, 180, 19.88,  26,   64, 0.24,  40, 'HCP');
             setM('Zr', 91.224, 160, 14.02,  33,   68, 0.34,  95, 'HCP');
-            setM('Nb', 92.906, 146, 10.83,  38,  105, 0.40, 620, 'BCC');
-            setM('Mo', 95.950, 139,  9.38, 126,  329, 0.31, 850, 'BCC');
+            setM('Nb', 92.906, 146, 10.83,  38,  105, 0.40, 140, 'BCC');
+            setM('Mo', 95.950, 139,  9.38, 126,  329, 0.31, 320, 'BCC');
             setM('Hf', 178.49, 159, 13.44,  53,  138, 0.30, 110, 'HCP');
-            setM('Ta', 180.95, 146, 10.85,  69,  186, 0.34, 680, 'BCC');
-            setM('W',  183.84, 139,  9.47, 161,  411, 0.28, 980, 'BCC');
+            setM('Ta', 180.95, 146, 10.85,  69,  186, 0.34, 180, 'BCC');
+            setM('W',  183.84, 139,  9.47, 161,  411, 0.28, 420, 'BCC');
             setM('Re', 186.21, 137,  8.86, 178,  463, 0.30, 260, 'HCP');
 
             % Precious / Platinum Group & Noble Metals

@@ -12,7 +12,7 @@ classdef HEAApplicationDatabase
     methods (Static)
 
         function apps = getAllApplications()
-            % Returns cell array of structs representing all 10 curated industrial applications
+            % Returns cell array of structs representing all 12 curated industrial applications
             apps = {
                 HEAApplicationDatabase.getAeroTurbineBlade();
                 HEAApplicationDatabase.getCryoLngVessel();
@@ -23,7 +23,9 @@ classdef HEAApplicationDatabase
                 HEAApplicationDatabase.getRefractoryFurnace();
                 HEAApplicationDatabase.getHydrogenStorage();
                 HEAApplicationDatabase.getEnergyCatalysis();
-                HEAApplicationDatabase.getAeroDiscRotor()
+                HEAApplicationDatabase.getAeroDiscRotor();
+                HEAApplicationDatabase.getLaserCladdingWearOverlay();
+                HEAApplicationDatabase.getCavitationCorrosionOverlay()
             };
         end
 
@@ -289,6 +291,40 @@ classdef HEAApplicationDatabase
                 'Turbine Compressor Disc & High-Stress Rotors', 'Aerospace & Propulsion', ...
                 desc, 'Gamma/Gamma-prime Co-Ni-based HEA', 'CitrineInformatics/MPEA_dataset | COD_HEM Clemson', ...
                 {'Zn', 'Sn', 'Bi', 'Pb'}, criteria);
+        end
+
+        function app = getLaserCladdingWearOverlay()
+            desc = ['High-durability wear-resistant HEA cladding on structural steels (AISI 1045, Q235, H13). ', ...
+                    'Requires Vickers hardness HV > 550, low specific wear rate (< 3.5e-6 mm^3/(N*m)), dilution tolerance, ', ...
+                    'and high plastic deformation resistance (H^3/E^2 > 0.03 GPa).'];
+            criteria = {
+                'Hardness_HV',          0.30, 'max',  400.0,  850.0, 'HV';
+                'WearRate_Archard',     0.25, 'min',   10.0,    1.5, '1e-6 mm^3/(N*m)';
+                'PlasticResistance',    0.20, 'max',  0.015,  0.080, 'GPa';
+                'ThermalStress_MPa',    0.15, 'min',  450.0,  120.0, 'MPa';
+                'Ductility_pct',        0.10, 'max',    5.0,   25.0, '%'
+            };
+            app = HEAApplicationDatabase.createBaseApp('WEAR_CLADDING_OVERLAY', ...
+                'Wear-Resistant Laser Cladding on Structural Steels', 'Surface Engineering & Mining', ...
+                desc, 'Al0.5CoCrFeNi / FeCoCrNiMo', 'Li et al., Adv. Eng. Mater. 21, 1900343 (2019)', ...
+                {'Pb', 'Bi', 'Cd', 'Hg'}, criteria);
+        end
+
+        function app = getCavitationCorrosionOverlay()
+            desc = ['Marine pump impellers, subsea hydro-turbines, and chemical processing valves exposed to ', ...
+                    'synergistic cavitation erosion and aggressive seawater pitting. Requires passivating p-type ', ...
+                    'protective film, PREN > 32, low corrosion rate (< 0.005 mm/yr), and high work-hardening capacity.'];
+            criteria = {
+                'CorrosionRate_NaCl',   0.30, 'min',   0.05,  0.002, 'mm/yr';
+                'PREN_Effective',       0.25, 'max',   22.0,   45.0, 'PREN';
+                'Hardness_HV',          0.20, 'max',  300.0,  650.0, 'HV';
+                'PittingBreakdown_V',   0.15, 'max',   0.10,   0.85, 'V vs SCE';
+                'WorkHardeningExponent',0.10, 'max',   0.25,   0.55, 'n'
+            };
+            app = HEAApplicationDatabase.createBaseApp('CAVITATION_CORROSION_OVERLAY', ...
+                'Marine Cavitation-Erosion & Corrosion Resistant Overlay', 'Marine & Offshore Engineering', ...
+                desc, 'Al0.3CoCrFeNi / CoCrFeNiMo0.2', 'Li et al., JMRT 35, 4142 (2025) & AEM (2019)', ...
+                {'Mg', 'Zn', 'Ca', 'Li'}, criteria);
         end
 
     end

@@ -1402,15 +1402,6 @@ classdef HEAThermoEngine
             M_bar = sum(x .* M);
             VEC = sum(x .* VEC_vals);
             
-            % Guo et al. (2011) criterion for FCC vs BCC
-            if VEC >= 8.0
-                phaseStr = 'FCC (Ductile Solid Solution)';
-            elseif VEC < 6.87
-                phaseStr = 'BCC (High-Strength Solid Solution)';
-            else
-                phaseStr = 'FCC + BCC (Duplex Structure)';
-            end
-            
             % 2. Ideal Configurational Mixing Entropy: Delta S_mix = -R * sum(x_i * ln(x_i))
             R = 8.314; % J/(mol*K)
             DeltaSmix = 0;
@@ -1421,17 +1412,27 @@ classdef HEAThermoEngine
             end
             
             % 3. Miedema Chemical Mixing Enthalpy: Delta H_mix = 4 * sum_{i < j} Delta H_ij * x_i * x_j
+            % Robust tiered fallback: Forward key -> Reverse key -> Analytical electronegativity/elastic model
             DeltaHmix = 0;
             for i = 1:(n-1)
                 for j = (i+1):n
                     e1 = strtrim(elements{i});
                     e2 = strtrim(elements{j});
                     pairKey = sprintf('%s_%s', e1, e2);
+                    pairKeyRev = sprintf('%s_%s', e2, e1);
                     if isKey(hMap, pairKey)
                         dH_ij = hMap(pairKey);
+                    elseif isKey(hMap, pairKeyRev)
+                        dH_ij = hMap(pairKeyRev);
                     else
-                        % Default fallback for unspecified pairs
-                        dH_ij = 0;
+                        % Analytical Miedema / Electronegativity-elastic fallback model (Takayama / Miedema)
+                        chi1 = chi(i); chi2 = chi(j);
+                        v1 = max(4.0, (M(i) / max(0.5, rho0_vals(i))));
+                        v2 = max(4.0, (M(j) / max(0.5, rho0_vals(j))));
+                        v_bar = 0.5 * (v1 + v2);
+                        % Chemical attraction from electronegativity + elastic size mismatch
+                        dH_ij = -96.485 * ((chi1 - chi2)^2) + 4.184 * (((v1 - v2) / v_bar)^2);
+                        dH_ij = max(-60.0, min(30.0, dH_ij));
                     end
                     DeltaHmix = DeltaHmix + 4 * dH_ij * x(i) * x(j);
                 end
@@ -1451,6 +1452,37 @@ classdef HEAThermoEngine
             % 7. Electronegativity Mismatch: Delta chi
             chi_bar = sum(x .* chi);
             delta_chi = sqrt(sum(x .* ((chi - chi_bar).^2)));
+
+            % Universal Crystal Structure & Phase Prediction (Guo 2011, Miracle 2017, Senkov 2018)
+            isHCP = any(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','sc','y','re','os','ru'})) && ...
+                    (sum(x(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','sc','y','re','os','ru'}))) >= 0.50);
+            isLW = sum(x(ismember(lower(elements), {'li','be','mg','al','ca','sr','ba'}))) >= 0.50 && ...
+                   ~any(ismember(lower(elements), {'nb','mo','ta','w'}));
+            isRefr = sum(x(ismember(lower(elements), {'nb','mo','ta','w','v','ti','zr','hf','cr'}))) >= 0.50;
+            cG6 = sum(x(ismember(lower(elements), {'w','mo','cr'})));
+            cG4 = sum(x(ismember(lower(elements), {'ti','zr','hf'})));
+
+            if Omega < 1.1 && DeltaHmix < -12.0
+                phaseStr = 'Intermetallic / Ordered Compounds';
+            elseif delta_size > 8.0 && Omega < 1.5
+                phaseStr = 'Multiphase / Amorphous Complex';
+            elseif isHCP
+                phaseStr = 'HCP (Hexagonal Close-Packed)';
+            elseif isLW
+                phaseStr = 'Lightweight Multiphase (Low Density)';
+            elseif isRefr && VEC < 6.87
+                if cG6 >= 0.15 || (cG4 < 0.20 && VEC > 4.60)
+                    phaseStr = 'BCC (Refractory Solid Solution, Brittle Cleavage)';
+                else
+                    phaseStr = 'BCC (Ductile Refractory BCC)';
+                end
+            elseif VEC >= 8.0
+                phaseStr = 'FCC (Ductile Solid Solution)';
+            elseif VEC < 6.87
+                phaseStr = 'BCC (High-Strength Solid Solution)';
+            else
+                phaseStr = 'FCC + BCC (Duplex Structure)';
+            end
             
             % 8. Calibrated Theoretical Solidus (Ts) and Liquidus (Tl)
             % Incorporates CALPHAD-consistent solution thermodynamics and authoritative
@@ -1654,6 +1686,7 @@ classdef HEAThermoEngine
             metrics = struct();
             metrics.VEC = VEC;
             metrics.Phase = phaseStr;
+            metrics.PredictedPhase = phaseStr;
             metrics.DeltaSmix = DeltaSmix;
             metrics.DeltaHmix = DeltaHmix;
             metrics.Tm_avg = Tm_avg;
@@ -1729,6 +1762,14 @@ classdef HEAThermoEngine
                 metrics.Oxidation = oxMetrics;
             catch ME_ox
                 metrics.Oxidation = struct('Error', ME_ox.message);
+            end
+
+            % Surface Coating & Tribological Engineering Engine (Li et al. Adv. Eng. Mater. 2019)
+            try
+                coatingMetrics = HEACoatingEngine.computeCoatingProperties(elements, x, metrics);
+                metrics.Coating = coatingMetrics;
+            catch ME_coat
+                metrics.Coating = struct('Error', ME_coat.message);
             end
 
             % -------------------------------------------------------------
@@ -2469,7 +2510,72 @@ classdef HEAThermoEngine
             % Passive film configurational entropy stabilization factor (Albedwawi et al. 2021)
             DeltaSmix_local = -8.314 * sum(x(x > 0) .* log(x(x > 0)));
             xi_entropy = exp(-DeltaSmix_local / (2.5 * 8.314));
-            
+
+            % -------------------------------------------------------------
+            % Point Defect Model (PDM) & Passive Film Semiconduction
+            % (Li et al., J. Mater. Res. Technol. 2025, 35, 4142-4163)
+            % -------------------------------------------------------------
+            cr_wt = getWt('Cr');
+            ni_wt = getWt('Ni');
+            co_wt = getWt('Co');
+            ti_wt = getWt('Ti');
+            zr_wt = getWt('Zr');
+            ta_wt = getWt('Ta');
+            nb_wt = getWt('Nb');
+            al_wt = getWt('Al');
+
+            if cr_wt >= 16.0 && (ni_wt >= 5.0 || co_wt >= 5.0)
+                % Stable p-type semiconducting passive film: Cr2O3 / Cr(OH)3 inner barrier
+                semiconductorType = 'p-type (Cation Vacancy Controlled: Cr2O3 / Ni(OH)2)';
+                dominantDefect    = 'Metal Cation Vacancy V_M^{3-}';
+                defectDensity_cm3 = 1.2e20 * (1.0 + 0.04 * max(0.0, 22.0 - cr_wt));
+                diffusivity_cm2_s = 1.5e-16; % Sluggish cation vacancy diffusion
+                i_pass_uA_cm2     = max(0.015, 0.12 * exp(-(cr_wt - 16.0) / 15.0));
+            elseif (ti_wt + zr_wt + ta_wt + nb_wt) >= 20.0
+                % Refractory / Valve-metal barrier film: TiO2 / ZrO2 / Ta2O5 / Nb2O5
+                semiconductorType = 'Dielectric Barrier / Valve Metal Oxide (TiO2/ZrO2/Ta2O5)';
+                dominantDefect    = 'Immobile Ion Barrier (Ultra-low point defect flux)';
+                defectDensity_cm3 = 4.0e19;
+                diffusivity_cm2_s = 2.5e-17;
+                i_pass_uA_cm2     = 0.010;
+            else
+                % n-type semiconducting passive film: Fe2O3 / Fe(OH)3 / TiO2 / MnO2
+                semiconductorType = 'n-type (Oxygen Vacancy Controlled: Fe2O3 / TiO2 / MnO2)';
+                dominantDefect    = 'Oxygen Vacancy V_O^{2+} / Metal Interstitial';
+                defectDensity_cm3 = 1.8e21 * (1.0 + 0.08 * (al_wt / 10.0));
+                diffusivity_cm2_s = 6.0e-15; % Faster anion vacancy migration -> pitting prone
+                i_pass_uA_cm2     = max(0.40, 1.85 * (1.0 + 0.5 * (al_wt / 10.0)));
+            end
+
+            % Micro-galvanic B2 vs FCC/A2 phase coupling in Al-containing alloys (Li et al. 2025)
+            if al_wt >= 3.0 && (ni_wt >= 5.0 || co_wt >= 5.0)
+                DeltaE_B2_FCC_mV = round(120.0 + 16.5 * al_wt, 1);
+                b2_anodePhase = '(Al, Ni)-rich B2 Phase (Preferential Anodic Dissolution)';
+                fcc_cathodePhase = '(Cr, Fe, Co)-rich FCC/A2 Matrix (Cathode)';
+            else
+                DeltaE_B2_FCC_mV = 0.0;
+                b2_anodePhase = 'None (Homogeneous / No B2 Partitioning)';
+                fcc_cathodePhase = 'Uniform Matrix';
+            end
+
+            % Heat-Treatment Response Modeling (Li et al. 2025 Table 2)
+            htResponse = struct();
+            % As-cast (dendritic micro-segregation)
+            htResponse.AsCast_Ecorr_mV = round(E_corr_pred * 1000.0, 1);
+            htResponse.AsCast_icorr_uA_cm2 = round(i_corr_nacl, 4);
+            % Homogenized at 1000-1100 °C (homogenizes Cr/Mo, dissolves brittle intermetallics)
+            htResponse.Homogenized_1000C_Ecorr_mV = round((E_corr_pred + 0.035) * 1000.0, 1);
+            htResponse.Homogenized_1000C_icorr_uA_cm2 = round(max(0.001, i_corr_nacl * 0.65), 4);
+            htResponse.Homogenized_1000C_Epit_mV = round((E_pit + 0.060) * 1000.0, 1);
+            % Sensitized at 650-750 °C (Cr-rich sigma/carbide precipitation, local Cr depletion)
+            if cr_wt >= 12.0
+                htResponse.Sensitized_700C_Ecorr_mV = round((E_corr_pred - 0.065) * 1000.0, 1);
+                htResponse.Sensitized_700C_icorr_uA_cm2 = round(i_corr_nacl * 2.80, 4);
+            else
+                htResponse.Sensitized_700C_Ecorr_mV = round(E_corr_pred * 1000.0, 1);
+                htResponse.Sensitized_700C_icorr_uA_cm2 = round(i_corr_nacl * 1.20, 4);
+            end
+
             % Build structured return
             cMetrics = struct();
             cMetrics.PREN_ASTM = round(pren_astm, 2);
@@ -2497,6 +2603,17 @@ classdef HEAThermoEngine
             cMetrics.Benchmark = benchMatch;
             cMetrics.PassiveFilmEntropyFactor = round(xi_entropy, 3);
             cMetrics.GalvanicPhasePartition = round(f_microcell, 2);
+
+            % Advanced PDM & Heat Treatment Metrics (Li et al. 2025)
+            cMetrics.SemiconductorType = semiconductorType;
+            cMetrics.DominantDefect = dominantDefect;
+            cMetrics.DefectDensity_cm3 = defectDensity_cm3;
+            cMetrics.VacancyDiffusivity_cm2_s = diffusivity_cm2_s;
+            cMetrics.PassiveCurrent_i_pass_uA_cm2 = round(i_pass_uA_cm2, 4);
+            cMetrics.B2_MicroGalvanicDrivingForce_mV = DeltaE_B2_FCC_mV;
+            cMetrics.B2_AnodePhase = b2_anodePhase;
+            cMetrics.FCC_CathodePhase = fcc_cathodePhase;
+            cMetrics.HeatTreatmentResponse = htResponse;
 
             % Iterative Butler-Volmer Mixed Potential Root-Finding
             maxItersBV = 50;

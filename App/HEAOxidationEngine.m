@@ -93,10 +93,32 @@ classdef HEAOxidationEngine
             refr_volatile_at = Mo_at + W_at + V_at;
             refr_total_at = Mo_at + W_at + V_at + Nb_at + Ta_at + Ti_at + Zr_at + Hf_at;
 
-            if refr_volatile_at >= 15.0
-                % Refractory HEA with significant Mo, W, or V
+            if Al_at >= 12.0
+                % Alumina Former (e.g. Al0.7-Al1.0 CoCrFeNi, Ti-Al-V, Butler et al. Oxid. Met. 2018)
+                regime = 'Alumina Former';
+                dominantOxide = '\alpha-Al2O3';
+                oxideFormula = 'Al2O3';
+                Q_ox_kJ = 215.0; % Calibrated activation energy (210 - 225 kJ/mol)
+                k0_val = 7.0e-3;  % g^2 / (cm^4 * s) -> kp(900 C) ~ 1.20e-12 g^2/(cm^4*s)
+                rho_ox = 3.95;   % g/cm^3
+                f_O = 0.4707;    % 48 / 101.96
+                PBR = 1.28;
+                protectiveRating = 'Superior (Hermetic Alpha-Alumina Barrier)';
+
+            elseif refr_volatile_at >= 15.0 && Cr_at < 16.0
+                % Refractory HEA with significant Mo, W, or V lacking protective Al or Cr
                 regime = 'Refractory Volatile / Pesting Risk';
-                dominantOxide = 'MoO3 / WO3 / Nb2O5';
+                if Mo_at >= 8.0 && W_at >= 8.0
+                    dominantOxide = 'MoO3 / WO3 / Nb2O5';
+                elseif Mo_at >= 8.0
+                    dominantOxide = 'MoO3 / Nb2O5';
+                elseif W_at >= 8.0
+                    dominantOxide = 'WO3 / Ta2O5';
+                elseif V_at >= 8.0
+                    dominantOxide = 'V2O5 / TiO2 (Molten Fluxing Risk)';
+                else
+                    dominantOxide = 'Mixed Volatile Refractory Oxides';
+                end
                 oxideFormula = 'Mixed Volatile Oxides';
                 Q_ox_kJ = 110.0;
                 k0_val = 5.0e-3; % Apparent rate
@@ -118,18 +140,6 @@ classdef HEAOxidationEngine
                     volatilizationAlert = true;
                     volatileMessage = sprintf('V2O5 melts at 690 °C into liquid-phase oxide, inducing catastrophic fluxing attack.');
                 end
-
-            elseif Al_at >= 12.0
-                % Alumina Former (e.g. Al0.7-Al1.0 CoCrFeNi, Butler et al. Oxid. Met. 2018)
-                regime = 'Alumina Former';
-                dominantOxide = 'alpha-Al2O3';
-                oxideFormula = 'Al2O3';
-                Q_ox_kJ = 215.0; % Calibrated activation energy (210 - 225 kJ/mol)
-                k0_val = 7.0e-3;  % g^2 / (cm^4 * s) -> kp(900 C) ~ 1.20e-12 g^2/(cm^4*s)
-                rho_ox = 3.95;   % g/cm^3
-                f_O = 0.4707;    % 48 / 101.96
-                PBR = 1.28;
-                protectiveRating = 'Superior (Hermetic Alpha-Alumina Barrier)';
 
             elseif Cr_at >= 16.0 && Mn_at < 8.0
                 % Chromia Former (e.g. Al0.3 CoCrFeNi, CoCrFeNi, Butler / Chou et al.)

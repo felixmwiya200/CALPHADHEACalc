@@ -416,10 +416,48 @@ classdef HEABenchmarkDatabase
                     vec_val = 8.0;
                     if isfield(thermoMetrics, 'VEC'), vec_val = thermoMetrics.VEC; end
                     
-                    isHCP = any(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','re','os','ru'})) && ...
-                            (sum(x(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','re','os','ru'}))) >= 0.50);
+                    isHCP = any(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','sc','y','re','os','ru'})) && ...
+                            (sum(x(ismember(lower(elements), {'gd','dy','tb','ho','er','lu','tm','sc','y','re','os','ru'}))) >= 0.50);
+                    isLW = sum(x(ismember(lower(elements), {'li','be','mg','al','ca','sr','ba'}))) >= 0.50 && ...
+                           ~any(ismember(lower(elements), {'nb','mo','ta','w'}));
+                    isBio = any(strcmpi(elements, 'Ti')) && any(ismember(lower(elements), {'nb','ta','zr'})) && ...
+                            ~any(ismember(lower(elements), {'ni','co','cr','v','al'})) && vec_val <= 4.65;
+                    cG6 = sum(x(ismember(lower(elements), {'w','mo','cr'})));
+                    cG4 = sum(x(ismember(lower(elements), {'ti','zr','hf'})));
+                    isRefrBCC = (sum(x(ismember(lower(elements), {'nb','mo','ta','w','v','ti','zr','hf','cr'}))) >= 0.50) && (vec_val < 6.87);
+                    isBrittleBCC = isRefrBCC && (cG6 >= 0.15 || (cG4 < 0.20 && vec_val > 4.60));
+                    isDuctileBCC = isRefrBCC && (cG4 >= 0.25 || vec_val <= 4.60) && cG6 < 0.15;
                     
-                    if isHCP
+                    if isBio
+                        sy_bench = 850.0;
+                        uts_bench = 980.0;
+                        elong_bench = 28.0;
+                        hv_bench = 320.0;
+                        k1c_bench = 75.0;
+                        a_bench = 3.310;
+                        E_mix = 75.0;
+                    elseif isLW
+                        sy_bench = max(220.0, min(500.0, round(E_mix * 4.2)));
+                        uts_bench = round(sy_bench * 1.28);
+                        elong_bench = 7.5;
+                        hv_bench = round(0.32 * sy_bench + 60.0);
+                        k1c_bench = 22.0;
+                        a_bench = 3.420;
+                    elseif isBrittleBCC
+                        sy_bench = max(950.0, round(E_mix * 4.1));
+                        uts_bench = round(sy_bench * 1.15);
+                        elong_bench = 2.2;
+                        hv_bench = round(0.36 * sy_bench + 120.0);
+                        k1c_bench = 14.0;
+                        a_bench = 3.213;
+                    elseif isDuctileBCC
+                        sy_bench = 929.0;
+                        uts_bench = 1010.0;
+                        elong_bench = 48.0;
+                        hv_bench = 385.0;
+                        k1c_bench = 50.0;
+                        a_bench = 3.410;
+                    elseif isHCP
                         sy_bench = 480.0;
                         uts_bench = 795.0;
                         elong_bench = 14.0;
@@ -434,21 +472,21 @@ classdef HEABenchmarkDatabase
                         k1c_bench = 210.0;
                         a_bench = 3.590;
                     elseif vec_val < 6.87 % BCC
-                        sy_bench = max(750.0, round(E_mix * 4.80));
+                        sy_bench = max(750.0, round(E_mix * 4.50));
                         uts_bench = round(sy_bench * 1.20);
                         elong_bench = 8.0;
-                        hv_bench = round(0.36 * sy_bench + 55.0);
-                        k1c_bench = 35.0;
+                        hv_bench = round(0.36 * sy_bench + 65.0);
+                        k1c_bench = 32.0;
                         a_bench = 3.280;
                     else % Duplex
                         f_bcc = (7.80 - vec_val) / (7.80 - 6.87);
                         sy_fcc = max(200.0, round(E_mix * 1.35));
-                        sy_bcc = max(750.0, round(E_mix * 4.80));
+                        sy_bcc = max(750.0, round(E_mix * 4.50));
                         sy_bench = round((1 - f_bcc) * sy_fcc + f_bcc * sy_bcc);
                         uts_bench = round((1 - f_bcc) * (sy_fcc * 2.45) + f_bcc * (sy_bcc * 1.20));
                         elong_bench = round((1 - f_bcc) * 48.0 + f_bcc * 8.0, 1);
-                        hv_bench = round((1 - f_bcc) * (0.30 * sy_fcc + 72.0) + f_bcc * (0.36 * sy_bcc + 55.0));
-                        k1c_bench = round((1 - f_bcc) * 210.0 + f_bcc * 35.0, 1);
+                        hv_bench = round((1 - f_bcc) * (0.30 * sy_fcc + 72.0) + f_bcc * (0.36 * sy_bcc + 65.0));
+                        k1c_bench = round((1 - f_bcc) * 210.0 + f_bcc * 32.0, 1);
                         a_bench = round((1 - f_bcc) * 3.590 + f_bcc * 3.280, 3);
                     end
                     
