@@ -146,11 +146,11 @@ classdef HEAMechanicalEngine
             isLightweight = sum(c(ismember(elemList, lightElements))) >= 0.50 && ~isRefractory;
             isNoble = sum(c(ismember(elemList, nobleElements))) >= 0.60;
 
-            % Group 6 (Cr, Mo, W) directional d-bonding induces high DBTT > 293 K and room-temp cleavage
-            c_Group6 = sum(c(ismember(elemList, {'W', 'Mo', 'Cr'})));
+            % Group 6 (W, Mo) directional d-bonding induces high DBTT > 293 K and room-temp cleavage in Refractory BCC
+            c_W_Mo = sum(c(ismember(elemList, {'W', 'Mo'})));
             c_Group4 = sum(c(ismember(elemList, {'Ti', 'Zr', 'Hf'})));
-            isBrittleBCC = (c_Group6 >= 0.15) || (isRefractory && c_Group4 < 0.20 && VEC_val > 4.60);
-            isDuctileBCC = (isRefractory && (c_Group4 >= 0.25 || VEC_val <= 4.60) && c_Group6 < 0.15);
+            isBrittleBCC = (VEC_val < 6.87) && isRefractory && ((c_W_Mo >= 0.15) || (c_Group4 < 0.20 && VEC_val > 4.60) || any(strcmp(elemList, 'V')));
+            isDuctileBCC = (VEC_val < 6.87) && isRefractory && (c_Group4 >= 0.25 || VEC_val <= 4.60) && (c_W_Mo < 0.15);
 
             % Biomedical alloy electronic bond softening (Wang et al. 2019, bone-matching modulus ~65-78 GPa)
             if isBiomedical
@@ -442,15 +442,17 @@ classdef HEAMechanicalEngine
                 HV_base = 0.32 * sig_y_RT_MPa + 62.0;
             elseif strcmp(dominantStructure, 'FCC')
                 HV_base = 0.30 * sig_y_RT_MPa + 72.0;
-            elseif isBrittleBCC
-                HV_base = 0.36 * sig_y_RT_MPa + 120.0; % High Peierls barrier & cleavage constraint (NbMoTaW ~505 HV)
             elseif startsWith(dominantStructure, 'BCC')
-                HV_base = 0.34 * sig_y_RT_MPa + 65.0;
+                if isBrittleBCC
+                    HV_base = 0.36 * sig_y_RT_MPa + 120.0; % High Peierls barrier & cleavage constraint (NbMoTaW ~505 HV)
+                else
+                    HV_base = 0.34 * sig_y_RT_MPa + 65.0;
+                end
             else
                 f_bcc = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
                 HV_base = (1 - f_bcc) * (0.30 * sig_y_RT_MPa + 72.0) + f_bcc * (0.34 * sig_y_RT_MPa + 65.0);
             end
-            HV_val = round(HV_base + f_B2 * 120.0 + f_sigma * 150.0, 0);
+            HV_val = round(HV_base + f_B2 * 210.0 + f_sigma * 150.0, 0);
 
             % 7. Fracture Toughness K1c / KJc & Pugh Ratio
             Pugh_Ratio = round(B_eff_GPa / G_eff_GPa, 2);
@@ -468,16 +470,16 @@ classdef HEAMechanicalEngine
             elseif isLightweight
                 K1c_MPa_m05 = max(12.0, min(28.0, 22.0 - 10.0 * f_ppt_total));
                 ductilityClass = 'Moderate';
-            elseif isBrittleBCC
-                % Refractory NbMoTaW, CrMoNbV: room-temp cleavage fracture
-                K1c_MPa_m05 = max(8.0, min(15.0, 15.0 - 7.0 * f_ppt_total));
-                ductilityClass = 'Brittle (Room-Temp Cleavage, DBTT > 293 K)';
-            elseif isDuctileBCC
-                % Ductile refractory TiZrHfNbTa family
-                K1c_MPa_m05 = max(35.0, min(65.0, 50.0 - 15.0 * f_ppt_total));
-                ductilityClass = 'Ductile';
             elseif startsWith(dominantStructure, 'BCC')
-                if Pugh_Ratio > 1.75
+                if isBrittleBCC
+                    % Refractory NbMoTaW, CrMoNbV: room-temp cleavage fracture
+                    K1c_MPa_m05 = max(8.0, min(15.0, 15.0 - 7.0 * f_ppt_total));
+                    ductilityClass = 'Brittle (Room-Temp Cleavage, DBTT > 293 K)';
+                elseif isDuctileBCC
+                    % Ductile refractory TiZrHfNbTa family
+                    K1c_MPa_m05 = max(35.0, min(65.0, 50.0 - 15.0 * f_ppt_total));
+                    ductilityClass = 'Ductile';
+                elseif Pugh_Ratio > 1.75
                     K1c_MPa_m05 = max(20.0, min(45.0, 32.0 - 15.0 * f_ppt_total));
                     ductilityClass = 'Ductile';
                 else
@@ -486,7 +488,7 @@ classdef HEAMechanicalEngine
                 end
             else % Duplex
                 f_bcc_d = max(0.0, min(1.0, (7.80 - VEC_val) / (7.80 - 6.87)));
-                K1c_MPa_m05 = max(20.0, (1 - f_bcc_d) * 220.0 + f_bcc_d * 40.0 - 150.0 * f_ppt_total);
+                K1c_MPa_m05 = max(20.0, (1 - f_bcc_d) * 220.0 + f_bcc_d * 45.0 - 55.0 * f_ppt_total);
                 if Pugh_Ratio > 1.75, ductilityClass = 'Ductile'; else, ductilityClass = 'Moderate'; end
             end
             K1c_MPa_m05 = round(K1c_MPa_m05, 1);
