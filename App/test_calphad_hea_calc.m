@@ -500,12 +500,62 @@ function test_calphad_hea_calc()
         warning('Chime warning: %s', err.message);
     end
 
+    % Test 22: Substrate & Coating Process Interactive Controls & Real-Time Dynamic Re-evaluation
+    fprintf('\n--- Test 22: Substrate & Coating Process Controls & Dynamic Recalculation ---\n');
+    % 22.1 Verify dropdown components exist and are populated
+    assert(~isempty(app.DropdownSubstrate) && isvalid(app.DropdownSubstrate), 'DropdownSubstrate must exist.');
+    assert(~isempty(app.DropdownCoatingProcess) && isvalid(app.DropdownCoatingProcess), 'DropdownCoatingProcess must exist.');
+    assert(ismember('AISI 1045', app.DropdownSubstrate.Items), 'DropdownSubstrate must include AISI 1045.');
+    assert(ismember('Ti6Al4V', app.DropdownSubstrate.Items), 'DropdownSubstrate must include Ti6Al4V.');
+    assert(ismember('Laser Cladding', app.DropdownCoatingProcess.Items), 'DropdownCoatingProcess must include Laser Cladding.');
+    assert(ismember('HVOF', app.DropdownCoatingProcess.Items), 'DropdownCoatingProcess must include HVOF.');
+
+    % 22.2 Verify initial coating calculation metrics
+    assert(isfield(app.CurrentThermoMetrics, 'Coating'), 'CurrentThermoMetrics must contain Coating field.');
+    cmInit = app.CurrentThermoMetrics.Coating;
+    assert(strcmp(cmInit.Substrate, 'AISI 1045'), 'Initial substrate must be AISI 1045.');
+    assert(strcmp(cmInit.Process, 'Laser Cladding'), 'Initial process must be Laser Cladding.');
+    assert(cmInit.DilutionRatio_pct >= 5 && cmInit.DilutionRatio_pct <= 25, 'Laser cladding nominal dilution must be ~10%.');
+    fprintf('  Initial Coating state: %s on %s | Dilution = %.1f%%, Interface HV = %.0f, Wear Rate = %.2e\n', ...
+        cmInit.Process, cmInit.Substrate, cmInit.DilutionRatio_pct, cmInit.InterfaceHardness_HV, cmInit.SpecificWearRate_1e6_mm3_Nm);
+
+    % 22.3 Dynamically change substrate to Ti6Al4V and process to HVOF via inspector controls
+    app.DropdownSubstrate.Value = 'Ti6Al4V';
+    app.DropdownCoatingProcess.Value = 'HVOF';
+    app.onCoatingParamsChanged();
+
+    cmUpdated = app.CurrentThermoMetrics.Coating;
+    assert(strcmp(cmUpdated.Substrate, 'Ti6Al4V'), 'Updated substrate must be Ti6Al4V.');
+    assert(strcmp(cmUpdated.Process, 'HVOF'), 'Updated process must be HVOF.');
+    assert(cmUpdated.DilutionRatio_pct < 2.0, 'HVOF dilution ratio must be < 2%.');
+    fprintf('  Dynamic re-calculation: %s on %s | Dilution = %.1f%%, Interface HV = %.0f, Wear Rate = %.2e\n', ...
+        cmUpdated.Process, cmUpdated.Substrate, cmUpdated.DilutionRatio_pct, cmUpdated.InterfaceHardness_HV, cmUpdated.SpecificWearRate_1e6_mm3_Nm);
+
+    % 22.4 Verify TableMechanicalProperties reflects dilution and interface hardness
+    mechData = app.TableMechanicalProperties.Data;
+    assert(~isempty(mechData), 'TableMechanicalProperties must have data.');
+    propNames = mechData(:, 1);
+    assert(any(contains(propNames, 'Substrate Dilution Ratio')), 'TableMechanicalProperties must contain Substrate Dilution Ratio.');
+    assert(any(contains(propNames, 'Diluted Interface Hardness')), 'TableMechanicalProperties must contain Diluted Interface Hardness.');
+    assert(any(contains(propNames, 'Specific Wear Rate')), 'TableMechanicalProperties must contain Specific Wear Rate.');
+    assert(any(contains(propNames, 'Scratch Adhesion Critical Load')), 'TableMechanicalProperties must contain Scratch Adhesion Critical Load.');
+    fprintf('  TableMechanicalProperties successfully populated with all coating and dilution rows!\n');
+
+    % 22.5 Verify Terminal SET SUBSTRATE and SET PROCESS commands
+    app.onTerminalEnter('SET SUBSTRATE 304L SS');
+    assert(strcmp(app.DropdownSubstrate.Value, '304L SS'), 'Terminal SET SUBSTRATE must update DropdownSubstrate to 304L SS.');
+
+    app.onTerminalEnter('SET PROCESS Laser Surface Alloying');
+    assert(strcmp(app.DropdownCoatingProcess.Value, 'Laser Surface Alloying'), 'Terminal SET PROCESS must update DropdownCoatingProcess.');
+    assert(app.CurrentThermoMetrics.Coating.DilutionRatio_pct >= 30, 'Laser Surface Alloying must yield high dilution (>30%).');
+    fprintf('  Terminal SET commands for substrate and process successfully executed and synchronized!\n');
+
     % Cleanup
     delete(app.UIFigure);
     delete(wrapperApp.UIFigure);
     delete(legacyApp.UIFigure);
 
     fprintf('\n=================================================================\n');
-    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (21/21)   \n');
+    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (22/22)   \n');
     fprintf('=================================================================\n');
 end

@@ -42,6 +42,8 @@ classdef CALPHADHEACalc < handle
         LabelOxTemp           matlab.ui.control.Label
         SliderScherrer        matlab.ui.control.Slider
         LabelScherrer         matlab.ui.control.Label
+        DropdownSubstrate     matlab.ui.control.DropDown
+        DropdownCoatingProcess matlab.ui.control.DropDown
         BtnCalculate          matlab.ui.control.Button
         BtnScreenAll          matlab.ui.control.Button
         SpinnerMaxIters       matlab.ui.control.Spinner
@@ -838,8 +840,8 @@ classdef CALPHADHEACalc < handle
         % CONDITION & PROPERTY INSPECTOR
         % =========================================================================
         function buildConditionInspector(app)
-            app.InspectorGrid = uigridlayout(app.InspectorPanel, [13, 2]);
-            app.InspectorGrid.RowHeight = {22, 22, 22, 140, 26, 24, 24, 24, 24, 55, 24, 22, 26};
+            app.InspectorGrid = uigridlayout(app.InspectorPanel, [15, 2]);
+            app.InspectorGrid.RowHeight = {22, 22, 22, 140, 26, 24, 24, 24, 24, 24, 24, 55, 24, 22, 26};
             app.InspectorGrid.ColumnWidth = {100, '1x'};
             app.InspectorGrid.Padding = [4 4 4 4];
             app.InspectorGrid.RowSpacing = 3;
@@ -961,11 +963,31 @@ classdef CALPHADHEACalc < handle
                 'ValueChangedFcn', @(~, ~) onScherrerChanged(app));
             app.LabelScherrer = uilabel(xrdGrid, 'Text', '35 nm', 'FontSize', 9, 'FontWeight', 'bold');
 
-            % Row 10: Phase Selection Matrix (Entered/Suspended)
+            % Row 10: Substrate Selection Dropdown
+            subLabel = uilabel(app.InspectorGrid, 'Text', 'Substrate:', 'FontSize', 9, 'FontWeight', 'bold');
+            subLabel.Layout.Row = 10; subLabel.Layout.Column = 1;
+            app.DropdownSubstrate = uidropdown(app.InspectorGrid, ...
+                'Items', {'AISI 1045', 'Q235', '304L SS', '316L SS', 'Ti6Al4V', 'Inconel 718', 'Pure Copper', 'AA6061'}, ...
+                'Value', 'AISI 1045', 'FontSize', 8.5, ...
+                'Tooltip', 'Engineering Substrate for Dilution, Adhesion & Thermal Stress Modeling (Li et al. 2019)', ...
+                'ValueChangedFcn', @(~, ~) onCoatingParamsChanged(app));
+            app.DropdownSubstrate.Layout.Row = 10; app.DropdownSubstrate.Layout.Column = 2;
+
+            % Row 11: Deposition Process Dropdown
+            procLabel = uilabel(app.InspectorGrid, 'Text', 'Coating Process:', 'FontSize', 9, 'FontWeight', 'bold');
+            procLabel.Layout.Row = 11; procLabel.Layout.Column = 1;
+            app.DropdownCoatingProcess = uidropdown(app.InspectorGrid, ...
+                'Items', {'Laser Cladding', 'Laser Surface Alloying', 'HVOF', 'Plasma Spraying', 'Magnetron Sputtering'}, ...
+                'Value', 'Laser Cladding', 'FontSize', 8.5, ...
+                'Tooltip', 'Surface Deposition Process & Dilution Boundary Condition (Li et al. 2019)', ...
+                'ValueChangedFcn', @(~, ~) onCoatingParamsChanged(app));
+            app.DropdownCoatingProcess.Layout.Row = 11; app.DropdownCoatingProcess.Layout.Column = 2;
+
+            % Row 12: Phase Selection Matrix (Entered/Suspended)
             phLabel = uilabel(app.InspectorGrid, 'Text', 'Phase Status:', 'FontSize', 9, 'FontWeight', 'bold');
-            phLabel.Layout.Row = 10; phLabel.Layout.Column = 1;
+            phLabel.Layout.Row = 12; phLabel.Layout.Column = 1;
             phGrid = uigridlayout(app.InspectorGrid, [1, 1]);
-            phGrid.Layout.Row = 10; phGrid.Layout.Column = 2;
+            phGrid.Layout.Row = 12; phGrid.Layout.Column = 2;
             phGrid.Padding = [0 0 0 0];
 
             initPhases = table({'FCC_A1'; 'BCC_A2'; 'B2_Ordered'; 'LIQUID'; 'SIGMA'}, ...
@@ -978,9 +1000,11 @@ classdef CALPHADHEACalc < handle
                 'ColumnEditable', [false, true], ...
                 'FontSize', 8.5);
 
-            % Row 11: Iteration & Convergence Tolerance Controls
-            uilabel(app.InspectorGrid, 'Text', 'Iterations / Tol:', 'FontSize', 9, 'FontWeight', 'bold');
+            % Row 13: Iteration & Convergence Tolerance Controls
+            iterLabel = uilabel(app.InspectorGrid, 'Text', 'Iterations / Tol:', 'FontSize', 9, 'FontWeight', 'bold');
+            iterLabel.Layout.Row = 13; iterLabel.Layout.Column = 1;
             iterGrid = uigridlayout(app.InspectorGrid, [1, 2]);
+            iterGrid.Layout.Row = 13; iterGrid.Layout.Column = 2;
             iterGrid.Padding = [0 0 0 0];
             iterGrid.ColumnWidth = {'1x', '1.1x'};
             app.SpinnerMaxIters = uispinner(iterGrid, ...
@@ -993,9 +1017,11 @@ classdef CALPHADHEACalc < handle
                 'Tooltip', 'Equilibrium Convergence Residual Tolerance', ...
                 'ValueChangedFcn', @(~, evt) onToleranceChanged(app, evt.Value));
 
-            % Row 12: Notification & Audio Chime Toggles
-            uilabel(app.InspectorGrid, 'Text', 'Notifications:', 'FontSize', 9);
+            % Row 14: Notification & Audio Chime Toggles
+            notifLabel = uilabel(app.InspectorGrid, 'Text', 'Notifications:', 'FontSize', 9);
+            notifLabel.Layout.Row = 14; notifLabel.Layout.Column = 1;
             notifyGrid = uigridlayout(app.InspectorGrid, [1, 2]);
+            notifyGrid.Layout.Row = 14; notifyGrid.Layout.Column = 2;
             notifyGrid.Padding = [0 0 0 0];
             notifyGrid.ColumnWidth = {'1x', '1x'};
             app.CheckNotifyComplete = uicheckbox(notifyGrid, ...
@@ -1005,9 +1031,9 @@ classdef CALPHADHEACalc < handle
                 'Text', 'Chime Audio', 'Value', true, 'FontSize', 8.5, ...
                 'Tooltip', 'Play pleasant acoustic chime upon convergence');
 
-            % Row 13: Solve Shortcut Button
+            % Row 15: Solve Shortcut Button
             btnSolveRow = uigridlayout(app.InspectorGrid, [1, 1]);
-            btnSolveRow.Layout.Row = 13; btnSolveRow.Layout.Column = [1 2];
+            btnSolveRow.Layout.Row = 15; btnSolveRow.Layout.Column = [1 2];
             btnSolveRow.Padding = [0 0 0 0];
             uibutton(btnSolveRow, 'Text', 'Calculate', ...
                 'FontWeight', 'bold', 'FontSize', 9.5, ...
@@ -1921,6 +1947,12 @@ classdef CALPHADHEACalc < handle
             % 1. Thermodynamic & Phase Stability
             try
                 thOpts = struct('MaxIterations', app.CurrentMaxIters, 'Tolerance', app.CurrentTolerance);
+                if ~isempty(app.DropdownSubstrate) && isvalid(app.DropdownSubstrate)
+                    thOpts.Substrate = app.DropdownSubstrate.Value;
+                end
+                if ~isempty(app.DropdownCoatingProcess) && isvalid(app.DropdownCoatingProcess)
+                    thOpts.Process = app.DropdownCoatingProcess.Value;
+                end
                 app.CurrentThermoMetrics = HEAThermoEngine.computeThermodynamics(app.CurrentElements, app.CurrentFractions, thOpts);
                 nIterTh = 8;
                 if isfield(app.CurrentThermoMetrics, 'IterationsExecuted')
@@ -3616,11 +3648,13 @@ classdef CALPHADHEACalc < handle
                     if isfield(app.CurrentThermoMetrics, 'Coating') && isstruct(app.CurrentThermoMetrics.Coating) && ~isfield(app.CurrentThermoMetrics.Coating, 'Error')
                         cm = app.CurrentThermoMetrics.Coating;
                         tableRows = [tableRows; { ...
-                            'Specific Wear Rate (Archard)',           'W',               sprintf('%.2e', cm.SpecificWearRate_1e6_mm3_Nm), '1e-6 mm^3/(N*m)', 'Archard wear model: W = K_wear / H (Li et al. 2019)'
-                            'Friction Coefficient (COF)',             'μ',               sprintf('%.3f', cm.FrictionCoefficient_COF),    '-',                'ASTM G99 dry sliding friction vs counterface'
-                            'Elastic Strain to Failure',              'H / E',           sprintf('%.4f', cm.ElasticStrainParam_HE),       '-',                'Musil parameter: resistance to crack initiation'
-                            'Plastic Deformation Resistance',         'H^3 / E^2',       sprintf('%.4f', cm.PlasticResistance_H3E2_GPa),  'GPa',              'Resistance to abrasive plastic ploughing'
-                            'Scratch Adhesion Critical Load',         'Lc',              sprintf('%.1f', cm.ScratchCriticalLoad_Lc_N),    'N',                'Critical load in scratch adhesion testing'
+                            'Substrate Dilution Ratio',               'D',               sprintf('%.1f', cm.DilutionRatio_pct),          '%',                sprintf('Substrate intermixing: %s (%s)', cm.Substrate, cm.Process);
+                            'Diluted Interface Hardness',             'HV_int',          sprintf('%.0f', cm.InterfaceHardness_HV),       'HV',               'Composite interface hardness post-dilution intermixing';
+                            'Specific Wear Rate (Archard)',           'W',               sprintf('%.2e', cm.SpecificWearRate_1e6_mm3_Nm), '1e-6 mm^3/(N*m)', 'Archard wear model: W = K_wear / H (Li et al. 2019)';
+                            'Friction Coefficient (COF)',             'μ',               sprintf('%.3f', cm.FrictionCoefficient_COF),    '-',                'ASTM G99 dry sliding friction vs counterface';
+                            'Elastic Strain to Failure',              'H / E',           sprintf('%.4f', cm.ElasticStrainParam_HE),       '-',                'Musil parameter: resistance to crack initiation';
+                            'Plastic Deformation Resistance',         'H^3 / E^2',       sprintf('%.4f', cm.PlasticResistance_H3E2_GPa),  'GPa',              'Resistance to abrasive plastic ploughing';
+                            'Scratch Adhesion Critical Load',         'Lc',              sprintf('%.1f', cm.ScratchCriticalLoad_Lc_N),    'N',                'Critical load in scratch adhesion testing';
                             'Recommended Deposition Process',         'Proc',            char(cm.RecommendedProcess),                    '-',                'Process suitability based on substrate dilution & stress'
                         }];
                     end
@@ -6414,6 +6448,27 @@ classdef CALPHADHEACalc < handle
             logMsg(app, sprintf('[Solver Config] Convergence Tolerance set to %.1e.', app.CurrentTolerance));
         end
 
+        function onCoatingParamsChanged(app)
+            if ~app.HasCalculatedOnce || isempty(fieldnames(app.CurrentThermoMetrics)), return; end
+            subKey = 'AISI 1045';
+            if ~isempty(app.DropdownSubstrate) && isvalid(app.DropdownSubstrate)
+                subKey = app.DropdownSubstrate.Value;
+            end
+            procKey = 'Laser Cladding';
+            if ~isempty(app.DropdownCoatingProcess) && isvalid(app.DropdownCoatingProcess)
+                procKey = app.DropdownCoatingProcess.Value;
+            end
+
+            cOpts = struct('Substrate', subKey, 'Process', procKey);
+            app.CurrentThermoMetrics.Coating = HEACoatingEngine.computeCoatingProperties(...
+                app.CurrentElements, app.CurrentFractions, app.CurrentThermoMetrics, cOpts);
+
+            renderMechanicalView(app);
+            cm = app.CurrentThermoMetrics.Coating;
+            logMsg(app, sprintf('[Coating Inspector] Updated: Substrate = %s | Process = %s (Dilution: %.1f%%, Interface HV: %.0f, Wear Rate: %.2e 1e-6 mm^3/(N*m), Lc: %.1f N)', ...
+                cm.Substrate, cm.Process, cm.DilutionRatio_pct, cm.InterfaceHardness_HV, cm.SpecificWearRate_1e6_mm3_Nm, cm.ScratchCriticalLoad_Lc_N));
+        end
+
         function onConsoleTabSelectionChanged(app, evt)
             if isempty(evt) || isempty(evt.NewValue), return; end
             newTab = evt.NewValue;
@@ -8594,11 +8649,37 @@ classdef CALPHADHEACalc < handle
                                     onOxidationTempChanged(app);
                                     outLines{end+1} = sprintf('Oxidation exposure temperature set to %.0f C', oxVal);
                                 end
+                            case 'SUBSTRATE'
+                                if numel(parts) >= 3
+                                    subName = strtrim(strjoin(parts(3:end), ' '));
+                                    items = app.DropdownSubstrate.Items;
+                                    mIdx = find(strcmpi(items, subName));
+                                    if ~isempty(mIdx)
+                                        app.DropdownSubstrate.Value = items{mIdx(1)};
+                                        onCoatingParamsChanged(app);
+                                        outLines{end+1} = sprintf('Substrate set to %s', app.DropdownSubstrate.Value);
+                                    else
+                                        outLines{end+1} = sprintf('Unknown substrate: %s. Valid: %s', subName, strjoin(items, ', '));
+                                    end
+                                end
+                            case {'PROCESS', 'COATING_PROCESS'}
+                                if numel(parts) >= 3
+                                    procName = strtrim(strjoin(parts(3:end), ' '));
+                                    items = app.DropdownCoatingProcess.Items;
+                                    mIdx = find(strcmpi(items, procName));
+                                    if ~isempty(mIdx)
+                                        app.DropdownCoatingProcess.Value = items{mIdx(1)};
+                                        onCoatingParamsChanged(app);
+                                        outLines{end+1} = sprintf('Coating process set to %s', app.DropdownCoatingProcess.Value);
+                                    else
+                                        outLines{end+1} = sprintf('Unknown process: %s. Valid: %s', procName, strjoin(items, ', '));
+                                    end
+                                end
                             otherwise
                                 outLines{end+1} = sprintf('Unknown parameter: %s. Type HELP for syntax.', sub);
                         end
                     else
-                        outLines{end+1} = 'Syntax: SET <ALLOY|T|P|GRAIN|OX_T> <value>';
+                        outLines{end+1} = 'Syntax: SET <ALLOY|T|P|GRAIN|OX_T|SUBSTRATE|PROCESS> <value>';
                     end
 
                 case 'SHOW'

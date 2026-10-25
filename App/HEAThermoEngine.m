@@ -1766,7 +1766,7 @@ classdef HEAThermoEngine
 
             % Surface Coating & Tribological Engineering Engine (Li et al. Adv. Eng. Mater. 2019)
             try
-                coatingMetrics = HEACoatingEngine.computeCoatingProperties(elements, x, metrics);
+                coatingMetrics = HEACoatingEngine.computeCoatingProperties(elements, x, metrics, userOpts);
                 metrics.Coating = coatingMetrics;
             catch ME_coat
                 metrics.Coating = struct('Error', ME_coat.message);
