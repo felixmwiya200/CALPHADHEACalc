@@ -55,8 +55,6 @@ classdef CALPHADHEACalc < handle
         
         % Center Main Display: Multi-Document Area
         MainTabGroup          matlab.ui.container.TabGroup
-        TabActivities         matlab.ui.container.Tab
-        LabelActivityAlloy    matlab.ui.control.Label
         TabEquilibrium        matlab.ui.container.Tab
         TabPhaseDiagrams      matlab.ui.container.Tab
         TabTransport          matlab.ui.container.Tab
@@ -240,7 +238,6 @@ classdef CALPHADHEACalc < handle
 
         % Workflow Stepper & Sequential Navigation
         WorkflowStepperPanel  matlab.ui.container.Panel
-        BtnActivityLauncher   matlab.ui.control.Button
         WorkflowButtons       cell    = {}
         BtnPrevStep           matlab.ui.control.Button
         BtnNextStep           matlab.ui.control.Button
@@ -1080,10 +1077,6 @@ classdef CALPHADHEACalc < handle
         % MAIN WORKSPACE TABS
         % =========================================================================
         function buildMainTabs(app)
-            % TAB 0: Thermo-Calc 2026b Activity Launcher & Configuration Workspace
-            app.TabActivities = uitab(app.MainTabGroup, 'Title', 'Activities (Thermo-Calc 2026b)', 'Scrollable', 'on');
-            buildActivitiesTab(app);
-
             % TAB 1: CALPHAD Phase Stability & Solvus
             app.TabEquilibrium = uitab(app.MainTabGroup, 'Title', '1D Phase Equilibrium', 'Scrollable', 'on');
             eqGrid = uigridlayout(app.TabEquilibrium, [2, 1]);
@@ -1171,25 +1164,17 @@ classdef CALPHADHEACalc < handle
         % WORKFLOW STEPPER NAVIGATION & SEQUENTIAL WORKFLOW PIPELINE
         % =========================================================================
         function buildWorkflowStepper(app)
-            sGrid = uigridlayout(app.WorkflowStepperPanel, [1, 11]);
+            sGrid = uigridlayout(app.WorkflowStepperPanel, [1, 10]);
             sGrid.Padding = [2 2 2 2];
             sGrid.ColumnSpacing = 3;
             sGrid.RowSpacing = 0;
-            sGrid.ColumnWidth = {55, 80, '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', 55};
+            sGrid.ColumnWidth = {60, '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', 60};
 
             app.BtnPrevStep = uibutton(sGrid, ...
                 'Text', 'Prev', ...
                 'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'Tooltip', 'Navigate to Previous Workflow Step (Alt+Left)', ...
                 'ButtonPushedFcn', @(~, ~) navigateWorkflowStep(app, -1));
-
-            app.BtnActivityLauncher = uibutton(sGrid, ...
-                'Text', 'Activities', ...
-                'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
-                'Tooltip', 'Thermo-Calc 2026b Activity Launcher & Configuration Workspace', ...
-                'BackgroundColor', [0.88, 0.92, 0.98], ...
-                'FontColor', [0.12, 0.28, 0.55], ...
-                'ButtonPushedFcn', @(~, ~) switchToTab(app, app.TabActivities));
 
             stepTitles = {
                 '1. Equilibrium', ...
@@ -1242,21 +1227,11 @@ classdef CALPHADHEACalc < handle
                     app.TabMechanical, app.TabEnvironmental, app.TabXRD, ...
                     app.TabApplications, app.TabValidation};
             curTab = app.MainTabGroup.SelectedTab;
-            currIdx = -1;
+            currIdx = 1;
             for k = 1:numel(tabs)
                 if ~isempty(tabs{k}) && curTab == tabs{k}
                     currIdx = k;
                     break;
-                end
-            end
-
-            if isprop(app, 'BtnActivityLauncher') && ~isempty(app.BtnActivityLauncher) && isvalid(app.BtnActivityLauncher)
-                if ~isempty(app.TabActivities) && curTab == app.TabActivities
-                    app.BtnActivityLauncher.BackgroundColor = [0.15, 0.45, 0.82];
-                    app.BtnActivityLauncher.FontColor = [1 1 1];
-                else
-                    app.BtnActivityLauncher.BackgroundColor = [0.88, 0.92, 0.98];
-                    app.BtnActivityLauncher.FontColor = [0.12, 0.28, 0.55];
                 end
             end
 
@@ -1310,219 +1285,6 @@ classdef CALPHADHEACalc < handle
             end
         end
 
-
-        % =========================================================================
-        % TAB 0: THERMO-CALC 2026b ACTIVITY LAUNCHER & CONFIGURATION WORKSPACE
-        % =========================================================================
-        function buildActivitiesTab(app)
-            actGrid = uigridlayout(app.TabActivities, [2, 1]);
-            actGrid.RowHeight = {65, '1x'};
-            actGrid.Padding = [8 8 8 8];
-            actGrid.RowSpacing = 8;
-            
-            % 1. Header Banner
-            headerPanel = uipanel(actGrid, 'BackgroundColor', [0.12, 0.20, 0.35], 'BorderType', 'none');
-            headerPanel.Layout.Row = 1;
-            hGrid = uigridlayout(headerPanel, [1, 3]);
-            hGrid.Padding = [12 6 12 6];
-            hGrid.ColumnWidth = {'2x', '1.3x', 140};
-            
-            titleGrid = uigridlayout(hGrid, [2, 1]);
-            titleGrid.Padding = [0 0 0 0]; titleGrid.RowSpacing = 1;
-            uilabel(titleGrid, 'Text', 'Thermo-Calc 2026b Activity Launcher & Configuration Workspace', ...
-                'FontName', 'Segoe UI', 'FontSize', 12.5, 'FontWeight', 'bold', 'FontColor', [1 1 1]);
-            uilabel(titleGrid, 'Text', 'Integrated CALPHAD, Kinetics, and Multi-Physics Property Model Activities', ...
-                'FontName', 'Segoe UI', 'FontSize', 9.0, 'FontColor', [0.80, 0.88, 0.98]);
-            
-            app.LabelActivityAlloy = uilabel(hGrid, 'Text', 'Active System: Cantor (CoCrFeMnNi) | FCC (A1)', ...
-                'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', 'FontColor', [0.55, 0.90, 0.70]);
-            
-            uibutton(hGrid, 'Text', 'Quick Solve (F5)', 'FontName', 'Segoe UI', 'FontSize', 9.5, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.10, 0.60, 0.35], 'FontColor', [1 1 1], ...
-                'ButtonPushedFcn', @(~, ~) calculateAll(app));
-            
-            % 2. 4 Group Panels in 2x2 Grid
-            cardsGrid = uigridlayout(actGrid, [2, 2]);
-            cardsGrid.Layout.Row = 2;
-            cardsGrid.Padding = [2 2 2 2];
-            cardsGrid.RowSpacing = 8;
-            cardsGrid.ColumnSpacing = 8;
-            cardsGrid.RowHeight = {'1x', '1x'};
-            cardsGrid.ColumnWidth = {'1x', '1x'};
-            
-            % Category 1: Equilibrium Calculations
-            pEq = uipanel(cardsGrid, 'Title', 'EQUILIBRIUM CALCULATIONS', ...
-                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.97, 0.98, 1.0], 'ForegroundColor', [0.12, 0.28, 0.55]);
-            pEqGrid = uigridlayout(pEq, [4, 1]);
-            pEqGrid.Padding = [4 4 4 4]; pEqGrid.RowSpacing = 4;
-            createActivityCard(app, pEqGrid, 1, 'Single Point Equilibrium', ...
-                'Calculate Gibbs energy, chemical potentials, and phase fractions at single T, P.', ...
-                'Launch Single Point', @(~, ~) launchActivity(app, 'single_point'));
-            createActivityCard(app, pEqGrid, 2, 'One-Axis Equilibrium (T-Step)', ...
-                'Step temperature to trace solvus boundaries, phase stability, and solidus/liquidus.', ...
-                'Launch One-Axis T-Step', @(~, ~) launchActivity(app, 'one_axis'));
-            createActivityCard(app, pEqGrid, 3, 'Aqueous Corrosion & Pourbaix (PDM)', ...
-                'Point Defect Model (PDM), mixed potential, and ASTM G102 degradation rates.', ...
-                'Launch Pourbaix / PDM', @(~, ~) launchActivity(app, 'pourbaix'));
-            createActivityCard(app, pEqGrid, 4, 'Isopleth & Ternary Phase Diagrams', ...
-                'Pseudo-binary isopleths (T-x) and isothermal Gibbs ternary triangular sections.', ...
-                'Launch Phase Diagrams', @(~, ~) launchActivity(app, 'phase_diagrams'));
-            
-            % Category 2: Non-Equilibrium & Kinetics
-            pNonEq = uipanel(cardsGrid, 'Title', 'NON-EQUILIBRIUM & KINETICS', ...
-                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.98, 0.97, 1.0], 'ForegroundColor', [0.38, 0.18, 0.55]);
-            pNonEqGrid = uigridlayout(pNonEq, [4, 1]);
-            pNonEqGrid.Padding = [4 4 4 4]; pNonEqGrid.RowSpacing = 4;
-            createActivityCard(app, pNonEqGrid, 1, 'Scheil-Gulliver Solidification', ...
-                'Non-equilibrium solidification with zero solute diffusion in solid and complete liquid mixing.', ...
-                'Launch Scheil Solidification', @(~, ~) launchActivity(app, 'scheil'));
-            createActivityCard(app, pNonEqGrid, 2, 'Diffusion & Interdiffusion DEMO', ...
-                'Fickian multicomponent transport, chemical mobility, and Kirkendall marker displacement.', ...
-                'Launch Diffusion DEMO', @(~, ~) launchActivity(app, 'diffusion'));
-            createActivityCard(app, pNonEqGrid, 3, 'Homogenization Kinetics DEMO', ...
-                'Estimate homogenization time and temperature to dissolve dendritic microsegregation.', ...
-                'Launch Homogenization DEMO', @(~, ~) launchActivity(app, 'homogenization'));
-            createActivityCard(app, pNonEqGrid, 4, 'Precipitation Hardening (TC-PRISMA DEMO)', ...
-                'Dislocation bowing, Orowan looping, and coherency strain from secondary nanoscale phases.', ...
-                'Launch Precipitation Hardening', @(~, ~) launchActivity(app, 'precipitation'));
-            
-            % Category 3: Property Models & Mechanics
-            pProp = uipanel(cardsGrid, 'Title', 'PROPERTY MODELS & MECHANICS', ...
-                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.97, 1.0, 0.98], 'ForegroundColor', [0.15, 0.48, 0.25]);
-            pPropGrid = uigridlayout(pProp, [5, 1]);
-            pPropGrid.Padding = [4 4 4 4]; pPropGrid.RowSpacing = 4;
-            createActivityCard(app, pPropGrid, 1, 'Mechanical Performance & Hall-Petch', ...
-                'Flow stress, Hall-Petch grain boundary strengthening, Varvenne-Curtin SSS, UTS.', ...
-                'Launch Mechanical Model', @(~, ~) launchActivity(app, 'mechanical'));
-            createActivityCard(app, pPropGrid, 2, 'High-T Oxidation Kinetics (Wagner)', ...
-                'Wagner parabolic oxidation rate kp, 118-oxide Ellingham formations, and scale regime.', ...
-                'Launch Oxidation Kinetics', @(~, ~) launchActivity(app, 'oxidation'));
-            createActivityCard(app, pPropGrid, 3, 'Surface Coating & Dilution Modeling', ...
-                'Laser cladding and thermal spray on 304L/316L/Ti substrates with dilution interface HV.', ...
-                'Launch Coating Modeling', @(~, ~) launchActivity(app, 'coating'));
-            createActivityCard(app, pPropGrid, 4, 'Atomic Lattice Distortion (He & Yang 2018)', ...
-                'Soft-sphere radial strains, RMS fluctuation, gamma_th shear strain, and Labusch dislocation glide.', ...
-                'Launch Lattice Distortion', @(~, ~) launchActivity(app, 'lattice_distortion'));
-            createActivityCard(app, pPropGrid, 5, 'Kinematic Powder XRD Diffractometry', ...
-                'Bragg reflection indexing, Debye-Waller attenuation, and high-angle doublet peak splitting.', ...
-                'Launch Powder XRD', @(~, ~) launchActivity(app, 'xrd'));
-            
-            % Category 4: Applications & Alloy Discovery
-            pApp = uipanel(cardsGrid, 'Title', 'APPLICATIONS & ALLOY DISCOVERY', ...
-                'FontName', 'Segoe UI', 'FontSize', 10, 'FontWeight', 'bold', ...
-                'BackgroundColor', [1.0, 0.98, 0.96], 'ForegroundColor', [0.65, 0.32, 0.10]);
-            pAppGrid = uigridlayout(pApp, [4, 1]);
-            pAppGrid.Padding = [4 4 4 4]; pAppGrid.RowSpacing = 4;
-            createActivityCard(app, pAppGrid, 1, 'Industrial Suitability Radar', ...
-                'Spider performance radar evaluating automotive, cryogenic, aerospace, turbine, and bio suitability.', ...
-                'Launch Suitability Radar', @(~, ~) launchActivity(app, 'suitability'));
-            createActivityCard(app, pAppGrid, 2, 'High-Throughput Screener (51 HEAs)', ...
-                'Rapid multi-physics screening and Pareto ranking across all 51 landmark High-Entropy Alloys.', ...
-                'Launch 51-Alloy Screener', @(~, ~) launchActivity(app, 'screener'));
-            createActivityCard(app, pAppGrid, 3, 'COMSOL Multiphysics LiveLink & Scripts', ...
-                'Export continuous smooth step functions, temperature-dependent properties, and TC-Python scripts.', ...
-                'Launch COMSOL Vault', @(~, ~) launchActivity(app, 'comsol'));
-            createActivityCard(app, pAppGrid, 4, 'CALPHAD TDB vs Empirical Benchmark', ...
-                'Audit evaluated Redlich-Kister excess Gibbs energy against empirical Miedema models and 12,427 tests.', ...
-                'Launch TDB Audit', @(~, ~) launchActivity(app, 'tdb_audit'));
-        end
-
-        function createActivityCard(app, parentGrid, rowIdx, titleStr, descStr, btnText, btnCallback)
-            cardPanel = uipanel(parentGrid, 'BackgroundColor', [1 1 1], 'BorderType', 'line', 'HighlightColor', [0.85, 0.88, 0.92]);
-            cardPanel.Layout.Row = rowIdx;
-            cGrid = uigridlayout(cardPanel, [1, 2]);
-            cGrid.Padding = [4 3 4 3];
-            cGrid.ColumnWidth = {'1x', 145};
-            
-            tGrid = uigridlayout(cGrid, [2, 1]);
-            tGrid.Padding = [0 0 0 0]; tGrid.RowSpacing = 1;
-            uilabel(tGrid, 'Text', titleStr, 'FontName', 'Segoe UI', 'FontSize', 9.0, 'FontWeight', 'bold', 'FontColor', [0.15, 0.20, 0.30]);
-            uilabel(tGrid, 'Text', descStr, 'FontName', 'Segoe UI', 'FontSize', 8.0, 'FontColor', [0.45, 0.50, 0.55]);
-            
-            uibutton(cGrid, 'Text', btnText, 'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
-                'BackgroundColor', [0.93, 0.95, 0.98], 'FontColor', [0.15, 0.35, 0.65], ...
-                'ButtonPushedFcn', btnCallback);
-        end
-
-        function launchActivity(app, activityKey)
-            if ~app.HasCalculatedOnce
-                calculateAll(app);
-            end
-            switch lower(activityKey)
-                case 'single_point'
-                    switchToTab(app, app.TabEquilibrium);
-                    logMsg(app, '[Activity Launcher] Activated: Single Point Equilibrium.');
-                case 'one_axis'
-                    switchToTab(app, app.TabEquilibrium);
-                    logMsg(app, '[Activity Launcher] Activated: One-Axis Equilibrium (T-Step).');
-                case 'pourbaix'
-                    switchToTab(app, app.TabEnvironmental);
-                    if isprop(app, 'EnvTabGroup') && ~isempty(app.EnvTabGroup) && isvalid(app.EnvTabGroup)
-                        app.EnvTabGroup.SelectedTab = app.SubtabCorrosion;
-                    end
-                    logMsg(app, '[Activity Launcher] Activated: Aqueous Corrosion & Pourbaix (PDM).');
-                case 'phase_diagrams'
-                    switchToTab(app, app.TabPhaseDiagrams);
-                    logMsg(app, '[Activity Launcher] Activated: Isopleth & Ternary Phase Diagrams.');
-                case 'scheil'
-                    switchToTab(app, app.TabEquilibrium);
-                    logMsg(app, '[Activity Launcher] Activated: Scheil-Gulliver Solidification.');
-                case 'diffusion'
-                    switchToTab(app, app.TabTransport);
-                    logMsg(app, '[Activity Launcher] Activated: Diffusion & Interdiffusion Kinetics DEMO.');
-                case 'homogenization'
-                    switchToTab(app, app.TabTransport);
-                    logMsg(app, '[Activity Launcher] Activated: Homogenization Kinetics DEMO.');
-                case 'precipitation'
-                    switchToTab(app, app.TabMechanical);
-                    logMsg(app, '[Activity Launcher] Activated: Precipitation Hardening (TC-PRISMA DEMO).');
-                case 'mechanical'
-                    switchToTab(app, app.TabMechanical);
-                    logMsg(app, '[Activity Launcher] Activated: Mechanical Performance & Hall-Petch.');
-                case 'oxidation'
-                    switchToTab(app, app.TabEnvironmental);
-                    if isprop(app, 'EnvTabGroup') && ~isempty(app.EnvTabGroup) && isvalid(app.EnvTabGroup)
-                        app.EnvTabGroup.SelectedTab = app.SubtabOxidation;
-                    end
-                    logMsg(app, '[Activity Launcher] Activated: High-Temperature Oxidation Kinetics (Wagner).');
-                case 'coating'
-                    switchToTab(app, app.TabMechanical);
-                    logMsg(app, '[Activity Launcher] Activated: Surface Coating & Substrate Dilution Modeling.');
-                case 'lattice_distortion'
-                    switchToTab(app, app.TabMechanical);
-                    if isprop(app, 'ConsoleTabGroup') && ~isempty(app.ConsoleTabGroup) && isvalid(app.ConsoleTabGroup)
-                        app.ConsoleTabGroup.SelectedTab = app.TabConsoleDetails;
-                    end
-                    logMsg(app, '[Activity Launcher] Activated: Atomic Lattice Distortion & Soft-Sphere Strain (He & Yang 2018).');
-                case 'xrd'
-                    switchToTab(app, app.TabXRD);
-                    logMsg(app, '[Activity Launcher] Activated: Kinematic Powder XRD Diffractometry.');
-                case 'suitability'
-                    switchToTab(app, app.TabApplications);
-                    logMsg(app, '[Activity Launcher] Activated: Industrial Suitability Radar.');
-                case 'screener'
-                    openHighThroughputScreeningDialog(app);
-                    logMsg(app, '[Activity Launcher] Activated: High-Throughput Screener (51 HEAs).');
-                case 'comsol'
-                    switchToTab(app, app.TabValidation);
-                    logMsg(app, '[Activity Launcher] Activated: COMSOL Multiphysics Code Vault & LiveLink.');
-                case 'tdb_audit'
-                    switchToTab(app, app.TabValidation);
-                    logMsg(app, '[Activity Launcher] Activated: CALPHAD TDB Evaluated Database Audit.');
-            end
-        end
-
-        function renderActivitiesView(app)
-            if isprop(app, 'LabelActivityAlloy') && ~isempty(app.LabelActivityAlloy) && isvalid(app.LabelActivityAlloy)
-                alloyStr = strjoin(app.CurrentElements, '-');
-                phStr = 'FCC (A1)';
-                if isfield(app.CurrentThermoMetrics, 'Phase'), phStr = app.CurrentThermoMetrics.Phase; end
-                app.LabelActivityAlloy.Text = sprintf('Active System: %s | %s', alloyStr, phStr);
-            end
-        end
 
         % =========================================================================
         % TAB 2: PHASE DIAGRAMS (ISOPLETH & TERNARY)
@@ -2336,8 +2098,7 @@ classdef CALPHADHEACalc < handle
             if isempty(curTab), return; end
             
             tag = '';
-            if curTab == app.TabActivities || contains(curTab.Title, 'Activities', 'IgnoreCase', true), tag = 'TabActivities';
-            elseif curTab == app.TabEquilibrium || contains(curTab.Title, 'Equilibrium', 'IgnoreCase', true), tag = 'TabEquilibrium';
+            if curTab == app.TabEquilibrium || contains(curTab.Title, 'Equilibrium', 'IgnoreCase', true), tag = 'TabEquilibrium';
             elseif curTab == app.TabPhaseDiagrams || contains(curTab.Title, 'Phase Diagrams', 'IgnoreCase', true), tag = 'TabPhaseDiagrams';
             elseif curTab == app.TabTransport || contains(curTab.Title, 'Transport', 'IgnoreCase', true), tag = 'TabTransport';
             elseif curTab == app.TabMechanical || contains(curTab.Title, 'Mechanical', 'IgnoreCase', true), tag = 'TabMechanical';
@@ -2348,8 +2109,6 @@ classdef CALPHADHEACalc < handle
             end
 
             switch tag
-                case 'TabActivities'
-                    renderActivitiesView(app);
                 case 'TabEquilibrium'
                     renderEquilibriumView(app);
                 case 'TabPhaseDiagrams'
@@ -8934,15 +8693,6 @@ classdef CALPHADHEACalc < handle
                         '  RESET                      : Reset active session to default equiatomic Cantor alloy' ...
                     };
                     outLines = [outLines; helpText(:)];
-
-                case {'ACTIVITY', 'LAUNCH'}
-                    if numel(parts) >= 2
-                        actKey = parts{2};
-                        launchActivity(app, actKey);
-                        outLines{end+1} = sprintf('Launched activity: %s', actKey);
-                    else
-                        outLines{end+1} = 'Syntax: ACTIVITY <single_point|one_axis|pourbaix|phase_diagrams|scheil|diffusion|homogenization|precipitation|mechanical|oxidation|coating|lattice_distortion|xrd|suitability|screener|comsol|tdb_audit>';
-                    end
 
                 case {'CALC', 'RUN', 'COMPUTE', 'SOLVE'}
                     outLines{end+1} = '[PanEngine] Starting comprehensive Gibbs energy minimization...';

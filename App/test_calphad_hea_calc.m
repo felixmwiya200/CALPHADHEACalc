@@ -618,41 +618,25 @@ function test_calphad_hea_calc()
     assert(any(contains(termLines, 'CALPHAD TDB MULTI-COMPONENT')), 'Terminal SHOW TDB must display TDB solver evaluation.');
     fprintf('  Terminal SHOW TDB successfully executed!\n');
 
-    % Test 25: Thermo-Calc 2026b Activity Launcher & Configuration Workspace Navigation
-    fprintf('\n--- Test 25: Thermo-Calc 2026b Activity Launcher & Configuration Navigation ---\n');
-    % 25.1 Verify TabActivities exists in MainTabGroup
-    assert(isprop(app, 'TabActivities') && isvalid(app.TabActivities), 'TabActivities must exist.');
-    assert(isprop(app, 'BtnActivityLauncher') && isvalid(app.BtnActivityLauncher), 'BtnActivityLauncher must exist.');
+    % Test 25: Thermo-Calc Scheil-Gulliver Non-Equilibrium Solidification & Homogenization Kinetics
+    fprintf('\n--- Test 25: Thermo-Calc Scheil Solidification & Homogenization Kinetics ---\n');
+    % 25.1 Verify TabActivities is removed from MainTabGroup (clean CAE workstation layout)
+    assert(~isprop(app, 'TabActivities'), 'TabActivities must be removed from CALPHADHEACalc.');
+    assert(app.MainTabGroup.SelectedTab == app.TabEquilibrium, 'MainTabGroup default selected tab must be TabEquilibrium.');
 
-    % 25.2 Switch to TabActivities via BtnActivityLauncher
-    app.switchToTab(app.TabActivities);
-    assert(app.MainTabGroup.SelectedTab == app.TabActivities, 'Selected tab must be TabActivities.');
-    assert(strcmp(app.BtnActivityLauncher.Text, 'Activities'), 'BtnActivityLauncher text must be Activities.');
-    fprintf('  Activity Launcher tab activated and rendered successfully!\n');
+    % 25.2 Verify Scheil-Gulliver non-equilibrium solidification parameters
+    m = app.CurrentThermoMetrics;
+    assert(isfield(m, 'T_ScheilSolidus') && m.T_ScheilSolidus > 0, 'T_ScheilSolidus must be positive.');
+    assert(m.T_ScheilSolidus < m.T_Solidus, 'Scheil solidus must be depressed below equilibrium solidus.');
+    assert(isfield(m, 'FreezingWindow_Scheil_K') && m.FreezingWindow_Scheil_K > m.FreezingWindow_Eq_K, ...
+        'Scheil freezing window must be wider than equilibrium freezing window.');
 
-    % 25.3 Test activity launching callbacks
-    app.launchActivity('single_point');
-    assert(app.MainTabGroup.SelectedTab == app.TabEquilibrium, 'single_point activity must navigate to TabEquilibrium.');
-
-    app.launchActivity('mechanical');
-    assert(app.MainTabGroup.SelectedTab == app.TabMechanical, 'mechanical activity must navigate to TabMechanical.');
-
-    app.launchActivity('xrd');
-    assert(app.MainTabGroup.SelectedTab == app.TabXRD, 'xrd activity must navigate to TabXRD.');
-
-    app.launchActivity('tdb_audit');
-    assert(app.MainTabGroup.SelectedTab == app.TabValidation, 'tdb_audit activity must navigate to TabValidation.');
-
-    app.launchActivity('pourbaix');
-    assert(app.MainTabGroup.SelectedTab == app.TabEnvironmental, 'pourbaix activity must navigate to TabEnvironmental.');
-    if isprop(app, 'EnvTabGroup') && ~isempty(app.EnvTabGroup) && isvalid(app.EnvTabGroup)
-        assert(app.EnvTabGroup.SelectedTab == app.SubtabCorrosion, 'pourbaix must select SubtabCorrosion.');
-    end
-
-    % 25.4 Test Terminal ACTIVITY command
-    app.onTerminalEnter('ACTIVITY mechanical');
-    assert(app.MainTabGroup.SelectedTab == app.TabMechanical, 'ACTIVITY mechanical must switch to TabMechanical.');
-    fprintf('  Thermo-Calc 2026b Activity Launcher callbacks & terminal commands 100%% verified!\n');
+    % 25.3 Verify Homogenization Kinetics
+    assert(isfield(m, 'MicrosegregationIndex') && m.MicrosegregationIndex > 0, 'MicrosegregationIndex must be positive.');
+    assert(isfield(m, 'HomogenizationTemp_K') && m.HomogenizationTemp_K > 0, 'HomogenizationTemp_K must be positive.');
+    assert(isfield(m, 'HomogenizationTime_hr') && m.HomogenizationTime_hr > 0, 'HomogenizationTime_hr must be positive.');
+    assert(m.HomogenizationTemp_K < m.T_Solidus, 'Homogenization temperature must be safely below solidus to avoid incipient melting.');
+    fprintf('  Thermo-Calc Scheil Solidification & Homogenization Kinetics 100%% verified!\n');
 
     % Cleanup
     delete(app.UIFigure);
