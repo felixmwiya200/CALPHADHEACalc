@@ -17,7 +17,7 @@ classdef MaterialSplash < handle
         end
         
         function isRunning = start(enableSplash)
-            if nargin < 1, enableSplash = false; end
+            if nargin < 1, enableSplash = true; end
             isRunning = false;
             if ~enableSplash, return; end
             ipc = MaterialSplash.IpcFile;

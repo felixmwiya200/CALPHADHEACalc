@@ -18,6 +18,15 @@ classdef CALPHADHEACalc < handle
         BtnZoomOut            matlab.ui.control.Button
         BtnResetZoom          matlab.ui.control.Button
         
+        % Mouse Dragging & Interactive Tab Sizing State
+        IsDraggingVerticalSplitter   logical = false
+        IsDraggingHorizontalSplitter logical = false
+        DragStartPt                  double = [0, 0]
+        DragStartWidth               double = 340
+        DragStartHeight              double = 195
+        BtnEnlargeTab                matlab.ui.control.Button
+        BtnSqueezeTab                matlab.ui.control.Button
+        
         % Left Upper Dock: Workspace Explorer
         TreePanel             matlab.ui.container.Panel
         WorkspaceTree         matlab.ui.container.Tree
@@ -332,6 +341,14 @@ classdef CALPHADHEACalc < handle
             app.IsHeadless = headless;
             app.IsStandalone = isStandalone;
 
+            % Start loading splash screen immediately upon launch
+            if ~app.IsHeadless
+                try
+                    MaterialSplash.start(true);
+                catch
+                end
+            end
+
             % Update splash screen progress if active
             try, MaterialSplash.update(15, 'Initializing Pure Native CALPHAD Core...', 'Configuring workspace docking architecture...', [1]); catch, end
 
@@ -343,9 +360,14 @@ classdef CALPHADHEACalc < handle
 
             % Build GUI
             buildUI(app);
+            try, MaterialSplash.update(45, 'Building Multi-Document Tabs...', 'Mounting 8 workflow tabs and 11 OriginLab canvases...', [1, 2]); catch, end
+
             setupMenus(app);
             setupWorkspaceTree(app);
+            try, MaterialSplash.update(70, 'Mounting Attached Databases...', 'SGTE Unaries, Miedema Enthalpies & 118 IUPAC Elements...', [1, 2, 3]); catch, end
+
             setupOriginCanvases(app);
+            try, MaterialSplash.update(85, 'Configuring Plotting Canvases...', 'Calibrating interactive axes, datatips & context menus...', [1, 2, 3, 4]); catch, end
 
             % Initialize tab dirty flags
             app.TabDirtyFlags = struct(...
@@ -358,8 +380,9 @@ classdef CALPHADHEACalc < handle
                 'TabApplications', true, ...
                 'TabValidation', true);
 
-            % Load Initial Alloy Preset into composition dock
+            % Load Initial Alloy Preset into composition dock (zero pre-calculation)
             setAlloyPreset(app, initialAlloy);
+            try, MaterialSplash.update(95, 'Loading Initial Alloy Preset...', 'Setting composition dock without pre-calculation...', [1, 2, 3, 4, 5]); catch, end
 
             % Do not preload calculations. Only calculate when user hits Calculate button.
             app.StatusLabel.Text = '[Ready] CALPHADHEACalc software ready. Click "Calculate" (or press F5) to solve.';
@@ -367,6 +390,7 @@ classdef CALPHADHEACalc < handle
 
             if ~app.IsHeadless
                 app.UIFigure.Visible = 'on';
+                drawnow;
             end
 
             % Complete splash screen and close cleanly
@@ -395,8 +419,14 @@ classdef CALPHADHEACalc < handle
                 'Visible', 'off', ...
                 'AutoResizeChildren', 'on', ...
                 'KeyPressFcn', @(~, evt) onGlobalKeyPress(app, evt), ...
+                'WindowButtonDownFcn', @(~, evt) onWindowButtonDown(app, evt), ...
+                'WindowButtonMotionFcn', @(~, evt) onWindowButtonMotion(app, evt), ...
+                'WindowButtonUpFcn', @(~, evt) onWindowButtonUp(app, evt), ...
                 'CloseRequestFcn', @(~, ~) onAppClose(app));
             app.UIFigure.WindowKeyPressFcn = @(~, evt) onGlobalKeyPress(app, evt);
+            app.UIFigure.WindowButtonDownFcn = @(~, evt) onWindowButtonDown(app, evt);
+            app.UIFigure.WindowButtonMotionFcn = @(~, evt) onWindowButtonMotion(app, evt);
+            app.UIFigure.WindowButtonUpFcn = @(~, evt) onWindowButtonUp(app, evt);
 
             % Set Application Logo on Window Titlebar and Windows Taskbar
             appRoot = fileparts(mfilename('fullpath'));
@@ -1164,11 +1194,11 @@ classdef CALPHADHEACalc < handle
         % WORKFLOW STEPPER NAVIGATION & SEQUENTIAL WORKFLOW PIPELINE
         % =========================================================================
         function buildWorkflowStepper(app)
-            sGrid = uigridlayout(app.WorkflowStepperPanel, [1, 10]);
+            sGrid = uigridlayout(app.WorkflowStepperPanel, [1, 12]);
             sGrid.Padding = [2 2 2 2];
             sGrid.ColumnSpacing = 3;
             sGrid.RowSpacing = 0;
-            sGrid.ColumnWidth = {60, '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', 60};
+            sGrid.ColumnWidth = {52, '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', 52, 85, 85};
 
             app.BtnPrevStep = uibutton(sGrid, ...
                 'Text', 'Prev', ...
@@ -1215,6 +1245,21 @@ classdef CALPHADHEACalc < handle
                 'FontName', 'Segoe UI', 'FontSize', 8.5, ...
                 'Tooltip', 'Navigate to Next Workflow Step (Alt+Right)', ...
                 'ButtonPushedFcn', @(~, ~) navigateWorkflowStep(app, 1));
+
+            % Dedicated Tab Sizing Controls for Mouse Interaction
+            app.BtnEnlargeTab = uibutton(sGrid, ...
+                'Text', 'Enlarge Tab', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, 'FontWeight', 'bold', ...
+                'BackgroundColor', [0.18, 0.45, 0.72], 'FontColor', [1 1 1], ...
+                'Tooltip', 'Enlarge active tab workspace using mouse (collapses sidebar & console)', ...
+                'ButtonPushedFcn', @(~, ~) enlargeTab(app));
+
+            app.BtnSqueezeTab = uibutton(sGrid, ...
+                'Text', 'Squeeze Tab', ...
+                'FontName', 'Segoe UI', 'FontSize', 8.5, ...
+                'BackgroundColor', [0.88, 0.90, 0.93], 'FontColor', [0.25, 0.30, 0.40], ...
+                'Tooltip', 'Squeeze tab back to standard balanced layout (Dock: 340px, Console: 195px)', ...
+                'ButtonPushedFcn', @(~, ~) squeezeTab(app));
 
             updateStepperState(app);
         end
@@ -4211,12 +4256,6 @@ classdef CALPHADHEACalc < handle
         % =========================================================================
         function renderValidationView(app)
             if ~app.HasCalculatedOnce
-                try
-                    calculateAll(app);
-                catch
-                end
-            end
-            if ~app.HasCalculatedOnce
                 if isprop(app, 'TableValidationMetrics') && isvalid(app.TableValidationMetrics)
                     app.TableValidationMetrics.Data = {'Awaiting Calculation', '-', '-', '-', '-', 'READY', 'Click "Calculate" in toolbar to audit against experimental database'};
                 end
@@ -4726,10 +4765,172 @@ classdef CALPHADHEACalc < handle
         end
 
         function setDockWidth(app, newWidth)
-            if ~app.IsDockCollapsed
-                app.WorkGrid.ColumnWidth = {newWidth, '1x'};
-                app.DockWidthMemory = newWidth;
+            wClamped = round(max(0, min(800, newWidth)));
+            if wClamped == 0
+                app.WorkGrid.ColumnWidth = {0, '1x'};
+                app.IsDockCollapsed = true;
+                if ~isempty(app.BtnToggleDock) && isvalid(app.BtnToggleDock)
+                    app.BtnToggleDock.Text = '>> Dock';
+                end
+            else
+                app.WorkGrid.ColumnWidth = {wClamped, '1x'};
+                app.DockWidthMemory = wClamped;
+                app.IsDockCollapsed = false;
+                if ~isempty(app.BtnToggleDock) && isvalid(app.BtnToggleDock)
+                    app.BtnToggleDock.Text = '<< Dock';
+                end
+                if ~isempty(app.SpinnerDockWidth) && isvalid(app.SpinnerDockWidth) && app.SpinnerDockWidth.Value ~= wClamped
+                    app.SpinnerDockWidth.Value = wClamped;
+                end
             end
+        end
+
+        % =========================================================================
+        % MOUSE DRAGGING & TAB SIZING CONTROLLERS
+        % =========================================================================
+        function onWindowButtonDown(app, ~)
+            try
+                currPt = get(app.UIFigure, 'CurrentPoint');
+                if isempty(currPt) || numel(currPt) < 2
+                    return;
+                end
+                figPos = app.UIFigure.Position;
+                figW = figPos(3);
+                figH = figPos(4);
+                
+                currDockW = app.WorkGrid.ColumnWidth{1};
+                if ischar(currDockW) || isstring(currDockW), currDockW = 340; end
+                currConsH = app.MainGrid.RowHeight{3};
+                if ischar(currConsH) || isstring(currConsH), currConsH = 195; end
+                
+                workYMin = 26 + currConsH;
+                workYMax = figH - 38;
+                consSplitY = 26 + currConsH;
+                
+                % Boundary 1: Vertical split between Left Dock and Tabs
+                if currPt(1) >= (currDockW - 12) && currPt(1) <= (currDockW + 16) && ...
+                   currPt(2) >= workYMin && currPt(2) <= workYMax
+                    app.IsDraggingVerticalSplitter = true;
+                    app.DragStartPt = currPt;
+                    app.DragStartWidth = currDockW;
+                    return;
+                end
+                
+                % Boundary 2: Horizontal split between Tabs and Bottom Console
+                if currPt(2) >= (consSplitY - 12) && currPt(2) <= (consSplitY + 14) && ...
+                   currPt(1) >= 0 && currPt(1) <= figW
+                    app.IsDraggingHorizontalSplitter = true;
+                    app.DragStartPt = currPt;
+                    app.DragStartHeight = currConsH;
+                    return;
+                end
+            catch
+            end
+        end
+
+        function onWindowButtonMotion(app, ~)
+            try
+                updateCursorCoordinates(app);
+                
+                figPos = app.UIFigure.Position;
+                figW = figPos(3);
+                figH = figPos(4);
+                currPt = get(app.UIFigure, 'CurrentPoint');
+                if isempty(currPt) || numel(currPt) < 2
+                    return;
+                end
+                
+                if app.IsDraggingVerticalSplitter
+                    deltaX = currPt(1) - app.DragStartPt(1);
+                    minDock = 90;
+                    maxDock = max(minDock + 50, figW - 300);
+                    newW = round(min(maxDock, max(minDock, app.DragStartWidth + deltaX)));
+                    setDockWidth(app, newW);
+                elseif app.IsDraggingHorizontalSplitter
+                    deltaY = currPt(2) - app.DragStartPt(2);
+                    minConsH = 26;
+                    maxConsH = max(minConsH + 50, figH - 180);
+                    newH = round(min(maxConsH, max(minConsH, app.DragStartHeight - deltaY)));
+                    setConsoleHeight(app, newH);
+                else
+                    % Update pointer when hovering over splitter regions
+                    currDockW = app.WorkGrid.ColumnWidth{1};
+                    if ischar(currDockW) || isstring(currDockW), currDockW = 340; end
+                    currConsH = app.MainGrid.RowHeight{3};
+                    if ischar(currConsH) || isstring(currConsH), currConsH = 195; end
+                    workYMin = 26 + currConsH;
+                    workYMax = figH - 38;
+                    consSplitY = 26 + currConsH;
+                    
+                    if currPt(1) >= (currDockW - 8) && currPt(1) <= (currDockW + 14) && ...
+                       currPt(2) >= workYMin && currPt(2) <= workYMax
+                        app.UIFigure.Pointer = 'left';
+                    elseif currPt(2) >= (consSplitY - 8) && currPt(2) <= (consSplitY + 12) && ...
+                           currPt(1) >= 0 && currPt(1) <= figW
+                        app.UIFigure.Pointer = 'top';
+                    else
+                        app.UIFigure.Pointer = 'arrow';
+                    end
+                end
+            catch
+            end
+        end
+
+        function onWindowButtonUp(app, ~)
+            try
+                if app.IsDraggingVerticalSplitter || app.IsDraggingHorizontalSplitter
+                    app.IsDraggingVerticalSplitter = false;
+                    app.IsDraggingHorizontalSplitter = false;
+                    app.UIFigure.Pointer = 'arrow';
+                end
+            catch
+            end
+        end
+
+        function enlargeTab(app)
+            if ~app.IsDockCollapsed
+                currW = app.WorkGrid.ColumnWidth{1};
+                if ~ischar(currW) && ~isstring(currW) && currW > 100
+                    app.DockWidthMemory = currW;
+                end
+            end
+            if ~app.IsConsoleCollapsed
+                currH = app.MainGrid.RowHeight{3};
+                if ~ischar(currH) && ~isstring(currH) && currH > 50
+                    app.ConsoleHeightMemory = currH;
+                end
+            end
+            
+            % Enlarge active tab: collapse sidebar and squeeze console
+            app.WorkGrid.ColumnWidth = {0, '1x'};
+            app.IsDockCollapsed = true;
+            if ~isempty(app.BtnToggleDock) && isvalid(app.BtnToggleDock)
+                app.BtnToggleDock.Text = '>> Dock';
+            end
+            
+            app.MainGrid.RowHeight = {38, '1x', 26, 26};
+            app.IsConsoleCollapsed = true;
+            if ~isempty(app.BtnToggleConsole) && isvalid(app.BtnToggleConsole)
+                app.BtnToggleConsole.Text = 'Console: Min';
+            end
+            if ~isempty(app.SpinnerConsoleHeight) && isvalid(app.SpinnerConsoleHeight)
+                app.SpinnerConsoleHeight.Value = 26;
+            end
+            
+            logMsg(app, '[Layout] Active tab workspace enlarged to maximum view area via mouse action.');
+        end
+
+        function squeezeTab(app)
+            % Restore standard balanced layout
+            w = 340;
+            if app.DockWidthMemory > 100, w = app.DockWidthMemory; end
+            setDockWidth(app, w);
+            
+            h = 195;
+            if app.ConsoleHeightMemory > 50, h = app.ConsoleHeightMemory; end
+            setConsoleHeight(app, h);
+            
+            logMsg(app, sprintf('[Layout] Squeezed tab view to standard balanced layout (Dock: %d px, Console: %d px).', w, h));
         end
 
         function toggleConsole(app)
@@ -6868,7 +7069,9 @@ classdef CALPHADHEACalc < handle
             end
             if isvalid(app.ConsoleTextArea)
                 app.ConsoleTextArea.Value = app.ConsoleLogHistory;
-                drawnow limitrate;
+                if ~app.IsHeadless && ~isempty(app.UIFigure) && isvalid(app.UIFigure) && strcmp(app.UIFigure.Visible, 'on')
+                    drawnow limitrate;
+                end
             end
         end
 

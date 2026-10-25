@@ -114,7 +114,7 @@ function test_calphad_hea_calc()
     fprintf('  Successfully exported 600 DPI publication plot (%d bytes)!\n', fileInfo.bytes);
     delete(exportFile);
 
-    % Test 8: Dock & Console Interactivity
+    % Test 8: Dock & Console Interactivity & Mouse Tab Sizing
     fprintf('\n--- Test 8: Dock & Console Interactivity State ---\n');
     if isprop(app, 'SpinnerDockWidth') && ~isempty(app.SpinnerDockWidth)
         app.SpinnerDockWidth.Value = 380;
@@ -131,6 +131,19 @@ function test_calphad_hea_calc()
     assert(app.IsConsoleCollapsed == true, 'Console must be collapsed.');
     app.toggleConsole();
     assert(app.IsConsoleCollapsed == false, 'Console must be restored.');
+
+    % Enlarge and Squeeze Tab with Mouse Actions
+    app.enlargeTab();
+    assert(app.IsDockCollapsed == true, 'Dock must be collapsed when enlarging tab.');
+    assert(app.WorkGrid.ColumnWidth{1} == 0, 'Tab workspace must occupy full width.');
+    app.squeezeTab();
+    assert(app.IsDockCollapsed == false, 'Dock must be un-collapsed when squeezing tab.');
+    assert(app.WorkGrid.ColumnWidth{1} == 380, 'Dock width must be restored.');
+
+    % Mouse window callbacks
+    app.onWindowButtonDown([]);
+    app.onWindowButtonMotion([]);
+    app.onWindowButtonUp([]);
     fprintf('  Dock and Console interactive folding/unfolding passed!\n');
 
     % Test 9: COMSOL Vault Code Generation
