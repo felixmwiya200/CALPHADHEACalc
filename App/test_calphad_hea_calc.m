@@ -550,12 +550,116 @@ function test_calphad_hea_calc()
     assert(app.CurrentThermoMetrics.Coating.DilutionRatio_pct >= 30, 'Laser Surface Alloying must yield high dilution (>30%).');
     fprintf('  Terminal SET commands for substrate and process successfully executed and synchronized!\n');
 
+    % Test 23: Atomic Lattice Distortion & Soft Sphere Model (He & Yang 2018)
+    fprintf('\n--- Test 23: Atomic Lattice Distortion & Soft Sphere Model (He & Yang 2018) ---\n');
+    % 23.1 Verify HEALatticeDistortionEngine metrics for Cantor CoCrFeMnNi
+    ldCantor = HEALatticeDistortionEngine.computeDistortionMetrics({'Co','Cr','Fe','Mn','Ni'}, [0.2, 0.2, 0.2, 0.2, 0.2]);
+    assert(ldCantor.Delta_HardSphere_pct < 2.0, 'Cantor hard-sphere delta must be < 2%.');
+    assert(ldCantor.Eps_RMS_SoftSphere_pct < 2.5, 'Cantor soft-sphere eps_RMS must be < 2.5%.');
+    assert(ldCantor.CriticalEffectiveShearStrain_gamma_th < 0.020, 'Cantor gamma_th must be < 0.020 (Peierls kink-pair regime).');
+    assert(contains(ldCantor.DislocationGlideMechanism, 'Peierls'), 'Cantor dislocation glide must be Peierls kink-pair.');
+    assert(~ldCantor.HasHighAnglePeakSplitting, 'Cantor must NOT have high-angle peak splitting.');
+    fprintf('  Cantor Distortion: delta = %.2f%%, eps_RMS = %.2f%%, gamma_th = %.4f | Mode: %s\n', ...
+        ldCantor.Delta_HardSphere_pct, ldCantor.Eps_RMS_SoftSphere_pct, ldCantor.CriticalEffectiveShearStrain_gamma_th, ldCantor.DislocationGlideMechanism);
+
+    % 23.2 Verify high-mismatch alloy AlCoCrFeNi (Labusch collective pinning & peak splitting)
+    ldAl = HEALatticeDistortionEngine.computeDistortionMetrics({'Al','Co','Cr','Fe','Ni'}, [0.2, 0.2, 0.2, 0.2, 0.2]);
+    assert(ldAl.Delta_HardSphere_pct > 4.5, 'AlCoCrFeNi hard-sphere delta must be > 4.5%.');
+    assert(ldAl.CriticalEffectiveShearStrain_gamma_th >= 0.020, 'AlCoCrFeNi gamma_th must be >= 0.020 (Labusch regime).');
+    assert(contains(ldAl.DislocationGlideMechanism, 'Labusch'), 'AlCoCrFeNi dislocation glide must be Labusch collective pinning.');
+    assert(ldAl.ActivationVolume_b3 >= 30, 'AlCoCrFeNi activation volume must be >= 30 b^3.');
+    assert(ldAl.HasHighAnglePeakSplitting, 'AlCoCrFeNi must exhibit high-angle peak splitting.');
+    fprintf('  AlCoCrFeNi Distortion: delta = %.2f%%, eps_RMS = %.2f%%, gamma_th = %.4f | Mode: %s | V* = %.1f b^3\n', ...
+        ldAl.Delta_HardSphere_pct, ldAl.Eps_RMS_SoftSphere_pct, ldAl.CriticalEffectiveShearStrain_gamma_th, ldAl.DislocationGlideMechanism, ldAl.ActivationVolume_b3);
+
+    % 23.3 Verify TableMechanicalProperties contains lattice distortion parameters
+    mechData = app.TableMechanicalProperties.Data;
+    propNames = mechData(:, 1);
+    assert(any(contains(propNames, 'Atomic Size Mismatch (Hard Sphere)')), 'TableMechanicalProperties must contain Hard Sphere Mismatch.');
+    assert(any(contains(propNames, 'Root-Mean-Square Strain (Soft Sphere)')), 'TableMechanicalProperties must contain Soft Sphere RMS Strain.');
+    assert(any(contains(propNames, 'Critical Effective Shear Strain')), 'TableMechanicalProperties must contain Critical Effective Shear Strain.');
+    assert(any(contains(propNames, 'Dislocation Glide Mechanism')), 'TableMechanicalProperties must contain Dislocation Glide Mechanism.');
+    assert(any(contains(propNames, 'Apparent Activation Volume')), 'TableMechanicalProperties must contain Activation Volume.');
+    fprintf('  TableMechanicalProperties verified with He & Yang (2018) lattice distortion metrics!\n');
+
+    % 23.4 Verify Terminal SHOW DISTORTION command
+    app.onTerminalEnter('SHOW DISTORTION');
+    termLines = app.TerminalOutputArea.Value;
+    assert(any(contains(termLines, 'ATOMIC LATTICE DISTORTION')), 'Terminal SHOW DISTORTION must display lattice distortion summary.');
+    fprintf('  Terminal SHOW DISTORTION successfully executed!\n');
+
+    % Test 24: CALPHAD Multi-Component TDB Engine & Newton-Raphson Iterative Minimization
+    fprintf('\n--- Test 24: CALPHAD Multi-Component TDB Engine & Newton-Raphson Solver ---\n');
+    % 24.1 Verify HEATDBEngine for Cantor alloy
+    solCantor = HEATDBEngine.solveIterativeEquilibrium({'Co','Cr','Fe','Mn','Ni'}, [0.2, 0.2, 0.2, 0.2, 0.2], 1000.0);
+    assert(solCantor.Converged, 'Cantor TDB minimization must converge.');
+    assert(strcmp(solCantor.PredictedDominantPhase, 'FCC'), 'Cantor dominant phase must be FCC.');
+    assert(solCantor.FinalChemicalPotentialResidual_J_mol < 1e5, 'Chemical potential residual must be bounded.');
+    assert(solCantor.FinalMassContinuityResidual < 1e-4, 'Mass continuity residual must be < 1e-4.');
+    fprintf('  Cantor TDB Solver: Dominant = %s | Gm = %.1f J/mol | Res |D_mu| = %.2e J/mol in %d iters\n', ...
+        solCantor.PredictedDominantPhase, solCantor.TotalGibbsEnergy_Gm_J_mol, ...
+        solCantor.FinalChemicalPotentialResidual_J_mol, solCantor.IterationsExecuted);
+
+    % 24.2 Verify HEATDBEngine comparison table generator
+    compTbl = HEATDBEngine.generateTDBComparison({'Co','Cr','Fe','Mn','Ni'}, [0.2, 0.2, 0.2, 0.2, 0.2], 1000.0, app.CurrentThermoMetrics);
+    assert(istable(compTbl), 'generateTDBComparison must return a MATLAB table.');
+    assert(height(compTbl) >= 6, 'Comparison table must have at least 6 rows.');
+    assert(all(ismember({'Property', 'Symbol', 'EmpiricalModel', 'CALPHAD_TDB_Solver', 'Deviation'}, compTbl.Properties.VariableNames)), ...
+        'Comparison table must contain standard columns.');
+
+    % 24.3 Verify TableTDBComparison populated in TabValidation
+    assert(isprop(app, 'TableTDBComparison') && isvalid(app.TableTDBComparison), 'TableTDBComparison must exist in app.');
+    assert(~isempty(app.TableTDBComparison.Data), 'TableTDBComparison must be populated.');
+    fprintf('  TableTDBComparison in TabValidation successfully verified with %d comparison rows!\n', size(app.TableTDBComparison.Data, 1));
+
+    % 24.4 Verify Terminal SHOW TDB command
+    app.onTerminalEnter('SHOW TDB');
+    termLines = app.TerminalOutputArea.Value;
+    assert(any(contains(termLines, 'CALPHAD TDB MULTI-COMPONENT')), 'Terminal SHOW TDB must display TDB solver evaluation.');
+    fprintf('  Terminal SHOW TDB successfully executed!\n');
+
+    % Test 25: Thermo-Calc 2026b Activity Launcher & Configuration Workspace Navigation
+    fprintf('\n--- Test 25: Thermo-Calc 2026b Activity Launcher & Configuration Navigation ---\n');
+    % 25.1 Verify TabActivities exists in MainTabGroup
+    assert(isprop(app, 'TabActivities') && isvalid(app.TabActivities), 'TabActivities must exist.');
+    assert(isprop(app, 'BtnActivityLauncher') && isvalid(app.BtnActivityLauncher), 'BtnActivityLauncher must exist.');
+
+    % 25.2 Switch to TabActivities via BtnActivityLauncher
+    app.switchToTab(app.TabActivities);
+    assert(app.MainTabGroup.SelectedTab == app.TabActivities, 'Selected tab must be TabActivities.');
+    assert(strcmp(app.BtnActivityLauncher.Text, 'Activities'), 'BtnActivityLauncher text must be Activities.');
+    fprintf('  Activity Launcher tab activated and rendered successfully!\n');
+
+    % 25.3 Test activity launching callbacks
+    app.launchActivity('single_point');
+    assert(app.MainTabGroup.SelectedTab == app.TabEquilibrium, 'single_point activity must navigate to TabEquilibrium.');
+
+    app.launchActivity('mechanical');
+    assert(app.MainTabGroup.SelectedTab == app.TabMechanical, 'mechanical activity must navigate to TabMechanical.');
+
+    app.launchActivity('xrd');
+    assert(app.MainTabGroup.SelectedTab == app.TabXRD, 'xrd activity must navigate to TabXRD.');
+
+    app.launchActivity('tdb_audit');
+    assert(app.MainTabGroup.SelectedTab == app.TabValidation, 'tdb_audit activity must navigate to TabValidation.');
+
+    app.launchActivity('pourbaix');
+    assert(app.MainTabGroup.SelectedTab == app.TabEnvironmental, 'pourbaix activity must navigate to TabEnvironmental.');
+    if isprop(app, 'EnvTabGroup') && ~isempty(app.EnvTabGroup) && isvalid(app.EnvTabGroup)
+        assert(app.EnvTabGroup.SelectedTab == app.SubtabCorrosion, 'pourbaix must select SubtabCorrosion.');
+    end
+
+    % 25.4 Test Terminal ACTIVITY command
+    app.onTerminalEnter('ACTIVITY mechanical');
+    assert(app.MainTabGroup.SelectedTab == app.TabMechanical, 'ACTIVITY mechanical must switch to TabMechanical.');
+    fprintf('  Thermo-Calc 2026b Activity Launcher callbacks & terminal commands 100%% verified!\n');
+
     % Cleanup
     delete(app.UIFigure);
     delete(wrapperApp.UIFigure);
     delete(legacyApp.UIFigure);
 
     fprintf('\n=================================================================\n');
-    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (22/22)   \n');
+    fprintf('    ALL CALPHADHEACALC SOFTWARE TESTS PASSED (100%%) (25/25)   \n');
     fprintf('=================================================================\n');
 end

@@ -22,7 +22,11 @@ classdef HEAXRDEngine
                 if isfield(xrdOpts, 'Radiation'), radiation = xrdOpts.Radiation; end
                 if isfield(xrdOpts, 'Microstrain'), microstrain = xrdOpts.Microstrain; end
             end
-            res = HEAXRDEngine.calculateXRD(elements, at_fractions, radiation, crystalliteSize_nm, microstrain);
+            if nargin >= 3 && isstruct(thermoMetrics) && isfield(thermoMetrics, 'VEC')
+                res = HEAXRDEngine.calculateXRD(elements, at_fractions, radiation, crystalliteSize_nm, microstrain, thermoMetrics);
+            else
+                res = HEAXRDEngine.calculateXRD(elements, at_fractions, radiation, crystalliteSize_nm, microstrain);
+            end
             metrics = struct();
             metrics.TwoTheta_deg = res.twoTheta;
             
@@ -58,15 +62,16 @@ classdef HEAXRDEngine
             end
         end
         
-        function result = calculateXRD(arg1, arg2, radiation, crystalliteSize_nm, microstrain)
+        function result = calculateXRD(arg1, arg2, radiation, crystalliteSize_nm, microstrain, thermoInput)
             % Main XRD computation method
             % Flexible inputs:
             %   calculateXRD(compMatrix, basis, radiation, D_nm, strain)  OR
-            %   calculateXRD(elements, at_fractions, radiation, D_nm, strain)
+            %   calculateXRD(elements, at_fractions, radiation, D_nm, strain, thermoInput)
             
             if nargin < 3 || isempty(radiation), radiation = 'Cu'; end
             if nargin < 4 || isempty(crystalliteSize_nm), crystalliteSize_nm = HEAXRDEngine.DEFAULT_CRYSTALLITE_SIZE_NM; end
             if nargin < 5 || isempty(microstrain), microstrain = HEAXRDEngine.DEFAULT_MICROSTRAIN; end
+            if nargin < 6, thermoInput = []; end
             
             if nargin >= 2 && isnumeric(arg2)
                 elements = arg1;
@@ -102,7 +107,11 @@ classdef HEAXRDEngine
             end
             
             % Compute thermodynamic and structural indicators
-            thermo = HEAThermoEngine.computeThermodynamics(elements, x);
+            if ~isempty(thermoInput) && isstruct(thermoInput) && isfield(thermoInput, 'VEC')
+                thermo = thermoInput;
+            else
+                thermo = HEAThermoEngine.computeThermodynamics(elements, x);
+            end
             VEC = thermo.VEC;
             
             % Determine crystal phases and lattice parameters
@@ -114,6 +123,39 @@ classdef HEAXRDEngine
                 phaseName = phases{pIdx};
                 peaksPhase = HEAXRDEngine.generateBraggPeaks(phaseName, latticeParams, elements, x, lambda);
                 allPeaks = [allPeaks, peaksPhase]; %#ok<AGROW>
+            end
+            
+            % Atomic Lattice Distortion: High-Angle Peak Splitting (He & Yang 2018)
+            % When critical effective shear strain gamma_th >= 0.020, reflections above 60 deg 2-theta
+            % exhibit local symmetry breaking (tetragonal/orthorhombic doublet splitting).
+            if isfield(thermo, 'LatticeDistortion') && isstruct(thermo.LatticeDistortion) && ...
+               isfield(thermo.LatticeDistortion, 'CriticalEffectiveShearStrain_gamma_th')
+                gamma_th = thermo.LatticeDistortion.CriticalEffectiveShearStrain_gamma_th;
+                if gamma_th >= 0.020 && ~isempty(allPeaks)
+                    splitReflections = [];
+                    for k = 1:numel(allPeaks)
+                        pk = allPeaks(k);
+                        if pk.twoTheta > 60.0
+                            th_rad = (pk.twoTheta / 2.0) * (pi / 180.0);
+                            delta2th = gamma_th * tan(th_rad) * (180.0 / pi);
+                            
+                            pk1 = pk;
+                            pk1.twoTheta = round(pk.twoTheta - delta2th * 0.45, 2);
+                            pk1.intensity = pk.intensity * 0.65;
+                            pk1.hkl = sprintf('%s_α', pk.hkl);
+                            
+                            pk2 = pk;
+                            pk2.twoTheta = round(pk.twoTheta + delta2th * 0.55, 2);
+                            pk2.intensity = pk.intensity * 0.35;
+                            pk2.hkl = sprintf('%s_β', pk.hkl);
+                            
+                            splitReflections = [splitReflections, pk1, pk2]; %#ok<AGROW>
+                        else
+                            splitReflections = [splitReflections, pk]; %#ok<AGROW>
+                        end
+                    end
+                    allPeaks = splitReflections;
+                end
             end
             
             % Sort peaks by 2-theta and deduplicate overlapping reflections (e.g., BCC + B2 fundamentals)
