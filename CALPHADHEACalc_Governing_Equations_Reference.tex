@@ -1,0 +1,567 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=22mm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small CALPHADHEACalc Reference Manual v3.4.0}
+\lhead{\small SRM University-AP | Department of Mechanical Engineering}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{CALPHADHEACalc: Governing Equations \& Variable Reference Manual}\\[0.3em]
+\large Mathematical Formulations, Parameter Definitions, SI Units, and Subsystem Mapping}
+
+\author{
+  \textbf{Felix Mwiya}\thanks{Lead Computational Architect \& Developer. Email: felix\_mwiya@srmuniv.edu.in} \quad 
+  \textbf{Prof. Dr. Sheela Singh}\thanks{Research Guidance \& Faculty Advisor. Email: sheelasingh@srmuniv.edu.in}\\[0.4em]
+  \small Department of Mechanical Engineering, School of Engineering and Sciences\\
+  \small SRM University-AP, Andhra Pradesh 522240, India
+}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This reference manual provides an exhaustive compendium of all governing mathematical equations, CALPHAD thermodynamic models, lattice distortion mechanics, empirical descriptors, transport phenomena, environmental kinetics, and kinematic crystallography models implemented within the CALPHADHEACalc engineering workstation. Each formulation includes a description of where it is used in the software, followed by complete variable definitions with standard physical dimensions and SI units. All content is presented in standard monochrome academic format.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+\hrule
+\vspace{1.5em}
+
+\section{CALPHAD Solution Thermodynamics \& Phase Equilibria}
+Primary Engines: \texttt{HEAThermoEngine.m}, \texttt{HEATDBEngine.m} \\
+Workstation Modules: Tab 1 (1D Phase Equilibrium), Tab 2 (Phase Diagrams), Iterative Multi-Physics Solver Console
+
+\subsection{Total Molar Gibbs Free Energy of Phase $\phi$}
+\begin{equation}
+G_m^\phi(T, \mathbf{c}) = {^{\text{ref}}}G^\phi(T) + {^{\text{id}}}G^\phi(T) + {^{\text{E}}}G^\phi(T) + {^{\text{mag}}}G^\phi(T)
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m} (Lines 240--310). Fundamental objective function minimized during phase equilibrium stepping across temperature and composition.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $G_m^\phi(T, \mathbf{c})$: Total molar Gibbs free energy of multicomponent phase $\phi$ at absolute temperature $T$ [$\text{J}\cdot\text{mol}^{-1}$].
+  \item $T$: Absolute thermodynamic temperature [$\text{K}$].
+  \item $\mathbf{c} = (c_1, c_2, \dots, c_n)$: Vector of mole fractions of the $n$ constituent alloy components [dimensionless, $\sum_{i=1}^n c_i = 1$].
+  \item ${^{\text{ref}}}G^\phi(T)$: Reference energy of pure elements in the physical state of phase $\phi$ [$\text{J}\cdot\text{mol}^{-1}$].
+  \item ${^{\text{id}}}G^\phi(T)$: Ideal configurational entropy of mixing contribution [$\text{J}\cdot\text{mol}^{-1}$].
+  \item ${^{\text{E}}}G^\phi(T)$: Non-ideal excess Gibbs free energy resulting from interatomic pair interactions [$\text{J}\cdot\text{mol}^{-1}$].
+  \item ${^{\text{mag}}}G^\phi(T)$: Magnetic ordering Gibbs energy contribution based on the Inden-Hillert-Jarl model [$\text{J}\cdot\text{mol}^{-1}$].
+\end{itemize}
+
+\subsection{Reference Energy (SGTE Unary Lattice Stabilities)}
+\begin{equation}
+{^{\text{ref}}}G^\phi(T) = \sum_{i=1}^n c_i \, {^\circ}G_i^\phi(T)
+\end{equation}
+\begin{equation}
+{^\circ}G_i^\phi(T) - H_i^{\text{SER}} = a_i + b_i T + c_i T \ln T + d_i T^2 + e_i T^{-1} + f_i T^3
+\end{equation}
+\textbf{Where Used}: \texttt{HEATDBEngine.m}. Evaluates pure element unary Gibbs free energies for 28 elements across FCC, BCC, HCP, and Liquid states.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item ${^\circ}G_i^\phi(T)$: Standard molar Gibbs energy of pure element $i$ in crystal structure $\phi$ [$\text{J}\cdot\text{mol}^{-1}$].
+  \item $H_i^{\text{SER}}$: Enthalpy of pure element $i$ in its Standard Element Reference (SER) state at $298.15\text{ K}$ and $10^5\text{ Pa}$ [$\text{J}\cdot\text{mol}^{-1}$].
+  \item $a_i, b_i, c_i, d_i, e_i, f_i$: Temperature-dependent polynomial coefficients assessed in the SGTE unary database (Dinsdale, 1991).
+  \item $c_i$: Mole fraction of element $i$ [$\text{mol/mol}$].
+\end{itemize}
+
+\subsection{Ideal Solution Configurational Entropy}
+\begin{equation}
+{^{\text{id}}}G^\phi(T) = R T \sum_{i=1}^n c_i \ln c_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Evaluates ideal entropic stabilization energy driving single-phase solid solution formation.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $R$: Universal gas constant, $R = 8.314462 \, \text{J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$.
+  \item $T$: Absolute temperature [$\text{K}$].
+  \item $c_i$: Mole fraction of component $i$ ($0 < c_i \le 1$).
+\end{itemize}
+
+\subsection{Redlich-Kister Polynomial Excess Gibbs Energy}
+\begin{equation}
+{^{\text{E}}}G^\phi(T) = \sum_{i=1}^{n-1}\sum_{j=i+1}^n c_i c_j \sum_{k=0}^p L_{ij}^{\phi, (k)}(T) \, (c_i - c_j)^k
+\end{equation}
+\begin{equation}
+L_{ij}^{\phi, (k)}(T) = a_k + b_k T
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Computes enthalpic and entropic deviations from ideality using assessed binary Redlich-Kister interaction coefficients.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $L_{ij}^{\phi, (k)}(T)$: $k$-th order Redlich-Kister binary interaction parameter between elements $i$ and $j$ in phase $\phi$ [$\text{J}\cdot\text{mol}^{-1}$].
+  \item $a_k$: Enthalpic interaction coefficient [$\text{J}\cdot\text{mol}^{-1}$].
+  \item $b_k$: Entropic interaction coefficient [$\text{J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$].
+  \item $p$: Polynomial expansion order ($p = 0$ for regular solution, $p \ge 1$ for sub-regular).
+\end{itemize}
+
+\subsection{Chemical Potential Equalization (Multiphase Equilibrium)}
+\begin{equation}
+\mu_i^\alpha(T, \mathbf{x}^\alpha) = \mu_i^\beta(T, \mathbf{x}^\beta) = \dots = \mu_i^\nu(T, \mathbf{x}^\nu) \quad (\forall i = 1, \dots, n)
+\end{equation}
+\begin{equation}
+\sum_{\phi=1}^\Phi f_\phi x_i^\phi = c_i^0, \quad \sum_{\phi=1}^\Phi f_\phi = 1
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Core iterative Newton-Raphson chemical potential matching and Lagrange multiplier mass balance solver.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\mu_i^\phi$: Partial molar chemical potential of component $i$ in phase $\phi$ [$\text{J}\cdot\text{mol}^{-1}$], defined as $\mu_i^\phi = \left(\frac{\partial G^\phi}{\partial n_i}\right)_{T, P, n_{j \ne i}}$.
+  \item $f_\phi$: Molar phase fraction of phase $\phi$ ($0 \le f_\phi \le 1, \sum f_\phi = 1$) [dimensionless].
+  \item $\mathbf{x}^\phi = (x_1^\phi, \dots, x_n^\phi)$: Composition vector of phase $\phi$ [$\text{mol/mol}$].
+  \item $c_i^0$: Nominal overall alloy mole fraction of component $i$ [$\text{mol/mol}$].
+  \item $\alpha, \beta, \dots, \nu$: Active equilibrium phases (FCC\_A1, BCC\_A2, B2, LIQUID, SIGMA).
+\end{itemize}
+
+\section{Empirical HEA Descriptors \& Solidification Kinetics}
+Primary Engine: \texttt{HEAThermoEngine.m} \\
+Workstation Modules: Tab 1, Tab 4, Tab 8, Diagnostics Console
+
+\subsection{Miedema Enthalpy of Mixing}
+\begin{equation}
+\Delta H_{\text{mix}} = \sum_{i=1}^{n-1}\sum_{j=i+1}^n 4 \, \Omega_{ij} \, c_i \, c_j
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Evaluates macroscopic interatomic bonding enthalpies across all constituent binary pairs.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\Delta H_{\text{mix}}$: Multicomponent alloy enthalpy of mixing [$\text{kJ}\cdot\text{mol}^{-1}$].
+  \item $\Omega_{ij}$: Binary mixing enthalpy at equiatomic composition between elements $i$ and $j$ from Miedema's macroscopic model [$\text{kJ}\cdot\text{mol}^{-1}$].
+  \item $c_i, c_j$: Atomic fractions of components $i$ and $j$ [dimensionless].
+\end{itemize}
+
+\subsection{Configurational Mixing Entropy}
+\begin{equation}
+\Delta S_{\text{mix}} = -R \sum_{i=1}^n c_i \ln c_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Classifies alloy into low-entropy ($\Delta S_{\text{mix}} < 1.0 R$), medium-entropy ($1.0 R \le \Delta S_{\text{mix}} < 1.5 R$), and high-entropy ($\Delta S_{\text{mix}} \ge 1.5 R$).
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\Delta S_{\text{mix}}$: Molar configurational entropy of mixing [$\text{J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$].
+  \item $R$: Universal gas constant ($8.314462 \, \text{J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$).
+\end{itemize}
+
+\subsection{Atomic Size Mismatch Parameter ($\delta$)}
+\begin{equation}
+\delta = \sqrt{\sum_{i=1}^n c_i \left(1 - \frac{r_i}{\bar{r}}\right)^2} \times 100\%, \quad \bar{r} = \sum_{i=1}^n c_i r_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Evaluates Hume-Rothery topological strain for solid solution stability ($\delta \le 6.6\%$).
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\delta$: Atomic size difference mismatch parameter [$\%$].
+  \item $r_i$: Empirical Goldschmidt atomic radius of element $i$ [$\text{\AA}$].
+  \item $\bar{r}$: Average atomic radius of the alloy system [$\text{\AA}$].
+\end{itemize}
+
+\subsection{Electronegativity Difference ($\Delta\chi$)}
+\begin{equation}
+\Delta\chi = \sqrt{\sum_{i=1}^n c_i \left(\chi_i - \bar{\chi}\right)^2}, \quad \bar{\chi} = \sum_{i=1}^n c_i \chi_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Evaluates chemical bonding polarity and tendency toward intermetallic compound precipitation.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\Delta\chi$: Root-mean-square electronegativity difference [dimensionless, Pauling scale].
+  \item $\chi_i$: Pauling electronegativity of pure element $i$.
+  \item $\bar{\chi}$: Compositionally weighted average electronegativity.
+\end{itemize}
+
+\subsection{Yang-Zhang Thermodynamic $\Omega$ Parameter}
+\begin{equation}
+\Omega = \frac{T_m \, \Delta S_{\text{mix}}}{|\Delta H_{\text{mix}}|}, \quad T_m = \sum_{i=1}^n c_i T_{m,i}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Criterion for single-phase solid solution formation ($\Omega \ge 1.1$ and $\delta \le 6.6\%$).
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\Omega$: Dimensionless ratio of entropic stabilization to mixing enthalpy.
+  \item $T_m$: Rule-of-mixtures theoretical melting point of the alloy [$\text{K}$].
+  \item $T_{m,i}$: Melting point of pure constituent element $i$ [$\text{K}$].
+\end{itemize}
+
+\subsection{Guo Valence Electron Concentration (VEC) Phase Stability}
+\begin{equation}
+\text{VEC} = \sum_{i=1}^n c_i \text{VEC}_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Predicts crystal structure: $\text{VEC} \ge 8.0 \implies \text{FCC}$; $\text{VEC} < 6.87 \implies \text{BCC}$; $6.87 \le \text{VEC} < 8.0 \implies \text{Duplex FCC+BCC}$.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\text{VEC}$: Total valence electron concentration [electrons/atom].
+  \item $\text{VEC}_i$: Valence electron count of element $i$ including valence $d$ electrons.
+\end{itemize}
+
+\subsection{Thermo-Calc Scheil-Gulliver Non-Equilibrium Solidification}
+\begin{equation}
+T_{\text{ScheilSolidus}} = T_{\text{Solidus}} - 0.45 \cdot (T_{\text{Liquidus}} - T_{\text{Solidus}}) \cdot (1 + 0.05 \cdot \delta)
+\end{equation}
+\begin{equation}
+\Delta T_{\text{freeze, Eq}} = T_{\text{Liquidus}} - T_{\text{Solidus}}, \quad \Delta T_{\text{freeze, Scheil}} = T_{\text{Liquidus}} - T_{\text{ScheilSolidus}}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Models solute rejection during non-equilibrium dendritic solidification and hot-cracking susceptibility.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $T_{\text{ScheilSolidus}}$: Non-equilibrium Scheil solidus temperature accounting for microsegregation during rapid cooling [$\text{K}$].
+  \item $T_{\text{Solidus}}, T_{\text{Liquidus}}$: Equilibrium solidus and liquidus boundaries [$\text{K}$].
+  \item $\Delta T_{\text{freeze, Eq}}, \Delta T_{\text{freeze, Scheil}}$: Equilibrium vs non-equilibrium freezing window [$\text{K}$].
+\end{itemize}
+
+\subsection{Homogenization Kinetics \& Microsegregation Index}
+\begin{equation}
+I_{\text{seg}} = 0.25 + 0.06 \cdot \delta
+\end{equation}
+\begin{equation}
+T_{\text{homog}} = \min\left(T_{\text{Solidus}} - 50 \text{ K}, \, 0.88 \cdot T_{\text{Solidus}}\right)
+\end{equation}
+\begin{equation}
+\tau_{\text{homog}} = 10.0 \cdot \left(\frac{I_{\text{seg}}}{0.35}\right)^2 \text{ hours}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAThermoEngine.m}. Calculates safe annealing temperature and soaking duration to eliminate dendritic coring.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $I_{\text{seg}}$: Non-dimensional microsegregation index.
+  \item $T_{\text{homog}}$: Safe thermal homogenization annealing temperature [$\text{K}$].
+  \item $\tau_{\text{homog}}$: Required isothermal soaking time to eliminate dendritic coring [$\text{hours}$].
+\end{itemize}
+
+\section{Atomic Lattice Distortion \& Soft-Sphere Physics}
+Primary Engine: \texttt{HEALatticeDistortionEngine.m} (He \& Yang, 2018) \\
+Workstation Modules: Tab 4 (Mechanical), Tab 6 (XRD), Diagnostics Console
+
+\subsection{Effective Relaxed Atomic Radius}
+\begin{equation}
+r_i^* = r_i \left(1 - \beta \frac{K_i - \bar{K}}{\bar{K}}\right), \quad \beta = \frac{1 + \nu}{3(1 - \nu)}, \quad \bar{K} = \sum_{i=1}^n c_i K_i
+\end{equation}
+\textbf{Where Used}: \texttt{HEALatticeDistortionEngine.m}. Accounts for elastic soft-sphere deformation of atoms in concentrated random solid solutions.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $r_i^*$: Effective relaxed atomic radius of element $i$ in the concentrated random solid solution [$\text{\AA}$].
+  \item $r_i$: Unperturbed Goldschmidt neutral radius [$\text{\AA}$].
+  \item $K_i, \bar{K}$: Bulk modulus of pure element $i$ and average alloy bulk modulus [$\text{GPa}$].
+  \item $\nu$: Average alloy Poisson's ratio [dimensionless, $\approx 0.30 - 0.33$].
+  \item $\beta$: Elastic stress accommodation factor.
+\end{itemize}
+
+\subsection{Root-Mean-Square (RMS) Atomic Lattice Strain}
+\begin{equation}
+\varepsilon_{\text{RMS}} = \sqrt{\sum_{i=1}^n c_i \left(\frac{r_i^* - \bar{r}^*}{\bar{r}^*}\right)^2}, \quad \bar{r}^* = \sum_{i=1}^n c_i r_i^*
+\end{equation}
+\textbf{Where Used}: \texttt{HEALatticeDistortionEngine.m}. Quantifies intrinsic static lattice displacement and dislocation scattering.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\varepsilon_{\text{RMS}}$: Volume-averaged Root-Mean-Square atomic static displacement strain [dimensionless].
+  \item $\bar{r}^*$: Mean effective atomic radius of the relaxed multicomponent lattice [$\text{\AA}$].
+\end{itemize}
+
+\subsection{Theoretical Critical Shear Strain}
+\begin{equation}
+\bar{\gamma}_{\text{th}} = \gamma_0 \left(1 - \alpha_{\text{dist}} \varepsilon_{\text{RMS}}\right)
+\end{equation}
+\textbf{Where Used}: \texttt{HEALatticeDistortionEngine.m}. Establishes ideal lattice shear strain limit.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\bar{\gamma}_{\text{th}}$: Theoretical plastic shear strain limit of the distorted crystalline lattice.
+  \item $\gamma_0$: Ideal theoretical shear strain of unperturbed lattice ($\gamma_0 \approx 0.11$).
+  \item $\alpha_{\text{dist}}$: Empirical lattice distortion coupling coefficient ($\alpha_{\text{dist}} \approx 2.8$).
+\end{itemize}
+
+\subsection{Labusch Collective Pinning vs Peierls Friction Slip}
+\begin{equation}
+\tau_c = \tau_{\text{Peierls}} + \Delta\tau_{\text{Labusch}}, \quad \Delta\tau_{\text{Labusch}} = A_L \cdot G \cdot \varepsilon_{\text{RMS}}^{4/3} \cdot c_i^{2/3}
+\end{equation}
+\textbf{Where Used}: \texttt{HEALatticeDistortionEngine.m}. Dislocation mobility transition between discrete Peierls glide and collective solute pinning.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\tau_c$: Critical resolved shear stress for dislocation slip [$\text{MPa}$].
+  \item $\tau_{\text{Peierls}}$: Intrinsic lattice resistance to dislocation motion [$\text{MPa}$].
+  \item $\Delta\tau_{\text{Labusch}}$: Solid solution strengthening increment from collective pinning [$\text{MPa}$].
+  \item $G$: Isotropic shear modulus of the alloy [$\text{GPa}$].
+  \item $A_L$: Dimensionless Labusch scaling coefficient.
+\end{itemize}
+
+\subsection{Dislocation Activation Volume}
+\begin{equation}
+V^* = b \cdot d_w \cdot l_s = -\frac{\partial \Delta G^*}{\partial \tau}
+\end{equation}
+\textbf{Where Used}: \texttt{HEALatticeDistortionEngine.m}. Quantifies deformation kinetics and thermally activated obstacle bypassing.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $V^*$: Dislocation activation volume [$\text{m}^3$ or in units of $b^3$].
+  \item $b$: Magnitude of Burgers vector [$\text{nm}$] ($\approx 0.255\text{ nm}$ for FCC, $\approx 0.286\text{ nm}$ for BCC).
+  \item $d_w$: Obstacle interaction barrier width [$\text{nm}$].
+  \item $l_s$: Average spacing between collective solute obstacles [$\text{nm}$].
+\end{itemize}
+
+\section{Mechanical Strengthening \& Constitutive Formulations}
+Primary Engine: \texttt{HEAMechanicalEngine.m} \\
+Workstation Modules: Tab 4 (Mechanical Properties), Tab 7 (Cladding & Wear), Tab 8 (Validation Benchmarks)
+
+\subsection{Total Yield Strength Superposition}
+\begin{equation}
+\sigma_y = \sigma_0 + \Delta\sigma_{\text{ss}} + \Delta\sigma_{\text{HP}} + \Delta\sigma_{\text{ppt}}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAMechanicalEngine.m}. Superposition model for room-temperature $0.2\%$ offset engineering yield strength.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\sigma_y$: Room-temperature engineering tensile yield strength ($0.2\%$ offset) [$\text{MPa}$].
+  \item $\sigma_0$: Intrinsic lattice friction stress [$\text{MPa}$] ($\sim 45\text{ MPa}$ for FCC; $\sim 650 - 950\text{ MPa}$ for BCC).
+  \item $\Delta\sigma_{\text{ss}}$: Solid solution strengthening contribution from atomic size and modulus mismatch [$\text{MPa}$].
+  \item $\Delta\sigma_{\text{HP}}$: Hall-Petch grain boundary strengthening [$\text{MPa}$].
+  \item $\Delta\sigma_{\text{ppt}}$: Precipitation / intermetallic dispersion strengthening [$\text{MPa}$].
+\end{itemize}
+
+\subsection{Varvenne-Curtin (FCC) & Maresca-Curtin (BCC) Solid Solution Models}
+\begin{equation}
+\Delta\sigma_{\text{ss}}^{\text{FCC}} = 0.0405 \cdot M \cdot \mu \left(\frac{1 + \nu}{1 - \nu}\right)^{4/3} \left[ \sum_{i=1}^n c_i \left(\frac{\Delta V_i}{V}\right)^2 \right]^{2/3}
+\end{equation}
+\begin{equation}
+\Delta\sigma_{\text{ss}}^{\text{BCC}} = M \cdot \left[ \tau_{\text{kink}} + \alpha_k \cdot \mu \cdot \Delta\varepsilon_{\text{size}}^{4/3} \right]
+\end{equation}
+\textbf{Where Used}: \texttt{HEAMechanicalEngine.m}. Physically based solid solution strengthening formulated specifically for FCC vs BCC HEAs.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $M$: Taylor orientation factor ($M = 3.06$ for untextured FCC polycrystals; $M = 2.73$ for BCC polycrystals).
+  \item $\mu$: Effective isotropic shear modulus of the alloy [$\text{GPa}$].
+  \item $\nu$: Poisson's ratio [dimensionless, typically $0.30 - 0.33$].
+  \item $\Delta V_i / V$: Normalized misfit volume of solute atom $i$ relative to average atomic volume $V$.
+  \item $\tau_{\text{kink}}$: Solute-resisted kink-pair nucleation threshold along screw dislocation lines [$\text{MPa}$].
+\end{itemize}
+
+\subsection{Hall-Petch Strengthening \& High-Temperature Softening}
+\begin{equation}
+\Delta\sigma_{\text{HP}} = \frac{k_{\text{HP}}}{\sqrt{d}}, \quad \sigma_y(T) = \sigma_y(298\text{ K}) \left[ 1 - \left(\frac{T - 298}{T_m - 298}\right)^m \right]
+\end{equation}
+\textbf{Where Used}: \texttt{HEAMechanicalEngine.m}. Evaluates grain boundary hardening and high-temperature yield strength decay.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $k_{\text{HP}}$: Hall-Petch grain boundary strengthening coefficient [$\text{MPa}\cdot\mu\text{m}^{1/2}$]. Calibrated to $494 \, \text{MPa}\cdot\mu\text{m}^{1/2}$ for Cantor alloys.
+  \item $d$: Mean grain diameter [$\mu\text{m}$]. Standard reference annealed state: $d = 30 \, \mu\text{m}$.
+  \item $T_m$: Solidus or melting temperature of the alloy [$\text{K}$].
+  \item $m$: Empirical thermal softening exponent ($m \approx 0.65 - 0.85$).
+\end{itemize}
+
+\subsection{Hardness, Flow Stress, Ductility \& Wear}
+\begin{equation}
+\text{HV} \approx 0.3 \, \sigma_y + 60, \quad \sigma_{\text{true}} = K \, \varepsilon_{\text{true}}^n, \quad W_{\text{wear}} = K_{\text{Archard}} \frac{F_N \, s}{H}
+\end{equation}
+\begin{equation}
+\eta = \frac{A_{\text{sub}}}{A_{\text{clad}} + A_{\text{sub}}} \times 100\%
+\end{equation}
+\textbf{Where Used}: \texttt{HEAMechanicalEngine.m}. Calculates Vickers hardness, plastic flow curve, Archard wear loss, and laser cladding dilution.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\text{HV}$: Vickers microhardness number [$\text{kgf}\cdot\text{mm}^{-2}$].
+  \item $K$: Strength coefficient in Hollomon constitutive law [$\text{MPa}$].
+  \item $n$: Strain-hardening exponent (typically $0.35 - 0.50$ for TWIP/FCC; $0.08 - 0.15$ for BCC).
+  \item $B/G$: Pugh ratio of bulk modulus $B$ to shear modulus $G$. Ductile regime: $B/G > 1.75$.
+  \item $W_{\text{wear}}$: Total volumetric wear loss [$\text{mm}^3$].
+  \item $K_{\text{Archard}}$: Dimensionless Archard wear coefficient.
+  \item $F_N$: Normal contact load applied to wear interface [$\text{N}$].
+  \item $s$: Total sliding distance [$\text{m}$].
+  \item $\eta$: Laser cladding substrate dilution percentage [$\%$].
+\end{itemize}
+
+\section{Thermophysical Transport Properties}
+Primary Engine: \texttt{HEATransportEngine.m} \\
+Workstation Modules: Tab 3 (Transport Curves: Density, Cp, k, Resistivity, Rheology)
+
+\subsection{Temperature-Dependent Density \& Kopp-Neumann Heat Capacity}
+\begin{equation}
+\rho(T) = \frac{\rho(298\text{ K})}{1 + 3 \, \alpha_L (T - 298)}, \quad C_p(T) = \sum_{i=1}^n c_i \, C_{p, i}(T)
+\end{equation}
+\textbf{Where Used}: \texttt{HEATransportEngine.m}. Evaluates mass density expansion and specific heat across solid, mushy, and liquid regimes.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\rho(T)$: Volumetric mass density at temperature $T$ [$\text{kg}\cdot\text{m}^{-3}$ or $\text{g}\cdot\text{cm}^{-3}$].
+  \item $\alpha_L$: Mean linear coefficient of thermal expansion [$\text{K}^{-1}$].
+  \item $C_p(T)$: Molar specific heat capacity at constant pressure [$\text{J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$].
+  \item $C_{p, i}(T)$: Temperature-dependent specific heat of pure constituent $i$ derived from SGTE unary data.
+\end{itemize}
+
+\subsection{Thermal Conductivity via Wiedemann-Franz Law \& Phonon Transport}
+\begin{equation}
+k(T) = k_e(T) + k_{\text{ph}}(T) = \frac{L_0 \, T}{\rho_{\text{el}}(T)} + \frac{A_{\text{ph}}}{T}
+\end{equation}
+\textbf{Where Used}: \texttt{HEATransportEngine.m}. Models electronic and phonon thermal conduction in severely disordered HEA lattices.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $k(T)$: Total thermal conductivity [$\text{W}\cdot\text{m}^{-1}\cdot\text{K}^{-1}$].
+  \item $k_e(T)$: Electronic thermal conductivity governed by conduction electron diffusion.
+  \item $k_{\text{ph}}(T)$: Lattice phonon thermal conductivity, attenuated by severe lattice distortion.
+  \item $L_0$: Sommerfeld theoretical Lorenz number ($2.443 \times 10^{-8} \, \text{W}\cdot\Omega\cdot\text{K}^{-2}$).
+  \item $\rho_{\text{el}}(T)$: Temperature-dependent electrical resistivity [$\Omega\cdot\text{m}$].
+\end{itemize}
+
+\subsection{Semi-Solid Rheology \& Laser Absorptivity}
+\begin{equation}
+\eta(f_s) = \eta_{\text{liq}} \left(1 - \frac{f_s}{f_{s, \text{crit}}}\right)^{-2.5 \, f_{s, \text{crit}}}, \quad A_{\text{laser}}(\lambda, T) \approx \sqrt{\frac{8 \pi \varepsilon_0 c_0 \, \rho_{\text{el}}(T)}{\lambda}}
+\end{equation}
+\textbf{Where Used}: \texttt{HEATransportEngine.m}. Semi-solid mushy zone slurry viscosity and laser energy coupling in additive manufacturing.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\eta(f_s)$: Dynamic apparent shear viscosity of semi-solid slurry in mushy freezing zone [$\text{Pa}\cdot\text{s}$].
+  \item $\eta_{\text{liq}}$: Viscosity of fully molten liquid alloy ($\eta_{\text{liq}} \approx 0.003 - 0.006 \, \text{Pa}\cdot\text{s}$).
+  \item $f_{s, \text{crit}}$: Critical solid fraction at rheological percolation jamming ($f_{s, \text{crit}} \approx 0.50 - 0.60$).
+  \item $A_{\text{laser}}$: Dimensionless optical surface absorptivity under industrial laser radiation.
+  \item $\varepsilon_0$: Vacuum permittivity ($8.854 \times 10^{-12} \, \text{F}\cdot\text{m}^{-1}$).
+  \item $c_0$: Speed of light in vacuum ($2.9979 \times 10^8 \, \text{m}\cdot\text{s}^{-1}$).
+\end{itemize}
+
+\section{Environmental Durability: Oxidation \& Corrosion Kinetics}
+Primary Engines: \texttt{HEAOxidationEngine.m}, \texttt{HEACorrosionEngine.m} \\
+Workstation Modules: Tab 5 (Oxidation & Corrosion Kinetics), Tab 8 (Validation Benchmarks)
+
+\subsection{Wagner Parabolic Oxidation Law \& Pilling-Bedworth Ratio}
+\begin{equation}
+\left(\frac{\Delta W}{A}\right)^2 = k_p(T) \, t, \quad k_p(T) = k_0 \exp\left(-\frac{Q_{\text{ox}}}{R T}\right)
+\end{equation}
+\begin{equation}
+\text{PBR} = \frac{V_{\text{oxide}}}{V_{\text{metal}}} = \frac{M_{\text{ox}} \, \rho_{\text{met}}}{n_{\text{met}} \, M_{\text{met}} \, \rho_{\text{ox}}}
+\end{equation}
+\begin{equation}
+\Delta G_f^\circ(T) = A + B \cdot T
+\end{equation}
+\textbf{Where Used}: \texttt{HEAOxidationEngine.m}. High-temperature parabolic oxidation mass gain curves and Ellingham oxide stability hierarchy.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\Delta W / A$: Specific mass gain per unit exposed surface area [$\text{mg}\cdot\text{cm}^{-2}$].
+  \item $k_p(T)$: Parabolic oxidation rate constant [$\text{mg}^2\cdot\text{cm}^{-4}\cdot\text{h}^{-1}$].
+  \item $t$: Isothermal exposure duration [$\text{hours}$].
+  \item $Q_{\text{ox}}$: Apparent activation energy for scale growth [$\text{kJ}\cdot\text{mol}^{-1}$].
+  \item $\text{PBR}$: Pilling-Bedworth Ratio. Protective scale criterion: $1.0 \le \text{PBR} \le 2.0$.
+  \item $\Delta G_f^\circ(T)$: Standard formation Gibbs energy per mole of $\text{O}_2$ [$\text{kJ}\cdot\text{mol}^{-1}$].
+\end{itemize}
+
+\subsection{Electrochemical Corrosion Rate (ASTM G102), PREN \& Butler-Volmer}
+\begin{equation}
+\text{CR} = K_{\text{corr}} \, \frac{i_{\text{corr}} \, \text{EW}}{\rho}, \quad \text{EW} = \left[ \sum_{i=1}^n \frac{w_i \, n_i}{M_i} \right]^{-1}
+\end{equation}
+\begin{equation}
+\text{PREN}_{\text{HEA}} = \text{wt}\%\text{Cr} + 3.3 \left(\text{wt}\%\text{Mo} + 0.5\,\text{wt}\%\text{W}\right) + 16\,\text{wt}\%\text{N}
+\end{equation}
+\begin{equation}
+i_{\text{net}} = i_{\text{corr}} \left[ \exp\left(\frac{2.303(E - E_{\text{corr}})}{\beta_a}\right) - \exp\left(-\frac{2.303(E - E_{\text{corr}})}{\beta_c}\right) \right]
+\end{equation}
+\textbf{Where Used}: \texttt{HEACorrosionEngine.m}. ASTM G102 electrochemical corrosion penetration rate and micro-galvanic cell polarization.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\text{CR}$: Annual corrosion penetration rate [$\text{mm}\cdot\text{year}^{-1}$].
+  \item $K_{\text{corr}}$: Metric conversion constant ($0.00327 \, \text{mm}\cdot\text{g}\cdot\mu\text{A}^{-1}\cdot\text{cm}^{-1}\cdot\text{year}^{-1}$).
+  \item $i_{\text{corr}}$: Corrosion current density determined from Tafel extrapolation [$\mu\text{A}\cdot\text{cm}^{-2}$].
+  \item $\text{EW}$: Alloy equivalent weight [$\text{g}\cdot\text{equivalent}^{-1}$].
+  \item $w_i$: Mass fraction of element $i$.
+  \item $n_i$: Valence electron exchange in dissolution reaction (e.g. Fe: 2, Cr: 3, Ni: 2, Mo: 4).
+  \item $\text{PREN}_{\text{HEA}}$: Pitting Resistance Equivalent Number. Pitting immunity in seawater requires $\text{PREN} \ge 40$.
+  \item $\beta_a, \beta_c$: Anodic and cathodic Tafel slopes [$\text{V}\cdot\text{decade}^{-1}$].
+\end{itemize}
+
+\section{Kinematic Powder X-Ray Diffractometry}
+Primary Engine: \texttt{HEAXRDEngine.m} \\
+Workstation Modules: Tab 6 (Waterfall Kinematic Diffractogram, Peak Broadening Slider)
+
+\subsection{Bragg's Law, Interplanar Spacing \& Peak Intensity}
+\begin{equation}
+\lambda = 2 \, d_{hkl} \, \sin\theta_{hkl}, \quad d_{hkl} = \frac{a_0}{\sqrt{h^2 + k^2 + l^2}}
+\end{equation}
+\begin{equation}
+I_{hkl} \propto |F_{hkl}|^2 \cdot p_{hkl} \cdot \left(\frac{1 + \cos^2(2\theta)}{\sin^2\theta \cos\theta}\right) \cdot \exp(-2 B_{\text{DW}} \sin^2\theta / \lambda^2)
+\end{equation}
+\textbf{Where Used}: \texttt{HEAXRDEngine.m}. Synthesizes theoretical powder X-ray diffractogram patterns for FCC, BCC, and HCP lattices.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\lambda$: X-ray wavelength ($\lambda = 1.54056 \, \text{\AA}$ for $\text{Cu-K}\alpha_1$).
+  \item $\theta_{hkl}$: Bragg diffraction angle [$\text{degrees}$].
+  \item $d_{hkl}$: Interplanar spacing of $(hkl)$ lattice planes [$\text{\AA}$].
+  \item $a_0$: Effective lattice parameter calculated from Vegard's law with soft-sphere relaxation [$\text{\AA}$].
+  \item $F_{hkl}$: Kinematic crystal structure factor for $(hkl)$ reflection.
+  \item $p_{hkl}$: Multiplicity factor of $(hkl)$ plane family.
+  \item $B_{\text{DW}}$: Debye-Waller temperature factor accounting for static displacement distortion and thermal vibration [$\text{\AA}^2$].
+\end{itemize}
+
+\subsection{Scherrer Peak Broadening \& Williamson-Hall Microstrain}
+\begin{equation}
+\text{FWHM}_{hkl} = \frac{K_{\text{Scherrer}} \, \lambda}{D_{\text{crystallite}} \cos\theta_{hkl}} + 4 \, \varepsilon_{\text{micro}} \tan\theta_{hkl}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAXRDEngine.m}. Simulates crystallite size and lattice microstrain peak broadening.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $\text{FWHM}_{hkl}$: Diffraction peak Full Width at Half Maximum [$\text{rad}$].
+  \item $K_{\text{Scherrer}}$: Crystallite shape factor ($K_{\text{Scherrer}} \approx 0.94$).
+  \item $D_{\text{crystallite}}$: Coherent crystalline domain size [$\text{nm}$].
+  \item $\varepsilon_{\text{micro}}$: Root-mean-square microstrain from lattice distortion.
+\end{itemize}
+
+\section{Industrial Application Ranking \& COMSOL Coupling}
+Primary Engines: \texttt{HEAApplicationDatabase.m}, \texttt{CALPHADHEACalc.m} \\
+Workstation Modules: Tab 7 (Applications Hub), Tab 8 (Validation & COMSOL Piecewise Vault)
+
+\subsection{Multi-Criteria Decision Analysis (MCDA) Scoring}
+\begin{equation}
+S_j = \left[ \sum_{k=1}^m w_k \cdot \phi_k(P_k) \right] \times \prod_{l=1}^p \Theta_l
+\end{equation}
+\begin{equation}
+\phi_k(P_k) = \frac{1}{1 + \exp\left(-\kappa_k \cdot \frac{P_k - P_{k, \text{target}}}{\Delta P_k}\right)}
+\end{equation}
+\textbf{Where Used}: \texttt{HEAApplicationDatabase.m}. Multi-criteria suitability ranking across 8 industrial sectors.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $S_j$: Overall industrial suitability score for application category $j$ ($0 \le S_j \le 1.0$).
+  \item $w_k$: Relative importance weighting factor assigned to property $k$ ($\sum w_k = 1.0$).
+  \item $\phi_k(P_k)$: Continuous non-linear sigmoid response utility function evaluating property $P_k \in [0, 1]$.
+  \item $\Theta_l \in \{0, 1\}$: Critical hard failure constraint gate (e.g. elongation $< 5\%$ disqualifies cryogenic LNG applications).
+\end{itemize}
+
+\subsection{COMSOL Multiphysics Piecewise Continuous Smoothing}
+\begin{equation}
+P_{\text{smooth}}(T) = P_{\text{solid}}(T) + \left[P_{\text{liquid}}(T) - P_{\text{solid}}(T)\right] \cdot \text{flc2hs}\left(T - T_{\text{Solidus}}, \, \Delta T_{\text{smooth}}\right)
+\end{equation}
+\textbf{Where Used}: \texttt{CALPHADHEACalc.m}. Exports differentiable material property functions for COMSOL Multiphysics finite element simulations.
+
+\noindent\textbf{Variable Definitions}:
+\begin{itemize}
+  \item $P_{\text{smooth}}(T)$: Continuous, differentiable material property function valid across solid, mushy, and liquid regimes.
+  \item $\text{flc2hs}(x, \Delta x)$: COMSOL continuous Heaviside step operator with continuous second derivative.
+  \item $\Delta T_{\text{smooth}}$: Smoothing transition temperature band [$\text{K}$].
+\end{itemize}
+
+\section*{Authoritative Literature References}
+\begin{enumerate}
+  \item A. T. Dinsdale, ``SGTE Data for Pure Elements,'' \textit{CALPHAD}, vol. 15, no. 4, pp. 317--425, 1991.
+  \item Q. He and Y. Yang, ``On Lattice Distortion in High Entropy Alloys,'' \textit{Frontiers in Materials}, vol. 5, p. 42, 2018.
+  \item C. Varvenne, A. Luque, and W. A. Curtin, ``Theory of strengthening in fcc high entropy alloys,'' \textit{Acta Materialia}, vol. 118, pp. 164--176, 2016.
+  \item F. Maresca and W. A. Curtin, ``Theory of screw dislocation glide in BCC high-entropy alloys,'' \textit{Acta Materialia}, vol. 182, pp. 235--249, 2020.
+  \item S. Guo, C. Ng, J. Lu, and C. T. Liu, ``Effect of valence electron concentration on stability of fcc or bcc phase in high entropy alloys,'' \textit{Journal of Applied Physics}, vol. 109, p. 103505, 2011.
+  \item ASTM Standard G102-89, ``Standard Practice for Calculation of Corrosion Rates and Related Information from Electrochemical Measurements,'' \textit{ASTM International}, West Conshohocken, PA, 2015.
+\end{enumerate}
+
+\end{document}
