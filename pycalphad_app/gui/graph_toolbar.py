@@ -33,25 +33,25 @@ class GraphNavigationToolbar(QFrame):
 
         self.setStyleSheet(
             "QFrame {"
-            "  background: #252526;"
-            "  border: 1px solid #3E3E42;"
-            "  border-radius: 3px;"
+            "  background: #FFFFFF;"
+            "  border: 1px solid #E2E8F0;"
+            "  border-radius: 4px;"
             "  padding: 2px 4px;"
             "}"
             "QPushButton {"
-            "  background: #2D2D30;"
-            "  color: #CCCCCC;"
-            "  border: 1px solid #3E3E42;"
-            "  border-radius: 2px;"
+            "  background: #F8FAFC;"
+            "  color: #1E293B;"
+            "  border: 1px solid #CBD5E1;"
+            "  border-radius: 3px;"
             "  padding: 3px 8px;"
             "  font-family: 'Segoe UI';"
             "  font-size: 8pt;"
             "  font-weight: 600;"
             "}"
-            "QPushButton:hover { background: #3E3E42; color: #FFFFFF; border-color: #0E639C; }"
-            "QPushButton:pressed { background: #0E639C; color: #FFFFFF; }"
-            "QPushButton:checked { background: #0E639C; color: #FFFFFF; font-weight: bold; border-color: #1177BB; }"
-            "QLabel { color: #CCCCCC; font-family: 'Segoe UI'; font-size: 8pt; }"
+            "QPushButton:hover { background: #F1F5F9; color: #0F172A; border-color: #2563EB; }"
+            "QPushButton:pressed { background: #E2E8F0; }"
+            "QPushButton:checked { background: #2563EB; color: #FFFFFF; font-weight: bold; border-color: #1D4ED8; }"
+            "QLabel { color: #475569; font-family: 'Segoe UI'; font-size: 8pt; }"
         )
 
         layout = QHBoxLayout(self)
@@ -111,7 +111,7 @@ class GraphNavigationToolbar(QFrame):
 
         # Real-time Data Cursor coordinate readout
         self.lbl_probe = QLabel("Cursor: -- , --")
-        self.lbl_probe.setStyleSheet("color: #4EC9B0; font-family: 'Consolas', monospace; font-size: 8.5pt; font-weight: bold;")
+        self.lbl_probe.setStyleSheet("color: #1D4ED8; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 3px; padding: 2px 6px; font-family: 'Consolas', monospace; font-size: 8.5pt; font-weight: bold;")
         layout.addWidget(self.lbl_probe)
 
         # Setup mouse move crosshair and tracking
