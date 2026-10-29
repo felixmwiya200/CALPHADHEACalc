@@ -1,0 +1,207 @@
+{
+  "AlloyName": "AeroBlade-HESA-X1",
+  "NominalFormula": "Al14.45Co21.95Cr19.95Fe14.95Ni25.95Ti2.00Ta0.50Hf0.15Y0.10",
+  "MolarMass_g_mol": 53.006286500000016,
+  "MolarComposition": {
+    "Elements": [
+      "Al",
+      "Co",
+      "Cr",
+      "Fe",
+      "Ni",
+      "Ti",
+      "Ta",
+      "Hf",
+      "Y"
+    ],
+    "AtFractions": [
+      0.14450000000000002,
+      0.21950000000000003,
+      0.19950000000000004,
+      0.14950000000000002,
+      0.25950000000000006,
+      0.020000000000000004,
+      0.005000000000000001,
+      0.0015000000000000002,
+      0.0010000000000000002
+    ],
+    "WtFractions": [
+      0.073555407432663658,
+      0.24404262879271871,
+      0.19569758013514113,
+      0.15750636483466915,
+      0.28734013464610464,
+      0.018060876609418769,
+      0.017068730140150451,
+      0.0050510046577211176,
+      0.0016772727514122311
+    ],
+    "Moles": [
+      0.14450000000000002,
+      0.21950000000000003,
+      0.19950000000000004,
+      0.14950000000000002,
+      0.25950000000000006,
+      0.020000000000000004,
+      0.005000000000000001,
+      0.0015000000000000002,
+      0.0010000000000000002
+    ],
+    "MeanMolarMass": 53.006286500000016,
+    "TotalMass": 53.006286500000016,
+    "TotalMoles": 1,
+    "TotalComposition": 100
+  },
+  "ElementsBreakdown": {
+    "Al": {
+      "AtomicWeight_g_mol": 26.982,
+      "MoleFraction": 0.14450000000000002,
+      "MolePercent_at": 14.450000000000001,
+      "MassContribution_g_mol": 3.8988990000000006,
+      "WeightPercent_wt": 7.3555407432663662,
+      "Mass_100g_batch_g": 7.3555407432663662,
+      "Mass_1kg_batch_g": 73.555407432663657,
+      "Moles_in_1kg_alloy": 2.7260917438538157
+    },
+    "Co": {
+      "AtomicWeight_g_mol": 58.933,
+      "MoleFraction": 0.21950000000000003,
+      "MolePercent_at": 21.950000000000003,
+      "MassContribution_g_mol": 12.9357935,
+      "WeightPercent_wt": 24.404262879271872,
+      "Mass_100g_batch_g": 24.404262879271872,
+      "Mass_1kg_batch_g": 244.04262879271872,
+      "Moles_in_1kg_alloy": 4.1410182545045853
+    },
+    "Cr": {
+      "AtomicWeight_g_mol": 51.996,
+      "MoleFraction": 0.19950000000000004,
+      "MolePercent_at": 19.950000000000003,
+      "MassContribution_g_mol": 10.373202000000003,
+      "WeightPercent_wt": 19.569758013514114,
+      "Mass_100g_batch_g": 19.569758013514114,
+      "Mass_1kg_batch_g": 195.69758013514115,
+      "Moles_in_1kg_alloy": 3.7637045183310476
+    },
+    "Fe": {
+      "AtomicWeight_g_mol": 55.845,
+      "MoleFraction": 0.14950000000000002,
+      "MolePercent_at": 14.950000000000003,
+      "MassContribution_g_mol": 8.3488275,
+      "WeightPercent_wt": 15.750636483466915,
+      "Mass_100g_batch_g": 15.750636483466915,
+      "Mass_1kg_batch_g": 157.50636483466914,
+      "Moles_in_1kg_alloy": 2.8204201778972
+    },
+    "Ni": {
+      "AtomicWeight_g_mol": 58.693,
+      "MoleFraction": 0.25950000000000006,
+      "MolePercent_at": 25.950000000000006,
+      "MassContribution_g_mol": 15.230833500000003,
+      "WeightPercent_wt": 28.734013464610463,
+      "Mass_100g_batch_g": 28.734013464610463,
+      "Mass_1kg_batch_g": 287.34013464610462,
+      "Moles_in_1kg_alloy": 4.8956457268516624
+    },
+    "Ti": {
+      "AtomicWeight_g_mol": 47.867,
+      "MoleFraction": 0.020000000000000004,
+      "MolePercent_at": 2.0000000000000004,
+      "MassContribution_g_mol": 0.95734000000000008,
+      "WeightPercent_wt": 1.806087660941877,
+      "Mass_100g_batch_g": 1.806087660941877,
+      "Mass_1kg_batch_g": 18.06087660941877,
+      "Moles_in_1kg_alloy": 0.37731373617353858
+    },
+    "Ta": {
+      "AtomicWeight_g_mol": 180.95,
+      "MoleFraction": 0.005000000000000001,
+      "MolePercent_at": 0.50000000000000011,
+      "MassContribution_g_mol": 0.90475000000000017,
+      "WeightPercent_wt": 1.706873014015045,
+      "Mass_100g_batch_g": 1.706873014015045,
+      "Mass_1kg_batch_g": 17.06873014015045,
+      "Moles_in_1kg_alloy": 0.094328434043384646
+    },
+    "Hf": {
+      "AtomicWeight_g_mol": 178.49,
+      "MoleFraction": 0.0015000000000000002,
+      "MolePercent_at": 0.15000000000000002,
+      "MassContribution_g_mol": 0.26773500000000006,
+      "WeightPercent_wt": 0.50510046577211176,
+      "Mass_100g_batch_g": 0.50510046577211176,
+      "Mass_1kg_batch_g": 5.0510046577211174,
+      "Moles_in_1kg_alloy": 0.028298530213015392
+    },
+    "Y": {
+      "AtomicWeight_g_mol": 88.906,
+      "MoleFraction": 0.0010000000000000002,
+      "MolePercent_at": 0.10000000000000002,
+      "MassContribution_g_mol": 0.088906000000000027,
+      "WeightPercent_wt": 0.1677272751412231,
+      "Mass_100g_batch_g": 0.1677272751412231,
+      "Mass_1kg_batch_g": 1.677272751412231,
+      "Moles_in_1kg_alloy": 0.018865686808676927
+    }
+  },
+  "Thermodynamics": {
+    "VEC": 7.5110000000000028,
+    "DeltaS_mix_J_molK": 14.046847425791029,
+    "DeltaH_mix_kJ_mol": -12.947914221140666,
+    "Tm_avg_K": 1737.7930000000003,
+    "Omega": 1.8852853603827162,
+    "DeltaSize_pct": 5.58374687527927,
+    "DeltaChi": 0.12710180712720018,
+    "PredictedPhase": "FCC + BCC (Duplex Structure)",
+    "T_Solidus_K": 1404.4,
+    "T_Liquidus_K": 1683.3,
+    "FreezingWindow_K": 278.89999999999986,
+    "T_ScheilSolidus_K": 1243.9,
+    "Density_g_cm3": 7.5,
+    "ThermalConductivity_W_mK": 11.5,
+    "SpecificHeat_J_kgK": 468.3,
+    "Resistivity_uOhm_cm": 149.9,
+    "YoungsModulus_E0_GPa": 198.6165,
+    "PoissonRatio_nu0": 0.29321000000000008
+  },
+  "MechanicalProperties": {
+    "GrainSize_um": 1.5,
+    "ShearModulus_GPa": 76.8,
+    "YoungsModulus_GPa": 198.6,
+    "BulkModulus_GPa": 160.1,
+    "PughRatio_B_over_G": 2.08,
+    "DuctilityCriterion": "Ductile",
+    "HallPetchContribution_MPa": 442.9,
+    "SolidSolutionCurtin_MPa": 206.3,
+    "YieldStrength_RT_MPa": 1111.7,
+    "UTS_RT_MPa": 2167.8,
+    "Elongation_pct": 18.5,
+    "VickersHardness_HV": 474,
+    "FractureToughness_K1c": 150.7,
+    "YieldStrength_800C_Base_MPa": 885.7,
+    "YieldStrength_800C_ODS_MPa": 1075.7,
+    "YieldStrength_1000C_ODS_MPa": 1008.6,
+    "HighTempCreepLimit_800C_MPa": 752.99
+  },
+  "OxidationKinetics_950C_100h": {
+    "Regime": "Alumina Former",
+    "DominantOxide": "\\alpha-Al2O3",
+    "ProtectiveRating": "Superior (Hermetic Alpha-Alumina Barrier)",
+    "kp_g2_cm4_s": 3.0431248268647006E-12,
+    "kp_mg2_cm4_h": 0.011,
+    "ActivationEnergy_kJ": 215,
+    "PBR": 1.28,
+    "MassGain_mg_cm2": 1.047,
+    "ScaleThickness_um": 5.63,
+    "SpallationStress_MPa": 3848
+  },
+  "FilmCoolingAeroThermal": {
+    "LinearCTE_ppm_K": 11.8,
+    "YSZ_Mismatch_ppm_K": 1.3000000000000007,
+    "ThermalFatigue_R_prime_W_m": 5278.7094406608976,
+    "CentrifugalRatio_vs_CMSX4": 0.86206896551724144,
+    "CentrifugalReduction_pct": 13.793103448275856,
+    "SolidusSafetyMargin_over_1100C_K": 31.25,
+    "DrillabilityIndex": 5.5759
+  }
+}
