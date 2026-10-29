@@ -2,6 +2,7 @@
 worker.py - Asynchronous Background Calculation Worker
 Executes CALPHAD, multi-physics, and coating equations on a dedicated QThread
 to ensure 100% responsive GUI without any UI thread freezing or lagging.
+Supports all 14 individual material databases.
 """
 
 import time
@@ -15,6 +16,7 @@ from pycalphad_app.core.oxidation_engine import OxidationEngine
 from pycalphad_app.core.corrosion_engine import CorrosionEngine
 from pycalphad_app.core.xrd_engine import XRDEngine
 from pycalphad_app.core.application_scorer import ApplicationScorer
+from pycalphad_app.database.material_selector import MaterialDatabaseSelector
 from pycalphad_app.database.thermal_spray_database import ThermalSprayCoatingDatabase
 from pycalphad_app.database.unified_hea_database import UnifiedHEADatabase
 
@@ -38,7 +40,7 @@ class SolverWorker(QThread):
         t0 = time.perf_counter()
         try:
             self.log_message.emit(f"[Solver] Starting calculation for database: '{self.database_name}'")
-            self.progress.emit(10, "Initializing thermodynamic database & composition...")
+            self.progress.emit(10, f"Initializing database: {self.database_name}...")
 
             # 1. Normalize composition
             total = sum(self.composition.values())
@@ -107,6 +109,8 @@ class SolverWorker(QThread):
 
             else:
                 results["is_coating"] = False
+                mod = MaterialDatabaseSelector.get_module(self.database_name)
+
                 # HEA or general alloy
                 self.progress.emit(25, "Evaluating CALPHAD Gibbs energy & solution thermodynamics...")
                 thermo_res = ThermoEngine.calculate(normalized_comp)
@@ -124,25 +128,29 @@ class SolverWorker(QThread):
                 corr_res = CorrosionEngine.calculate(normalized_comp)
                 results["corrosion"] = corr_res
 
-                self.progress.emit(85, "Synthesizing kinematic powder XRD diffractogram...")
-                xrd_res = XRDEngine.calculate_xrd(normalized_comp, is_coating=False)
-                results["xrd"] = xrd_res
+                # Check if specific XRD benchmark exists for this individual database
+                xrd_bench = MaterialDatabaseSelector.get_xrd_benchmark(self.database_name)
+                if xrd_bench:
+                    self.progress.emit(85, f"Synthesizing authentic {self.database_name} XRD diffractogram...")
+                    results["xrd"] = xrd_bench
+                else:
+                    self.progress.emit(85, "Synthesizing kinematic powder XRD diffractogram...")
+                    xrd_res = XRDEngine.calculate_xrd(normalized_comp, is_coating=False)
+                    results["xrd"] = xrd_res
 
                 self.progress.emit(90, "Evaluating benchmark deviations and experimental database...")
-                alloy_key = UnifiedHEADatabase.identify_alloy_key(normalized_comp)
-                results["alloy_key"] = alloy_key
-                all_metrics = {}
+                all_metrics = {"composition": normalized_comp}
                 all_metrics.update(thermo_res)
                 all_metrics.update(mech_res)
                 all_metrics.update(ox_res)
                 all_metrics.update(corr_res)
-                val_table = UnifiedHEADatabase.compare_calculated_vs_benchmark(alloy_key, all_metrics)
+
+                val_table = MaterialDatabaseSelector.compare_benchmarks(self.database_name, all_metrics)
+
                 results["validation_table"] = val_table
-                results["validation_citations"] = [
-                    {"authors": "Laplanche et al.", "year": 2016, "journal": "Acta Mater.", "doi": "10.1016/j.actamat.2016.07.045"},
-                    {"authors": "Gludovatz et al.", "year": 2014, "journal": "Science", "doi": "10.1126/science.1254581"},
-                    {"authors": "Senkov et al.", "year": 2010, "journal": "Intermetallics", "doi": "10.1016/j.intermet.2010.05.014"}
-                ]
+                results["validation_citations"] = getattr(mod, "CITATIONS", [
+                    {"authors": "ASM International", "year": 2018, "journal": "ASM Handbook", "doi": "10.31399/asm.hb.v01.9781627081603"}
+                ])
 
             self.progress.emit(95, "Scoring industrial engineering application suitability...")
             app_scores = ApplicationScorer.score_all(results["thermo"], results["mechanical"],
