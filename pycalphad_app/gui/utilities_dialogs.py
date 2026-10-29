@@ -649,3 +649,145 @@ class BatchModeDialog(QDialog):
             self.table.setItem(row, 2, QTableWidgetItem("Completed"))
             self.table.setItem(row, 3, QTableWidgetItem(ys_results[row % len(ys_results)]))
         QMessageBox.information(self, "Batch Complete", "Successfully executed batch calculations across all alloys.")
+
+
+class EllinghamOxideExplorerDialog(QDialog):
+    """
+    Thermodynamic Ellingham Oxide Explorer Dialog
+    Migrated from previous app's HEAOxideDatabase.m:
+    Visualizes standard Gibbs free energy of formation Ellingham lines (Delta G_f = A + B * T),
+    Pilling-Bedworth ratios (PBR), densities, and protectiveness classifications for 30+ oxides.
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Ellingham Oxide Thermochemistry & Scale Integrity Database")
+        self.resize(780, 560)
+        self.init_ui()
+
+    def init_ui(self):
+        from pycalphad_app.database.oxide_database import HEAOxideDatabase
+        layout = QVBoxLayout(self)
+
+        info_lbl = QLabel(
+            "<b>High-Entropy Oxide Thermodynamics & Scale Integrity:</b><br>"
+            "Ellingham Free Energy of Formation (<i>ΔG<sub>f</sub>° = A + B·T</i>) and Pilling-Bedworth Ratio (PBR). "
+            "PBR between 1.0 and 2.0 indicates continuous, self-healing, adherent protective scales."
+        )
+        info_lbl.setWordWrap(True)
+        layout.addWidget(info_lbl)
+
+        # Filter bar
+        filt_h = QHBoxLayout()
+        filt_h.addWidget(QLabel("Filter by Constituent Element:"))
+        self.elem_filter = QComboBox()
+        self.elem_filter.addItems(["All Elements", "Al (Alumina)", "Cr (Chromia)", "Si (Silica)", "Ti (Rutile)", "Zr", "Hf", "Nb", "Ta", "Mo", "W", "Ni", "Co", "Fe"])
+        self.elem_filter.currentTextChanged.connect(self.apply_filter)
+        filt_h.addWidget(self.elem_filter)
+        filt_h.addStretch()
+        layout.addLayout(filt_h)
+
+        # Table
+        self.table = QTableWidget(0, 7)
+        self.table.setHorizontalHeaderLabels([
+            "Formula", "Mineral Name", "Class", "PBR", "Density (g/cm³)", "Tm (K)", "Citation & DOI"
+        ])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        layout.addWidget(self.table)
+
+        btn_box = QHBoxLayout()
+        btn_close = QPushButton("Close")
+        btn_close.clicked.connect(self.accept)
+        btn_box.addStretch()
+        btn_box.addWidget(btn_close)
+        layout.addLayout(btn_box)
+
+        self.apply_filter("All Elements")
+
+    def apply_filter(self, choice: str):
+        from pycalphad_app.database.oxide_database import HEAOxideDatabase
+        all_oxides = HEAOxideDatabase.get_all_oxides()
+        selected_elem = choice.split()[0] if choice != "All Elements" else None
+
+        filtered = []
+        for ox in all_oxides:
+            if not selected_elem or selected_elem in ox["Elements"]:
+                filtered.append(ox)
+
+        self.table.setRowCount(len(filtered))
+        for row, ox in enumerate(filtered):
+            self.table.setItem(row, 0, QTableWidgetItem(ox["Formula"]))
+            self.table.setItem(row, 1, QTableWidgetItem(ox["Name"]))
+            self.table.setItem(row, 2, QTableWidgetItem(ox["Class"]))
+            self.table.setItem(row, 3, QTableWidgetItem(f"{ox['PBR']:.2f}"))
+            self.table.setItem(row, 4, QTableWidgetItem(f"{ox['Density']:.2f}"))
+            self.table.setItem(row, 5, QTableWidgetItem(f"{ox['Tm_K']:.0f}"))
+            self.table.setItem(row, 6, QTableWidgetItem(f"{ox['Citation']} ({ox.get('DOI', '')})"))
+
+
+class LiteratureHEADatabaseDialog(QDialog):
+    """
+    Literature High-Entropy Alloy Database Browser
+    Migrated from previous app's database_of_HEAs.csv:
+    Provides live search across 12,000+ literature alloy compositions,
+    crystal structures, synthesis processing conditions, and source DOIs.
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Curated Literature HEA Database (12,000+ Compositions)")
+        self.resize(850, 560)
+        self.init_ui()
+
+    def init_ui(self):
+        from pycalphad_app.database.literature_hea_repository import LiteratureHEARepository
+        layout = QVBoxLayout(self)
+
+        header_lbl = QLabel(
+            "<b>Comprehensive High-Entropy Alloy Literature Dataset:</b><br>"
+            "Curated from experimental and theoretical publications with measured phases, "
+            "melting methods, purity levels, and paper citations."
+        )
+        header_lbl.setWordWrap(True)
+        layout.addWidget(header_lbl)
+
+        # Search bar
+        search_h = QHBoxLayout()
+        search_h.addWidget(QLabel("Search Alloy (e.g., Cantor, NbMoTaW, AlCoCrFeNi):"))
+        self.search_edit = QLineEdit()
+        self.search_edit.setPlaceholderText("Type alloy designation or elements...")
+        self.search_edit.textChanged.connect(self.search_alloys)
+        search_h.addWidget(self.search_edit)
+        layout.addLayout(search_h)
+
+        # Results table
+        self.table = QTableWidget(0, 5)
+        self.table.setHorizontalHeaderLabels([
+            "Alloy System", "Phases Identified", "Type", "Synthesis Details", "Paper Reference"
+        ])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        layout.addWidget(self.table)
+
+        btn_box = QHBoxLayout()
+        btn_close = QPushButton("Close")
+        btn_close.clicked.connect(self.accept)
+        btn_box.addStretch()
+        btn_box.addWidget(btn_close)
+        layout.addLayout(btn_box)
+
+        self.search_alloys("")
+
+    def search_alloys(self, query: str):
+        from pycalphad_app.database.literature_hea_repository import LiteratureHEARepository
+        if not query.strip():
+            records = LiteratureHEARepository.get_top_alloys(35)
+        else:
+            records = LiteratureHEARepository.search_by_alloy(query.strip())[:50]
+
+        self.table.setRowCount(len(records))
+        for row, r in enumerate(records):
+            self.table.setItem(row, 0, QTableWidgetItem(r.get("Alloy", "")))
+            self.table.setItem(row, 1, QTableWidgetItem(r.get("Phase", "")))
+            self.table.setItem(row, 2, QTableWidgetItem(r.get("Type", "")))
+            self.table.setItem(row, 3, QTableWidgetItem(r.get("Synthesis", "")))
+            self.table.setItem(row, 4, QTableWidgetItem(r.get("Paper", "")))

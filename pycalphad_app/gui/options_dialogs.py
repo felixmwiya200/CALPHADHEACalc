@@ -573,7 +573,7 @@ class FormingExportDialog(QDialog):
 
 class GeneralPreferencesDialog(QDialog):
     """Configures application theme, numerical precision, and plot rendering parameters."""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, current_theme="dark"):
         super().__init__(parent)
         self.setWindowTitle("General Preferences")
         self.resize(400, 280)
@@ -583,6 +583,10 @@ class GeneralPreferencesDialog(QDialog):
         grid.addWidget(QLabel("Interface Color Theme:"), 0, 0)
         self.theme_combo = QComboBox()
         self.theme_combo.addItems(["Dark (Professional CAE)", "Light (Standard Windows)"])
+        if current_theme == "light":
+            self.theme_combo.setCurrentIndex(1)
+        else:
+            self.theme_combo.setCurrentIndex(0)
         grid.addWidget(self.theme_combo, 0, 1)
 
         grid.addWidget(QLabel("Decimal Display Precision:"), 1, 0)
@@ -612,6 +616,9 @@ class GeneralPreferencesDialog(QDialog):
         btn_box.addWidget(btn_save)
         btn_box.addWidget(btn_cancel)
         layout.addLayout(btn_box)
+
+    def get_selected_theme(self) -> str:
+        return "dark" if "Dark" in self.theme_combo.currentText() else "light"
 
 
 class OrderOfElementsDialog(QDialog):
