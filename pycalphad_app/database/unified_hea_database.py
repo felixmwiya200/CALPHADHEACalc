@@ -230,7 +230,8 @@ class UnifiedHEADatabase:
         """
         table = []
         if alloy_key not in cls.BENCHMARKS:
-            return table
+            alloy_key = "CANTOR_COCRFEMNNI"
+
 
         bench_data = cls.BENCHMARKS[alloy_key]
         bench_props = bench_data["properties"]

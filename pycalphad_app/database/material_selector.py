@@ -1,23 +1,39 @@
 """
-material_selector.py - Multi-Alloy Database Architecture & Startup Registry
-Implements the 14-alloy database catalog matching the materials engineering taxonomy:
-  1. High Entropy Alloys (Compacted Unified Database)
-  2. Thermal Spray Coatings (Ni71.61Fe4.47Cr15.27B3.32C0.68Si4.65 As-Sprayed)
-  3. Aluminium Alloy
-  4. Magnesium Alloy
-  5. Cast Iron
-  6. General Steel
-  7. Stainless Steel
-  8. Cobalt Alloy
-  9. Nickel Based Superalloy
- 10. NiFe Based Superalloy
- 11. Single Crystal
- 12. Titanium Alloy
- 13. Zirconium Alloy
- 14. Solder Alloy
+material_selector.py - Master Multi-Alloy Database Registry & Router
+Coordinates the 14 individual alloy databases:
+  1. High Entropy Alloys (UnifiedHEADatabase)
+  2. Thermal Spray Coatings (ThermalSprayCoatingDatabase)
+  3. Aluminium Alloy (AluminiumAlloyDatabase)
+  4. Magnesium Alloy (MagnesiumAlloyDatabase)
+  5. Cast Iron (CastIronDatabase)
+  6. General Steel (GeneralSteelDatabase)
+  7. Stainless Steel (StainlessSteelDatabase)
+  8. Cobalt Alloy (CobaltAlloyDatabase)
+  9. Nickel Based Superalloy (NickelSuperalloyDatabase)
+ 10. NiFe Based Superalloy (NiFeSuperalloyDatabase)
+ 11. Single Crystal (SingleCrystalDatabase)
+ 12. Titanium Alloy (TitaniumAlloyDatabase)
+ 13. Zirconium Alloy (ZirconiumAlloyDatabase)
+ 14. Solder Alloy (SolderAlloyDatabase)
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
+
+from pycalphad_app.database.unified_hea_database import UnifiedHEADatabase
+from pycalphad_app.database.thermal_spray_database import ThermalSprayCoatingDatabase
+from pycalphad_app.database.aluminium_database import AluminiumAlloyDatabase
+from pycalphad_app.database.magnesium_database import MagnesiumAlloyDatabase
+from pycalphad_app.database.cast_iron_database import CastIronDatabase
+from pycalphad_app.database.general_steel_database import GeneralSteelDatabase
+from pycalphad_app.database.stainless_steel_database import StainlessSteelDatabase
+from pycalphad_app.database.cobalt_database import CobaltAlloyDatabase
+from pycalphad_app.database.nickel_superalloy_database import NickelSuperalloyDatabase
+from pycalphad_app.database.nife_superalloy_database import NiFeSuperalloyDatabase
+from pycalphad_app.database.single_crystal_database import SingleCrystalDatabase
+from pycalphad_app.database.titanium_database import TitaniumAlloyDatabase
+from pycalphad_app.database.zirconium_database import ZirconiumAlloyDatabase
+from pycalphad_app.database.solder_database import SolderAlloyDatabase
+
 
 class MaterialDatabaseSelector:
     DATABASES: List[str] = [
@@ -37,133 +53,21 @@ class MaterialDatabaseSelector:
         "Solder Alloy"
     ]
 
-    SPECS: Dict[str, Dict[str, Any]] = {
-        "High Entropy Alloys": {
-            "name": "High Entropy Alloys",
-            "basis": "at%",
-            "default_alloy": "CoCrFeMnNi (Cantor Alloy)",
-            "composition": {"Co": 0.20, "Cr": 0.20, "Fe": 0.20, "Mn": 0.20, "Ni": 0.20},
-            "category": "Concentrated Multi-Principal Element Alloys (MPEAs)",
-            "description": "Compacted master database of 51 HEA archetypes, 22 experimental benchmarks, and SGTE lattice stabilities.",
-            "primary_phases": ["FCC_A1", "BCC_A2", "B2", "Sigma", "Liquid"]
-        },
-        "Thermal Spray Coatings": {
-            "name": "Thermal Spray Coatings",
-            "basis": "wt%",
-            "default_alloy": "Ni71.61Fe4.47Cr15.27B3.32C0.68Si4.65 (As-Sprayed)",
-            "composition": {"Ni": 0.7161, "Cr": 0.1527, "Si": 0.0465, "Fe": 0.0447, "B": 0.0332, "C": 0.0068},
-            "category": "Self-Fluxing Hardfacing & Thermal Spray Coatings",
-            "description": "Dedicated experimental database for Ni-Cr-Fe-B-Si-C coatings in as-sprayed condition (HVOF, APS). Real microhardness (745 HV), porosity (1.8%), bond strength (58.4 MPa), and authentic XRD.",
-            "primary_phases": ["gamma-Ni (FCC)", "CrB (Orthorhombic)", "Cr2B", "Cr7C3", "Ni3Si", "Liquid"]
-        },
-        "Aluminium Alloy": {
-            "name": "Aluminium Alloy",
-            "basis": "wt%",
-            "default_alloy": "AA 7075-T6 (Al-5.6Zn-2.5Mg-1.6Cu)",
-            "composition": {"Al": 0.897, "Zn": 0.056, "Mg": 0.025, "Cu": 0.016, "Cr": 0.0023, "Fe": 0.0037},
-            "category": "Wrought & Cast Aluminum Aerospace Alloys",
-            "description": "Precipitation-hardenable lightweight structural alloys. Calibrated for eta-prime (MgZn2) strengthening and GP zones.",
-            "primary_phases": ["FCC_Al", "MgZn2 (eta)", "Al2CuMg (S-phase)", "Al7Cu2Fe", "Liquid"]
-        },
-        "Magnesium Alloy": {
-            "name": "Magnesium Alloy",
-            "basis": "wt%",
-            "default_alloy": "AZ91D (Mg-9.0Al-0.7Zn-0.2Mn)",
-            "composition": {"Mg": 0.901, "Al": 0.090, "Zn": 0.007, "Mn": 0.002},
-            "category": "Ultra-Lightweight Structural Alloys",
-            "description": "HCP magnesium casting and wrought alloys featuring Mg17Al12 intermetallic phase modeling.",
-            "primary_phases": ["HCP_Mg", "Mg17Al12 (beta)", "Al8Mn5", "Liquid"]
-        },
-        "Cast Iron": {
-            "name": "Cast Iron",
-            "basis": "wt%",
-            "default_alloy": "Ductile Nodular Iron 65-45-12 (Fe-3.6C-2.5Si-0.3Mn)",
-            "composition": {"Fe": 0.936, "C": 0.036, "Si": 0.025, "Mn": 0.003},
-            "category": "Ferrous Foundry Alloys & High-Carbon Systems",
-            "description": "Fe-C-Si ternary eutectic solidification, graphite nodularity, and pearlite/ferrite volume ratio prediction.",
-            "primary_phases": ["Ferrite (BCC)", "Austenite (FCC)", "Graphite", "Fe3C (Cementite)", "Liquid"]
-        },
-        "General Steel": {
-            "name": "General Steel",
-            "basis": "wt%",
-            "default_alloy": "AISI 4340 Low-Alloy Structural Steel",
-            "composition": {"Fe": 0.957, "Ni": 0.018, "Cr": 0.008, "Mn": 0.007, "Mo": 0.0025, "Si": 0.0025, "C": 0.004},
-            "category": "Carbon & Low-Alloy Construction Steels",
-            "description": "Quench-and-temper hardening, martensite start (Ms) temperature calculation, and pearlite/bainite kinetics.",
-            "primary_phases": ["Ferrite (BCC)", "Austenite (FCC)", "Martensite", "M23C6", "Liquid"]
-        },
-        "Stainless Steel": {
-            "name": "Stainless Steel",
-            "basis": "wt%",
-            "default_alloy": "AISI 316L Austenitic Stainless Steel",
-            "composition": {"Fe": 0.655, "Cr": 0.170, "Ni": 0.120, "Mo": 0.025, "Mn": 0.020, "Si": 0.010},
-            "category": "Corrosion & Acid Resistant Stainless Steels",
-            "description": "Schaeffler-Delong Cr-Ni equivalent phase balance, PREN pitting resistance, and sigma phase susceptibility.",
-            "primary_phases": ["Austenite (FCC)", "Delta-Ferrite (BCC)", "Sigma", "M23C6", "Liquid"]
-        },
-        "Cobalt Alloy": {
-            "name": "Cobalt Alloy",
-            "basis": "wt%",
-            "default_alloy": "Stellite 21 (Co-28Cr-6Mo-0.25C Wear Resistant)",
-            "composition": {"Co": 0.6275, "Cr": 0.280, "Mo": 0.060, "Ni": 0.025, "Fe": 0.005, "C": 0.0025},
-            "category": "High-Temperature Wear & Medical Implant Alloys",
-            "description": "Solid-solution FCC/HCP cobalt matrix reinforced by skeletal Cr/Mo carbides.",
-            "primary_phases": ["FCC_Co", "HCP_Co", "M7C3", "M23C6", "Liquid"]
-        },
-        "Nickel Based Superalloy": {
-            "name": "Nickel Based Superalloy",
-            "basis": "wt%",
-            "default_alloy": "Inconel 718 (Ni-19Cr-18.5Fe-5.1Nb-3Mo-0.9Ti-0.5Al)",
-            "composition": {"Ni": 0.530, "Cr": 0.190, "Fe": 0.185, "Nb": 0.051, "Mo": 0.030, "Ti": 0.009, "Al": 0.005},
-            "category": "Aero-Engine & Gas Turbine Superalloys",
-            "description": "Gamma-prime (Ni3Al,Ti) and gamma-double-prime (Ni3Nb) precipitation kinetics and creep rupture lifetime.",
-            "primary_phases": ["gamma (FCC)", "gamma-prime (L12)", "gamma-double-prime (D022)", "Delta (Ni3Nb)", "Liquid"]
-        },
-        "NiFe Based Superalloy": {
-            "name": "NiFe Based Superalloy",
-            "basis": "wt%",
-            "default_alloy": "Incoloy 800H (Fe-32Ni-21Cr-0.4Al-0.4Ti)",
-            "composition": {"Fe": 0.457, "Ni": 0.320, "Cr": 0.210, "Al": 0.004, "Ti": 0.004, "C": 0.005},
-            "category": "Petrochemical & Nuclear High-Temperature Steels",
-            "description": "Austenitic Fe-Ni-Cr alloys resisting carburization and sulfidation up to 1100 deg C.",
-            "primary_phases": ["gamma (FCC)", "TiC", "M23C6", "gamma-prime", "Liquid"]
-        },
-        "Single Crystal": {
-            "name": "Single Crystal",
-            "basis": "wt%",
-            "default_alloy": "CMSX-4 2nd-Gen Single Crystal Superalloy",
-            "composition": {"Ni": 0.617, "Co": 0.090, "Cr": 0.065, "W": 0.060, "Ta": 0.065, "Re": 0.030, "Al": 0.056, "Ti": 0.010, "Mo": 0.006, "Hf": 0.001},
-            "category": "Turbine Blade Directionally Solidified / SX Alloys",
-            "description": "Grain-boundary-free casting architecture with 70 vol% coherent gamma-prime cubes and high Re partitioning.",
-            "primary_phases": ["gamma (FCC)", "gamma-prime (L12)", "TCP", "Liquid"]
-        },
-        "Titanium Alloy": {
-            "name": "Titanium Alloy",
-            "basis": "wt%",
-            "default_alloy": "Ti-6Al-4V (Grade 5 Alpha-Beta Alloy)",
-            "composition": {"Ti": 0.897, "Al": 0.060, "V": 0.040, "Fe": 0.003},
-            "category": "Aerospace & Biomedical Alpha-Beta Titanium",
-            "description": "Alpha (HCP) / Beta (BCC) phase transformation, beta-transus temperature (~995 deg C).",
-            "primary_phases": ["Alpha (HCP)", "Beta (BCC)", "Ti3Al (alpha2)", "Liquid"]
-        },
-        "Zirconium Alloy": {
-            "name": "Zirconium Alloy",
-            "basis": "wt%",
-            "default_alloy": "Zircaloy-4 (Zr-1.5Sn-0.2Fe-0.1Cr)",
-            "composition": {"Zr": 0.982, "Sn": 0.015, "Fe": 0.002, "Cr": 0.001},
-            "category": "Nuclear Fuel Cladding & Low Neutron Capture Alloys",
-            "description": "Ultra-low thermal neutron capture cross-section and high corrosion resistance in pressurized hot water.",
-            "primary_phases": ["Alpha_Zr (HCP)", "Beta_Zr (BCC)", "Zr(Fe,Cr)2", "Liquid"]
-        },
-        "Solder Alloy": {
-            "name": "Solder Alloy",
-            "basis": "wt%",
-            "default_alloy": "SAC305 Lead-Free Electronic Solder (Sn-3.0Ag-0.5Cu)",
-            "composition": {"Sn": 0.965, "Ag": 0.030, "Cu": 0.005},
-            "category": "Microelectronics Lead-Free Interconnects",
-            "description": "Near-eutectic Sn-Ag-Cu solidification at 217 deg C, Ag3Sn and Cu6Sn5 intermetallic scallops.",
-            "primary_phases": ["Beta-Sn (BCT)", "Ag3Sn", "Cu6Sn5", "Liquid"]
-        }
+    MODULE_MAP = {
+        "High Entropy Alloys": UnifiedHEADatabase,
+        "Thermal Spray Coatings": ThermalSprayCoatingDatabase,
+        "Aluminium Alloy": AluminiumAlloyDatabase,
+        "Magnesium Alloy": MagnesiumAlloyDatabase,
+        "Cast Iron": CastIronDatabase,
+        "General Steel": GeneralSteelDatabase,
+        "Stainless Steel": StainlessSteelDatabase,
+        "Cobalt Alloy": CobaltAlloyDatabase,
+        "Nickel Based Superalloy": NickelSuperalloyDatabase,
+        "NiFe Based Superalloy": NiFeSuperalloyDatabase,
+        "Single Crystal": SingleCrystalDatabase,
+        "Titanium Alloy": TitaniumAlloyDatabase,
+        "Zirconium Alloy": ZirconiumAlloyDatabase,
+        "Solder Alloy": SolderAlloyDatabase
     }
 
     @classmethod
@@ -171,5 +75,68 @@ class MaterialDatabaseSelector:
         return cls.DATABASES
 
     @classmethod
+    def get_module(cls, db_name: str):
+        return cls.MODULE_MAP.get(db_name, UnifiedHEADatabase)
+
+    @classmethod
     def get_spec(cls, db_name: str) -> Dict[str, Any]:
-        return cls.SPECS.get(db_name, cls.SPECS["High Entropy Alloys"])
+        mod = cls.get_module(db_name)
+        if hasattr(mod, "PRESETS") and mod.PRESETS:
+            first_key = list(mod.PRESETS.keys())[0]
+            first_comp = mod.PRESETS[first_key]
+        else:
+            first_key = getattr(mod, "NAME", db_name)
+            first_comp = {"Ni": 71.61, "Cr": 15.27, "Si": 4.65, "Fe": 4.47, "B": 3.32, "C": 0.68}
+
+        # Normalize fractions
+        total = sum(first_comp.values())
+        norm_comp = {k: v / total for k, v in first_comp.items()}
+
+        return {
+            "name": getattr(mod, "NAME", db_name),
+            "basis": getattr(mod, "BASIS", "wt%"),
+            "default_alloy": first_key,
+            "composition": norm_comp,
+            "raw_composition": first_comp,
+            "category": getattr(mod, "CATEGORY", "Materials Database"),
+            "description": getattr(mod, "DESCRIPTION", ""),
+            "primary_phases": getattr(mod, "PRIMARY_PHASES", ["Solid", "Liquid"])
+        }
+
+    @classmethod
+    def get_presets_for_database(cls, db_name: str) -> Dict[str, Dict[str, float]]:
+        mod = cls.get_module(db_name)
+        if hasattr(mod, "PRESETS"):
+            return mod.PRESETS
+        elif db_name == "Thermal Spray Coatings":
+            return {
+                "Ni71.61Fe4.47Cr15.27B3.32C0.68Si4.65 (As-Sprayed)": {
+                    "Ni": 71.61, "Cr": 15.27, "Si": 4.65, "Fe": 4.47, "B": 3.32, "C": 0.68
+                },
+                "Colmonoy 6 Standard (Ni-15Cr-4Fe-3.5B-4.5Si-0.7C)": {
+                    "Ni": 71.80, "Cr": 15.00, "Si": 4.50, "Fe": 4.00, "B": 3.50, "C": 0.70
+                }
+            }
+        return {}
+
+    @classmethod
+    def compare_benchmarks(cls, db_name: str, calc_metrics: Dict[str, Any], preset: Optional[str] = None) -> List[Dict[str, Any]]:
+        mod = cls.get_module(db_name)
+        if hasattr(mod, "compare_calculated_vs_experimental"):
+            try:
+                if preset:
+                    return mod.compare_calculated_vs_experimental(calc_metrics, preset=preset)
+                return mod.compare_calculated_vs_experimental(calc_metrics)
+            except TypeError:
+                return mod.compare_calculated_vs_experimental(calc_metrics)
+        elif hasattr(mod, "compare_calculated_vs_benchmark"):
+            alloy_key = UnifiedHEADatabase.identify_alloy_key(calc_metrics.get("composition", {}))
+            return mod.compare_calculated_vs_benchmark(alloy_key, calc_metrics)
+        return []
+
+    @classmethod
+    def get_xrd_benchmark(cls, db_name: str) -> Optional[Dict[str, Any]]:
+        mod = cls.get_module(db_name)
+        if hasattr(mod, "get_xrd_benchmark"):
+            return mod.get_xrd_benchmark()
+        return None

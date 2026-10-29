@@ -182,43 +182,45 @@ class DatabaseDock(QDockWidget):
         else:
             self.rb_at.setChecked(True)
 
-        # Update presets
+        # Update presets from individual database
+        presets = MaterialDatabaseSelector.get_presets_for_database(db_name)
         self.preset_combo.blockSignals(True)
         self.preset_combo.clear()
-        if db_name == "High Entropy Alloys":
-            self.preset_combo.addItems(list(UnifiedHEADatabase.PRESETS.keys()))
-        elif db_name == "Thermal Spray Coatings":
-            self.preset_combo.addItems([
-                "Ni71.61Fe4.47Cr15.27B3.32C0.68Si4.65 (As-Sprayed)",
-                "Colmonoy 6 / Metco 16C Standard (NiCrBSi)",
-                "Ni-15Cr-4Fe-3.5B-4.5Si-0.7C (HVOF)",
-                "Ni-16Cr-4.5Fe-3.0B-4.0Si-0.6C (APS)"
-            ])
-            self.combo_process.setCurrentText("HVOF")
+        if presets:
+            self.preset_combo.addItems(list(presets.keys()))
         else:
             self.preset_combo.addItem(spec.get("default_alloy", db_name))
         self.preset_combo.blockSignals(False)
 
-        # Populate composition table with default
-        comp = spec.get("composition", {})
-        self.load_composition_to_table(comp)
+        if db_name == "Thermal Spray Coatings":
+            self.combo_process.setCurrentText("HVOF")
+
+        # Load first preset composition into table
+        if presets:
+            first_key = list(presets.keys())[0]
+            self.load_composition_to_table(presets[first_key])
+        else:
+            comp = spec.get("composition", {})
+            self.load_composition_to_table(comp)
 
     def on_preset_changed(self, preset_name: str):
         db_name = self.db_combo.currentText()
-        if db_name == "High Entropy Alloys" and preset_name in UnifiedHEADatabase.PRESETS:
-            comp = UnifiedHEADatabase.PRESETS[preset_name]
-            self.load_composition_to_table(comp)
-        elif db_name == "Thermal Spray Coatings":
-            comp = {"Ni": 0.7161, "Cr": 0.1527, "Si": 0.0465, "Fe": 0.0447, "B": 0.0332, "C": 0.0068}
-            self.load_composition_to_table(comp)
+        presets = MaterialDatabaseSelector.get_presets_for_database(db_name)
+        if preset_name in presets:
+            self.load_composition_to_table(presets[preset_name])
 
     def load_composition_to_table(self, comp: Dict[str, float]):
         self.comp_table.setRowCount(0)
-        for elem, frac in comp.items():
+        # Check if values are normalized (sum <= 1.5) or percentage
+        total = sum(comp.values())
+        is_fraction = (total <= 1.5)
+        for elem, val in comp.items():
             row = self.comp_table.rowCount()
             self.comp_table.insertRow(row)
+            pct = val * 100.0 if is_fraction else val
             self.comp_table.setItem(row, 0, QTableWidgetItem(elem))
-            self.comp_table.setItem(row, 1, QTableWidgetItem(f"{frac * 100.0:.2f}"))
+            self.comp_table.setItem(row, 1, QTableWidgetItem(f"{pct:.2f}"))
+
 
     def add_row(self):
         row = self.comp_table.rowCount()
