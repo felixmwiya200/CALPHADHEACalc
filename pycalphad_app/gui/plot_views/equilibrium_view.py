@@ -1,7 +1,7 @@
 """
 equilibrium_view.py - Equilibrium Phase Fractions vs. Temperature View
 Renders phase stability curves (Liquid, FCC, BCC, B2, Sigma, or Coating Precipitates)
-using hardware-accelerated pyqtgraph.
+using hardware-accelerated pyqtgraph with OriginLab-style navigation tools.
 """
 
 from typing import Dict, Any
@@ -10,6 +10,8 @@ import pyqtgraph as pg
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
+
+from pycalphad_app.gui.graph_toolbar import GraphNavigationToolbar
 
 
 class EquilibriumView(QWidget):
@@ -37,6 +39,10 @@ class EquilibriumView(QWidget):
         self.plot_widget.setLabel("left", "Phase Fraction", units="[-]")
         self.plot_widget.setLabel("bottom", "Temperature", units="K")
         self.plot_widget.addLegend(offset=(10, 10))
+
+        # OriginLab Navigation Toolbar
+        self.nav_toolbar = GraphNavigationToolbar(self.plot_widget, title="Equilibrium Phases", parent=self)
+        layout.addWidget(self.nav_toolbar)
         layout.addWidget(self.plot_widget)
 
     def update_data(self, results: Dict[str, Any]):
@@ -45,62 +51,62 @@ class EquilibriumView(QWidget):
 
         is_coating = results.get("is_coating", False)
         thermo = results.get("thermo", {})
-        sol_k = thermo.get("Solidus_K", 1400.0)
-        liq_k = thermo.get("Liquidus_K", 1600.0)
-
-        T = np.linspace(300.0, 2200.0, 300)
+        sol_k = float(thermo.get("Solidus_K", 1400.0))
+        liq_k = float(thermo.get("Liquidus_K", 1600.0))
+        pf = thermo.get("PhaseFractions", {})
 
         if is_coating:
-            # Coating Precipitates: gamma-Ni, CrB, Ni3Si, Cr7C3, Liquid
             self.title_label.setText("Thermal Spray Coating Phase Stability: Ni-Cr-Fe-B-Si-C")
             self.status_label.setText(f"Solidus: {sol_k:.1f} K | Liquidus: {liq_k:.1f} K")
 
-            # Liquid fraction
-            f_liq = np.clip((T - sol_k) / (liq_k - sol_k), 0.0, 1.0)
-            f_liq = np.where(T < sol_k, 0.0, np.where(T > liq_k, 1.0, f_liq**1.3))
-
-            # Solid fraction
-            f_sol = 1.0 - f_liq
-            f_gamma = f_sol * 0.72
-            f_crb = f_sol * 0.14
-            f_ni3si = f_sol * 0.08
-            f_cr7c3 = f_sol * 0.06
-
-            self.plot_widget.plot(T, f_gamma, pen=pg.mkPen("#4CAF50", width=2.5), name="gamma-Ni Matrix (FCC)")
-            self.plot_widget.plot(T, f_crb, pen=pg.mkPen("#FF9800", width=2.5), name="CrB Boride (Orthorhombic)")
-            self.plot_widget.plot(T, f_ni3si, pen=pg.mkPen("#00BCD4", width=2.5), name="Ni3Si Silicide (L12)")
-            self.plot_widget.plot(T, f_cr7c3, pen=pg.mkPen("#E91E63", width=2.5), name="Cr7C3 Carbide (Hexagonal)")
-            self.plot_widget.plot(T, f_liq, pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
+            if isinstance(pf, dict) and "T_K" in pf:
+                t_k = pf["T_K"]
+                self.plot_widget.plot(t_k, pf.get("gamma_Ni_FCC", np.zeros_like(t_k)), pen=pg.mkPen("#4CAF50", width=2.5), name="γ-Ni Matrix (FCC)")
+                self.plot_widget.plot(t_k, pf.get("CrB_Boride", np.zeros_like(t_k)), pen=pg.mkPen("#FF9800", width=2.5), name="CrB Boride (Orthorhombic)")
+                self.plot_widget.plot(t_k, pf.get("Ni3Si_Silicide", np.zeros_like(t_k)), pen=pg.mkPen("#00BCD4", width=2.5), name="Ni3Si Silicide (L12)")
+                self.plot_widget.plot(t_k, pf.get("Cr7C3_Carbide", np.zeros_like(t_k)), pen=pg.mkPen("#E91E63", width=2.5), name="Cr7C3 Carbide (Hexagonal)")
+                self.plot_widget.plot(t_k, pf.get("Liquid", np.zeros_like(t_k)), pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
+            else:
+                T = np.linspace(300.0, 2200.0, 300)
+                f_liq = np.clip((T - sol_k) / max(1.0, (liq_k - sol_k)), 0.0, 1.0) ** 1.3
+                f_sol = 1.0 - f_liq
+                self.plot_widget.plot(T, f_sol * 0.72, pen=pg.mkPen("#4CAF50", width=2.5), name="γ-Ni Matrix (FCC)")
+                self.plot_widget.plot(T, f_sol * 0.14, pen=pg.mkPen("#FF9800", width=2.5), name="CrB Boride (Orthorhombic)")
+                self.plot_widget.plot(T, f_sol * 0.08, pen=pg.mkPen("#00BCD4", width=2.5), name="Ni3Si Silicide (L12)")
+                self.plot_widget.plot(T, f_sol * 0.06, pen=pg.mkPen("#E91E63", width=2.5), name="Cr7C3 Carbide (Hexagonal)")
+                self.plot_widget.plot(T, f_liq, pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
 
         else:
-            # HEA Phases
-            self.title_label.setText("CALPHAD Thermodynamic Equilibrium Phase Stability")
+            solver_info = pf.get("Solver", "CALPHAD Equilibrium Minimizer") if isinstance(pf, dict) else "CALPHAD Model"
+            self.title_label.setText(f"Equilibrium Phase Stability ({solver_info})")
             self.status_label.setText(f"Solidus: {sol_k:.1f} K | Liquidus: {liq_k:.1f} K")
 
-            # Liquid
-            f_liq = np.clip((T - sol_k) / (liq_k - sol_k), 0.0, 1.0)
-            f_liq = np.where(T < sol_k, 0.0, np.where(T > liq_k, 1.0, f_liq**1.2))
-            f_sol = 1.0 - f_liq
-
-            vec = thermo.get("VEC_val", 8.0)
-            if vec >= 7.8:
-                f_fcc = f_sol * 0.95
-                f_bcc = f_sol * 0.05
-                f_b2 = np.zeros_like(T)
-            elif vec <= 6.87:
-                f_fcc = f_sol * 0.05
-                f_bcc = f_sol * 0.80
-                f_b2 = f_sol * 0.15
+            if isinstance(pf, dict) and "T_K" in pf:
+                t_k = pf["T_K"]
+                if "FCC" in pf and np.any(pf["FCC"] > 0):
+                    self.plot_widget.plot(t_k, pf["FCC"], pen=pg.mkPen("#2196F3", width=2.5), name="FCC_A1 (Austenite/Cantor)")
+                if "BCC" in pf and np.any(pf["BCC"] > 0):
+                    self.plot_widget.plot(t_k, pf["BCC"], pen=pg.mkPen("#FF9800", width=2.5), name="BCC_A2 (Ferrite/RHEA)")
+                if "B2" in pf and np.any(pf["B2"] > 0):
+                    self.plot_widget.plot(t_k, pf["B2"], pen=pg.mkPen("#00BCD4", width=2.5), name="B2 Ordered (CsCl)")
+                if "Sigma" in pf and np.any(pf["Sigma"] > 0):
+                    self.plot_widget.plot(t_k, pf["Sigma"], pen=pg.mkPen("#9C27B0", width=2.0), name="Sigma Phase (TCP)")
+                if "Liquid" in pf:
+                    self.plot_widget.plot(t_k, pf["Liquid"], pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
             else:
-                f_fcc = f_sol * 0.55
-                f_bcc = f_sol * 0.35
-                f_b2 = f_sol * 0.10
+                T = np.linspace(300.0, 2200.0, 300)
+                f_liq = np.clip((T - sol_k) / max(1.0, (liq_k - sol_k)), 0.0, 1.0) ** 1.2
+                f_sol = 1.0 - f_liq
+                vec = float(thermo.get("VEC", thermo.get("VEC_val", 8.0)))
+                f_fcc = f_sol * (0.95 if vec >= 7.8 else (0.05 if vec <= 6.87 else 0.55))
+                f_bcc = f_sol * (0.05 if vec >= 7.8 else (0.80 if vec <= 6.87 else 0.35))
+                f_b2 = f_sol * (0.0 if vec >= 7.8 else (0.15 if vec <= 6.87 else 0.10))
 
-            self.plot_widget.plot(T, f_fcc, pen=pg.mkPen("#2196F3", width=2.5), name="FCC_A1 (Austenite/Cantor)")
-            self.plot_widget.plot(T, f_bcc, pen=pg.mkPen("#FF9800", width=2.5), name="BCC_A2 (Ferrite/RHEA)")
-            if np.max(f_b2) > 0.01:
-                self.plot_widget.plot(T, f_b2, pen=pg.mkPen("#9C27B0", width=2.5), name="B2 (Ordered Intermetallic)")
-            self.plot_widget.plot(T, f_liq, pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
+                self.plot_widget.plot(T, f_fcc, pen=pg.mkPen("#2196F3", width=2.5), name="FCC_A1 (Austenite/Cantor)")
+                self.plot_widget.plot(T, f_bcc, pen=pg.mkPen("#FF9800", width=2.5), name="BCC_A2 (Ferrite/RHEA)")
+                if np.any(f_b2 > 0):
+                    self.plot_widget.plot(T, f_b2, pen=pg.mkPen("#00BCD4", width=2.5), name="B2 Ordered (CsCl)")
+                self.plot_widget.plot(T, f_liq, pen=pg.mkPen("#F44336", width=2.5, style=Qt.PenStyle.DashLine), name="Liquid Phase")
 
-        self.plot_widget.setYRange(0, 1.05)
-        self.plot_widget.setXRange(300, 2200)
+        self.plot_widget.addLine(x=sol_k, pen=pg.mkPen("#2196F3", width=1.2, style=Qt.PenStyle.DashLine))
+        self.plot_widget.addLine(x=liq_k, pen=pg.mkPen("#F44336", width=1.2, style=Qt.PenStyle.DashLine))

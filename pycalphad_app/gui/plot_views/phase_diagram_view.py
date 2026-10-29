@@ -1,14 +1,16 @@
 """
 phase_diagram_view.py - Temperature-Composition Isopleth Phase Diagram View
-Renders isopleth sections with Liquidus, Solidus, and two-phase mushy zone fill.
+Renders isopleth sections with Liquidus, Solidus, and two-phase mushy zone fill
+with OriginLab-style navigation tools.
 """
 
 from typing import Dict, Any
 import numpy as np
 import pyqtgraph as pg
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
-from PyQt6.QtGui import QFont, QColor
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
+
+from pycalphad_app.gui.graph_toolbar import GraphNavigationToolbar
 
 
 class PhaseDiagramView(QWidget):
@@ -33,21 +35,24 @@ class PhaseDiagramView(QWidget):
         self.plot_widget.showGrid(x=True, y=True, alpha=0.3)
         self.plot_widget.setLabel("left", "Temperature", units="K")
         self.plot_widget.setLabel("bottom", "Solute Fraction x", units="[-]")
+
+        # Navigation Toolbar
+        self.nav_toolbar = GraphNavigationToolbar(self.plot_widget, title="Phase Diagram Isopleth", parent=self)
+        layout.addWidget(self.nav_toolbar)
         layout.addWidget(self.plot_widget)
 
     def update_data(self, results: Dict[str, Any]):
         self.plot_widget.clear()
 
         thermo = results.get("thermo", {})
-        sol_k = thermo.get("Solidus_K", 1400.0)
-        liq_k = thermo.get("Liquidus_K", 1600.0)
+        sol_k = float(thermo.get("Solidus_K", 1400.0))
+        liq_k = float(thermo.get("Liquidus_K", 1600.0))
         is_coating = results.get("is_coating", False)
 
         x = np.linspace(0.0, 1.0, 100)
 
         if is_coating:
             self.title_label.setText("Isopleth Section: Ni-Cr-Fe-B-Si Hardfacing System")
-            # Eutectic depression due to B and Si
             T_liq = liq_k + 280.0 * (x - 0.5)**2 - 50.0 * x
             T_sol = sol_k + 200.0 * (x - 0.5)**2 - 40.0 * x
             label_solute = "Si + B Fluxing Additions"
@@ -55,7 +60,7 @@ class PhaseDiagramView(QWidget):
             self.title_label.setText("CALPHAD Isopleth: Solute Sweep vs. Base HEA Matrix")
             T_liq = liq_k + 350.0 * (x**1.5 - 0.3)
             T_sol = sol_k + 300.0 * (x**1.5 - 0.3)
-            label_solute = "Al / Ti Principal Solute Content"
+            label_solute = "Principal Solute Content (Al / Ti / Cr)"
 
         self.plot_widget.setLabel("bottom", label_solute)
 

@@ -75,21 +75,41 @@ class DatabaseDock(QDockWidget):
         comp_group.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
         comp_layout = QVBoxLayout(comp_group)
         comp_layout.setContentsMargins(6, 6, 6, 6)
+        comp_layout.setSpacing(6)
+
+        # Periodic Table Launcher Button
+        self.btn_open_pt = QPushButton("Select Elements from Periodic Table (118)...")
+        self.btn_open_pt.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
+        self.btn_open_pt.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_open_pt.setStyleSheet(
+            "QPushButton {"
+            "  background-color: #1D4ED8;"
+            "  color: #FFFFFF;"
+            "  padding: 6px 10px;"
+            "  border-radius: 4px;"
+            "  font-weight: bold;"
+            "}"
+            "QPushButton:hover { background-color: #2563EB; }"
+            "QPushButton:pressed { background-color: #1E40AF; }"
+        )
+        self.btn_open_pt.clicked.connect(self.open_periodic_table_dialog)
+        comp_layout.addWidget(self.btn_open_pt)
 
         self.comp_table = QTableWidget()
         self.comp_table.setColumnCount(2)
         self.comp_table.setHorizontalHeaderLabels(["Element", "Fraction (%)"])
         self.comp_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.comp_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.comp_table.setMinimumHeight(220)
         self.comp_table.setStyleSheet(
-            "QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; }"
-            "QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 3px; font-weight: bold; }"
+            "QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; border: 1px solid #3E3E42; }"
+            "QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 4px; font-weight: bold; border: 1px solid #3E3E42; }"
         )
         comp_layout.addWidget(self.comp_table)
 
         # Table Control Buttons
         btn_tbl_layout = QHBoxLayout()
-        self.btn_add_elem = QPushButton("+ Add")
+        self.btn_add_elem = QPushButton("+ Add Element")
         self.btn_add_elem.clicked.connect(self.add_row)
         btn_tbl_layout.addWidget(self.btn_add_elem)
 
@@ -134,10 +154,11 @@ class DatabaseDock(QDockWidget):
         layout.addWidget(proc_group)
 
         # 4. Calculate Trigger Button
-        self.btn_calc = QPushButton("Calculate Properties")
-        self.btn_calc.setFont(QFont("Segoe UI", 11, QFont.Weight.Bold))
+        self.btn_calc = QPushButton("Calculate Properties / Run Simulation")
+        self.btn_calc.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.btn_calc.setToolTip("Execute multi-physics CALPHAD equilibrium, thermophysical, mechanical, oxidation, and XRD simulations.")
         self.btn_calc.setStyleSheet(
-            "QPushButton { background-color: #0E639C; color: #FFFFFF; padding: 10px; border-radius: 4px; }"
+            "QPushButton { background-color: #0E639C; color: #FFFFFF; padding: 10px; border-radius: 4px; font-weight: bold; }"
             "QPushButton:hover { background-color: #1177BB; }"
             "QPushButton:pressed { background-color: #094771; }"
             "QPushButton:disabled { background-color: #555555; color: #888888; }"
@@ -171,6 +192,15 @@ class DatabaseDock(QDockWidget):
 
         # Initialize with default database
         self.on_database_changed("High Entropy Alloys")
+
+    def open_periodic_table_dialog(self):
+        from pycalphad_app.gui.periodic_table_widget import PeriodicTableDialog
+        current_comp = self.get_composition()
+        initial_elems = list(current_comp.keys()) if current_comp else ["Co", "Cr", "Fe", "Mn", "Ni"]
+        dlg = PeriodicTableDialog(self, initial_elements=initial_elems)
+        if dlg.exec():
+            if dlg.result_comp:
+                self.load_composition_to_table(dlg.result_comp)
 
     def on_database_changed(self, db_name: str):
         spec = MaterialDatabaseSelector.get_spec(db_name)
@@ -223,9 +253,16 @@ class DatabaseDock(QDockWidget):
 
 
     def add_row(self):
+        comp = self.get_composition()
+        common = ["Fe", "Ni", "Cr", "Co", "Al", "Ti", "Mo", "Nb", "V", "W", "Mn", "Cu", "Si", "Zr", "Ta", "Hf"]
+        cand = "Fe"
+        for el in common:
+            if el not in comp:
+                cand = el
+                break
         row = self.comp_table.rowCount()
         self.comp_table.insertRow(row)
-        self.comp_table.setItem(row, 0, QTableWidgetItem("Fe"))
+        self.comp_table.setItem(row, 0, QTableWidgetItem(cand))
         self.comp_table.setItem(row, 1, QTableWidgetItem("10.00"))
 
     def remove_selected_row(self):
@@ -279,7 +316,7 @@ class DatabaseDock(QDockWidget):
 
     def calculation_finished(self, results: Dict[str, Any]):
         self.btn_calc.setEnabled(True)
-        self.btn_calc.setText("Calculate Properties")
+        self.btn_calc.setText("Calculate Properties / Run Simulation")
 
         thermo = results.get("thermo", {})
         mech = results.get("mechanical", {})
