@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
                              QLabel, QComboBox, QRadioButton, QButtonGroup,
                              QTableWidget, QTableWidgetItem, QHeaderView,
                              QPushButton, QSlider, QGroupBox, QDoubleSpinBox,
-                             QFrame, QMessageBox)
+                             QFrame, QMessageBox, QScrollArea)
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -50,21 +50,25 @@ class DatabaseDock(QDockWidget):
         self.preset_combo.currentTextChanged.connect(self.on_preset_changed)
         db_layout.addWidget(self.preset_combo)
 
-        # Basis Radio Buttons (wt% vs at%)
+        # Basis Radio Buttons (wt%, at%, Molar ratio)
         basis_layout = QHBoxLayout()
         basis_lbl = QLabel("Basis:")
-        basis_lbl.setFont(QFont("Segoe UI", 9))
+        basis_lbl.setFont(QFont("Segoe UI", 9, QFont.Weight.DemiBold))
         basis_layout.addWidget(basis_lbl)
 
-
+        self.current_basis = "wt%"
         self.rb_wt = QRadioButton("wt%")
         self.rb_at = QRadioButton("at%")
+        self.rb_mol = QRadioButton("Molar ratio")
         self.rb_wt.setChecked(True)
-        self.basis_group = QButtonGroup()
+        self.basis_group = QButtonGroup(self)
         self.basis_group.addButton(self.rb_wt)
         self.basis_group.addButton(self.rb_at)
+        self.basis_group.addButton(self.rb_mol)
+        self.basis_group.buttonClicked.connect(self.on_basis_radio_changed)
         basis_layout.addWidget(self.rb_wt)
         basis_layout.addWidget(self.rb_at)
+        basis_layout.addWidget(self.rb_mol)
         basis_layout.addStretch()
         db_layout.addLayout(basis_layout)
 
@@ -101,10 +105,7 @@ class DatabaseDock(QDockWidget):
         self.comp_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.comp_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.comp_table.setMinimumHeight(220)
-        self.comp_table.setStyleSheet(
-            "QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; border: 1px solid #3E3E42; }"
-            "QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 4px; font-weight: bold; border: 1px solid #3E3E42; }"
-        )
+        self.comp_table.setAlternatingRowColors(True)
         comp_layout.addWidget(self.comp_table)
 
         # Table Control Buttons
@@ -188,7 +189,15 @@ class DatabaseDock(QDockWidget):
         layout.addWidget(summary_group)
         layout.addStretch()
 
-        self.setWidget(container)
+        # Wrap in QScrollArea for smooth vertical scrolling
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll_area.setWidget(container)
+
+        self.setWidget(self.scroll_area)
 
         # Initialize with default database
         self.on_database_changed("High Entropy Alloys")
@@ -202,15 +211,82 @@ class DatabaseDock(QDockWidget):
             if dlg.result_comp:
                 self.load_composition_to_table(dlg.result_comp)
 
+    def on_basis_radio_changed(self, button):
+        if button == self.rb_wt:
+            new_basis = "wt%"
+        elif button == self.rb_at:
+            new_basis = "at%"
+        else:
+            new_basis = "mol"
+
+        if new_basis == self.current_basis:
+            return
+
+        old_basis = self.current_basis
+        self.current_basis = new_basis
+
+        header_text = "Ratio" if new_basis == "mol" else "Fraction (%)"
+        self.comp_table.setHorizontalHeaderLabels(["Element", header_text])
+
+        comp = self.get_composition()
+        if comp:
+            converted = self.convert_basis_composition(comp, old_basis, new_basis)
+            self.load_composition_to_table(converted)
+
+    def convert_basis_composition(self, comp: Dict[str, float], old_basis: str, new_basis: str) -> Dict[str, float]:
+        if not comp or old_basis == new_basis:
+            return comp
+
+        masses = {}
+        for elem in comp.keys():
+            edata = ElementsData.get_element(elem)
+            masses[elem] = getattr(edata, "atomic_mass", 55.845)
+
+        total_in = sum(comp.values())
+        if total_in <= 0:
+            return comp
+
+        # 1. Convert old_basis to normalized mole fractions x_mol
+        if old_basis == "wt%":
+            moles_raw = {el: (val / total_in) / max(1e-4, masses[el]) for el, val in comp.items()}
+            tot_mol = sum(moles_raw.values())
+            x_mol = {el: m / tot_mol for el, m in moles_raw.items()}
+        else:
+            x_mol = {el: val / total_in for el, val in comp.items()}
+
+        # 2. Convert x_mol to new_basis
+        if new_basis == "at%":
+            return {el: round(frac * 100.0, 2) for el, frac in x_mol.items()}
+        elif new_basis == "wt%":
+            mass_raw = {el: frac * masses[el] for el, frac in x_mol.items()}
+            tot_mass = sum(mass_raw.values())
+            return {el: round((m / tot_mass) * 100.0, 2) for el, m in mass_raw.items()}
+        elif new_basis == "mol":
+            min_val = min(x_mol.values()) if x_mol.values() else 1.0
+            scale = min_val if min_val > 0 else 1.0
+            return {el: round(frac / scale, 2) for el, frac in x_mol.items()}
+        return comp
+
     def on_database_changed(self, db_name: str):
         spec = MaterialDatabaseSelector.get_spec(db_name)
         self.lbl_summary_db.setText(f"Database: {db_name}")
 
         # Set basis radio button
-        if spec.get("basis", "wt%") == "wt%":
+        spec_basis = spec.get("basis", "wt%")
+        self.basis_group.blockSignals(True)
+        if spec_basis == "wt%":
             self.rb_wt.setChecked(True)
+            self.current_basis = "wt%"
+        elif spec_basis in ("mol", "molar"):
+            self.rb_mol.setChecked(True)
+            self.current_basis = "mol"
         else:
             self.rb_at.setChecked(True)
+            self.current_basis = "at%"
+        self.basis_group.blockSignals(False)
+
+        header_text = "Ratio" if self.current_basis == "mol" else "Fraction (%)"
+        self.comp_table.setHorizontalHeaderLabels(["Element", header_text])
 
         # Update presets from individual database
         presets = MaterialDatabaseSelector.get_presets_for_database(db_name)
@@ -241,15 +317,18 @@ class DatabaseDock(QDockWidget):
 
     def load_composition_to_table(self, comp: Dict[str, float]):
         self.comp_table.setRowCount(0)
-        # Check if values are normalized (sum <= 1.5) or percentage
         total = sum(comp.values())
         is_fraction = (total <= 1.5)
         for elem, val in comp.items():
             row = self.comp_table.rowCount()
             self.comp_table.insertRow(row)
-            pct = val * 100.0 if is_fraction else val
+            if self.current_basis == "mol":
+                val_str = f"{val:.2f}"
+            else:
+                pct = val * 100.0 if is_fraction else val
+                val_str = f"{pct:.2f}"
             self.comp_table.setItem(row, 0, QTableWidgetItem(elem))
-            self.comp_table.setItem(row, 1, QTableWidgetItem(f"{pct:.2f}"))
+            self.comp_table.setItem(row, 1, QTableWidgetItem(val_str))
 
 
     def add_row(self):
@@ -306,7 +385,12 @@ class DatabaseDock(QDockWidget):
             QMessageBox.warning(self, "Composition Error", "Please specify at least one chemical element.")
             return
 
-        basis = "wt%" if self.rb_wt.isChecked() else "at%"
+        if self.rb_wt.isChecked():
+            basis = "wt%"
+        elif self.rb_mol.isChecked():
+            basis = "mol"
+        else:
+            basis = "at%"
         grain_size = float(self.slider_grain.value())
         process_type = self.combo_process.currentText()
 

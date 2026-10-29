@@ -8,6 +8,7 @@ from typing import Dict, Any, Optional, List
 import os
 import sys
 import csv
+import pyqtgraph as pg
 from PyQt6.QtWidgets import (
     QMainWindow, QTabWidget, QMessageBox, QFileDialog,
     QStatusBar, QProgressBar, QLabel, QToolBar, QPushButton,
@@ -38,6 +39,12 @@ from pycalphad_app.gui.options_dialogs import (
     CreepModelingDialog, AlCastStrengthDialog, FormingExportDialog,
     GeneralPreferencesDialog, OrderOfElementsDialog
 )
+from pycalphad_app.gui.advanced_simulation_dialogs import (
+    ScheilSolidificationDialog, JominyHardenabilityDialog, FEAExportHelper,
+    MetastablePhasesDialog, ExtendedPropertiesDialog, HighTempStrengthDialog,
+    FatigueModelingDialog, TTTCCTDiagramDialog, StackingFaultEnergyDialog
+)
+from pycalphad_app.gui.styles import get_application_stylesheet
 from pycalphad_app.database.published_data_repository import PublishedDataRepository
 from pycalphad_app.database.oxide_database import HEAOxideDatabase
 from pycalphad_app.database.application_database import HEAApplicationDatabase
@@ -56,18 +63,18 @@ class MainWindow(QMainWindow):
         self.verbose_mode: bool = False
         self.record_session: bool = False
         self.show_phase_search: bool = True
-        self.current_theme: str = "dark"
+        self.current_theme: str = "light"
 
         self.init_ui()
         self.init_toolbar()
         self.init_menus()
         self.init_statusbar()
-        self.apply_theme("dark")
+        self.apply_theme("light")
 
         self.console_dock.log("[System] PyCALPHAD Suite initialized successfully.")
         self.console_dock.log("[System] Multi-threading worker pool ready. Zero GUI latency.")
 
-    def apply_theme(self, theme: str = "dark"):
+    def apply_theme(self, theme: str = "light"):
         """
         Applies comprehensive theme styling across QMainWindow, MenuBar, ToolBar,
         Dock widgets, Console, and all PyQtGraph plot canvases in the central viewport.
@@ -83,7 +90,19 @@ class MainWindow(QMainWindow):
             self.act_theme_dark.setChecked(theme == "dark")
             self.act_theme_light.setChecked(theme == "light")
 
-        if theme == "dark":
+        if theme == "light":
+            self.setStyleSheet(get_application_stylesheet())
+            pg.setConfigOption('background', 'w')
+            pg.setConfigOption('foreground', 'k')
+            bg_plot = "#FFFFFF"
+            axis_pen = "#334155"
+            text_pen = "#0F172A"
+        else:
+            pg.setConfigOption('background', 'k')
+            pg.setConfigOption('foreground', 'w')
+            bg_plot = "#1E1E1E"
+            axis_pen = "#888888"
+            text_pen = "#E0E0E0"
             self.setStyleSheet("""
                 QMainWindow { background-color: #1E1E1E; }
                 QMenuBar { background-color: #2D2D30; color: #FFFFFF; font-size: 10pt; }
@@ -106,30 +125,6 @@ class MainWindow(QMainWindow):
                 QLineEdit, QDoubleSpinBox, QSpinBox, QComboBox { background-color: #2D2D30; color: #FFFFFF; border: 1px solid #555555; padding: 3px; }
                 QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; alternate-background-color: #2D2D30; }
                 QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 4px; border: 1px solid #3E3E42; }
-            """)
-        else:
-            self.setStyleSheet("""
-                QMainWindow { background-color: #F3F3F3; }
-                QMenuBar { background-color: #E1E1E1; color: #000000; font-size: 10pt; }
-                QMenuBar::item { padding: 4px 10px; background: transparent; }
-                QMenuBar::item:selected { background-color: #D0D0D0; }
-                QMenu { background-color: #FFFFFF; color: #000000; border: 1px solid #CCCCCC; }
-                QMenu::item { padding: 5px 24px 5px 20px; }
-                QMenu::item:selected { background-color: #0078D7; color: #FFFFFF; }
-                QToolBar { background-color: #EAEAEA; border-bottom: 1px solid #CCCCCC; spacing: 5px; padding: 3px 8px; }
-                QToolButton, QPushButton { background-color: #E0E0E0; color: #000000; font-weight: bold; border-radius: 3px; padding: 4px 12px; border: 1px solid #BBBBBB; }
-                QToolButton:hover, QPushButton:hover { background-color: #0078D7; color: #FFFFFF; }
-                QTabWidget::pane { border: 1px solid #CCCCCC; background-color: #FFFFFF; }
-                QTabBar::tab { background-color: #E1E1E1; color: #333333; padding: 7px 16px; margin-right: 2px; }
-                QTabBar::tab:selected { background-color: #0078D7; color: #FFFFFF; }
-                QStatusBar { background-color: #0078D7; color: #FFFFFF; }
-                QDockWidget { color: #000000; font-weight: bold; }
-                QDockWidget::title { background-color: #E1E1E1; padding: 6px; }
-                QGroupBox { color: #0277BD; font-weight: bold; border: 1px solid #CCCCCC; margin-top: 6px; padding-top: 10px; }
-                QLabel { color: #212121; }
-                QLineEdit, QDoubleSpinBox, QSpinBox, QComboBox { background-color: #FFFFFF; color: #000000; border: 1px solid #CCCCCC; padding: 3px; }
-                QTableWidget { background-color: #FFFFFF; color: #000000; gridline-color: #E0E0E0; alternate-background-color: #F8F8F8; }
-                QHeaderView::section { background-color: #EAEAEA; color: #000000; padding: 4px; border: 1px solid #CCCCCC; }
             """)
 
         # Propagate theme to PyQtGraph plot widgets across all graphic viewport tabs
@@ -489,11 +484,11 @@ class MainWindow(QMainWindow):
         menu_options.addAction(act_al_cast)
 
         act_export_deform_opt = QAction("Export to DEFORM-HT...", self)
-        act_export_deform_opt.triggered.connect(lambda: FormingExportDialog(self, "DEFORM-HT").exec())
+        act_export_deform_opt.triggered.connect(self.export_deform_material_card)
         menu_options.addAction(act_export_deform_opt)
 
         act_export_simu_opt = QAction("Export to Simufact.premap...", self)
-        act_export_simu_opt.triggered.connect(lambda: FormingExportDialog(self, "Simufact.premap").exec())
+        act_export_simu_opt.triggered.connect(self.export_simufact_material_card)
         menu_options.addAction(act_export_simu_opt)
 
         # Forming export submenu
@@ -756,138 +751,72 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def open_metastable_phases_dialog(self):
-        QMessageBox.information(
-            self, "Metastable Phases Control",
-            "<b>Metastable Phase Equilibrium:</b><br><br>"
-            "Active inclusions:<br>"
-            "• GP Zones (Guinier-Preston) in Al-alloys: [Enabled]<br>"
-            "• γ'' (Ni3Nb D022) in Ni-superalloys: [Enabled]<br>"
-            "• Strain-induced Martensite α' in Austenitic Steels: [Enabled]<br>"
-            "• Amorphous inter-splat boundaries in Thermal Spray Coatings: [Enabled]"
-        )
+        MetastablePhasesDialog(self).exec()
 
     def open_extended_props_dialog(self):
-        QMessageBox.information(
-            self, "Extended Physical Properties",
-            "<b>Extended Physical Property Outputs:</b><br><br>"
-            "• Electrical Resistivity (ρ): 1.15 &times; 10<sup>-6</sup> Ω&middot;m<br>"
-            "• Thermal Diffusivity (α): 3.82 &times; 10<sup>-6</sup> m<sup>2</sup>/s<br>"
-            "• Poisson's Ratio (ν): 0.305<br>"
-            "• Surface Tension (γ_liquid): 1.62 N/m<br>"
-            "• Dynamic Viscosity (η_liquid): 4.8 mPa&middot;s"
-        )
+        comp = self.database_dock.get_composition()
+        ExtendedPropertiesDialog(comp, self).exec()
 
     def open_high_temp_strength_dialog(self):
-        QMessageBox.information(
-            self, "High Temperature Strength Model",
-            "<b>High Temperature Yield Strength:</b><br><br>"
-            "Uses thermal activation and dislocation climb mechanics:<br>"
-            "<i>σ<sub>y</sub>(T) = σ<sub>0</sub> &middot; [1 - (T / T<sub>m</sub>)<sup>m</sup>]</i><br>"
-            "Retention up to 750 °C exceeds 68% of room temperature proof stress."
-        )
+        comp = self.database_dock.get_composition()
+        HighTempStrengthDialog(comp, self).exec()
 
     def open_fatigue_dialog(self):
-        QMessageBox.information(
-            self, "Fatigue Life Prediction",
-            "<b>Basquin-Morrow High-Cycle Fatigue:</b><br><br>"
-            "<i>Δσ / 2 = (σ<sub>f</sub>' - σ<sub>m</sub>) &middot; (2N<sub>f</sub>)<sup>b</sup></i><br>"
-            "• Fatigue Strength Coefficient (σ_f'): 1120 MPa<br>"
-            "• Fatigue Strength Exponent (b): -0.092<br>"
-            "• Endurance Limit (10<sup>7</sup> cycles): 380 MPa"
-        )
+        comp = self.database_dock.get_composition()
+        FatigueModelingDialog(comp, self).exec()
 
     def open_ttt_cct_dialog(self):
-        QMessageBox.information(
-            self, "TTT / CCT Transformation Kinetics",
-            "<b>Johnson-Mehl-Avrami-Kolmogorov (JMAK) Model:</b><br><br>"
-            "<i>ξ(t) = 1 - exp(-k &middot; t<sup>n</sup>)</i><br>"
-            "Calculates nose temperature, start time (1% transformed), "
-            "and finish time (99% transformed) for ferrite, pearlite, and bainite."
-        )
+        comp = self.database_dock.get_composition()
+        TTTCCTDiagramDialog(comp, self).exec()
 
     def open_cooling_dialog(self):
-        QMessageBox.information(
-            self, "Continuous Cooling Simulation",
-            "<b>Continuous Cooling (CCT) Parameters:</b><br><br>"
-            "• Cooling Rate Range: 0.01 K/s to 500 K/s<br>"
-            "• Quenching Medium: Air, Oil, Water, High-Pressure Gas<br>"
-            "• Critical Cooling Velocity for Martensite: 45 K/s"
-        )
+        comp = self.database_dock.get_composition()
+        TTTCCTDiagramDialog(comp, self).exec()
 
     def open_isothermal_dialog(self):
-        QMessageBox.information(
-            self, "Isothermal Transformation Holding",
-            "<b>Isothermal Holding Kinetics:</b><br><br>"
-            "• Holding Temperature: 450 °C (Bainitic holding)<br>"
-            "• Incubation Time: 12.4 seconds<br>"
-            "• Maximum Transformation Velocity: at 45 seconds"
-        )
+        comp = self.database_dock.get_composition()
+        TTTCCTDiagramDialog(comp, self).exec()
 
     def open_sfe_dialog(self):
-        QMessageBox.information(
-            self, "Stacking Fault Energy (SFE)",
-            "<b>Stacking Fault Energy Model (FCC Matrix):</b><br><br>"
-            "<i>γ<sub>SFE</sub> = 2 &middot; ρ &middot; ΔG<sup>γ→ε</sup> + 2 &middot; σ<sup>γ/ε</sup></i><br>"
-            "• Calculated SFE: <b>24.8 mJ/m<sup>2</sup></b><br>"
-            "• Deformation Mechanism: TWIP (Twinning Induced Plasticity) dominant."
-        )
+        comp = self.database_dock.get_composition()
+        StackingFaultEnergyDialog(comp, self).exec()
 
     def open_energy_change_dialog(self):
-        QMessageBox.information(
-            self, "Thermodynamic Energy Changes",
-            "<b>Thermodynamic Free Energies:</b><br><br>"
-            "• Enthalpy of Mixing (ΔH<sub>mix</sub>): -14.2 kJ/mol<br>"
-            "• Entropy of Mixing (ΔS<sub>mix</sub>): 12.8 J/(mol&middot;K)<br>"
-            "• Gibbs Free Energy at 1273 K (ΔG): -30.5 kJ/mol<br>"
-            "• Driving Force for Precipitation: 3.4 kJ/mol"
-        )
+        self.tabs.setCurrentIndex(0)
+        self.console_dock.log("[Navigation] Switched to Equilibrium Thermodynamic Energy & Phase View.")
 
     def open_solidification_dialog(self):
-        QMessageBox.information(
-            self, "Solidification Simulation",
-            "<b>Scheil-Gulliver Solidification Engine:</b><br><br>"
-            "<i>C<sub>L</sub> = C<sub>0</sub> &middot; f<sub>L</sub><sup>(k - 1)</sup></i><br>"
-            "• Non-equilibrium microsegregation computed for solute elements.<br>"
-            "• Solidus Temperature: 1240 °C (Equilibrium: 1285 °C)<br>"
-            "• Latent Heat of Fusion (L<sub>f</sub>): 278 kJ/kg"
-        )
+        comp = self.database_dock.get_composition()
+        ScheilSolidificationDialog(comp, self).exec()
 
     def open_coarsening_dialog(self):
-        QMessageBox.information(
-            self, "Precipitate Coarsening Kinetics",
-            "<b>Lifshitz-Slyozov-Wagner (LSW) Theory:</b><br><br>"
-            "<i>r<sup>3</sup> - r<sub>0</sub><sup>3</sup> = K<sub>LSW</sub> &middot; t</i><br>"
-            "• Coarsening Rate Constant (K_LSW): 4.2 &times; 10<sup>-27</sup> m<sup>3</sup>/s at 850 °C<br>"
-            "• Activation Energy for Coarsening (Q): 265 kJ/mol"
-        )
+        comp = self.database_dock.get_composition()
+        PrecipitationHardeningDialog(self).exec()
 
     def open_steel_ttt_dialog(self):
-        QMessageBox.information(
-            self, "General Steel & Cast Iron TTT/CCT",
-            "<b>Steel Transformation Engine:</b><br><br>"
-            "Calculates phase fractions (Ferrite, Pearlite, Bainite, Martensite) "
-            "as a function of carbon equivalent (CE) and prior austenite grain size."
-        )
+        comp = self.database_dock.get_composition()
+        TTTCCTDiagramDialog(comp, self).exec()
 
     def open_jominy_dialog(self):
-        QMessageBox.information(
-            self, "Jominy End-Quench Hardenability",
-            "<b>Jominy Hardenability Prediction:</b><br><br>"
-            "• Grossmann Ideal Critical Diameter (D<sub>I</sub>): 58.4 mm<br>"
-            "• Hardness at J = 1.5 mm (1/16 in): 58 HRC<br>"
-            "• Hardness at J = 12 mm (1/2 in): 44 HRC<br>"
-            "• Hardness at J = 50 mm (2 in): 28 HRC"
-        )
+        comp = self.database_dock.get_composition()
+        JominyHardenabilityDialog(comp, self).exec()
 
     def open_flow_stress_dialog(self):
-        QMessageBox.information(
-            self, "Zener-Hollomon Constitutive Flow Stress",
-            "<b>Sellars-Tegart Hyperbolic Sine Law:</b><br><br>"
-            "<i>Z = &epsilon;&#775; &middot; exp(Q / RT) = A &middot; [sinh(α &middot; σ)]<sup>n</sup></i><br>"
-            "• Activation Energy for Deformation (Q): 310 kJ/mol<br>"
-            "• Stress Multiplier (α): 0.012 MPa<sup>-1</sup><br>"
-            "• Stress Exponent (n): 4.5"
-        )
+        StressStrainCurveDialog(self).exec()
+
+    def export_deform_material_card(self):
+        db_name = self.database_dock.db_combo.currentText()
+        comp = self.database_dock.get_composition()
+        out = FEAExportHelper.export_deform_material(self, db_name, comp)
+        if out:
+            self.console_dock.log(f"[Export] Saved DEFORM-HT simulation deck to: {out}")
+
+    def export_simufact_material_card(self):
+        db_name = self.database_dock.db_combo.currentText()
+        comp = self.database_dock.get_composition()
+        out = FEAExportHelper.export_deform_material(self, f"{db_name}_Simufact", comp)
+        if out:
+            self.console_dock.log(f"[Export] Saved Simufact.premap material card to: {out}")
 
     def init_statusbar(self):
         self.status = QStatusBar()

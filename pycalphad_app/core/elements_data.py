@@ -178,6 +178,10 @@ class ElementsData:
         return ELEMENTS_REGISTRY.get(symbol.strip())
 
     @classmethod
+    def get_element(cls, symbol: str) -> Optional[ElementData]:
+        return ELEMENTS_REGISTRY.get(symbol.strip())
+
+    @classmethod
     def all(cls) -> Dict[str, ElementData]:
         return ELEMENTS_REGISTRY
 

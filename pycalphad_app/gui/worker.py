@@ -52,9 +52,24 @@ class SolverWorker(QThread):
             elements = list(normalized_comp.keys())
             fractions = list(normalized_comp.values())
 
+            # Convert to atomic mole fractions if input basis is wt%
+            if self.basis == "wt%":
+                from pycalphad_app.core.elements_data import get_element
+                moles_raw = {el: frac / max(1e-4, getattr(get_element(el), "atomic_mass", 55.845))
+                             for el, frac in normalized_comp.items()}
+                tot_moles = sum(moles_raw.values())
+                at_comp = {el: m / tot_moles for el, m in moles_raw.items()}
+                at_elements = list(at_comp.keys())
+                at_fractions = list(at_comp.values())
+            else:
+                at_comp = dict(normalized_comp)
+                at_elements = list(elements)
+                at_fractions = list(fractions)
+
             results: Dict[str, Any] = {
                 "database_name": self.database_name,
                 "composition": normalized_comp,
+                "atomic_composition": at_comp,
                 "basis": self.basis,
                 "grain_size_um": self.grain_size_um,
                 "process_type": self.process_type
@@ -136,37 +151,37 @@ class SolverWorker(QThread):
 
                 # HEA or general alloy
                 self.progress.emit(20, "Evaluating CALPHAD Gibbs energy & solution thermodynamics...")
-                thermo_res = ThermoEngine.calculate(normalized_comp)
+                thermo_res = ThermoEngine.calculate(at_comp)
 
                 # Run PyCALPHAD in-memory Gibbs minimization
                 self.progress.emit(35, "Running PyCALPHAD thermodynamic phase equilibrium...")
-                pycalphad_res = PyCalphadEmbed.run_equilibrium(elements, fractions)
+                pycalphad_res = PyCalphadEmbed.run_equilibrium(at_elements, at_fractions)
                 thermo_res["PhaseFractions"] = pycalphad_res
                 thermo_res["PyCalphad"] = pycalphad_res
 
                 # Thermophysical transport
                 transport_res = ThermoEngine.compute_thermophysical_transport(
-                    normalized_comp, thermo_res["Solidus_K"], thermo_res["Liquidus_K"], thermo_res["Density_g_cm3"]
+                    at_comp, thermo_res["Solidus_K"], thermo_res["Liquidus_K"], thermo_res["Density_g_cm3"]
                 )
                 thermo_res["Transport"] = transport_res
 
                 # Lattice distortion
                 self.progress.emit(45, "Computing atomic lattice distortion & soft-sphere strains...")
                 distortion_res = LatticeDistortionEngine.compute_distortion_metrics(
-                    elements, fractions, thermo_res
+                    at_elements, at_fractions, thermo_res
                 )
                 thermo_res["LatticeDistortion"] = distortion_res
                 results["thermo"] = thermo_res
 
                 self.progress.emit(55, "Computing solid-solution strengthening & mechanical behavior...")
                 mech_res = MechanicalEngine.compute_mechanical_properties(
-                    elements, fractions, thermo_res, grain_size_um=self.grain_size_um
+                    at_elements, at_fractions, thermo_res, grain_size_um=self.grain_size_um
                 )
                 results["mechanical"] = mech_res
 
                 self.progress.emit(65, "Modeling Wagner high-temperature parabolic oxidation...")
                 ox_res = OxidationEngine.compute_oxidation_kinetics(
-                    elements, fractions, thermo_res
+                    at_elements, at_fractions, thermo_res
                 )
                 results["oxidation"] = ox_res
 
