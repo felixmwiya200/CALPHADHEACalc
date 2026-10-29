@@ -1,7 +1,7 @@
 """
 main_window.py - JMatPro / Pandat Professional CAE Desktop Layout
 Assembles the Left Parameter Dock, Central 8-Tab Graphics Viewport, Bottom Solver Console,
-Menu Bar, Quick Mode Toolbar (wt%/at%, K/°C), and Background QThread Solver.
+Menu Bar, Quick Mode Toolbar (wt%/at%, K/°C, Dark/Light Theme), and Background QThread Solver.
 """
 
 from typing import Dict, Any, Optional, List
@@ -27,7 +27,8 @@ from pycalphad_app.gui.plot_views import (
 )
 from pycalphad_app.gui.utilities_dialogs import (
     AusteniteGrainSizeDialog, ConversionsDialog, MartensiteTransitionDialog,
-    StressStrainCurveDialog, CreateMaterialTypeDialog, BatchModeDialog
+    StressStrainCurveDialog, CreateMaterialTypeDialog, BatchModeDialog,
+    EllinghamOxideExplorerDialog, LiteratureHEADatabaseDialog
 )
 from pycalphad_app.gui.options_dialogs import (
     TemperatureSteppingDialog, ConcentrationSteppingDialog, SingleThermodynamicDialog,
@@ -35,6 +36,10 @@ from pycalphad_app.gui.options_dialogs import (
     CreepModelingDialog, AlCastStrengthDialog, FormingExportDialog,
     GeneralPreferencesDialog, OrderOfElementsDialog
 )
+from pycalphad_app.database.published_data_repository import PublishedDataRepository
+from pycalphad_app.database.oxide_database import HEAOxideDatabase
+from pycalphad_app.database.application_database import HEAApplicationDatabase
+from pycalphad_app.database.literature_hea_repository import LiteratureHEARepository
 
 
 class MainWindow(QMainWindow):
@@ -49,17 +54,33 @@ class MainWindow(QMainWindow):
         self.verbose_mode: bool = False
         self.record_session: bool = False
         self.show_phase_search: bool = True
+        self.current_theme: str = "dark"
 
-        self.apply_theme("dark")
         self.init_ui()
         self.init_toolbar()
         self.init_menus()
         self.init_statusbar()
+        self.apply_theme("dark")
 
         self.console_dock.log("[System] PyCALPHAD Suite initialized successfully.")
         self.console_dock.log("[System] Multi-threading worker pool ready. Zero GUI latency.")
 
     def apply_theme(self, theme: str = "dark"):
+        """
+        Applies comprehensive theme styling across QMainWindow, MenuBar, ToolBar,
+        Dock widgets, Console, and all PyQtGraph plot canvases in the central viewport.
+        """
+        self.current_theme = theme
+        if hasattr(self, 'btn_theme_toggle'):
+            self.btn_theme_toggle.setText("Theme: Dark" if theme == "dark" else "Theme: Light")
+            self.btn_theme_toggle.setToolTip(
+                "Currently in Dark Theme. Click to switch to Light Theme (Ctrl+T)" if theme == "dark"
+                else "Currently in Light Theme. Click to switch to Dark Theme (Ctrl+T)"
+            )
+        if hasattr(self, 'act_theme_dark') and hasattr(self, 'act_theme_light'):
+            self.act_theme_dark.setChecked(theme == "dark")
+            self.act_theme_light.setChecked(theme == "light")
+
         if theme == "dark":
             self.setStyleSheet("""
                 QMainWindow { background-color: #1E1E1E; }
@@ -69,13 +90,20 @@ class MainWindow(QMainWindow):
                 QMenu { background-color: #252526; color: #FFFFFF; border: 1px solid #3E3E42; }
                 QMenu::item { padding: 5px 24px 5px 20px; }
                 QMenu::item:selected { background-color: #094771; }
-                QToolBar { background-color: #2D2D30; border-bottom: 1px solid #3E3E42; spacing: 4px; padding: 2px 8px; }
-                QToolButton { background-color: #3E3E42; color: #FFFFFF; font-weight: bold; border-radius: 3px; padding: 3px 10px; }
-                QToolButton:hover { background-color: #007ACC; }
+                QToolBar { background-color: #2D2D30; border-bottom: 1px solid #3E3E42; spacing: 5px; padding: 3px 8px; }
+                QToolButton, QPushButton { background-color: #3E3E42; color: #FFFFFF; font-weight: bold; border-radius: 3px; padding: 4px 12px; border: 1px solid #555555; }
+                QToolButton:hover, QPushButton:hover { background-color: #007ACC; }
                 QTabWidget::pane { border: 1px solid #3E3E42; background-color: #1E1E1E; }
                 QTabBar::tab { background-color: #2D2D30; color: #B0BEC5; padding: 7px 16px; margin-right: 2px; font-weight: bold; }
                 QTabBar::tab:selected { background-color: #0E639C; color: #FFFFFF; border-bottom: 2px solid #00BCD4; }
                 QStatusBar { background-color: #007ACC; color: #FFFFFF; font-weight: demi-bold; }
+                QDockWidget { color: #FFFFFF; font-weight: bold; }
+                QDockWidget::title { background-color: #2D2D30; padding: 6px; }
+                QGroupBox { color: #81D4FA; font-weight: bold; border: 1px solid #3E3E42; margin-top: 6px; padding-top: 10px; }
+                QLabel { color: #E0E0E0; }
+                QLineEdit, QDoubleSpinBox, QSpinBox, QComboBox { background-color: #2D2D30; color: #FFFFFF; border: 1px solid #555555; padding: 3px; }
+                QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; alternate-background-color: #2D2D30; }
+                QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 4px; border: 1px solid #3E3E42; }
             """)
         else:
             self.setStyleSheet("""
@@ -86,14 +114,47 @@ class MainWindow(QMainWindow):
                 QMenu { background-color: #FFFFFF; color: #000000; border: 1px solid #CCCCCC; }
                 QMenu::item { padding: 5px 24px 5px 20px; }
                 QMenu::item:selected { background-color: #0078D7; color: #FFFFFF; }
-                QToolBar { background-color: #EAEAEA; border-bottom: 1px solid #CCCCCC; spacing: 4px; padding: 2px 8px; }
-                QToolButton { background-color: #D0D0D0; color: #000000; font-weight: bold; border-radius: 3px; padding: 3px 10px; }
-                QToolButton:hover { background-color: #0078D7; color: #FFFFFF; }
+                QToolBar { background-color: #EAEAEA; border-bottom: 1px solid #CCCCCC; spacing: 5px; padding: 3px 8px; }
+                QToolButton, QPushButton { background-color: #E0E0E0; color: #000000; font-weight: bold; border-radius: 3px; padding: 4px 12px; border: 1px solid #BBBBBB; }
+                QToolButton:hover, QPushButton:hover { background-color: #0078D7; color: #FFFFFF; }
                 QTabWidget::pane { border: 1px solid #CCCCCC; background-color: #FFFFFF; }
                 QTabBar::tab { background-color: #E1E1E1; color: #333333; padding: 7px 16px; margin-right: 2px; }
                 QTabBar::tab:selected { background-color: #0078D7; color: #FFFFFF; }
                 QStatusBar { background-color: #0078D7; color: #FFFFFF; }
+                QDockWidget { color: #000000; font-weight: bold; }
+                QDockWidget::title { background-color: #E1E1E1; padding: 6px; }
+                QGroupBox { color: #0277BD; font-weight: bold; border: 1px solid #CCCCCC; margin-top: 6px; padding-top: 10px; }
+                QLabel { color: #212121; }
+                QLineEdit, QDoubleSpinBox, QSpinBox, QComboBox { background-color: #FFFFFF; color: #000000; border: 1px solid #CCCCCC; padding: 3px; }
+                QTableWidget { background-color: #FFFFFF; color: #000000; gridline-color: #E0E0E0; alternate-background-color: #F8F8F8; }
+                QHeaderView::section { background-color: #EAEAEA; color: #000000; padding: 4px; border: 1px solid #CCCCCC; }
             """)
+
+        # Propagate theme to PyQtGraph plot widgets across all graphic viewport tabs
+        bg_plot = "#1E1E1E" if theme == "dark" else "#FFFFFF"
+        axis_pen = "#888888" if theme == "dark" else "#555555"
+        text_pen = "#E0E0E0" if theme == "dark" else "#212121"
+
+        if hasattr(self, 'tabs'):
+            for i in range(self.tabs.count()):
+                widget = self.tabs.widget(i)
+                if hasattr(widget, 'plot_widget'):
+                    pw = widget.plot_widget
+                    pw.setBackground(bg_plot)
+                    try:
+                        pw.getAxis('left').setPen(axis_pen)
+                        pw.getAxis('bottom').setPen(axis_pen)
+                        pw.getAxis('left').setTextPen(text_pen)
+                        pw.getAxis('bottom').setTextPen(text_pen)
+                    except Exception:
+                        pass
+
+        if hasattr(self, 'console_dock'):
+            self.console_dock.log(f"[Theme] Applied {theme.capitalize()} Theme across all viewports and controls.")
+
+    def toggle_theme(self):
+        new_theme = "light" if self.current_theme == "dark" else "dark"
+        self.apply_theme(new_theme)
 
     def init_ui(self):
         # 1. Left Database Dock
@@ -130,7 +191,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
     def init_toolbar(self):
-        """Constructs JMatPro quick toolbar (wt% / at% toggle, K / °C toggle, active database)."""
+        """Constructs JMatPro quick toolbar (wt%/at%, K/°C, Theme: Dark/Light, active database)."""
         toolbar = QToolBar("Quick Parameters", self)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
@@ -148,6 +209,13 @@ class MainWindow(QMainWindow):
         self.btn_temp_unit_toggle.setStyleSheet("font-weight: bold; min-width: 42px; padding: 3px;")
         self.btn_temp_unit_toggle.clicked.connect(self.toggle_temp_unit)
         toolbar.addWidget(self.btn_temp_unit_toggle)
+
+        # Theme toggle button
+        self.btn_theme_toggle = QPushButton("Theme: Dark")
+        self.btn_theme_toggle.setToolTip("Toggle Theme between Dark and Light (Ctrl+T)")
+        self.btn_theme_toggle.setStyleSheet("font-weight: bold; min-width: 95px; padding: 3px;")
+        self.btn_theme_toggle.clicked.connect(self.toggle_theme)
+        toolbar.addWidget(self.btn_theme_toggle)
 
         toolbar.addSeparator()
 
@@ -208,7 +276,7 @@ class MainWindow(QMainWindow):
         menu_file.addAction(act_exit)
 
         # =========================================================================
-        # 2. MATERIAL TYPES MENU (Matching JMatPro Material Types)
+        # 2. MATERIAL TYPES MENU (Matching JMatPro Material Types + Previous App Systems)
         # =========================================================================
         menu_mat_types = menubar.addMenu("&Material Types")
 
@@ -235,15 +303,49 @@ class MainWindow(QMainWindow):
             menu_mat_types.addAction(act_db)
 
         menu_mat_types.addSeparator()
+
+        # Previous App Databases: 19 Published Literature Materials
+        menu_published = menu_mat_types.addMenu("Published Materials Repository (19 Systems)")
+        for mat_id in PublishedDataRepository.get_available_materials():
+            name = PublishedDataRepository.get_material_display_name(mat_id)
+            act_pub = QAction(name, self)
+            act_pub.triggered.connect(lambda checked, m=mat_id: self.load_published_material(m))
+            menu_published.addAction(act_pub)
+
+        menu_mat_types.addSeparator()
         act_switch_db = QAction("Select Active Materials Database... (Ctrl+D)", self)
         act_switch_db.setShortcut("Ctrl+D")
         act_switch_db.triggered.connect(self.open_database_selector_dialog)
         menu_mat_types.addAction(act_switch_db)
 
         # =========================================================================
-        # 3. OPTIONS MENU (Matching JMatPro Options Screenshot 1)
+        # 3. OPTIONS MENU (Theme, Verbose, Preferences, Stepping, Metallurgy Models)
         # =========================================================================
         menu_options = menubar.addMenu("&Options")
+
+        # Theme Submenu
+        menu_theme = menu_options.addMenu("Theme")
+        self.act_theme_dark = QAction("Dark Theme (Professional CAE)", self)
+        self.act_theme_dark.setCheckable(True)
+        self.act_theme_dark.setChecked(self.current_theme == "dark")
+        self.act_theme_dark.setShortcut("Ctrl+Shift+D")
+        self.act_theme_dark.triggered.connect(lambda: self.apply_theme("dark"))
+        menu_theme.addAction(self.act_theme_dark)
+
+        self.act_theme_light = QAction("Light Theme (Windows Standard)", self)
+        self.act_theme_light.setCheckable(True)
+        self.act_theme_light.setChecked(self.current_theme == "light")
+        self.act_theme_light.setShortcut("Ctrl+Shift+L")
+        self.act_theme_light.triggered.connect(lambda: self.apply_theme("light"))
+        menu_theme.addAction(self.act_theme_light)
+
+        menu_theme.addSeparator()
+        act_toggle_th = QAction("Toggle Dark ↔ Light Theme", self)
+        act_toggle_th.setShortcut("Ctrl+T")
+        act_toggle_th.triggered.connect(self.toggle_theme)
+        menu_theme.addAction(act_toggle_th)
+
+        menu_options.addSeparator()
 
         # Verbose mode toggle
         self.act_verbose = QAction("Run in verbose mode", self)
@@ -262,7 +364,7 @@ class MainWindow(QMainWindow):
         menu_options.addSeparator()
 
         act_gen_pref = QAction("General preferences...", self)
-        act_gen_pref.triggered.connect(lambda: GeneralPreferencesDialog(self).exec())
+        act_gen_pref.triggered.connect(self.open_general_preferences_dialog)
         menu_options.addAction(act_gen_pref)
 
         act_order_elem = QAction("Order of elements...", self)
@@ -390,7 +492,7 @@ class MainWindow(QMainWindow):
         menu_flow.addAction(act_zener)
 
         # =========================================================================
-        # 4. UTILITIES MENU (Matching JMatPro Utilities Screenshot 2)
+        # 4. UTILITIES MENU (Matching JMatPro + Previous App Databases)
         # =========================================================================
         menu_util = menubar.addMenu("&Utilities")
 
@@ -409,6 +511,17 @@ class MainWindow(QMainWindow):
         act_rt_ss = QAction("Stress-Strain curves (Room Temperature)...", self)
         act_rt_ss.triggered.connect(lambda: StressStrainCurveDialog(self).exec())
         menu_util.addAction(act_rt_ss)
+
+        menu_util.addSeparator()
+
+        # Previous App Databases: Oxides & Literature HEAs
+        act_ellingham = QAction("Ellingham Oxide Thermochemistry Database...", self)
+        act_ellingham.triggered.connect(lambda: EllinghamOxideExplorerDialog(self).exec())
+        menu_util.addAction(act_ellingham)
+
+        act_lit_heas = QAction("Curated Literature HEA Dataset (12,000+ Alloys)...", self)
+        act_lit_heas.triggered.connect(lambda: LiteratureHEADatabaseDialog(self).exec())
+        menu_util.addAction(act_lit_heas)
 
         menu_util.addSeparator()
 
@@ -460,6 +573,26 @@ class MainWindow(QMainWindow):
         act_license = QAction("License terms...", self)
         act_license.triggered.connect(self.show_license_dialog)
         menu_help.addAction(act_license)
+
+    def open_general_preferences_dialog(self):
+        dlg = GeneralPreferencesDialog(self, current_theme=self.current_theme)
+        if dlg.exec():
+            sel_theme = dlg.get_selected_theme()
+            if sel_theme != self.current_theme:
+                self.apply_theme(sel_theme)
+
+    def load_published_material(self, mat_id: str):
+        disp_name = PublishedDataRepository.get_material_display_name(mat_id)
+        self.console_dock.log(f"[Database] Loaded published literature system: '{disp_name}'")
+        if "aluminum" in mat_id.lower() or "al10" in mat_id.lower():
+            self.database_dock.db_combo.setCurrentText("Aluminium Alloy")
+        elif "cobalt" in mat_id.lower():
+            self.database_dock.db_combo.setCurrentText("Cobalt Alloy")
+        else:
+            self.database_dock.db_combo.setCurrentText("High Entropy Alloys")
+
+        # Automatically trigger calculation
+        self.database_dock.on_calculate_clicked()
 
     def build_articles_menu(self, parent_menu: QMenu):
         """Builds JMatPro / CALPHAD technical documentation tree linking to authentic PDF papers."""
@@ -519,7 +652,6 @@ class MainWindow(QMainWindow):
                 sub_menu.addAction(act)
 
     def open_pdf_document(self, path: str, title: str):
-        """Opens authentic PDF technical document directly in the user's default PDF viewer."""
         if os.path.exists(path):
             QDesktopServices.openUrl(QUrl.fromLocalFile(path))
             self.console_dock.log(f"[Documentation] Opened PDF article: '{title}' ({os.path.basename(path)})")
@@ -544,7 +676,7 @@ class MainWindow(QMainWindow):
             "2. <b>Adjust Chemistry:</b> Choose a preset or edit element weight fractions directly.<br>"
             "3. <b>Run Solver:</b> Click 'Calculate Properties'. Results compute asynchronously.<br>"
             "4. <b>Inspect Results:</b> Review the 8 central graphics tabs (Equilibrium, Isopleth, XRD, etc.).<br>"
-            "5. <b>Export:</b> Use File menu to export data to CSV, DAT, or CAE simulation cards (DEFORM, Simufact)."
+            "5. <b>Theme Switching:</b> Toggle between Light and Dark themes via the toolbar button or Ctrl+T."
         )
 
     def open_faqs_help(self):
@@ -557,8 +689,8 @@ class MainWindow(QMainWindow):
                 "<b>Frequently Asked Questions:</b><br><br>"
                 "• <i>How are equilibrium phases calculated?</i><br>"
                 "Using Gibbs free energy minimization and CALPHAD thermodynamic sublattices.<br><br>"
-                "• <i>Are XRD peaks authentic?</i><br>"
-                "Yes, calculated from structural space groups and validated against peer-reviewed literature."
+                "• <i>Can I switch themes at any time?</i><br>"
+                "Yes, click 'Theme: Dark / Light' on the quick toolbar or press Ctrl+T at any time."
             )
 
     def show_license_dialog(self):

@@ -30,6 +30,8 @@ hidden_imports += collect_submodules('pycalphad_app')
 datas = [
     ('pycalphad_app', 'pycalphad_app'),
     ('App/AppIcon.ico', 'App'),
+    ('App/published_materials_data.json', 'App'),
+    ('App/data/database_of_HEAs.csv', 'App/data'),
 ]
 
 a = Analysis(
