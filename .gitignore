@@ -22,6 +22,10 @@ __pycache__/
 .venv/
 venv/
 ENV/
+build/
+dist/
+*.spec.bak
+
 
 # Temporary Scratch & Diagnostic Files
 scratch/

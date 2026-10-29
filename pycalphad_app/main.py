@@ -6,11 +6,18 @@ selection dialog matching user requirement, and launches the desktop suite.
 
 import sys
 import os
+
+# Direct top-level imports to guarantee PyInstaller dependency discovery
+import numpy as np
+import scipy
+import pyqtgraph as pg
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
 
-# Ensure pycalphad_app is discoverable
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Ensure pycalphad_app is discoverable on sys.path
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from pycalphad_app.gui.main_window import MainWindow
 from pycalphad_app.gui.database_modal import DatabaseModalDialog
