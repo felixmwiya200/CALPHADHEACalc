@@ -1,6 +1,6 @@
 """
 applications_view.py - Industrial Domain Suitability & Multi-Criteria Ranking View
-Evaluates the alloy against 10 critical industrial sectors with ranked bars and table.
+Evaluates the alloy against 12 critical industrial sectors with ranked bars and table.
 """
 
 from typing import Dict, Any
@@ -39,15 +39,18 @@ class ApplicationsView(QWidget):
 
         # Right: Ranked Table
         self.table = QTableWidget()
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["Sector", "Suitability (%)", "Assessment"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["Sector / Application", "Score (%)", "Match Tier", "Bottleneck / Advice"])
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
         self.table.setStyleSheet(
             "QTableWidget { background-color: #252526; color: #FFFFFF; gridline-color: #3E3E42; }"
             "QHeaderView::section { background-color: #2D2D30; color: #FFFFFF; padding: 4px; font-weight: bold; }"
         )
         splitter.addWidget(self.table)
-        splitter.setSizes([450, 400])
+        splitter.setSizes([450, 550])
 
     def update_data(self, results: Dict[str, Any]):
         self.plot_widget.clear()
@@ -62,14 +65,18 @@ class ApplicationsView(QWidget):
         # Populate Table
         self.table.setRowCount(len(sorted_scores))
         for row, item in enumerate(sorted_scores):
-            sector = item.get("sector", "")
-            score = item.get("score", 0.0)
-            status = item.get("status", "Suitable")
+            name = item.get("name", item.get("sector", ""))
+            score = float(item.get("score", 0.0))
+            tier = item.get("tier", item.get("status", "Suitable"))
+            bottle = item.get("bottleneck", "")
+            adv = item.get("advice", "")
+            info_text = f"{bottle} | {adv}" if adv and bottle != "Balanced" else bottle
 
-            it_sector = QTableWidgetItem(sector)
+            it_name = QTableWidgetItem(name)
             it_score = QTableWidgetItem(f"{score:.1f}%")
             it_score.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            it_status = QTableWidgetItem(status)
+            it_tier = QTableWidgetItem(tier)
+            it_info = QTableWidgetItem(info_text)
 
             # Color coding
             if score >= 75.0:
@@ -79,14 +86,15 @@ class ApplicationsView(QWidget):
             else:
                 it_score.setForeground(QColor("#F44336"))
 
-            self.table.setItem(row, 0, it_sector)
+            self.table.setItem(row, 0, it_name)
             self.table.setItem(row, 1, it_score)
-            self.table.setItem(row, 2, it_status)
+            self.table.setItem(row, 2, it_tier)
+            self.table.setItem(row, 3, it_info)
 
         # Horizontal Bar Chart
         y_pos = np.arange(len(sorted_scores))
-        scores_arr = [s.get("score", 0.0) for s in reversed(sorted_scores)]
-        names = [s.get("sector", "") for s in reversed(sorted_scores)]
+        scores_arr = [float(s.get("score", 0.0)) for s in reversed(sorted_scores)]
+        names = [s.get("name", s.get("sector", ""))[:28] for s in reversed(sorted_scores)]
 
         # Custom string axis for y
         y_axis = self.plot_widget.getPlotItem().getAxis("left")

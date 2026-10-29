@@ -26,6 +26,8 @@ hidden_imports = [
     'pycalphad_app.gui',
 ]
 hidden_imports += collect_submodules('pycalphad_app')
+hidden_imports += collect_submodules('pycalphad')
+hidden_imports += collect_submodules('pyqtgraph')
 
 datas = [
     ('pycalphad_app', 'pycalphad_app'),
@@ -33,6 +35,7 @@ datas = [
     ('App/published_materials_data.json', 'App'),
     ('App/data/database_of_HEAs.csv', 'App/data'),
 ]
+datas += collect_data_files('pycalphad')
 
 a = Analysis(
     ['pycalphad_app/main.py'],

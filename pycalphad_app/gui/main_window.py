@@ -25,6 +25,8 @@ from pycalphad_app.gui.plot_views import (
     EquilibriumView, PhaseDiagramView, TransportView, MechanicalView,
     EnvironmentalView, XRDView, ApplicationsView, ValidationView
 )
+from pycalphad_app.gui.periodic_table_widget import PeriodicTableWidget
+
 from pycalphad_app.gui.utilities_dialogs import (
     AusteniteGrainSizeDialog, ConversionsDialog, MartensiteTransitionDialog,
     StressStrainCurveDialog, CreateMaterialTypeDialog, BatchModeDialog,
@@ -178,6 +180,7 @@ class MainWindow(QMainWindow):
         self.tab_xrd = XRDView()
         self.tab_applications = ApplicationsView()
         self.tab_validation = ValidationView()
+        self.tab_periodic_table = PeriodicTableWidget()
 
         self.tabs.addTab(self.tab_equilibrium, "Equilibrium Phases")
         self.tabs.addTab(self.tab_phase_diag, "Isopleth Phase Diagram")
@@ -187,6 +190,11 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.tab_xrd, "Powder XRD Diffractometer")
         self.tabs.addTab(self.tab_applications, "Industrial Suitability")
         self.tabs.addTab(self.tab_validation, "Literature Audit & Validation")
+        self.tabs.addTab(self.tab_periodic_table, "Periodic Table (118)")
+
+        # Wire periodic table selection into chemical composition table
+        self.tab_periodic_table.elements_applied.connect(self.database_dock.load_composition_to_table)
+
 
         self.setCentralWidget(self.tabs)
 
@@ -219,7 +227,17 @@ class MainWindow(QMainWindow):
 
         toolbar.addSeparator()
 
+        # Periodic Table Launcher Button
+        self.btn_periodic_table = QPushButton("Periodic Table (118)...")
+        self.btn_periodic_table.setToolTip("Open Full IUPAC 118-Element Interactive Periodic Table (Tab 9)")
+        self.btn_periodic_table.setStyleSheet("background-color: #15803D; color: #FFFFFF; font-weight: bold; padding: 3px 10px; border: 1px solid #16A34A;")
+        self.btn_periodic_table.clicked.connect(lambda: self.tabs.setCurrentWidget(self.tab_periodic_table))
+        toolbar.addWidget(self.btn_periodic_table)
+
+        toolbar.addSeparator()
+
         lbl_active_prefix = QLabel("  Active Materials System: ")
+
         lbl_active_prefix.setStyleSheet("color: #9E9E9E; font-size: 9pt;")
         toolbar.addWidget(lbl_active_prefix)
 
@@ -500,7 +518,14 @@ class MainWindow(QMainWindow):
         act_aus_gs.triggered.connect(lambda: AusteniteGrainSizeDialog(self).exec())
         menu_util.addAction(act_aus_gs)
 
+        act_periodic = QAction("Interactive Periodic Table (118)...", self)
+        act_periodic.triggered.connect(lambda: self.tabs.setCurrentWidget(self.tab_periodic_table))
+        menu_util.addAction(act_periodic)
+
+        menu_util.addSeparator()
+
         act_conv = QAction("Conversions...", self)
+
         act_conv.triggered.connect(lambda: ConversionsDialog(self).exec())
         menu_util.addAction(act_conv)
 
