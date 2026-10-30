@@ -11,7 +11,14 @@ from typing import Dict, List, Any, Optional
 import numpy as np
 
 class UnifiedHEADatabase:
+    NAME = "High Entropy Alloys"
     DATABASE_NAME = "Unified HEA Master Database (CALPHAD + Experimental)"
+    BASIS = "at%"
+    CATEGORY = "Multi-Principal Element & High-Entropy Alloys (CCAs / MPEAs)"
+    DESCRIPTION = "Consolidated thermodynamic solution models for equiatomic and non-equiatomic multi-principal element alloys. Encompasses Cantor FCC alloys, AlxCoCrFeNi spinodal & eutectic series, Senkov refractory HEAs (NbMoTaW), and lightweight multi-principal systems. Features CALPHAD sub-regular solutions and Miedema pairwise enthalpies."
+    PRIMARY_PHASES = ["FCC_A1 (Austenite-like)", "BCC_A2 (Ferrite-like)", "B2 (Ordered Intermetallic)", "Sigma (Tetragonal)", "Liquid"]
+    TEMPERATURE_RANGE = "300 - 2400 K"
+    KEY_APPLICATIONS = ["Aerospace Hot-Section Components", "High-Temperature Cryogenic Storage", "Radiation-Resistant Nuclear Cladding"]
     VERSION = "2026.3.0-Compacted"
     TOTAL_CURATED_COMPOSITIONS = 12427
     BENCHMARK_COUNT = 22

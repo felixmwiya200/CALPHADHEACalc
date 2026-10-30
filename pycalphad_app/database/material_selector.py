@@ -70,6 +70,23 @@ class MaterialDatabaseSelector:
         "Solder Alloy": SolderAlloyDatabase
     }
 
+    DOMAIN_GROUPS: Dict[str, str] = {
+        "High Entropy Alloys": "High-Entropy & Multi-Principal",
+        "Thermal Spray Coatings": "High-Entropy & Multi-Principal",
+        "General Steel": "Ferrous & Structural Steels",
+        "Stainless Steel": "Ferrous & Structural Steels",
+        "Cast Iron": "Ferrous & Structural Steels",
+        "Aluminium Alloy": "Lightweight Aerospace Alloys",
+        "Magnesium Alloy": "Lightweight Aerospace Alloys",
+        "Titanium Alloy": "Lightweight Aerospace Alloys",
+        "Cobalt Alloy": "High-Temperature Superalloys",
+        "Nickel Based Superalloy": "High-Temperature Superalloys",
+        "NiFe Based Superalloy": "High-Temperature Superalloys",
+        "Single Crystal": "High-Temperature Superalloys",
+        "Zirconium Alloy": "Specialty & Nuclear Alloys",
+        "Solder Alloy": "Specialty & Nuclear Alloys",
+    }
+
     @classmethod
     def get_database_list(cls) -> List[str]:
         return cls.DATABASES
@@ -81,9 +98,10 @@ class MaterialDatabaseSelector:
     @classmethod
     def get_spec(cls, db_name: str) -> Dict[str, Any]:
         mod = cls.get_module(db_name)
-        if hasattr(mod, "PRESETS") and mod.PRESETS:
-            first_key = list(mod.PRESETS.keys())[0]
-            first_comp = mod.PRESETS[first_key]
+        presets = cls.get_presets_for_database(db_name)
+        if presets:
+            first_key = list(presets.keys())[0]
+            first_comp = presets[first_key]
         else:
             first_key = getattr(mod, "NAME", db_name)
             first_comp = {"Ni": 71.61, "Cr": 15.27, "Si": 4.65, "Fe": 4.47, "B": 3.32, "C": 0.68}
@@ -99,8 +117,12 @@ class MaterialDatabaseSelector:
             "composition": norm_comp,
             "raw_composition": first_comp,
             "category": getattr(mod, "CATEGORY", "Materials Database"),
-            "description": getattr(mod, "DESCRIPTION", ""),
-            "primary_phases": getattr(mod, "PRIMARY_PHASES", ["Solid", "Liquid"])
+            "description": getattr(mod, "DESCRIPTION", "Authoritative CALPHAD multi-component thermodynamic and physical database."),
+            "primary_phases": getattr(mod, "PRIMARY_PHASES", ["Solid", "Liquid"]),
+            "temperature_range": getattr(mod, "TEMPERATURE_RANGE", "300 - 1800 K"),
+            "key_applications": getattr(mod, "KEY_APPLICATIONS", ["Aerospace & Defense", "Energy & Power Systems", "High-Performance Manufacturing"]),
+            "domain_group": cls.DOMAIN_GROUPS.get(db_name, "General Materials"),
+            "presets": presets
         }
 
     @classmethod

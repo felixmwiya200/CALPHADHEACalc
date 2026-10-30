@@ -14,7 +14,23 @@ from typing import Dict, Any, List
 
 
 class ThermalSprayCoatingDatabase:
+    NAME = "Thermal Spray Coatings"
     ALLOY_NAME = "Colmonoy 6 / Metco 16C (NiCrBSiC Hardfacing)"
+    BASIS = "wt%"
+    CATEGORY = "Thermal Spray & Hardfacing Surface Engineering Coatings"
+    DESCRIPTION = "Multi-phase wear- and corrosion-resistant hardfacing alloys for HVOF, APS, and Flame Spray deposition. Features non-equilibrium splat solidification, boron/silicon partitioning, and precipitation of ultra-hard ceramic borides (CrB, Cr2B), silicides (Ni3Si), and chromium carbides (Cr7C3, Cr23C6) inside an austenitic gamma-Ni matrix."
+    PRIMARY_PHASES = ["gamma-Ni (FCC Matrix)", "CrB / Cr2B (Borides)", "Ni3Si (Silicides)", "Cr7C3 / Cr23C6 (Carbides)", "Liquid"]
+    TEMPERATURE_RANGE = "300 - 1500 K"
+    KEY_APPLICATIONS = ["HVOF Pump Sleeves & Shafts", "Turbine Blade Wear Collars", "Chemical Impellers & Valve Seats"]
+
+    PRESETS = {
+        "Colmonoy 6 Standard (Ni-15Cr-4Fe-3.5B-4.5Si-0.7C)": {
+            "Ni": 71.80, "Cr": 15.00, "Si": 4.50, "Fe": 4.00, "B": 3.50, "C": 0.70
+        },
+        "Metco 16C As-Sprayed (Ni-15.3Cr-4.7Si-4.5Fe-3.3B-0.7C)": {
+            "Ni": 71.61, "Cr": 15.27, "Si": 4.65, "Fe": 4.47, "B": 3.32, "C": 0.68
+        }
+    }
 
     WEIGHT_PERCENT = {
         "Ni": 71.61,

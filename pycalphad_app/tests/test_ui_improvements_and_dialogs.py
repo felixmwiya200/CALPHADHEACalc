@@ -21,6 +21,7 @@ from pycalphad_app.gui.styles import get_application_stylesheet
 from pycalphad_app.gui.database_dock import DatabaseDock
 from pycalphad_app.gui.plot_views.environmental_view import EnvironmentalView
 from pycalphad_app.gui.plot_views.validation_view import ValidationView
+from pycalphad_app.gui.database_modal import DatabaseModalDialog
 from pycalphad_app.gui.advanced_simulation_dialogs import (
     ScheilSolidificationDialog,
     LatticeMismatchDialog,
@@ -219,6 +220,56 @@ class TestInteractiveSimulationDialogs(unittest.TestCase):
         )
         self.assertIn("*MATERIAL: Fe-0.4C-1Cr", deck)
         self.assertIn("TSOLIDUS = 1690.00 K", deck)
+
+
+class TestDatabaseModalDialog(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_modal_initialization_and_preselection(self):
+        dlg = DatabaseModalDialog("Thermal Spray Coatings", theme="light")
+        self.assertEqual(dlg.get_selected_database(), "Thermal Spray Coatings")
+        self.assertEqual(dlg.db_list.count(), 14)
+        self.assertIn("Thermal Spray", dlg.lbl_db_name.text())
+        self.assertGreater(dlg.chem_chips_layout.count(), 0)
+        self.assertGreater(dlg.phases_layout.count(), 0)
+
+    def test_search_filtering(self):
+        dlg = DatabaseModalDialog(theme="light")
+        dlg.search_box.setText("Nickel")
+        visible = [dlg.db_list.item(i).text() for i in range(dlg.db_list.count()) if not dlg.db_list.item(i).isHidden()]
+        self.assertTrue(any("Nickel" in name for name in visible))
+
+        # Clear filter
+        dlg.search_box.setText("")
+        visible_all = [dlg.db_list.item(i).text() for i in range(dlg.db_list.count()) if not dlg.db_list.item(i).isHidden()]
+        self.assertEqual(len(visible_all), 14)
+
+    def test_domain_filtering(self):
+        dlg = DatabaseModalDialog(theme="light")
+        dlg.combo_domain.setCurrentText("Lightweight Aerospace Alloys")
+        visible = [dlg.db_list.item(i).text() for i in range(dlg.db_list.count()) if not dlg.db_list.item(i).isHidden()]
+        self.assertIn("Aluminium Alloy", visible)
+        self.assertIn("Titanium Alloy", visible)
+        self.assertIn("Magnesium Alloy", visible)
+        self.assertNotIn("General Steel", visible)
+
+    def test_archetype_preset_switching(self):
+        dlg = DatabaseModalDialog("Thermal Spray Coatings", theme="light")
+        self.assertGreaterEqual(dlg.combo_preset.count(), 2)
+        # Select second preset
+        first_preset = dlg.combo_preset.itemText(0)
+        second_preset = dlg.combo_preset.itemText(1)
+        dlg.combo_preset.setCurrentText(second_preset)
+        self.assertEqual(dlg.get_selected_preset(), second_preset)
+
+    def test_theme_switching(self):
+        dlg = DatabaseModalDialog(theme="dark")
+        self.assertEqual(dlg.current_theme, "dark")
+        dlg.apply_theme("light")
+        self.assertEqual(dlg.current_theme, "light")
 
 
 if __name__ == "__main__":
