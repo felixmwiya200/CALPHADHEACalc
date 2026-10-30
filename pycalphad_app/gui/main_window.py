@@ -833,11 +833,15 @@ class MainWindow(QMainWindow):
 
     def open_database_selector_dialog(self):
         curr_db = self.database_dock.db_combo.currentText()
-        dlg = DatabaseModalDialog(curr_db, self)
+        dlg = DatabaseModalDialog(curr_db, self, theme=self.current_theme)
         if dlg.exec():
             selected = dlg.get_selected_database()
+            preset = dlg.get_selected_preset()
             self.database_dock.db_combo.setCurrentText(selected)
-            self.console_dock.log(f"[Database] Switched active database to: '{selected}'")
+            if preset and hasattr(self.database_dock, "preset_combo"):
+                self.database_dock.preset_combo.setCurrentText(preset)
+            self.console_dock.log(f"[Database] Switched active database to: '{selected}' (Archetype: '{preset}')")
+            self.database_dock.on_calculate_clicked()
 
     def start_calculation(self, db_name: str, comp: Dict[str, float], basis: str,
                           grain_size: float, process_type: str):

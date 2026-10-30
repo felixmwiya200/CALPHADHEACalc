@@ -21,6 +21,7 @@ if BASE_DIR not in sys.path:
 
 from pycalphad_app.gui.main_window import MainWindow
 from pycalphad_app.gui.database_modal import DatabaseModalDialog
+from pycalphad_app.gui.styles import get_application_stylesheet
 
 
 def main():
@@ -31,17 +32,22 @@ def main():
     app.setApplicationName("PyCALPHAD Materials Engineering Suite")
     app.setOrganizationName("SRM University-AP")
     app.setOrganizationDomain("srmap.edu.in")
+    app.setStyleSheet(get_application_stylesheet())
 
-    # Present startup database selector modal dialog as requested
-    startup_dlg = DatabaseModalDialog("Thermal Spray Coatings")
+    # Present startup database selector modal dialog matching standard CAE workflow
+    startup_dlg = DatabaseModalDialog("Thermal Spray Coatings", theme="light")
     selected_db = "Thermal Spray Coatings"
+    selected_preset = ""
     if startup_dlg.exec():
         selected_db = startup_dlg.get_selected_database()
+        selected_preset = startup_dlg.get_selected_preset()
 
     # Launch Main Window
     window = MainWindow()
-    # Set chosen database and run initial calculation
+    # Set chosen database and preset archetype, then run initial calculation
     window.database_dock.db_combo.setCurrentText(selected_db)
+    if selected_preset and hasattr(window.database_dock, "preset_combo"):
+        window.database_dock.preset_combo.setCurrentText(selected_preset)
     window.database_dock.on_calculate_clicked()
     
     window.show()

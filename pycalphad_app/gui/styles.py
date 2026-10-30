@@ -171,6 +171,72 @@ def get_application_stylesheet() -> str:
         color: #94A3B8;
         border-color: #E2E8F0;
     }
+    QPushButton#primaryBtn {
+        background-color: #1D4ED8;
+        color: #FFFFFF;
+        border: 1px solid #1E40AF;
+        font-weight: 600;
+        padding: 6px 16px;
+    }
+    QPushButton#primaryBtn:hover {
+        background-color: #2563EB;
+        border-color: #1D4ED8;
+    }
+    QPushButton#primaryBtn:pressed {
+        background-color: #1E40AF;
+    }
+
+    /* QDialog & Modals */
+    QDialog {
+        background-color: #F8FAFC;
+        color: #0F172A;
+    }
+
+    /* QListWidget */
+    QListWidget {
+        background-color: #FFFFFF;
+        color: #1E293B;
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        padding: 4px;
+        outline: none;
+    }
+    QListWidget::item {
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-bottom: 2px;
+        font-size: 9.5pt;
+    }
+    QListWidget::item:hover {
+        background-color: #F1F5F9;
+        color: #0F172A;
+    }
+    QListWidget::item:selected {
+        background-color: #EFF6FF;
+        color: #1D4ED8;
+        font-weight: 600;
+        border-left: 3px solid #1D4ED8;
+    }
+
+    /* QTextEdit & QPlainTextEdit */
+    QTextEdit, QPlainTextEdit {
+        background-color: #FFFFFF;
+        color: #334155;
+        border: 1px solid #CBD5E1;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 9.5pt;
+    }
+
+    /* QSplitter */
+    QSplitter::handle {
+        background-color: #E2E8F0;
+        width: 3px;
+        height: 3px;
+    }
+    QSplitter::handle:hover {
+        background-color: #94A3B8;
+    }
 
     /* QComboBox & Inputs */
     QComboBox, QLineEdit, QDoubleSpinBox, QSpinBox {
