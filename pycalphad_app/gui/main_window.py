@@ -10,7 +10,7 @@ import sys
 import csv
 import pyqtgraph as pg
 from PyQt6.QtWidgets import (
-    QMainWindow, QTabWidget, QMessageBox, QFileDialog,
+    QMainWindow, QTabWidget, QStackedWidget, QMessageBox, QFileDialog,
     QStatusBar, QProgressBar, QLabel, QToolBar, QPushButton,
     QMenu, QWidgetAction
 )
@@ -21,6 +21,7 @@ from PyQt6.QtGui import QDesktopServices
 from pycalphad_app.gui.database_dock import DatabaseDock
 from pycalphad_app.gui.console_dock import ConsoleDock
 from pycalphad_app.gui.database_modal import DatabaseModalDialog
+from pycalphad_app.gui.welcome_splash_widget import WelcomeSplashWidget
 from pycalphad_app.gui.worker import SolverWorker
 from pycalphad_app.gui.plot_views import (
     EquilibriumView, PhaseDiagramView, TransportView, MechanicalView,
@@ -54,7 +55,7 @@ from pycalphad_app.database.literature_hea_repository import LiteratureHEAReposi
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PyCALPHAD Materials Engineering Suite v2026.3.0 - [SRM University-AP]")
+        self.setWindowTitle("PyCALPHAD the materials property simulation software. - [SRM University-AP]")
         self.resize(1400, 900)
         self.setMinimumSize(1024, 680)
 
@@ -163,7 +164,16 @@ class MainWindow(QMainWindow):
         self.console_dock = ConsoleDock(self)
         self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.console_dock)
 
-        # 3. Center Tab Widget
+        # 3. Stacked Central Viewport (JMatPro Architecture)
+        self.central_stack = QStackedWidget(self)
+
+        # Page 0: Authentic JMatPro Welcome & Startup View
+        self.welcome_splash = WelcomeSplashWidget(self)
+        self.welcome_splash.material_type_requested.connect(self.open_database_selector_dialog)
+        self.welcome_splash.database_selected.connect(self.switch_database)
+        self.central_stack.addWidget(self.welcome_splash)
+
+        # Page 1: Multi-Tab Computational Graphics Workspace
         self.tabs = QTabWidget()
         self.tabs.setFont(QFont("Segoe UI", 10))
 
@@ -190,64 +200,79 @@ class MainWindow(QMainWindow):
         # Wire periodic table selection into chemical composition table
         self.tab_periodic_table.elements_applied.connect(self.database_dock.load_composition_to_table)
 
+        self.central_stack.addWidget(self.tabs)
+        self.setCentralWidget(self.central_stack)
+        self.central_stack.setCurrentIndex(0)
 
-        self.setCentralWidget(self.tabs)
+        # Initial state: docks hidden until user selects a material type or file (matching JMatPro)
+        self.database_dock.setVisible(False)
+        self.console_dock.setVisible(False)
 
     def init_toolbar(self):
-        """Constructs JMatPro quick toolbar (wt%/at%, K/°C, Theme: Dark/Light, active database)."""
+        """Constructs JMatPro quick toolbar (wt%/at%, K/°C, Material Types, Home, Theme, active database)."""
         toolbar = QToolBar("Quick Parameters", self)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
-        # wt% / at% toggle
+        # wt% / at% toggle (matching JMatPro wt.gif / at.gif)
         self.btn_basis_toggle = QPushButton("wt%")
         self.btn_basis_toggle.setToolTip("Toggle Chemistry Basis between wt% (Weight) and at% (Atomic)")
-        self.btn_basis_toggle.setStyleSheet("font-weight: bold; min-width: 42px; padding: 3px;")
+        self.btn_basis_toggle.setStyleSheet("font-weight: bold; min-width: 42px; padding: 4px 8px;")
         self.btn_basis_toggle.clicked.connect(self.toggle_basis)
         toolbar.addWidget(self.btn_basis_toggle)
 
-        # K / °C toggle
+        # K / °C toggle (matching JMatPro degreek.gif / degreec.gif)
         self.btn_temp_unit_toggle = QPushButton("°C")
         self.btn_temp_unit_toggle.setToolTip("Toggle Temperature Units between °C (Celsius) and K (Kelvin)")
-        self.btn_temp_unit_toggle.setStyleSheet("font-weight: bold; min-width: 42px; padding: 3px;")
+        self.btn_temp_unit_toggle.setStyleSheet("font-weight: bold; min-width: 42px; padding: 4px 8px;")
         self.btn_temp_unit_toggle.clicked.connect(self.toggle_temp_unit)
         toolbar.addWidget(self.btn_temp_unit_toggle)
 
+        toolbar.addSeparator()
+
+        # Material Types Selector Button
+        self.btn_material_types = QPushButton("Material Types...")
+        self.btn_material_types.setToolTip("Open CALPHAD Materials Database Selector (Ctrl+D)")
+        self.btn_material_types.setStyleSheet("font-weight: bold; padding: 4px 10px;")
+        self.btn_material_types.clicked.connect(self.open_database_selector_dialog)
+        toolbar.addWidget(self.btn_material_types)
+
+        # Home / Startup Screen Return Button
+        self.btn_home = QPushButton("Home / Startup")
+        self.btn_home.setToolTip("Return to JMatPro Welcome & Startup Screen (Ctrl+H)")
+        self.btn_home.setStyleSheet("font-weight: bold; padding: 4px 10px;")
+        self.btn_home.clicked.connect(self.return_to_welcome_screen)
+        toolbar.addWidget(self.btn_home)
+
+        # Periodic Table Launcher Button
+        self.btn_periodic_table = QPushButton("Periodic Table (118)...")
+        self.btn_periodic_table.setToolTip("Open Full IUPAC 118-Element Interactive Periodic Table")
+        self.btn_periodic_table.setStyleSheet("background-color: #15803D; color: #FFFFFF; font-weight: bold; padding: 4px 10px; border: 1px solid #16A34A;")
+        self.btn_periodic_table.clicked.connect(self.show_periodic_table)
+        toolbar.addWidget(self.btn_periodic_table)
+
         # Theme toggle button
-        self.btn_theme_toggle = QPushButton("Theme: Dark")
-        self.btn_theme_toggle.setToolTip("Toggle Theme between Dark and Light (Ctrl+T)")
-        self.btn_theme_toggle.setStyleSheet("font-weight: bold; min-width: 95px; padding: 3px;")
+        self.btn_theme_toggle = QPushButton("Theme: Light")
+        self.btn_theme_toggle.setToolTip("Toggle Theme between Light and Dark (Ctrl+T)")
+        self.btn_theme_toggle.setStyleSheet("font-weight: bold; min-width: 95px; padding: 4px 8px;")
         self.btn_theme_toggle.clicked.connect(self.toggle_theme)
         toolbar.addWidget(self.btn_theme_toggle)
 
         toolbar.addSeparator()
 
-        # Periodic Table Launcher Button
-        self.btn_periodic_table = QPushButton("Periodic Table (118)...")
-        self.btn_periodic_table.setToolTip("Open Full IUPAC 118-Element Interactive Periodic Table (Tab 9)")
-        self.btn_periodic_table.setStyleSheet("background-color: #15803D; color: #FFFFFF; font-weight: bold; padding: 3px 10px; border: 1px solid #16A34A;")
-        self.btn_periodic_table.clicked.connect(lambda: self.tabs.setCurrentWidget(self.tab_periodic_table))
-        toolbar.addWidget(self.btn_periodic_table)
-
-        toolbar.addSeparator()
-
         lbl_active_prefix = QLabel("  Active Materials System: ")
-
-        lbl_active_prefix.setStyleSheet("color: #9E9E9E; font-size: 9pt;")
+        lbl_active_prefix.setStyleSheet("color: #64748B; font-size: 9pt;")
         toolbar.addWidget(lbl_active_prefix)
 
-        self.lbl_toolbar_db = QLabel("Thermal Spray Coatings")
-        self.lbl_toolbar_db.setStyleSheet("color: #4FC3F7; font-weight: bold; font-size: 9.5pt;")
+        self.lbl_toolbar_db = QLabel("None (Idle)")
+        self.lbl_toolbar_db.setStyleSheet("color: #64748B; font-weight: bold; font-size: 9.5pt;")
         toolbar.addWidget(self.lbl_toolbar_db)
-
-        # Sync label when database changes
-        self.database_dock.db_combo.currentTextChanged.connect(self.lbl_toolbar_db.setText)
 
     def toggle_basis(self):
         curr = self.btn_basis_toggle.text()
         new_basis = "at%" if curr == "wt%" else "wt%"
         self.btn_basis_toggle.setText(new_basis)
-        self.database_dock.basis_combo.setCurrentText(new_basis)
+        self.database_dock.set_basis(new_basis)
         self.console_dock.log(f"[Settings] Chemistry basis switched to: {new_basis}")
 
     def toggle_temp_unit(self):
@@ -265,6 +290,18 @@ class MainWindow(QMainWindow):
         # 1. FILE MENU
         # =========================================================================
         menu_file = menubar.addMenu("&File")
+
+        act_home = QAction("&Home / Startup Screen", self)
+        act_home.setShortcut("Ctrl+H")
+        act_home.triggered.connect(self.return_to_welcome_screen)
+        menu_file.addAction(act_home)
+
+        act_switch_db_file = QAction("Select &Material Type / Database... (Ctrl+D)", self)
+        act_switch_db_file.setShortcut("Ctrl+D")
+        act_switch_db_file.triggered.connect(self.open_database_selector_dialog)
+        menu_file.addAction(act_switch_db_file)
+
+        menu_file.addSeparator()
 
         act_export_dat = QAction("Export CALPHAD Data File (.dat)...", self)
         act_export_dat.triggered.connect(self.export_dat_file)
@@ -293,7 +330,21 @@ class MainWindow(QMainWindow):
         # =========================================================================
         menu_mat_types = menubar.addMenu("&Material Types")
 
+        act_mat_home = QAction("&Home / Startup Screen", self)
+        act_mat_home.setShortcut("Ctrl+H")
+        act_mat_home.triggered.connect(self.return_to_welcome_screen)
+        menu_mat_types.addAction(act_mat_home)
+
+        act_mat_modal = QAction("&Select Active Materials Database... (Ctrl+D)", self)
+        act_mat_modal.setShortcut("Ctrl+D")
+        act_mat_modal.triggered.connect(self.open_database_selector_dialog)
+        menu_mat_types.addAction(act_mat_modal)
+
+        menu_mat_types.addSeparator()
+
         alloy_databases = [
+            "Thermal Spray Coatings",
+            "High Entropy Alloys",
             "Aluminium Alloy",
             "Magnesium Alloy",
             "Cast Iron",
@@ -305,9 +356,7 @@ class MainWindow(QMainWindow):
             "Single Crystal",
             "Titanium Alloy",
             "Zirconium Alloy",
-            "Solder Alloy",
-            "High Entropy Alloys",
-            "Thermal Spray Coatings"
+            "Solder Alloy"
         ]
 
         for db_name in alloy_databases:
@@ -324,12 +373,6 @@ class MainWindow(QMainWindow):
             act_pub = QAction(name, self)
             act_pub.triggered.connect(lambda checked, m=mat_id: self.load_published_material(m))
             menu_published.addAction(act_pub)
-
-        menu_mat_types.addSeparator()
-        act_switch_db = QAction("Select Active Materials Database... (Ctrl+D)", self)
-        act_switch_db.setShortcut("Ctrl+D")
-        act_switch_db.triggered.connect(self.open_database_selector_dialog)
-        menu_mat_types.addAction(act_switch_db)
 
         # =========================================================================
         # 3. OPTIONS MENU (Theme, Verbose, Preferences, Stepping, Metallurgy Models)
@@ -603,16 +646,14 @@ class MainWindow(QMainWindow):
 
     def load_published_material(self, mat_id: str):
         disp_name = PublishedDataRepository.get_material_display_name(mat_id)
-        self.console_dock.log(f"[Database] Loaded published literature system: '{disp_name}'")
         if "aluminum" in mat_id.lower() or "al10" in mat_id.lower():
-            self.database_dock.db_combo.setCurrentText("Aluminium Alloy")
+            target_db = "Aluminium Alloy"
         elif "cobalt" in mat_id.lower():
-            self.database_dock.db_combo.setCurrentText("Cobalt Alloy")
+            target_db = "Cobalt Alloy"
         else:
-            self.database_dock.db_combo.setCurrentText("High Entropy Alloys")
-
-        # Automatically trigger calculation
-        self.database_dock.on_calculate_clicked()
+            target_db = "High Entropy Alloys"
+        self.switch_database(target_db)
+        self.console_dock.log(f"[Database] Loaded published literature system: '{disp_name}'")
 
     def build_articles_menu(self, parent_menu: QMenu):
         """Builds JMatPro / CALPHAD technical documentation tree linking to authentic PDF papers."""
@@ -723,9 +764,43 @@ class MainWindow(QMainWindow):
             "and alloy development research."
         )
 
-    def switch_database(self, db_name: str):
+    def switch_database(self, db_name: str, preset: str = ""):
+        """
+        Switches the active CALPHAD database, switches from the welcome startup view
+        to the multi-tab computational graphics workspace, and launches property simulation.
+        """
+        if self.central_stack.currentIndex() != 1:
+            self.central_stack.setCurrentIndex(1)
+            self.database_dock.setVisible(True)
+            self.console_dock.setVisible(True)
+
         self.database_dock.db_combo.setCurrentText(db_name)
-        self.console_dock.log(f"[Database] Switched active database to: '{db_name}'")
+        if preset and hasattr(self.database_dock, "preset_combo"):
+            self.database_dock.preset_combo.setCurrentText(preset)
+
+        self.lbl_toolbar_db.setText(db_name)
+        self.lbl_toolbar_db.setStyleSheet("color: #0284C7; font-weight: bold; font-size: 9.5pt;")
+        self.console_dock.log(f"[Database] Switched active database to: '{db_name}'" + (f" (Preset: '{preset}')" if preset else ""))
+        self.database_dock.on_calculate_clicked()
+
+    def return_to_welcome_screen(self):
+        """Returns to the signature JMatPro welcome startup canvas in an idle state."""
+        self.central_stack.setCurrentIndex(0)
+        self.database_dock.setVisible(False)
+        self.console_dock.setVisible(False)
+        self.lbl_toolbar_db.setText("None (Idle)")
+        self.lbl_toolbar_db.setStyleSheet("color: #64748B; font-weight: bold; font-size: 9.5pt;")
+        self.status_lbl.setText("Idle... waiting for the user to pick a material type or a material file...")
+        self.console_dock.log("[Navigation] Returned to JMatPro-style Welcome & Startup Screen.")
+
+    def show_periodic_table(self):
+        """Displays the interactive 118-element periodic table."""
+        if self.central_stack.currentIndex() != 1:
+            self.central_stack.setCurrentIndex(1)
+            self.database_dock.setVisible(True)
+            self.console_dock.setVisible(True)
+        self.tabs.setCurrentWidget(self.tab_periodic_table)
+        self.console_dock.log("[Navigation] Switched to Interactive Periodic Table (118 elements).")
 
     def toggle_verbose_mode(self, enabled: bool):
         self.verbose_mode = enabled
@@ -822,7 +897,7 @@ class MainWindow(QMainWindow):
         self.status = QStatusBar()
         self.setStatusBar(self.status)
 
-        self.status_lbl = QLabel("Ready")
+        self.status_lbl = QLabel("Idle... waiting for the user to pick a material type or a material file...")
         self.status.addWidget(self.status_lbl, 1)
 
         self.progress_bar = QProgressBar()
@@ -837,11 +912,7 @@ class MainWindow(QMainWindow):
         if dlg.exec():
             selected = dlg.get_selected_database()
             preset = dlg.get_selected_preset()
-            self.database_dock.db_combo.setCurrentText(selected)
-            if preset and hasattr(self.database_dock, "preset_combo"):
-                self.database_dock.preset_combo.setCurrentText(preset)
-            self.console_dock.log(f"[Database] Switched active database to: '{selected}' (Archetype: '{preset}')")
-            self.database_dock.on_calculate_clicked()
+            self.switch_database(selected, preset)
 
     def start_calculation(self, db_name: str, comp: Dict[str, float], basis: str,
                           grain_size: float, process_type: str):

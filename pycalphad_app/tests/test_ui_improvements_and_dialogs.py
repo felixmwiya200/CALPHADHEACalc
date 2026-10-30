@@ -22,6 +22,8 @@ from pycalphad_app.gui.database_dock import DatabaseDock
 from pycalphad_app.gui.plot_views.environmental_view import EnvironmentalView
 from pycalphad_app.gui.plot_views.validation_view import ValidationView
 from pycalphad_app.gui.database_modal import DatabaseModalDialog
+from pycalphad_app.gui.welcome_splash_widget import WelcomeSplashWidget
+from pycalphad_app.gui.main_window import MainWindow
 from pycalphad_app.gui.advanced_simulation_dialogs import (
     ScheilSolidificationDialog,
     LatticeMismatchDialog,
@@ -270,6 +272,106 @@ class TestDatabaseModalDialog(unittest.TestCase):
         self.assertEqual(dlg.current_theme, "dark")
         dlg.apply_theme("light")
         self.assertEqual(dlg.current_theme, "light")
+
+
+class TestJMatProStartupArchitecture(unittest.TestCase):
+    """
+    Verifies that the application adheres to authentic JMatPro / Scientific CAE
+    desktop workflow specifications:
+    - Direct launch into an idle welcome screen without blocking modal popups.
+    - Central viewport is a QStackedWidget (Index 0 = Welcome Splash, Index 1 = 8-Tab Workspace).
+    - Status bar displays idle prompt waiting for material type selection.
+    - Dynamic transition to multi-tab workspace when database is selected.
+    - Ability to return to welcome screen at any time (Ctrl+H).
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        self.window = MainWindow()
+        self.window.show()
+
+    def tearDown(self):
+        self.window.close()
+
+    def test_startup_idle_state(self):
+        # 1. Central stack must be on page 0 (Welcome Splash)
+        self.assertEqual(self.window.central_stack.currentIndex(), 0)
+        self.assertIsInstance(self.window.welcome_splash, WelcomeSplashWidget)
+
+        # 2. Left parameter dock and bottom console dock must be hidden initially
+        self.assertTrue(self.window.database_dock.isHidden())
+        self.assertTrue(self.window.console_dock.isHidden())
+
+        # 3. Status bar must display authentic idle message
+        self.assertEqual(
+            self.window.status_lbl.text(),
+            "Idle... waiting for the user to pick a material type or a material file..."
+        )
+
+        # 4. Toolbar active material must be 'None (Idle)'
+        self.assertEqual(self.window.lbl_toolbar_db.text(), "None (Idle)")
+
+        # 5. Window title must follow JMatPro desktop CAE standard
+        self.assertIn("the materials property simulation software.", self.window.windowTitle())
+
+    def test_switch_database_transitions_to_workspace(self):
+        # Trigger database selection
+        self.window.switch_database("Thermal Spray Coatings")
+
+        # 1. Central stack should flip to index 1 (computational workspace)
+        self.assertEqual(self.window.central_stack.currentIndex(), 1)
+
+        # 2. Docks must now be visible
+        self.assertFalse(self.window.database_dock.isHidden())
+        self.assertFalse(self.window.console_dock.isHidden())
+
+        # 3. Active materials label must reflect the selection
+        self.assertEqual(self.window.lbl_toolbar_db.text(), "Thermal Spray Coatings")
+        self.assertEqual(self.window.database_dock.db_combo.currentText(), "Thermal Spray Coatings")
+
+    def test_return_to_welcome_screen(self):
+        # First switch to a database
+        self.window.switch_database("High Entropy Alloys")
+        self.assertEqual(self.window.central_stack.currentIndex(), 1)
+
+        # Now return to welcome screen
+        self.window.return_to_welcome_screen()
+
+        # Stack must return to 0, docks hidden, and status bar reset to Idle
+        self.assertEqual(self.window.central_stack.currentIndex(), 0)
+        self.assertTrue(self.window.database_dock.isHidden())
+        self.assertTrue(self.window.console_dock.isHidden())
+        self.assertEqual(self.window.lbl_toolbar_db.text(), "None (Idle)")
+        self.assertEqual(
+            self.window.status_lbl.text(),
+            "Idle... waiting for the user to pick a material type or a material file..."
+        )
+
+    def test_toolbar_toggles(self):
+        # Basis toggle: wt% <-> at%
+        self.assertEqual(self.window.btn_basis_toggle.text(), "wt%")
+        self.window.toggle_basis()
+        self.assertEqual(self.window.btn_basis_toggle.text(), "at%")
+        self.assertEqual(self.window.database_dock.current_basis, "at%")
+        self.window.toggle_basis()
+        self.assertEqual(self.window.btn_basis_toggle.text(), "wt%")
+        self.assertEqual(self.window.database_dock.current_basis, "wt%")
+
+        # Temp unit toggle: °C <-> K
+        self.assertEqual(self.window.btn_temp_unit_toggle.text(), "°C")
+        self.window.toggle_temp_unit()
+        self.assertEqual(self.window.btn_temp_unit_toggle.text(), "K")
+        self.window.toggle_temp_unit()
+        self.assertEqual(self.window.btn_temp_unit_toggle.text(), "°C")
+
+    def test_show_periodic_table(self):
+        self.window.show_periodic_table()
+        self.assertEqual(self.window.central_stack.currentIndex(), 1)
+        self.assertFalse(self.window.database_dock.isHidden())
+        self.assertEqual(self.window.tabs.currentWidget(), self.window.tab_periodic_table)
 
 
 if __name__ == "__main__":

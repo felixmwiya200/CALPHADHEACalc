@@ -202,6 +202,20 @@ class DatabaseDock(QDockWidget):
         # Initialize with default database
         self.on_database_changed("High Entropy Alloys")
 
+    def set_basis(self, new_basis: str):
+        """Programmatically select the chemistry basis (wt%, at%, mol) and update table."""
+        if new_basis == self.current_basis:
+            return
+        if new_basis == "wt%":
+            self.rb_wt.setChecked(True)
+            self.on_basis_radio_changed(self.rb_wt)
+        elif new_basis == "at%":
+            self.rb_at.setChecked(True)
+            self.on_basis_radio_changed(self.rb_at)
+        elif new_basis in ("mol", "molar"):
+            self.rb_mol.setChecked(True)
+            self.on_basis_radio_changed(self.rb_mol)
+
     def open_periodic_table_dialog(self):
         from pycalphad_app.gui.periodic_table_widget import PeriodicTableDialog
         current_comp = self.get_composition()
