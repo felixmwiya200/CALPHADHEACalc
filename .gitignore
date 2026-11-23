@@ -90,3 +90,35 @@ CALPHADHEACalc_3_Year_Commercial_SpinOff_Plan.pdf
 CALPHADHEACalc_3_Year_Plan.html
 scratch_generate_pdf.py
 
+# C++ / Native Build Artifacts & Object Files
+*.obj
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.idb
+imgui.ini
+ocgnu.plt
+cpp/bin/
+x64/
+Debug/
+Release/
+
+# .NET / C# Build Outputs
+bin/
+obj/
+publish/
+csharp/**/bin/
+csharp/**/obj/
+csharp/publish/
+*.user
+*.suo
+.vs/
+
+# Transient Diagnostic Plots & Cache
+scratch_slide12_img.png
+light_theme_plot_test.png
+Databases/.sdat_cache/
+pycalphad_app/database/.tdat_cache/
+
+

@@ -16,8 +16,8 @@ from typing import Dict, List, Any, Optional
 from pycalphad_app.core.elements_data import IUPAC_ELEMENTS_DATA
 
 class LatticeDistortionEngine:
-    @staticmethod
-    def compute_distortion_metrics(elements: List[str], at_fractions: List[float],
+    @classmethod
+    def compute_distortion_metrics(cls, elements: List[str], at_fractions: List[float],
                                   thermo_metrics: Optional[Dict[str, Any]] = None,
                                   user_opts: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         if thermo_metrics is None:
@@ -126,10 +126,15 @@ class LatticeDistortionEngine:
             act_vol_b3 = round(30.0 + 1200.0 * (gamma_th - 0.02), 1)
             wavy_tortuosity = 1.0 + 3.5 * gamma_th
 
+        act_vol_m3 = (act_vol_b3 * ((b_nm * 1e-9) ** 3))
+
         delta_sigma_labusch_mpa = 0.5 * (g_alloy_gpa * 1e3) * (gamma_th ** (4.0 / 3.0)) * (1.0 + nu_clamped)
 
         target_angles = [43.5, 50.8, 74.7, 90.7]
         xrd_splitting = [round(gamma_th * math.tan(math.radians(ang / 2.0)) * (180.0 / math.pi), 3) for ang in target_angles]
+
+        # Match literature benchmark
+        bench = cls.match_literature_benchmark(elements, c)
 
         return {
             "Delta_HardSphere_pct": round(delta_hard_sphere_pct, 3),
@@ -139,6 +144,7 @@ class LatticeDistortionEngine:
             "PackingEfficiency_eta": eta_pack,
             "CoordinationNumber": n_coord,
             "PoissonRatio": round(nu_clamped, 3),
+            "PoissonFactor": round(poisson_factor, 4),
             "CriticalEffectiveShearStrain_gamma_th": round(gamma_th, 4),
             "ElasticShearEnergy_DeltaEp_MPa": round(delta_ep_mpa, 2),
             "C11_GPa": round(c11_gpa, 1),
@@ -150,9 +156,82 @@ class LatticeDistortionEngine:
             "DislocationGlideMechanism": glide_mech,
             "PinningRegime": pinning_regime,
             "ActivationVolume_b3": act_vol_b3,
+            "ActivationVolume_m3": act_vol_m3,
+            "BurgersVector_nm": round(b_nm, 4),
             "WavyDislocationTortuosity": round(wavy_tortuosity, 3),
             "LabuschStrengthening_MPa": round(delta_sigma_labusch_mpa, 1),
             "XRDAngles_2Theta_deg": target_angles,
             "XRDAngularSplitting_deg": xrd_splitting,
-            "HasHighAnglePeakSplitting": (gamma_th >= 0.020)
+            "HasHighAnglePeakSplitting": (gamma_th >= 0.020),
+            "LiteratureBenchmark": bench
         }
+
+    @staticmethod
+    def match_literature_benchmark(elem_list: List[str], c: np.ndarray) -> Dict[str, Any]:
+        """
+        Matches alloy against authoritative benchmark data from He & Yang (2018).
+        """
+        bench = {
+            "Matched": False, "System": "", "ExpDelta_pct": None,
+            "ExpEpsRMS_pct": None, "ExpGammaTh": None, "ObservedPhase": "", "Citation": ""
+        }
+        comp_map = {elem_list[i].strip(): float(c[i]) for i in range(len(elem_list))}
+
+        # 1. Cantor Alloy CoCrFeMnNi (Figure 2, 4)
+        if all(k in comp_map for k in ["Co", "Cr", "Fe", "Mn", "Ni"]) and len(elem_list) == 5:
+            if abs(comp_map["Co"] - 0.20) <= 0.03:
+                bench["Matched"] = True
+                bench["System"] = "Cantor (CoCrFeMnNi)"
+                bench["ExpDelta_pct"] = 1.18
+                bench["ExpEpsRMS_pct"] = 1.12
+                bench["ExpGammaTh"] = 0.015
+                bench["ObservedPhase"] = "Single-Phase FCC (Low Distortion, Kink-Pair Glide)"
+                bench["Citation"] = "He & Yang, Front. Mater. 2018, Fig. 2; Owen et al., 2017"
+                return bench
+
+        # 2. CoCrNi (Medium Entropy Alloy, Figure 2)
+        if all(k in comp_map for k in ["Co", "Cr", "Ni"]) and len(elem_list) == 3:
+            if abs(comp_map["Co"] - 0.33) <= 0.04:
+                bench["Matched"] = True
+                bench["System"] = "CoCrNi (Toughness Benchmark)"
+                bench["ExpDelta_pct"] = 1.15
+                bench["ExpEpsRMS_pct"] = 1.08
+                bench["ExpGammaTh"] = 0.014
+                bench["ObservedPhase"] = "Single-Phase FCC (Exceptional Damage Tolerance)"
+                bench["Citation"] = "Gludovatz et al., Nat. Commun. 2016; He & Yang 2018"
+                return bench
+
+        # 3. CoCrFeNiPd (Severe Distortion FCC, Page 2)
+        if all(k in comp_map for k in ["Co", "Cr", "Fe", "Ni", "Pd"]) and len(elem_list) == 5:
+            bench["Matched"] = True
+            bench["System"] = "CoCrFeNiPd (Pd-Expanded FCC)"
+            bench["ExpDelta_pct"] = 4.25
+            bench["ExpEpsRMS_pct"] = 3.85
+            bench["ExpGammaTh"] = 0.052
+            bench["ObservedPhase"] = "Severely Distorted FCC (Tong et al. 2017, Labusch Pinning)"
+            bench["Citation"] = "Tong et al., 2017; He & Yang, Front. Mater. 2018"
+            return bench
+
+        # 4. TiZrHfNbTa (Refractory Senkov BCC, Figure 2)
+        if all(k in comp_map for k in ["Ti", "Zr", "Hf", "Nb", "Ta"]) and len(elem_list) == 5:
+            bench["Matched"] = True
+            bench["System"] = "TiZrHfNbTa (Refractory BCC)"
+            bench["ExpDelta_pct"] = 5.62
+            bench["ExpEpsRMS_pct"] = 4.75
+            bench["ExpGammaTh"] = 0.068
+            bench["ObservedPhase"] = "Ductile Refractory BCC (Guo et al. 2013; He & Yang 2018)"
+            bench["Citation"] = "Senkov et al. 2011; He & Yang, Front. Mater. 2018 Fig. 2"
+            return bench
+
+        # 5. NbMoTaW (Refractory Ultra-High Temperature BCC, Figure 2)
+        if all(k in comp_map for k in ["Nb", "Mo", "Ta", "W"]) and len(elem_list) == 4:
+            bench["Matched"] = True
+            bench["System"] = "NbMoTaW (Refractory BCC)"
+            bench["ExpDelta_pct"] = 4.31
+            bench["ExpEpsRMS_pct"] = 3.65
+            bench["ExpGammaTh"] = 0.048
+            bench["ObservedPhase"] = "Single-Phase BCC (Senkov et al. 2011, Labusch Slip)"
+            bench["Citation"] = "Senkov et al., 2011; He & Yang, Front. Mater. 2018"
+            return bench
+
+        return bench

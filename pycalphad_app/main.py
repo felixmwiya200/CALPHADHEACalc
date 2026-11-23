@@ -1,44 +1,29 @@
 """
 main.py - Entry Point for PyCALPHAD Materials Engineering Suite
-Initializes PyQt6 application, enables high-DPI scaling, and launches the desktop suite
-directly into the signature JMatPro-style startup workspace.
-
-Lead Materials Suite Developers: Felix Mwiya and Prof. (Dr.) Sheela Singh, SRM University-AP.
+Launches the native C/C++ desktop suite (cpp/bin/PyCALPHAD_Suite.exe) or provides
+headless CAE daemon execution if requested.
 """
 
 import sys
 import os
+import subprocess
 
-# Direct top-level imports to guarantee PyInstaller dependency discovery
-import numpy as np
-import scipy
-import pyqtgraph as pg
-from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import Qt
-
-# Ensure pycalphad_app is discoverable on sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
-
-from pycalphad_app.gui.main_window import MainWindow
-from pycalphad_app.gui.styles import get_application_stylesheet
 
 
 def main():
-    # Enable high-DPI scaling
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    
-    app = QApplication(sys.argv)
-    app.setApplicationName("PyCALPHAD Materials Engineering Suite")
-    app.setOrganizationName("SRM University-AP")
-    app.setOrganizationDomain("srmap.edu.in")
-    app.setStyleSheet(get_application_stylesheet())
+    if "--daemon" in sys.argv or "--server" in sys.argv:
+        from pycalphad_app.server.cae_daemon import run_daemon
+        run_daemon()
+        return
 
-    # Launch Main Window directly into JMatPro-style startup workspace
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    exe_path = os.path.join(BASE_DIR, "cpp", "bin", "PyCALPHAD_Suite.exe")
+    if os.path.isfile(exe_path):
+        subprocess.Popen([exe_path], cwd=BASE_DIR)
+    else:
+        print(f"[Error] Native executable not found at: {exe_path}")
+        print("Please build the C/C++ suite using cpp/build.bat.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

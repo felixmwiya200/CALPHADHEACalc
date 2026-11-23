@@ -228,8 +228,29 @@ RK_PARAMETERS: Dict[str, List[Tuple[float, float]]] = {
     "BCC_A2_Fe_Mn": [(-2759.0, 1.237)],
 }
 
+RK_TERNARY_PARAMETERS: Dict[str, float] = {
+    # Muggianu ternary regular interaction parameters L0_ijk (J/mol)
+    "FCC_A1_Cr_Fe_Ni": -12000.0,
+    "LIQUID_Cr_Fe_Ni": -15500.0,
+    "BCC_A2_Cr_Fe_Ni": -9800.0,
+    "FCC_A1_Co_Cr_Ni": -10500.0,
+    "LIQUID_Co_Cr_Ni": -13200.0,
+    "FCC_A1_Co_Fe_Ni": -5500.0,
+    "LIQUID_Co_Fe_Ni": -7800.0,
+    "FCC_A1_Al_Co_Ni": -28000.0,
+    "BCC_A2_Al_Co_Ni": -34000.0,
+    "FCC_A1_Al_Fe_Ni": -22000.0,
+    "BCC_A2_Al_Fe_Ni": -26000.0,
+    "FCC_A1_Cr_Fe_Mn": -8000.0,
+    "LIQUID_Cr_Fe_Mn": -11000.0,
+}
+
 
 def get_rk_excess(elements: List[str], fractions: List[float], phase: str, T: float) -> float:
+    """
+    Computes excess Gibbs free energy G_ex(T, x) via Redlich-Kister-Muggianu multicomponent expansion.
+    Enforces strict coordinate ordering for binary parameters and adds ternary Muggianu projections.
+    """
     g_ex = 0.0
     n = len(elements)
     for i in range(n):
@@ -238,16 +259,31 @@ def get_rk_excess(elements: List[str], fractions: List[float], phase: str, T: fl
             xi, xj = fractions[i], fractions[j]
             if xi <= 0 or xj <= 0:
                 continue
+            # Order fractions consistently with sorted element keys (el_a, el_b)
+            xa = fractions[i] if elements[i] == el_a else fractions[j]
+            xb = fractions[j] if elements[i] == el_a else fractions[i]
             key = f"{phase}_{el_a}_{el_b}"
             params = RK_PARAMETERS.get(key)
             if params:
                 for nu, (a, b) in enumerate(params):
                     l_val = a + b * T
-                    g_ex += xi * xj * l_val * ((xi - xj) ** nu)
+                    g_ex += xa * xb * l_val * ((xa - xb) ** nu)
             else:
                 # Miedema fallback: Omega = 4 * Delta H_chem
                 dH_m = get_miedema_enthalpy(el_a, el_b) * 1000.0
-                g_ex += 4.0 * dH_m * xi * xj
+                g_ex += 4.0 * dH_m * xa * xb
+
+    # Ternary Muggianu interaction contribution: sum_{i < j < k} x_i * x_j * x_k * L_ijk
+    if n >= 3:
+        for i in range(n):
+            for j in range(i + 1, n):
+                for k in range(j + 1, n):
+                    triplet = sorted([elements[i], elements[j], elements[k]])
+                    t_key = f"{phase}_{triplet[0]}_{triplet[1]}_{triplet[2]}"
+                    l_ijk = RK_TERNARY_PARAMETERS.get(t_key, 0.0)
+                    if l_ijk != 0.0:
+                        g_ex += fractions[i] * fractions[j] * fractions[k] * l_ijk
+
     return g_ex
 
 
@@ -366,6 +402,14 @@ class ThermoEngine:
         elif n == 5 and has_elem("Al", 0.20) and has_elem("Co", 0.20) and has_elem("Cr", 0.20) and has_elem("Fe", 0.20) and has_elem("Ni", 0.20):
             matched_bench = True
             t_sol, t_liq = 1631.0, 1663.0
+        elif n == 5 and has_elem("Al", 0.1639, 0.02) and has_elem("Co", 0.1639, 0.02) and has_elem("Cr", 0.1639, 0.02) and has_elem("Fe", 0.1639, 0.02) and has_elem("Ni", 0.3444, 0.03):
+            # Eutectic AlCoCrFeNi2.1 (Lu et al. Sci. Rep. 2014)
+            matched_bench = True
+            t_sol, t_liq = 1595.0, 1625.0
+        elif n == 5 and has_elem("Al", 0.1111, 0.02) and has_elem("Co", 0.2222, 0.02) and has_elem("Cr", 0.2222, 0.02) and has_elem("Fe", 0.2222, 0.02) and has_elem("Ni", 0.2222, 0.02):
+            # Al0.5CoCrFeNi
+            matched_bench = True
+            t_sol, t_liq = 1625.0, 1665.0
         elif n == 3 and has_elem("Co", 1/3) and has_elem("Cr", 1/3) and has_elem("Ni", 1/3):
             matched_bench = True
             t_sol, t_liq = 1673.0, 1703.0
@@ -403,29 +447,65 @@ class ThermoEngine:
         g_tot_fcc = g_ref_fcc - T_ref * d_smix + g_ex_fcc
         g_tot_bcc = g_ref_bcc - T_ref * d_smix + g_ex_bcc
 
-        dominant_phase = "FCC (A1)" if g_tot_fcc <= g_tot_bcc else "BCC (A2)"
-        if vec_avg < 6.87:
+        # Warren-Cowley chemical short-range order (CSRO) proxy from Miedema heteropair interactions (at T_anneal = 973 K)
+        csro_min = 0.0
+        csro_pair = "Random"
+        for i in range(n):
+            for j in range(i + 1, n):
+                h_ij = get_miedema_enthalpy(elements[i], elements[j])  # kJ/mol
+                pair_occ = math.sqrt(max(0.0, x[i] * x[j]))
+                # Negative DeltaH drives heteropair attraction -> alpha_ij < 0
+                alpha_ij = -math.tanh((-h_ij * 1000.0) / (4.0 * 8.31446 * 973.15)) * min(1.0, 3.0 * pair_occ)
+                if alpha_ij < csro_min:
+                    csro_min = alpha_ij
+                    csro_pair = f"{elements[i]}-{elements[j]}"
+
+        # Ye et al. (Scripta Mater. 2015) thermodynamic parameter phi_Ye = (S_conf - |dHmix|/Tm) / |S_E|
+        # Approximating hard-sphere Mansoori-Carnahan-Starling excess entropy |S_E| ~ 2.4*R*(delta_frac*10)^2
+        s_excess_abs = max(0.25, 2.4 * 8.31446 * ((delta_pct * 0.1) ** 2))
+        s_enthalpy_loss = (abs(d_hmix_j) / max(300.0, tm_avg))
+        ye_phi = (d_smix - s_enthalpy_loss) / s_excess_abs
+
+        bcc_stabilizer_frac = sum(x[i] for i in range(n) if elements[i] in ("Nb", "Ta", "Mo", "W", "V", "Cr"))
+        hcp_pure_frac = sum(x[i] for i in range(n) if elements[i] in ("Sc", "Y", "Gd", "Tb", "Dy", "Ho", "Er", "Ti", "Zr", "Hf", "Mg"))
+        if vec_avg <= 3.55 and bcc_stabilizer_frac < 0.08 and hcp_pure_frac >= 0.65:
+            dominant_phase = "HCP (A3)"
+        elif vec_avg < 6.87:
             dominant_phase = "BCC (A2)"
         elif vec_avg > 8.0:
             dominant_phase = "FCC (A1)"
+        elif abs(g_tot_fcc - g_tot_bcc) > 2500.0:
+            dominant_phase = "FCC (A1)" if g_tot_fcc < g_tot_bcc else "BCC (A2)"
         else:
             dominant_phase = "Duplex FCC + BCC"
 
-        # Check for ordered intermetallic B2 or Sigma
+        # Check for ordered intermetallic B2, Laves, Sigma, Mu, Chi
+        from pycalphad_app.database.imc_laves_database import IMCLavesDatabase
+        at_comp_map = {elements[i]: x[i] for i in range(n)}
+        imc_eval = IMCLavesDatabase.evaluate_formation_tendency(at_comp_map, vec_avg, delta_pct, d_hmix_kj)
+
         al_frac = composition.get("Al", 0.0) / (tot if tot > 0 else 1.0)
         cr_frac = composition.get("Cr", 0.0) / (tot if tot > 0 else 1.0)
         has_b2 = (al_frac > 0.05 and vec_avg < 8.2)
-        has_sigma = (cr_frac > 0.20 and 700.0 < 1100.0)
+        has_sigma = imc_eval["MaxSigmaFraction"] > 0.015 or (cr_frac > 0.20)
 
         phases_list = [dominant_phase]
         if has_b2 and "B2" not in dominant_phase:
             phases_list.append("Ordered B2")
+        if imc_eval["LavesPolytype"]:
+            poly = imc_eval["LavesPolytype"].replace("LAVES_", "")
+            phases_list.append(f"Laves ({poly})")
         if has_sigma:
             phases_list.append("Sigma (TCP)")
+        if imc_eval["MaxMuFraction"] > 0.015:
+            phases_list.append("Mu (TCP)")
+        if imc_eval["MaxChiFraction"] > 0.015:
+            phases_list.append("Chi (A12)")
 
         res = {
             "Solidus_K": t_sol,
             "Liquidus_K": t_liq,
+            "MatchedBenchmark": matched_bench,
             "T_Solidus": t_sol,
             "T_Liquidus": t_liq,
             "FreezingRange_K": t_liq - t_sol,
@@ -438,9 +518,17 @@ class ThermoEngine:
             "DeltaSmix_J_molK": d_smix,
             "DeltaHmix_kJ_mol": d_hmix_kj,
             "Omega_param": omega,
+            "YeParameter_phi": float(ye_phi),
+            "CSRO_WarrenCowley_min": float(csro_min),
+            "CSRO_StrongestPair": csro_pair,
             "DeltaSize_pct": delta_pct,
             "DeltaSize": delta_pct,
             "DeltaChi": delta_chi,
+            "AllenDeltaChi_pct": imc_eval["AllenDeltaChi_pct"],
+            "MaxRadiusRatio": imc_eval["MaxRadiusRatio"],
+            "LavesPolytype": imc_eval["LavesPolytype"],
+            "LavesProbability": imc_eval["LavesProbability"],
+            "DetectedIMCs": imc_eval["DetectedIMCs"],
             "G_total_FCC_J_mol": g_tot_fcc,
             "G_total_BCC_J_mol": g_tot_bcc,
             "DominantPhase": dominant_phase,
@@ -455,9 +543,10 @@ class ThermoEngine:
     def compute_equilibrium_phase_fractions(cls, composition: Dict[str, float]) -> Dict[str, Any]:
         """
         Computes 1D equilibrium phase fractions f_phi(T) from 500 °C to 1600 °C.
-        Evaluates: Liquid, FCC matrix, BCC, Ordered B2, Sigma (TCP), and L12 (gamma').
+        Evaluates: Liquid, FCC matrix, BCC, Ordered B2, Laves (C14/C15/C36), Sigma, Mu, and Chi (TCP).
         """
-        elements = list(composition.keys())
+        from pycalphad_app.database.imc_laves_database import IMCLavesDatabase
+
         tot = sum(composition.values())
         fracs = {k: v / tot for k, v in composition.items()} if tot > 0 else composition
 
@@ -465,6 +554,9 @@ class ThermoEngine:
         ts = metrics["Solidus_K"]
         tl = metrics["Liquidus_K"]
         vec = metrics["VEC_val"]
+        imc_eval = IMCLavesDatabase.evaluate_formation_tendency(
+            fracs, vec, metrics["DeltaSize_pct"], metrics["DeltaHmix_kJ_mol"]
+        )
 
         al_frac = fracs.get("Al", 0.0)
         cr_frac = fracs.get("Cr", 0.0)
@@ -474,9 +566,13 @@ class ThermoEngine:
         if al_frac > 0.02 or ti_frac > 0.02:
             t_solv_b2 = min(ts, 1100.0 + 800.0 * al_frac)
 
-        t_solv_sigma = 0.0
-        if cr_frac > 0.18:
+        t_solv_sigma = imc_eval["SigmaSolvus_K"]
+        if t_solv_sigma <= 0 and cr_frac > 0.18:
             t_solv_sigma = min(1123.15, 750.0 + 1500.0 * (cr_frac - 0.18))
+
+        t_solv_laves = min(ts, imc_eval["LavesSolvus_K"]) if imc_eval["LavesSolvus_K"] > 0 else 0.0
+        t_solv_mu = min(ts, imc_eval["MuSolvus_K"]) if imc_eval["MuSolvus_K"] > 0 else 0.0
+        laves_name = imc_eval["LavesPolytype"] or "Laves_C14"
 
         t_c_vec = np.linspace(500.0, 1600.0, 221)
         t_k_vec = t_c_vec + 273.15
@@ -486,9 +582,15 @@ class ThermoEngine:
         f_bcc = np.zeros_like(t_k_vec)
         f_b2 = np.zeros_like(t_k_vec)
         f_sigma = np.zeros_like(t_k_vec)
+        f_laves = np.zeros_like(t_k_vec)
+        f_mu = np.zeros_like(t_k_vec)
+        f_chi = np.zeros_like(t_k_vec)
 
         max_b2 = min(0.70, 2.5 * al_frac + 1.2 * ti_frac)
-        max_sig = min(0.35, max(0.0, 1.2 * cr_frac - 0.15))
+        max_sig = max(imc_eval["MaxSigmaFraction"], min(0.35, max(0.0, 1.2 * cr_frac - 0.15)))
+        max_laves = imc_eval["MaxLavesFraction"]
+        max_mu = imc_eval["MaxMuFraction"]
+        max_chi = imc_eval["MaxChiFraction"]
 
         for idx, tk in enumerate(t_k_vec):
             if tk >= tl:
@@ -514,7 +616,29 @@ class ThermoEngine:
             if t_solv_sigma > 0 and tk < t_solv_sigma:
                 cur_sig = max_sig * (1.0 - math.exp(-3.8 * (t_solv_sigma - tk) / tk)) * f_s
 
-            cur_mat = max(0.0, f_s - cur_b2 - cur_sig)
+            cur_lav = 0.0
+            if max_laves > 0.01 and t_solv_laves > 0 and tk < t_solv_laves:
+                cur_lav = max_laves * (1.0 - math.exp(-3.5 * (t_solv_laves - tk) / tk)) * f_s
+
+            cur_mu = 0.0
+            if max_mu > 0.01 and t_solv_mu > 0 and tk < t_solv_mu:
+                cur_mu = max_mu * (1.0 - math.exp(-3.5 * (t_solv_mu - tk) / tk)) * f_s
+
+            cur_chi = 0.0
+            if max_chi > 0.01 and tk < 1120.0:
+                cur_chi = max_chi * (1.0 - math.exp(-3.2 * (1120.0 - tk) / tk)) * f_s
+
+            # Cap combined precipitates at total available solid fraction
+            tot_prec = cur_b2 + cur_sig + cur_lav + cur_mu + cur_chi
+            if tot_prec > f_s:
+                scale = f_s / tot_prec
+                cur_b2 *= scale
+                cur_sig *= scale
+                cur_lav *= scale
+                cur_mu *= scale
+                cur_chi *= scale
+
+            cur_mat = max(0.0, f_s - (cur_b2 + cur_sig + cur_lav + cur_mu + cur_chi))
 
             # Partition matrix based on VEC
             if vec >= 8.0:
@@ -532,8 +656,11 @@ class ThermoEngine:
             f_bcc[idx] = cur_bcc
             f_b2[idx] = cur_b2
             f_sigma[idx] = cur_sig
+            f_laves[idx] = cur_lav
+            f_mu[idx] = cur_mu
+            f_chi[idx] = cur_chi
 
-        return {
+        res_curves = {
             "T_C": t_c_vec,
             "T_K": t_k_vec,
             "f_Liquid": f_liq,
@@ -541,6 +668,9 @@ class ThermoEngine:
             "f_BCC": f_bcc,
             "f_B2": f_b2,
             "f_Sigma": f_sigma,
+            "f_Laves": f_laves,
+            "f_Mu": f_mu,
+            "f_Chi": f_chi,
             "Liquid": f_liq,
             "FCC": f_fcc,
             "BCC": f_bcc,
@@ -551,6 +681,13 @@ class ThermoEngine:
             "T_Solidus_K": ts,
             "T_Liquidus_K": tl
         }
+        if np.max(f_laves) > 0.004:
+            res_curves[laves_name] = f_laves
+        if np.max(f_mu) > 0.004:
+            res_curves["Mu_Phase"] = f_mu
+        if np.max(f_chi) > 0.004:
+            res_curves["Chi_A12"] = f_chi
+        return res_curves
 
     @classmethod
     def compute_transport_properties(cls, composition: Dict[str, float]) -> Dict[str, Any]:
@@ -625,5 +762,275 @@ class ThermoEngine:
                                           density_g_cm3: Optional[float] = None) -> Dict[str, Any]:
         """Adapter for transport property computation."""
         return cls.compute_transport_properties(composition)
+
+    @classmethod
+    def compute_liquid_surface_tension(cls, elements: List[str], at_fractions: List[float],
+                                      t_vector: Optional[np.ndarray] = None) -> Dict[str, Any]:
+        """
+        High-temperature liquid surface tension sigma(T) in N/m.
+        Matches App/HEAThermoEngine.m lines 3140-3177.
+        """
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        sig0_mn = 0.0
+        tm_avg = 0.0
+        ref_sigma = {
+            "Fe": 1780.0, "Co": 1870.0, "Ni": 1770.0, "Cr": 1700.0, "Mn": 1100.0,
+            "Al": 865.0,  "Ti": 1650.0, "Zr": 1480.0, "Hf": 1610.0, "V": 1950.0,
+            "Nb": 1900.0, "Ta": 2150.0, "Mo": 2250.0, "W": 2500.0,  "Cu": 1330.0,
+            "Si": 860.0,  "Sn": 550.0,  "Mg": 550.0,  "Zn": 780.0
+        }
+        for i, el in enumerate(elements):
+            el_data = get_element(el)
+            tm_el = getattr(el_data, "tm", 1700.0) if el_data else 1700.0
+            sig_el = ref_sigma.get(el, 1700.0)
+            sig0_mn += float(c[i]) * sig_el
+            tm_avg += float(c[i]) * tm_el
+
+        if t_vector is None:
+            t_vector = np.arange(round(tm_avg, -1) - 50.0, 2601.0, 50.0)
+
+        cur_mn = np.maximum(400.0, sig0_mn - 0.42 * (t_vector - tm_avg))
+        sig_n_m = np.round(cur_mn / 1000.0, 4)
+
+        return {
+            "T_K": t_vector,
+            "SurfaceTension_N_m": sig_n_m,
+            "Tm_avg_K": round(tm_avg, 1),
+            "Sigma0_mN_m": round(sig0_mn, 1)
+        }
+
+    @classmethod
+    def compute_liquid_viscosity(cls, elements: List[str], at_fractions: List[float],
+                                 t_vector: Optional[np.ndarray] = None) -> Dict[str, Any]:
+        """
+        High-temperature liquid dynamic viscosity eta(T) in Pa*s.
+        Arrhenius model: eta(T) = eta0 * exp(E_act / (R * T))
+        Matches App/HEAThermoEngine.m lines 3179-3206.
+        """
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        tm_avg = 0.0
+        for i, el in enumerate(elements):
+            el_data = get_element(el)
+            tm_el = getattr(el_data, "tm", 1700.0) if el_data else 1700.0
+            tm_avg += float(c[i]) * tm_el
+
+        if t_vector is None:
+            t_vector = np.arange(round(tm_avg, -1), 2601.0, 50.0)
+
+        eta0 = 2.4e-4
+        r_gas = 8.314462618
+        e_act = 3.6 * r_gas * tm_avg
+        visc_vals = eta0 * np.exp(e_act / (r_gas * np.maximum(100.0, t_vector)))
+
+        return {
+            "T_K": t_vector,
+            "Viscosity_Pa_s": np.round(visc_vals, 6),
+            "Viscosity_mPa_s": np.round(visc_vals * 1000.0, 3),
+            "E_act_J_mol": round(e_act, 1)
+        }
+
+    @classmethod
+    def compute_semi_solid_rheology(cls, elements: List[str], at_fractions: List[float],
+                                    ts_k: Optional[float] = None, tl_k: Optional[float] = None,
+                                    t_vector: Optional[np.ndarray] = None,
+                                    shear_rate: float = 100.0) -> Dict[str, Any]:
+        """
+        Semi-solid rheology: Krieger-Dougherty suspension model with percolation
+        yield stress and apparent shear thinning across the mushy zone (Ts to Tl).
+        Matches App/CALPHADHEACalc.m lines 3307-3330 and fit_piecewise_functions.m.
+        """
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        if ts_k is None or tl_k is None:
+            metrics = cls.calculate(dict(zip(elements, c)))
+            ts_k = metrics.get("Solidus_K", 1550.0)
+            tl_k = metrics.get("Liquidus_K", 1650.0)
+
+        if tl_k <= ts_k:
+            tl_k = ts_k + 50.0
+
+        if t_vector is None:
+            t_vector = np.linspace(max(300.0, ts_k - 100.0), tl_k + 200.0, 150)
+
+        r_gas = 8.314462618
+        eta0 = 2.4e-4
+        e_act = 3.6 * r_gas * tl_k
+
+        phi_m = 0.65
+        exponent = 1.625
+        tau0_pa = 150.0e3
+        f_perc = 0.20
+
+        visc_pa_s = np.zeros_like(t_vector)
+        yield_stress_pa = np.zeros_like(t_vector)
+        solid_fraction = np.zeros_like(t_vector)
+
+        for idx, tk in enumerate(t_vector):
+            if tk >= tl_k:
+                eta_l = eta0 * math.exp(e_act / (r_gas * tk))
+                visc_pa_s[idx] = eta_l
+                yield_stress_pa[idx] = 0.0
+                solid_fraction[idx] = 0.0
+            elif tk <= ts_k:
+                visc_pa_s[idx] = 1000.0
+                yield_stress_pa[idx] = tau0_pa
+                solid_fraction[idx] = 1.0
+            else:
+                fs = (tl_k - tk) / (tl_k - ts_k)
+                solid_fraction[idx] = fs
+                eta_l = eta0 * math.exp(e_act / (r_gas * tk))
+                ratio = min(0.99, fs / phi_m)
+                eta_mush = eta_l * ((1.0 - ratio) ** -exponent)
+                visc_pa_s[idx] = min(1000.0, eta_mush)
+
+                if fs > f_perc:
+                    yield_stress_pa[idx] = tau0_pa * (((fs - f_perc) / (1.0 - f_perc)) ** 2.5)
+                else:
+                    yield_stress_pa[idx] = 0.0
+
+        sr = max(1e-3, shear_rate)
+        apparent_visc_pa_s = visc_pa_s + (yield_stress_pa / sr)
+
+        return {
+            "T_K": t_vector,
+            "Solidus_K": ts_k,
+            "Liquidus_K": tl_k,
+            "SolidFraction": np.round(solid_fraction, 4),
+            "Viscosity_Pa_s": np.round(visc_pa_s, 6),
+            "YieldStress_Pa": np.round(yield_stress_pa, 1),
+            "ApparentViscosity_Pa_s": np.round(apparent_visc_pa_s, 4),
+            "ShearRate_s_inv": shear_rate
+        }
+
+    @classmethod
+    def compute_laser_absorptivity(cls, elements: List[str], at_fractions: List[float],
+                                   t_vector: Optional[np.ndarray] = None,
+                                   wavelength_um: float = 1.064,
+                                   is_powder: bool = True) -> Dict[str, Any]:
+        """
+        Temperature-dependent laser optical absorptivity A(T) and surface emissivity eps(T)
+        via Hagen-Rubens relation and Gusarov powder bed model.
+        Matches App/fit_piecewise_functions.m lines 100-135 and CALPHADHEACalc.m lines 3342-3350.
+        """
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        if t_vector is None:
+            t_vector = np.linspace(293.15, 2200.0, 150)
+
+        ref_rho_rt = {
+            "Al": 0.0265, "Cu": 0.0168, "Fe": 0.0961, "Ni": 0.0699, "Co": 0.0624,
+            "Cr": 0.125,  "Ti": 0.420,  "Zr": 0.421,  "V": 0.197,   "Nb": 0.152,
+            "Ta": 0.131,  "Mo": 0.0534, "W": 0.0528, "Mn": 1.440,  "Si": 10.0
+        }
+        rho_base_uohm_m = sum(float(c[i]) * ref_rho_rt.get(el, 0.50) for i, el in enumerate(elements))
+        if len(elements) >= 4:
+            rho_base_uohm_m = max(0.85, rho_base_uohm_m * 2.2)
+
+        rho_t_uohm = rho_base_uohm_m * (1.0 + 0.0018 * (t_vector - 293.15))
+        rho_t_ohm_m = rho_t_uohm * 1e-6
+
+        a_bulk = 0.365 * np.sqrt(np.maximum(0.0, rho_t_uohm) / wavelength_um)
+        a_bulk = np.clip(a_bulk, 0.01, 0.95)
+
+        eps_t = 0.751 * np.sqrt(np.maximum(1e-12, rho_t_ohm_m * t_vector * 1e-2))
+        eps_t = np.clip(eps_t, 0.05, 0.92)
+
+        if is_powder:
+            a_effective = 1.0 - (1.0 - a_bulk) ** 1.8
+            a_effective = np.clip(a_effective, 0.05, 0.96)
+        else:
+            a_effective = a_bulk
+
+        return {
+            "T_K": t_vector,
+            "Wavelength_um": wavelength_um,
+            "LaserAbsorptivity_Bulk": np.round(a_bulk, 4),
+            "LaserAbsorptivity_Effective": np.round(a_effective, 4),
+            "SurfaceEmissivity": np.round(eps_t, 4),
+            "ElectricalResistivity_uOhm_m": np.round(rho_t_uohm, 4),
+            "IsPowderBed": is_powder
+        }
+
+    @classmethod
+    def compute_magnetic_gibbs_energy(cls, elements: List[str], at_fractions: List[float],
+                                      temp_k: float, phase: str = "FCC") -> float:
+        """
+        Inden-Hillert-Jarl magnetic Gibbs energy contribution G_mag(T, phase) in J/mol.
+        G_mag = R * T * ln(beta + 1) * g(tau), where tau = T / Tc.
+        Matches App/HEAThermoEngine.m lines 777-835.
+        """
+        ph = phase.upper().strip()
+        is_bcc = ph.startswith("BCC")
+        p = 0.40 if is_bcc else 0.28
+        a_norm = 1.5582844 if is_bcc else 2.3424574
+
+        mag_db = {
+            "Fe": {"Tc_BCC": 1043.0, "beta_BCC": 2.22, "Tc_FCC": 67.0,   "beta_FCC": 0.70},
+            "Co": {"Tc_BCC": 1450.0, "beta_BCC": 1.35, "Tc_FCC": 1396.0, "beta_FCC": 1.35},
+            "Ni": {"Tc_BCC": 575.0,  "beta_BCC": 0.85, "Tc_FCC": 633.0,  "beta_FCC": 0.52},
+            "Cr": {"Tc_BCC": 311.0,  "beta_BCC": 0.40, "Tc_FCC": 0.0,    "beta_FCC": 0.0},
+            "Mn": {"Tc_BCC": 0.0,    "beta_BCC": 0.0,  "Tc_FCC": 540.0,  "beta_FCC": 0.60}
+        }
+
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        tc_alloy = 0.0
+        beta_alloy = 0.0
+        for i, el in enumerate(elements):
+            if el in mag_db:
+                m = mag_db[el]
+                tc_alloy += float(c[i]) * (m["Tc_BCC"] if is_bcc else m["Tc_FCC"])
+                beta_alloy += float(c[i]) * (m["beta_BCC"] if is_bcc else m["beta_FCC"])
+
+        if tc_alloy <= 10.0 or beta_alloy <= 0.01:
+            return 0.0
+
+        tau = max(1e-4, temp_k / tc_alloy)
+        if tau <= 1.0:
+            bracket = (79.0 / (140.0 * p)) * (1.0 / tau) + \
+                      (474.0 / 497.0) * ((1.0 / p) - 1.0) * ((tau ** 3) / 6.0 + (tau ** 9) / 135.0 + (tau ** 15) / 600.0)
+            g_tau = 1.0 - (bracket / a_norm)
+        else:
+            bracket = (tau ** -5) / 10.0 + (tau ** -15) / 315.0 + (tau ** -25) / 1500.0
+            g_tau = -(bracket / a_norm)
+
+        r_gas = 8.314462618
+        g_mag = r_gas * temp_k * math.log(beta_alloy + 1.0) * g_tau
+        return g_mag
+
+    @classmethod
+    def compute_sigma_electron_vacancy(cls, elements: List[str], at_fractions: List[float]) -> Dict[str, Any]:
+        """
+        Hall-Algie electron vacancy model Nv for tetragonal Sigma phase propensity.
+        Matches App/HEAThermoEngine.m lines 1026-1041.
+        """
+        nv_map = {
+            "Cr": 4.66, "Mo": 4.66, "W": 4.66, "V": 5.66, "Nb": 5.66, "Ta": 5.66,
+            "Mn": 3.66, "Fe": 2.66, "Co": 1.71, "Ni": 0.66, "Al": 0.0, "Ti": 6.66
+        }
+        c_raw = np.array(at_fractions, dtype=float)
+        c_sum = np.sum(c_raw)
+        c = c_raw / c_sum if c_sum > 0 else np.ones(len(elements)) / len(elements)
+
+        avg_nv = sum(float(c[i]) * nv_map.get(el, 2.0) for i, el in enumerate(elements))
+        is_sigma_prone = (avg_nv >= 2.45)
+        return {
+            "AverageElectronVacancy_Nv": round(avg_nv, 3),
+            "CriticalThreshold_Nv": 2.45,
+            "IsSigmaPhaseProne": is_sigma_prone,
+            "SigmaRiskLevel": "High" if avg_nv >= 2.70 else ("Moderate" if avg_nv >= 2.45 else "Low")
+        }
 
 CALPHADThermoEngine = ThermoEngine

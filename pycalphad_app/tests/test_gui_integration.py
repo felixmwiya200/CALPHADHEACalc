@@ -34,9 +34,10 @@ class TestGUIIntegration(unittest.TestCase):
     def test_window_components(self):
         self.assertIsNotNone(self.window.database_dock)
         self.assertIsNotNone(self.window.console_dock)
-        self.assertEqual(self.window.tabs.count(), 9)
+        self.assertEqual(self.window.tabs.count(), 10)
 
         tab_names = [self.window.tabs.tabText(i) for i in range(self.window.tabs.count())]
+        self.assertIn("Calculation Matrix", tab_names)
         self.assertIn("Equilibrium Phases", tab_names)
         self.assertIn("Isopleth Phase Diagram", tab_names)
         self.assertIn("Transport Properties", tab_names)
@@ -45,7 +46,7 @@ class TestGUIIntegration(unittest.TestCase):
         self.assertIn("Powder XRD Diffractometer", tab_names)
         self.assertIn("Periodic Table (118)", tab_names)
         self.assertIn("Industrial Suitability", tab_names)
-        self.assertIn("Literature Audit & Validation", tab_names)
+        self.assertIn("Literature Validation", tab_names)
 
     def test_database_switching(self):
         dock = self.window.database_dock

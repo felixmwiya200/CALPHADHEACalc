@@ -17,7 +17,7 @@ class NickelSuperalloyDatabase:
         "intermetallics. Calibrated for high-temperature tensile yield, multi-axial creep rupture, and delta-phase solvus."
     )
 
-    PRIMARY_PHASES = ["gamma (FCC Matrix)", "gamma-prime (L12)", "gamma-double-prime (D022)", "Delta (Ni3Nb)", "MC Carbide", "Liquid"]
+    PRIMARY_PHASES = ["gamma (FCC Matrix)", "gamma-prime (L12)", "gamma-double-prime (D022)", "Delta (Ni3Nb)", "Sigma / Mu / Laves (TCP)", "MC Carbide", "Liquid"]
 
     PRESETS: Dict[str, Dict[str, float]] = {
         "Inconel 718 (Ni-19Cr-18.5Fe-5.1Nb-3Mo-0.9Ti-0.5Al)": {

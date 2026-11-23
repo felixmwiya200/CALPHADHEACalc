@@ -17,7 +17,7 @@ class StainlessSteelDatabase:
         "environments, delta-ferrite solidus partitioning, and brittle sigma-phase precipitation kinetics."
     )
 
-    PRIMARY_PHASES = ["Austenite (FCC)", "Delta-Ferrite (BCC)", "Sigma (Tetragonal)", "M23C6", "Cr2N", "Liquid"]
+    PRIMARY_PHASES = ["Austenite (FCC)", "Delta-Ferrite (BCC)", "Sigma (TCP)", "Chi (A12)", "Laves (Fe2Nb/Fe2Mo)", "M23C6", "Cr2N", "Liquid"]
 
     PRESETS: Dict[str, Dict[str, float]] = {
         "AISI 316L (Austenitic Marine Grade)": {

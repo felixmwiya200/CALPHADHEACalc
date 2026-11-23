@@ -17,7 +17,7 @@ class SolderAlloyDatabase:
         "Cu6Sn5 interfacial scallop growth, thermal fatigue, and electromigration in microelectronic packaging."
     )
 
-    PRIMARY_PHASES = ["Beta-Sn (BCT Matrix)", "Ag3Sn Intermetallic", "Cu6Sn5 Intermetallic", "Bi Phase", "Liquid"]
+    PRIMARY_PHASES = ["Beta-Sn (BCT Matrix)", "Ag3Sn (D0a IMC)", "Cu6Sn5 (eta IMC)", "Cu3Sn (epsilon IMC)", "Bi Phase", "Liquid"]
 
     PRESETS: Dict[str, Dict[str, float]] = {
         "SAC305 (Sn-3.0Ag-0.5Cu Lead-Free Standard)": {

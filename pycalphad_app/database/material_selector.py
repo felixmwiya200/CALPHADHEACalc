@@ -33,6 +33,21 @@ from pycalphad_app.database.single_crystal_database import SingleCrystalDatabase
 from pycalphad_app.database.titanium_database import TitaniumAlloyDatabase
 from pycalphad_app.database.zirconium_database import ZirconiumAlloyDatabase
 from pycalphad_app.database.solder_database import SolderAlloyDatabase
+from pycalphad_app.database.benchmark_database import BenchmarkDatabase
+from pycalphad_app.database.tdb_manager import TDBManager
+
+from pycalphad_app.core.base_alloy_engine import BaseAlloyEngine
+from pycalphad_app.core.steel_engine import SteelEngine
+from pycalphad_app.core.cast_iron_engine import CastIronEngine
+from pycalphad_app.core.nickel_superalloy_engine import NickelSuperalloyEngine
+from pycalphad_app.core.cobalt_alloy_engine import CobaltAlloyEngine
+from pycalphad_app.core.titanium_engine import TitaniumEngine
+from pycalphad_app.core.aluminium_engine import AluminiumEngine
+from pycalphad_app.core.magnesium_engine import MagnesiumEngine
+from pycalphad_app.core.zirconium_engine import ZirconiumEngine
+from pycalphad_app.core.solder_engine import SolderEngine
+from pycalphad_app.core.hea_engine import HEAEngine
+from pycalphad_app.core.coating_alloy_engine import CoatingAlloyEngine
 
 
 class MaterialDatabaseSelector:
@@ -69,6 +84,64 @@ class MaterialDatabaseSelector:
         "Zirconium Alloy": ZirconiumAlloyDatabase,
         "Solder Alloy": SolderAlloyDatabase
     }
+
+    _ENGINE_REGISTRY: Dict[str, Any] = {
+        "High Entropy Alloys": HEAEngine,
+        "High-Entropy Alloys (HEAs)": HEAEngine,
+        "Refractory Complex Concentrated Alloys": HEAEngine,
+        "Thermal Spray Coatings": CoatingAlloyEngine,
+        "Aluminium Alloy": AluminiumEngine,
+        "Aluminium Alloys": AluminiumEngine,
+        "Magnesium Alloy": MagnesiumEngine,
+        "Magnesium Alloys": MagnesiumEngine,
+        "Cast Iron": CastIronEngine,
+        "Cast Irons": CastIronEngine,
+        "General Steel": SteelEngine,
+        "General Steels": SteelEngine,
+        "Stainless Steel": SteelEngine,
+        "Stainless Steels": SteelEngine,
+        "Cobalt Alloy": CobaltAlloyEngine,
+        "Cobalt Alloys": CobaltAlloyEngine,
+        "Nickel Based Superalloy": NickelSuperalloyEngine,
+        "Nickel & Fe-Ni Superalloys": NickelSuperalloyEngine,
+        "NiFe Based Superalloy": NickelSuperalloyEngine,
+        "Single Crystal": NickelSuperalloyEngine,
+        "Single-Crystal & DS Superalloys": NickelSuperalloyEngine,
+        "Titanium Alloy": TitaniumEngine,
+        "Titanium Alloys": TitaniumEngine,
+        "Zirconium Alloy": ZirconiumEngine,
+        "Zirconium Alloys": ZirconiumEngine,
+        "Solder Alloy": SolderEngine,
+        "Solders": SolderEngine,
+    }
+
+    @classmethod
+    def get_engine(cls, db_name: str, composition_wt: Dict[str, float],
+                   grain_size_um: float = 25.0, process_type: str = "Wrought") -> BaseAlloyEngine:
+        """
+        Polymorphic factory method resolving and instantiating the dedicated
+        calculation engine corresponding to the selected alloy family database.
+        """
+        engine_cls = cls._ENGINE_REGISTRY.get(db_name, HEAEngine)
+        return engine_cls(
+            database_name=db_name,
+            composition_wt=composition_wt,
+            grain_size_um=grain_size_um,
+            process_type=process_type
+        )
+
+    @classmethod
+    def get_tdb_path(cls, db_name: str) -> Optional[str]:
+        """Resolves the physical .tdb file for the selected alloy database."""
+        return TDBManager.get_tdb_for_family(db_name)
+
+    @classmethod
+    def get_tdb_info(cls, db_name: str) -> Dict[str, Any]:
+        """Retrieves metadata for the selected alloy database's TDB."""
+        p = cls.get_tdb_path(db_name)
+        if p:
+            return TDBManager.get_metadata(p)
+        return {"name": "Dynamic Synthesis", "is_valid": True, "elements": [], "phases": []}
 
     DOMAIN_GROUPS: Dict[str, str] = {
         "High Entropy Alloys": "High-Entropy & Multi-Principal",
@@ -144,6 +217,7 @@ class MaterialDatabaseSelector:
     @classmethod
     def compare_benchmarks(cls, db_name: str, calc_metrics: Dict[str, Any], preset: Optional[str] = None) -> List[Dict[str, Any]]:
         mod = cls.get_module(db_name)
+        comp = calc_metrics.get("atomic_composition") or calc_metrics.get("composition_at") or calc_metrics.get("composition", {})
         if hasattr(mod, "compare_calculated_vs_experimental"):
             try:
                 if preset:
@@ -152,9 +226,13 @@ class MaterialDatabaseSelector:
             except TypeError:
                 return mod.compare_calculated_vs_experimental(calc_metrics)
         elif hasattr(mod, "compare_calculated_vs_benchmark"):
-            alloy_key = UnifiedHEADatabase.identify_alloy_key(calc_metrics.get("composition", {}))
-            return mod.compare_calculated_vs_benchmark(alloy_key, calc_metrics)
-        return []
+            alloy_key = BenchmarkDatabase.identify_alloy_key(comp, db_name=db_name)
+            res = mod.compare_calculated_vs_benchmark(alloy_key, calc_metrics)
+            if res:
+                return res
+        # Centralized benchmark fallback
+        bench_res = BenchmarkDatabase.compare_metrics(comp, calc_metrics)
+        return bench_res.get("table", [])
 
     @classmethod
     def get_xrd_benchmark(cls, db_name: str) -> Optional[Dict[str, Any]]:

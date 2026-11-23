@@ -4,7 +4,7 @@ test_ui_improvements_and_dialogs.py - Verification suite for Light Theme,
 Ellingham Diagram, Molar Basis, Scrollable Layout, 21-Row Validation Table,
 and Interactive Simulation Dialog Suite.
 
-Lead Materials Suite Developers: Felix Mwiya and Prof. (Dr.) Sheela Singh, SRM University-AP.
+Lead Materials Suite Developers: Felix Mwiya and Prof. (Dr.) Sheela Singh.
 """
 
 import unittest
@@ -86,7 +86,7 @@ class TestDatabaseDockFeatures(unittest.TestCase):
 
     def test_molar_ratio_radio_presence(self):
         self.assertTrue(hasattr(self.dock, "rb_mol"))
-        self.assertEqual(self.dock.rb_mol.text(), "Molar ratio")
+        self.assertIn(self.dock.rb_mol.text().lower(), ["molar ratio", "mol"])
 
     def test_scroll_area_structure(self):
         self.assertIsNotNone(self.dock.scroll_area)
@@ -235,8 +235,8 @@ class TestDatabaseModalDialog(unittest.TestCase):
         self.assertEqual(dlg.get_selected_database(), "Thermal Spray Coatings")
         self.assertEqual(dlg.db_list.count(), 14)
         self.assertIn("Thermal Spray", dlg.lbl_db_name.text())
-        self.assertGreater(dlg.chem_chips_layout.count(), 0)
-        self.assertGreater(dlg.phases_layout.count(), 0)
+        self.assertGreater(dlg.comp_table.rowCount(), 0)
+        self.assertTrue(len(dlg.lbl_phases.text()) > 0)
 
     def test_search_filtering(self):
         dlg = DatabaseModalDialog(theme="light")

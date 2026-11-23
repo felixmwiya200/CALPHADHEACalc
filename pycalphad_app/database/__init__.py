@@ -16,11 +16,14 @@ from pycalphad_app.database.zirconium_database import ZirconiumAlloyDatabase
 from pycalphad_app.database.solder_database import SolderAlloyDatabase
 from pycalphad_app.database.published_data_repository import PublishedDataRepository
 from pycalphad_app.database.oxide_database import HEAOxideDatabase
+from pycalphad_app.database.imc_laves_database import IMCLavesDatabase
 from pycalphad_app.database.application_database import HEAApplicationDatabase
 from pycalphad_app.database.literature_hea_repository import LiteratureHEARepository
+from pycalphad_app.database.tdb_manager import TDBManager
 
 __all__ = [
     "MaterialDatabaseSelector",
+    "TDBManager",
     "UnifiedHEADatabase",
     "ThermalSprayCoatingDatabase",
     "AluminiumAlloyDatabase",
@@ -37,6 +40,7 @@ __all__ = [
     "SolderAlloyDatabase",
     "PublishedDataRepository",
     "HEAOxideDatabase",
+    "IMCLavesDatabase",
     "HEAApplicationDatabase",
     "LiteratureHEARepository"
 ]

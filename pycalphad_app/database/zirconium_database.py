@@ -17,7 +17,7 @@ class ZirconiumAlloyDatabase:
         "hot water (300-360 deg C), hydride formation/embrittlement thresholds, and radiation-induced creep."
     )
 
-    PRIMARY_PHASES = ["Alpha_Zr (HCP Matrix)", "Beta_Zr (BCC)", "Zr(Fe,Cr)2 Laves", "Zr2(Fe,Ni)", "Liquid"]
+    PRIMARY_PHASES = ["Alpha_Zr (HCP Matrix)", "Beta_Zr (BCC)", "Fe2Zr / Zr(Fe,Cr)2 (C15 Laves)", "Zr2(Fe,Ni)", "Liquid"]
 
     PRESETS: Dict[str, Dict[str, float]] = {
         "Zircaloy-4 (Zr-1.5Sn-0.2Fe-0.1Cr PWR Standard)": {

@@ -212,6 +212,13 @@ class HEACoatingEngine:
                 "Elements": ["Al", "Mg", "Si"],
                 "Fractions": [0.978, 0.012, 0.010],
                 "Tm_K": 925.0, "Modulus_GPa": 69.0, "Hardness_HV": 95.0, "CTE": 23.4
+            },
+            "CMSX-4": {
+                "Name": "CMSX-4 Single-Crystal Superalloy",
+                "BaseMetal": "Ni",
+                "Elements": ["Ni", "Co", "Cr", "W", "Ta", "Al", "Re", "Ti", "Mo"],
+                "Fractions": [0.655, 0.096, 0.065, 0.064, 0.065, 0.056, 0.030, 0.010, 0.006],
+                "Tm_K": 1610.0, "Modulus_GPa": 130.0, "Hardness_HV": 420.0, "CTE": 11.5
             }
         }
 
