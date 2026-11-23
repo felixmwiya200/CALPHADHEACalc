@@ -942,6 +942,78 @@ class CAEDaemon:
                     vrow["Deviation"] = round(d_new, 3)
                     vrow["ErrorPercent"] = round(abs(d_new) / abs(float(ev)) * 100.0, 2)
 
+        # Ensure validation_table contains Melting Temperature and Freezing Range rows
+        if val_table:
+            has_melt = any("melting" in str(r.get("Property", "")).lower() for r in val_table)
+            sol_row = next((r for r in val_table if "solidus" in str(r.get("Property", "")).lower()), None)
+            liq_row = next((r for r in val_table if "liquidus" in str(r.get("Property", "")).lower()), None)
+
+            if not has_melt and (sol_row or liq_row):
+                c_sol = float(sol_row["Calculated"]) if sol_row and sol_row.get("Calculated") is not None else None
+                c_liq = float(liq_row["Calculated"]) if liq_row and liq_row.get("Calculated") is not None else None
+                c_m = round((c_sol + c_liq) / 2.0, 2) if (c_sol is not None and c_liq is not None) else (c_liq or c_sol)
+
+                e_sol = float(sol_row["Experimental"]) if sol_row and sol_row.get("Experimental") is not None else None
+                e_liq = float(liq_row["Experimental"]) if liq_row and liq_row.get("Experimental") is not None else None
+                e_m = round((e_sol + e_liq) / 2.0, 2) if (e_sol is not None and e_liq is not None) else (e_liq or e_sol)
+
+                diff_c = round(c_m - e_m, 2) if (c_m is not None and e_m is not None) else None
+                err_c = round(abs(diff_c) / abs(e_m) * 100.0, 2) if (diff_c is not None and e_m and abs(e_m) > 1e-6) else None
+
+                ref_str = (liq_row or sol_row).get("Reference", "Literature Standard")
+                doi_str = (liq_row or sol_row).get("DOI", "")
+
+                melt_row = {
+                    "Property": "Melting Temperature (K)",
+                    "Calculated": c_m,
+                    "Experimental": e_m,
+                    "Deviation": diff_c,
+                    "ErrorPercent": err_c,
+                    "Reference": ref_str,
+                    "DOI": doi_str
+                }
+                pos = len(val_table)
+                for idx, r in enumerate(val_table):
+                    p_low = str(r.get("Property", "")).lower()
+                    if "liquidus" in p_low:
+                        pos = idx + 1
+                        break
+                    elif "solidus" in p_low:
+                        pos = idx + 1
+                val_table.insert(pos, melt_row)
+
+            has_fr = any("freezing" in str(r.get("Property", "")).lower() for r in val_table)
+            if not has_fr and (sol_row and liq_row):
+                c_sol = float(sol_row["Calculated"]) if sol_row.get("Calculated") is not None else None
+                c_liq = float(liq_row["Calculated"]) if liq_row.get("Calculated") is not None else None
+                c_fr = round(max(0.0, c_liq - c_sol), 2) if (c_sol is not None and c_liq is not None) else None
+
+                e_sol = float(sol_row["Experimental"]) if sol_row.get("Experimental") is not None else None
+                e_liq = float(liq_row["Experimental"]) if liq_row.get("Experimental") is not None else None
+                e_fr = round(max(0.0, e_liq - e_sol), 2) if (e_sol is not None and e_liq is not None) else None
+
+                diff_fr = round(c_fr - e_fr, 2) if (c_fr is not None and e_fr is not None) else None
+                err_fr = round(abs(diff_fr) / abs(e_fr) * 100.0, 2) if (diff_fr is not None and e_fr and abs(e_fr) > 1e-6) else None
+
+                fr_row = {
+                    "Property": "Freezing Range (K)",
+                    "Calculated": c_fr,
+                    "Experimental": e_fr,
+                    "Deviation": diff_fr,
+                    "ErrorPercent": err_fr,
+                    "Reference": (liq_row or sol_row).get("Reference", "Literature Standard"),
+                    "DOI": (liq_row or sol_row).get("DOI", "")
+                }
+                pos = len(val_table)
+                for idx, r in enumerate(val_table):
+                    p_low = str(r.get("Property", "")).lower()
+                    if "melting" in p_low:
+                        pos = idx + 1
+                        break
+                    elif "liquidus" in p_low:
+                        pos = idx + 1
+                val_table.insert(pos, fr_row)
+
         # Enrich validation_table rows with Rule of Mixtures calculated baselines and errors
         if val_table and rom_results:
             for vrow in val_table:
@@ -974,6 +1046,12 @@ class CAEDaemon:
                     r_val = rom_results.get("solidus_k")
                 elif "liquidus" in p_text:
                     r_val = rom_results.get("liquidus_k")
+                elif "melting" in p_text:
+                    r_val = rom_results.get("melting_point_k") or rom_results.get("liquidus_k")
+                elif "freezing" in p_text:
+                    r_val = rom_results.get("freezing_range_k")
+                    if r_val is None and "liquidus_k" in rom_results and "solidus_k" in rom_results:
+                        r_val = max(0.0, float(rom_results["liquidus_k"]) - float(rom_results["solidus_k"]))
                 elif "cte" in p_text or "expansion" in p_text:
                     r_val = rom_results.get("cte_1e6_k")
                 elif "elongation" in p_text:

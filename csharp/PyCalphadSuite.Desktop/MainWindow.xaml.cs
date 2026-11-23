@@ -3456,7 +3456,10 @@ namespace PyCalphadSuite.Desktop
             string rkSummary = FormatRockwellSummary(res, hv);
             string phase = res.Thermo.TryGetValue("Phase", out var pObj) ? pObj.ToString() ?? "Solid Solution" : "Solid Solution";
 
-            LblQuickSolidus.Text = $"Solidus / Liquidus: {ConvTemp(ts):F0} / {ConvTemp(tl):F0} {u}";
+            double tm = (ts + tl) / 2.0;
+            double tmRom = res.RuleOfMixtures?.LiquidusK ?? 0.0;
+            string romStr = tmRom > 0 ? $" | ROM T_m: {ConvTemp(tmRom):F0} {u}" : "";
+            LblQuickSolidus.Text = $"T_sol / T_liq: {ConvTemp(ts):F0} / {ConvTemp(tl):F0} {u} | T_melt: {ConvTemp(tm):F0} {u}{romStr}";
             LblQuickPhase.Text = $"Phase: {phase}";
             LblQuickStrength.Text = $"Yield: {sy:F0} MPa | {hv:F0} HV / {rkSummary}";
 

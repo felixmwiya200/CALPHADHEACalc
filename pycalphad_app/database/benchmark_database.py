@@ -103,6 +103,7 @@ class BenchmarkDatabase:
                 "Density_g_cm3": {"val": 6.98, "unit": "g/cm³", "domain": "Physical"},
                 "Solidus_K": {"val": 1605.0, "unit": "K", "domain": "Thermo"},
                 "Liquidus_K": {"val": 1648.0, "unit": "K", "domain": "Thermo"},
+                "MeltingPoint_K": {"val": 1626.5, "unit": "K", "domain": "Thermo"},
                 "FreezingRange_K": {"val": 43.0, "unit": "K", "domain": "Thermo"},
                 "YieldStrength_RT_MPa": {"val": 1050.0, "unit": "MPa", "domain": "Mechanical"},
                 "UTS_RT_MPa": {"val": 1440.0, "unit": "MPa", "domain": "Mechanical"},
@@ -1152,7 +1153,8 @@ class BenchmarkDatabase:
             "Density_g_cm3": ["Density_g_cm3", "density", "Density", "density_g_cm3"],
             "Solidus_K": ["Solidus_K", "solidus_K", "T_Solidus", "solidus", "solidus_k"],
             "Liquidus_K": ["Liquidus_K", "liquidus_K", "T_Liquidus", "liquidus", "liquidus_k"],
-            "FreezingRange_K": ["FreezingRange_K", "freezing_range_K", "FreezingRange", "freezing_range"],
+            "MeltingPoint_K": ["MeltingPoint_K", "Melting_K", "T_Melting", "T_melt_K", "MeltingTemperature_K", "mean_melting_k"],
+            "FreezingRange_K": ["FreezingRange_K", "freezing_range_K", "FreezingRange", "freezing_range", "freezing_range_k"],
             "YieldStrength_RT_MPa": ["YieldStrength_RT_MPa", "YieldStrength_MPa", "yield_strength_MPa", "yield_strength", "yield_stress_mpa"],
             "UTS_RT_MPa": ["UTS_RT_MPa", "UTS_MPa", "uts_MPa", "tensile_strength_mpa", "uts"],
             "Elongation_pct": ["Elongation_pct", "Elongation_RT_pct", "elongation_pct", "elongation"],
@@ -1176,6 +1178,7 @@ class BenchmarkDatabase:
             "Density_g_cm3": ["density_g_cm3", "density"],
             "Solidus_K": ["solidus_k", "melting_point_k", "tm_k"],
             "Liquidus_K": ["liquidus_k", "melting_point_k", "tm_k"],
+            "MeltingPoint_K": ["melting_point_k", "melting_temperature_k", "liquidus_k", "mean_melting_k"],
             "FreezingRange_K": ["freezing_range_k"],
             "YieldStrength_RT_MPa": ["yield_strength_mpa", "yield_strength"],
             "UTS_RT_MPa": ["uts_mpa", "tensile_strength_mpa"],
@@ -1226,6 +1229,7 @@ class BenchmarkDatabase:
             "Density_g_cm3": "Density",
             "Solidus_K": "Solidus Temperature",
             "Liquidus_K": "Liquidus Temperature",
+            "MeltingPoint_K": "Melting Temperature",
             "FreezingRange_K": "Freezing Range",
             "YieldStrength_RT_MPa": "Yield Strength",
             "UTS_RT_MPa": "Ultimate Tensile Strength",
@@ -1244,6 +1248,56 @@ class BenchmarkDatabase:
             "CorrosionPotential_V": "Corrosion Potential",
             "CorrosionCurrent_uA_cm2": "Corrosion Current"
         }
+
+        # Synthesize missing CALPHAD melting properties if solidus/liquidus exist
+        if "Solidus_K" in flat_calc and "Liquidus_K" in flat_calc:
+            if "MeltingPoint_K" not in flat_calc:
+                flat_calc["MeltingPoint_K"] = (float(flat_calc["Solidus_K"]) + float(flat_calc["Liquidus_K"])) / 2.0
+            if "FreezingRange_K" not in flat_calc:
+                flat_calc["FreezingRange_K"] = max(0.0, float(flat_calc["Liquidus_K"]) - float(flat_calc["Solidus_K"]))
+        elif "T_Solidus" in flat_calc and "T_Liquidus" in flat_calc:
+            if "MeltingPoint_K" not in flat_calc:
+                flat_calc["MeltingPoint_K"] = (float(flat_calc["T_Solidus"]) + float(flat_calc["T_Liquidus"])) / 2.0
+            if "FreezingRange_K" not in flat_calc:
+                flat_calc["FreezingRange_K"] = max(0.0, float(flat_calc["T_Liquidus"]) - float(flat_calc["T_Solidus"]))
+
+        # Ensure ROM has melting_point_k and freezing_range_k
+        if rom_props:
+            if "melting_point_k" not in rom_props and "liquidus_k" in rom_props:
+                rom_props["melting_point_k"] = rom_props["liquidus_k"]
+            if "freezing_range_k" not in rom_props and "liquidus_k" in rom_props and "solidus_k" in rom_props:
+                rom_props["freezing_range_k"] = max(0.0, float(rom_props["liquidus_k"]) - float(rom_props["solidus_k"]))
+
+        # Ensure MeltingPoint_K and FreezingRange_K are in benchmark props if Solidus and Liquidus exist
+        if "Solidus_K" in props and "Liquidus_K" in props:
+            if "MeltingPoint_K" not in props:
+                s_val = float(props["Solidus_K"]["val"])
+                l_val = float(props["Liquidus_K"]["val"])
+                props["MeltingPoint_K"] = {
+                    "val": round((s_val + l_val) / 2.0, 1),
+                    "unit": "K",
+                    "domain": "Thermo"
+                }
+            if "FreezingRange_K" not in props:
+                s_val = float(props["Solidus_K"]["val"])
+                l_val = float(props["Liquidus_K"]["val"])
+                props["FreezingRange_K"] = {
+                    "val": round(max(0.0, l_val - s_val), 1),
+                    "unit": "K",
+                    "domain": "Thermo"
+                }
+            # Order properties so MeltingPoint_K and FreezingRange_K appear right after Liquidus_K
+            ordered_props = {}
+            for pk, pv in props.items():
+                if pk in ("MeltingPoint_K", "FreezingRange_K"):
+                    continue
+                ordered_props[pk] = pv
+                if pk == "Liquidus_K":
+                    if "MeltingPoint_K" in props:
+                        ordered_props["MeltingPoint_K"] = props["MeltingPoint_K"]
+                    if "FreezingRange_K" in props:
+                        ordered_props["FreezingRange_K"] = props["FreezingRange_K"]
+            props = ordered_props
 
         for prop_name, p_data in props.items():
             exp_val = float(p_data["val"])
