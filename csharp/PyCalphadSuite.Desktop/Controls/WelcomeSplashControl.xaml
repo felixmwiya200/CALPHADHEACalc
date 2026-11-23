@@ -1,0 +1,28 @@
+<UserControl x:Class="PyCalphadSuite.Desktop.Controls.WelcomeSplashControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="#FFFFFF">
+        <StackPanel Margin="36,28" MaxWidth="1040" HorizontalAlignment="Center">
+            <!-- Hero Header -->
+            <Border Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="10" Padding="28,24" Margin="0,0,0,22">
+                <StackPanel>
+                    <TextBlock Text="Computational Thermodynamics &amp; Multi-Physics Alloy CAE" Foreground="#000000" FontWeight="Bold" FontSize="22" Margin="0,0,0,6"/>
+                    <TextBlock Text="Select a metallurgical database system below or explore the 118-element IUPAC Periodic Table to begin Gibbs energy minimization, Scheil solidification, thermophysical transport, and FEA card export." Foreground="#000000" FontSize="12.5" TextWrapping="Wrap"/>
+                    <WrapPanel Margin="0,16,0,0">
+                        <Button x:Name="BtnSelectModal" Content="Browse Material Types &amp; Databases..." Click="BtnSelectModal_Click" Padding="14,7" Margin="0,0,10,0" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="Bold"/>
+                        <Button x:Name="BtnPeriodic" Content="Interactive Periodic Table (118)" Click="BtnPeriodic_Click" Padding="14,7" Margin="0,0,10,0" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="Bold"/>
+                        <Button x:Name="BtnLitHea" Content="Literature HEA Repository" Click="BtnLitHea_Click" Padding="14,7" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="SemiBold"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 14 Materials Family Cards Grid -->
+            <TextBlock Text="Select Active Materials System (14 Calibrated Databases):" FontWeight="Bold" FontSize="14" Foreground="#000000" Margin="4,0,0,10"/>
+            <UniformGrid Columns="3" x:Name="GridDatabases">
+                <!-- Cards dynamically populated from IPC DatabaseCatalogResult -->
+            </UniformGrid>
+
+            <TextBlock Text="Lead Materials Developers: Felix Mwiya &amp; Prof. (Dr.) Sheela Singh  •  CALPHAD XOC Platform 2026" Foreground="#000000" FontSize="11" HorizontalAlignment="Center" Margin="0,20,0,6"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

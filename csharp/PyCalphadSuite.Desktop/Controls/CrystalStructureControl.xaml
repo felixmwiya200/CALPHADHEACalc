@@ -1,0 +1,285 @@
+<UserControl x:Class="PyCalphadSuite.Desktop.Controls.CrystalStructureControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PyCalphadSuite.Desktop.Controls">
+    <Grid x:Name="RootGrid" Background="#FFFFFF">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Crystal Studio Header & Query Parameters -->
+        <Border x:Name="HeaderBorder" Grid.Row="0" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="0,0,0,1" Padding="12,8">
+            <DockPanel LastChildFill="True">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="LblSupercell" Text="Supercell:" Foreground="#000000" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="CmbSupercell" Width="125" Background="#FFFFFF" Foreground="#000000" SelectionChanged="CmbRebuildParam_SelectionChanged">
+                        <ComboBoxItem Content="1×1×1 Unit Cell" Tag="1"/>
+                        <ComboBoxItem Content="2×2×2 Supercell" Tag="2" IsSelected="True"/>
+                        <ComboBoxItem Content="3×3×3 Supercell" Tag="3"/>
+                    </ComboBox>
+
+                    <TextBlock x:Name="LblSnapshotTemp" Text="T Snapshot:" Foreground="#000000" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,6,0"/>
+                    <ComboBox x:Name="CmbSnapshotTemp" Width="115" Background="#FFFFFF" Foreground="#000000" SelectionChanged="CmbRebuildParam_SelectionChanged">
+                        <ComboBoxItem Content="300 K (27 °C)" Tag="300" IsSelected="True"/>
+                        <ComboBoxItem Content="700 K (427 °C)" Tag="700"/>
+                        <ComboBoxItem Content="1000 K (727 °C)" Tag="1000"/>
+                        <ComboBoxItem Content="1300 K (1027 °C)" Tag="1300"/>
+                        <ComboBoxItem Content="1650 K (1377 °C)" Tag="1650"/>
+                    </ComboBox>
+
+                    <ToggleButton x:Name="BtnToggleAtomLabels" Content="Element Labels: ON" IsChecked="True"
+                                  Margin="10,0,0,0" Padding="10,4" Background="#EFF6FF" Foreground="#1E3A8A"
+                                  FontWeight="Bold" BorderBrush="#1D4ED8" BorderThickness="1.2"
+                                  Checked="BtnToggleAtomLabels_Changed" Unchecked="BtnToggleAtomLabels_Changed"
+                                  ToolTip="Toggle element-symbol atom labels (Fe, Cr, Ni, Co, Mn...) on or off inside the 3D crystal view"/>
+
+                    <Button x:Name="BtnRefreshStructures" Content="Rebuild 3D Cells" Click="BtnRefreshStructures_Click"
+                            Margin="8,0,0,0" Padding="10,4" Background="#FFFFFF" Foreground="#000000" FontWeight="Bold" BorderBrush="#1D4ED8" BorderThickness="1.2"/>
+                </StackPanel>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtHeaderTitle" Text="3D Crystal Structure"
+                               FontWeight="Bold" FontSize="14" Foreground="#000000"/>
+                    <TextBlock x:Name="TxtHeaderSubtitle" Text="Run Calculate Equilibrium or rebuild cells to inspect crystal structures present and Wyckoff atomic configurations."
+                               FontSize="11.5" Foreground="#475569" Margin="0,2,0,0" Visibility="Collapsed"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Row 1: Dedicated Tab per Crystal Phase Present (+ Comparison Tab) -->
+        <Border x:Name="PhaseTabsBarBorder" Grid.Row="1" Background="#E2E8F0" BorderBrush="#CBD5E1" BorderThickness="0,0,0,1" Padding="8,4,8,0">
+            <TabControl x:Name="PhaseTabsControl"
+                        Background="#E2E8F0"
+                        Foreground="#0F172A"
+                        BorderThickness="0"
+                        SelectionChanged="PhaseTabsControl_SelectionChanged"/>
+        </Border>
+
+        <!-- Row 2: Active Phase Workspace (Nested Sub-Tabs) OR All-Phases Comparison -->
+        <Grid Grid.Row="2" Background="#FFFFFF">
+            <!-- Nested Sub-Tabs for the Selected Crystal Phase -->
+            <TabControl x:Name="CrystalSubTabs" Background="#FFFFFF" Foreground="#000000" BorderThickness="0" Padding="4">
+
+                <!-- Sub-Tab 1: 3D Interactive Lattice & Bonds -->
+                <TabItem Header="3D Interactive Lattice &amp; Bonds">
+                    <Grid x:Name="SubTab1Grid" Background="#FFFFFF" Margin="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="360"/>
+                            <ColumnDefinition x:Name="ColSplitter" Width="6"/>
+                            <ColumnDefinition x:Name="ColInspector" Width="340" MinWidth="0"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left: Expandable Native WPF 3D Viewport Host -->
+                        <Border x:Name="ViewportCard" Grid.Column="0" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="8">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*" MinHeight="300"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Visual Mode & Expand Toolbar -->
+                                <WrapPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+                                    <ComboBox x:Name="CmbRenderEngine" Visibility="Collapsed" Width="185" Margin="0,0,10,4" Background="#FFFFFF" Foreground="#000000" FontWeight="Bold" SelectionChanged="CmbRenderEngine_SelectionChanged">
+                                        <ComboBoxItem Content="Engine: C# 3D Studio" Tag="wpf" IsSelected="True"/>
+                                        <ComboBoxItem Content="Engine: C++ DirectX 11 (HW)" Tag="dx11"/>
+                                    </ComboBox>
+
+                                    <CheckBox x:Name="ChkAtomLabels" Content="Element Labels (On/Off)" IsChecked="True" Foreground="#000000" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
+                                    <CheckBox x:Name="ChkUnitCellBox" Content="Unit-Cell Cage" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
+                                    <CheckBox x:Name="ChkBonds" Content="NN Bonds" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
+                                    <CheckBox x:Name="ChkSlipPlane" Content="Slip Plane" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
+                                    <CheckBox x:Name="ChkAxesTriad" Content="Axes (a,b,c)" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
+                                    <CheckBox x:Name="ChkAutoSpin" Content="Auto-Rotate" IsChecked="False" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="ChkAutoSpin_Changed" Unchecked="ChkAutoSpin_Changed"/>
+
+                                    <ComboBox x:Name="CmbColourMode" Width="155" Margin="0,0,8,4" Background="#FFFFFF" Foreground="#000000" SelectionChanged="VisualOption_ComboChanged">
+                                        <ComboBoxItem Content="Colour: Element (CPK)" Tag="element" IsSelected="True"/>
+                                        <ComboBoxItem Content="Colour: Sublattice Site" Tag="sublattice"/>
+                                    </ComboBox>
+
+                                    <ComboBox x:Name="CmbScaleMode" Width="140" Margin="0,0,8,4" Background="#FFFFFF" Foreground="#000000" SelectionChanged="VisualOption_ComboChanged">
+                                        <ComboBoxItem Content="Radii: Metallic" Tag="metallic" IsSelected="True"/>
+                                        <ComboBoxItem Content="Radii: Ball &amp; Stick" Tag="ballstick"/>
+                                        <ComboBoxItem Content="Radii: Space-Fill" Tag="cpk"/>
+                                    </ComboBox>
+
+                                    <Button x:Name="BtnRotate180" Content="↻ 180°" Click="BtnRotate180_Click" ToolTip="Rotate 3D view by 180°" Padding="8,3" Margin="0,0,4,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
+                                    <Button x:Name="BtnSpin360" Content="↺ 360°" Click="BtnSpin360_Click" ToolTip="Perform a smooth 360° orbital sweep" Padding="8,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
+                                    <Button x:Name="BtnResetCamera" Content="Reset Camera" Click="BtnResetCamera_Click" Padding="8,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
+                                    <Button x:Name="BtnExportPng" Content="Export PNG..." Click="BtnExportPng_Click" ToolTip="Export high-resolution PNG of the 3D crystal viewport and labels" Padding="9,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#059669" BorderThickness="1.2"/>
+                                    <Button x:Name="BtnExpand3D" Content="⛶ Expand 3D" Click="BtnExpand3D_Click" ToolTip="Expand 3D crystal viewport across the full window (click again to restore)"
+                                            Padding="9,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#1D4ED8" BorderThickness="1.2"/>
+                                    <Button x:Name="BtnPopOut3D" Content="↗ Pop Out Window" Click="BtnPopOut3D_Click" ToolTip="Open interactive 3D crystal structure in a separate resizable window"
+                                            Padding="9,3" Margin="0,0,0,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#CBD5E1"/>
+                                </WrapPanel>
+
+                                <!-- Native 3D Viewport Surface: C# Managed Viewport3D OR Native C++ DirectX 11 Viewport -->
+                                <Border x:Name="ViewportSurface" Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="4" ClipToBounds="True"
+                                        SizeChanged="ViewportSurface_SizeChanged"
+                                        MouseLeftButtonDown="ViewportSurface_MouseLeftButtonDown"
+                                        MouseLeftButtonUp="ViewportSurface_MouseLeftButtonUp"
+                                        MouseRightButtonDown="ViewportSurface_MouseRightButtonDown"
+                                        MouseRightButtonUp="ViewportSurface_MouseRightButtonUp"
+                                        MouseDown="ViewportSurface_MouseDown"
+                                        MouseUp="ViewportSurface_MouseUp"
+                                        MouseMove="ViewportSurface_MouseMove"
+                                        MouseWheel="ViewportSurface_MouseWheel">
+                                    <Grid>
+                                        <!-- Viewport A: Managed C# Viewport3D Studio -->
+                                        <Grid x:Name="GridWpf3DViewport" Visibility="Visible">
+                                            <Viewport3D x:Name="CrystalViewport" ClipToBounds="True">
+                                                <Viewport3D.Camera>
+                                                    <PerspectiveCamera x:Name="SceneCamera" Position="12,8,14" LookDirection="-12,-8,-14" UpDirection="0,1,0" FieldOfView="38"/>
+                                                </Viewport3D.Camera>
+                                                <ModelVisual3D x:Name="LightsVisual">
+                                                    <ModelVisual3D.Content>
+                                                        <Model3DGroup>
+                                                            <AmbientLight Color="#5A5A5A"/>
+                                                            <DirectionalLight Color="#D8D8D8" Direction="-0.45,-0.65,-0.60"/>
+                                                            <DirectionalLight Color="#888888" Direction="0.55,0.45,0.70"/>
+                                                        </Model3DGroup>
+                                                    </ModelVisual3D.Content>
+                                                </ModelVisual3D>
+                                                <ModelVisual3D x:Name="CrystalSceneRoot"/>
+                                                <ModelVisual3D x:Name="HighlightRoot"/>
+                                            </Viewport3D>
+
+                                            <!-- Projected Element Symbol Labels Layer -->
+                                            <Canvas x:Name="AtomLabelsOverlay" IsHitTestVisible="False" ClipToBounds="True"/>
+
+                                            <!-- Subtle overlay readout for axis colour legend -->
+                                            <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Padding="6,3" Background="#EEFFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" IsHitTestVisible="False">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Axes: " FontSize="10.5" FontWeight="Bold" Foreground="#000000"/>
+                                                    <TextBlock Text="a" FontSize="10.5" FontWeight="Bold" Foreground="#DC2626" Margin="2,0,6,0"/>
+                                                    <TextBlock Text="b" FontSize="10.5" FontWeight="Bold" Foreground="#16A34A" Margin="0,0,6,0"/>
+                                                    <TextBlock Text="c" FontSize="10.5" FontWeight="Bold" Foreground="#2563EB"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Viewport B: Native C++ DirectX 11 Hardware Viewport Embedded in WPF -->
+                                        <local:NativeDx11ViewportHost x:Name="NativeDx11Host" Visibility="Collapsed"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Non-overlapping Hint & Camera Telemetry Footer -->
+                                <Grid Grid.Row="2" Margin="2,6,2,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="TxtInteractionHint" Grid.Column="0" FontSize="11" Foreground="#475569" TextTrimming="CharacterEllipsis"
+                                               Text="Left-drag: 360° Rotate | Right/Middle/Shift+Drag: Pan | Scroll: Zoom | Click atom: Inspect site"/>
+                                    <TextBlock x:Name="TxtCameraStatus" Grid.Column="1" FontFamily="Consolas" FontSize="11" Foreground="#475569" Margin="14,0,0,0"
+                                               Text="Azimuth: 40° | Elevation: 24° | Zoom: 1.00×"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Resizable GridSplitter -->
+                        <GridSplitter x:Name="SplitterInspector" Grid.Column="1" Width="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                      Background="#E2E8F0" ToolTip="Drag to resize 3D viewport and inspector panel" ResizeBehavior="PreviousAndNext"/>
+
+                        <!-- Right: Collapsible Phase Telemetry, Atom Inspector & Species Legend -->
+                        <ScrollViewer x:Name="InspectorScroll" Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Expander Header="Crystallographic Metadata" IsExpanded="True" Foreground="#000000" Background="#FFFFFF" Margin="0,0,0,6">
+                                    <GroupBox x:Name="GrpPhaseMeta" Foreground="#000000" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
+                                        <TextBlock x:Name="TxtPhaseMetadata" FontWeight="Normal" FontFamily="Consolas" FontSize="11.5" Foreground="#000000" TextWrapping="Wrap" LineHeight="18"/>
+                                    </GroupBox>
+                                </Expander>
+
+                                <Expander Header="Clicked Atom Site Inspector" IsExpanded="True" Foreground="#000000" Background="#FFFFFF" Margin="0,0,0,6">
+                                    <GroupBox x:Name="GrpAtomInspect" Foreground="#000000" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
+                                        <TextBlock x:Name="TxtAtomInspector" FontWeight="Normal" FontFamily="Consolas" FontSize="11.5" Foreground="#000000" TextWrapping="Wrap" LineHeight="18"
+                                                   Text="Click any atom sphere inside the 3D viewport to inspect its element symbol, Wyckoff position, sublattice assignment, radius, and fractional coordinates."/>
+                                    </GroupBox>
+                                </Expander>
+
+                                <Expander Header="Species in Active Phase Model" IsExpanded="True" Foreground="#000000" Background="#FFFFFF">
+                                    <GroupBox x:Name="GrpSpeciesLegend" Foreground="#000000" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
+                                        <WrapPanel x:Name="PanelSpeciesLegend" Orientation="Horizontal"/>
+                                    </GroupBox>
+                                </Expander>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <!-- Sub-Tab 2: Atomic Configuration & Sublattices -->
+                <TabItem Header="Atomic Configuration &amp; Sublattices">
+                    <Grid x:Name="SubTab2Grid" Background="#FFFFFF" Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="190"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Border x:Name="ConfigSummaryBorder" Grid.Row="0" Background="#FFFFFF" BorderBrush="#1D4ED8" BorderThickness="3,1,1,1" CornerRadius="4" Padding="10,8" Margin="0,0,0,8">
+                            <TextBlock x:Name="TxtConfigSummary" Text="Atomic configuration summary appears here." Foreground="#000000" FontSize="12.5" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <GroupBox x:Name="GrpSublattices" Grid.Row="1" Header="Wyckoff / CALPHAD Sublattice Site Occupancy" FontWeight="Bold" Foreground="#000000" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="6">
+                            <DataGrid x:Name="GridSublattices" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                                      Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#FFFFFF" BorderBrush="#CBD5E1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Sublattice" Binding="{Binding SublatticeId}" Width="90"/>
+                                    <DataGridTextColumn Header="Wyckoff Positions" Binding="{Binding WyckoffSites}" Width="210"/>
+                                    <DataGridTextColumn Header="Sites / Cell" Binding="{Binding SiteCountPerCell}" Width="95"/>
+                                    <DataGridTextColumn Header="Atomic Occupancy Breakdown" Binding="{Binding OccupancySummary}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+
+                        <GroupBox x:Name="GrpAtomSites" Grid.Row="3" Header="Atomic Positions in Model Cell (Click row to highlight atom in 3D)" FontWeight="Bold" Foreground="#000000" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="6">
+                            <DataGrid x:Name="GridAtomPositions" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                                      SelectionChanged="GridAtomPositions_SelectionChanged"
+                                      Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#FFFFFF" BorderBrush="#CBD5E1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Binding="{Binding Index}" Width="45"/>
+                                    <DataGridTextColumn Header="Element" Binding="{Binding Symbol}" Width="70"/>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding ElementName}" Width="115"/>
+                                    <DataGridTextColumn Header="Sublattice" Binding="{Binding Sublattice}" Width="85"/>
+                                    <DataGridTextColumn Header="Wyckoff Site" Binding="{Binding Wyckoff}" Width="165"/>
+                                    <DataGridTextColumn Header="Radius (pm)" Binding="{Binding RadiusPm}" Width="85"/>
+                                    <DataGridTextColumn Header="Fractional (u, v, w)" Binding="{Binding FracDisplay}" Width="175"/>
+                                    <DataGridTextColumn Header="Cartesian (x, y, z Å)" Binding="{Binding CartDisplay}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <!-- Dedicated All-Phases Comparison View (shown when Comparison Tab is active) -->
+            <Grid x:Name="ComparePanel" Background="#FFFFFF" Margin="8" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Comparison of all crystal phases present in the active alloy. Click any row to switch to that phase's 3D Crystal Structure tab."
+                           Foreground="#475569" FontSize="12" Margin="0,0,0,8"/>
+                <DataGrid x:Name="GridPhaseCompare" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          SelectionChanged="GridPhaseCompare_SelectionChanged"
+                          Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#FFFFFF" BorderBrush="#CBD5E1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Phase" Binding="{Binding PhaseName}" Width="140"/>
+                        <DataGridTextColumn Header="Fraction" Binding="{Binding PhaseFractionDisplay}" Width="75"/>
+                        <DataGridTextColumn Header="Crystal System" Binding="{Binding CrystalSystem}" Width="175"/>
+                        <DataGridTextColumn Header="Space Group" Binding="{Binding SpaceGroup}" Width="125"/>
+                        <DataGridTextColumn Header="Pearson" Binding="{Binding PearsonSymbol}" Width="70"/>
+                        <DataGridTextColumn Header="Strukturbericht" Binding="{Binding Strukturbericht}" Width="105"/>
+                        <DataGridTextColumn Header="Lattice a, b, c (Å)" Binding="{Binding LatticeSummaryDisplay}" Width="145"/>
+                        <DataGridTextColumn Header="CN" Binding="{Binding CoordinationNumber}" Width="50"/>
+                        <DataGridTextColumn Header="APF" Binding="{Binding Apf}" Width="55"/>
+                        <DataGridTextColumn Header="Configuration Mode" Binding="{Binding ConfigurationMode}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

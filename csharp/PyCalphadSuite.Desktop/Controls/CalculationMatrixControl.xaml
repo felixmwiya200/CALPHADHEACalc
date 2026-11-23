@@ -1,0 +1,125 @@
+<UserControl x:Class="PyCalphadSuite.Desktop.Controls.CalculationMatrixControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="#FFFFFF">
+        <ScrollViewer.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="#FFFFFF"/>
+                <Setter Property="Foreground" Value="#000000"/>
+                <Setter Property="BorderBrush" Value="#CBD5E1"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+        </ScrollViewer.Resources>
+        <StackPanel Margin="20,16" MaxWidth="980" HorizontalAlignment="Left">
+            <!-- Header Banner -->
+            <Border Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="18">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,14">
+                        <TextBlock Text="Physical Metallurgy Calculation Matrix" FontSize="15" FontWeight="Bold" Foreground="#000000"/>
+                        <TextBlock x:Name="TxtAlloyTitle" Text="High Entropy Alloys" DockPanel.Dock="Right" FontSize="14" FontWeight="Bold" Foreground="#000000"/>
+                    </DockPanel>
+                    <Separator Background="#CBD5E1" Margin="0,0,0,14"/>
+
+                    <!-- 1. Thermodynamic Properties -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Thermodynamic Properties:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Step Temperature" Tag="step_temperature" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Run full multi-physics stepped equilibrium sweep across temperature range"/>
+                            <Button Content="Step Concentration" Tag="step_concentration" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Interactive binary concentration stepping and isopleth analysis"/>
+                            <Button Content="Profile" Tag="profile" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Evaluate multicomponent elemental segregation profile"/>
+                            <Button Content="Single" Tag="single" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Calculate single-temperature isothermal thermodynamic equilibrium"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <Separator Background="#F1F5F9" Margin="0,8"/>
+
+                    <!-- 2. Solidification -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Solidification:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Phases and Properties" Tag="phases_properties" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Non-equilibrium Scheil-Gulliver vs Lever Rule solidification trajectory"/>
+                            <Button Content="Homogenisation" Tag="homogenisation" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Evaluate interdiffusion holding times for microsegregation removal"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <Separator Background="#CBD5E1" Margin="0,8"/>
+
+                    <!-- 3. Mechanical Properties -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Mechanical Properties:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Strength and Hardness" Tag="strength_hardness" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Yield strength, UTS, and Vickers hardness vs temperature"/>
+                            <Button Content="High Temperature Strength" Tag="high_temp_strength" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Elevated-temperature thermal softening and solid-solution strengthening"/>
+                            <Button Content="Creep" Tag="creep" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Norton-Bailey Creep Rupture and Larson-Miller master curves"/>
+                            <Button Content="Flow Stress Analysis" Tag="flow_stress" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Hollomon, Voce, and Zener-Hollomon constitutive flow stress analysis"/>
+                            <Button Content="Fatigue Related" Tag="fatigue" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Basquin-Morrow High-Cycle Fatigue S-N endurance curves"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <Separator Background="#CBD5E1" Margin="0,8"/>
+
+                    <!-- 4. Thermo-Physical Properties -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Thermo-Physical Properties:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Extended General" Tag="extended_general" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Density, CTE, thermal conductivity, diffusivity, and surface tension"/>
+                            <Button Content="Dynamic" Tag="dynamic" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Dynamic Young's modulus, shear modulus, and ultrasonic velocities"/>
+                            <Button x:Name="BtnGammaMismatch" Content="Gamma/Gamma' Mismatch" Tag="gamma_mismatch" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Coherent γ/γ' lattice mismatch parameter δ(T)"/>
+                            <Button x:Name="BtnSfe" Content="Stacking Fault Energy" Tag="sfe" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Thermodynamic stacking fault energy (mJ/m²) and TRIP/TWIP map"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <Separator Background="#CBD5E1" Margin="0,8"/>
+
+                    <!-- 5. Phase Transformation -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Phase transformation:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="TTT/CCT Diagrams" Tag="ttt_cct" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Time-Temperature-Transformation and Continuous Cooling diagrams"/>
+                            <Button Content="Coarsening" Tag="coarsening" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Lifshitz-Slyozov-Wagner (LSW) precipitate coarsening kinetics"/>
+                            <Button Content="Energy Changes" Tag="energy_changes" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Latent heat of fusion and Gibbs driving force analysis"/>
+                            <Button Content="Isothermal" Tag="isothermal" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Avrami JMAK isothermal transformation kinetics"/>
+                            <Button x:Name="BtnHeatTreatment" Content="Heat Treatment" Tag="heat_treatment" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" ToolTip="Solutionizing, quenching, Jominy hardenability &amp; aging schedule"/>
+                        </WrapPanel>
+                    </Grid>
+
+                    <Separator Background="#CBD5E1" Margin="0,8"/>
+
+                    <!-- 6. Data Export -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Data Export:" FontWeight="Bold" FontSize="12" Foreground="#000000" VerticalAlignment="Center"/>
+                        <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="FORGE by Transvalor" Tag="export_forge" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Foreground="#000000"/>
+                            <Button Content="DEFORM Forming" Tag="export_deform" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Foreground="#000000"/>
+                            <Button Content="Simufact.forming" Tag="export_simufact" Click="MatrixBtn_Click" Width="185" Height="32" Margin="4" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Foreground="#000000"/>
+                        </WrapPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

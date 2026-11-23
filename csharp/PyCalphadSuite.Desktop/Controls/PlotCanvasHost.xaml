@@ -1,0 +1,86 @@
+<UserControl x:Class="PyCalphadSuite.Desktop.Controls.PlotCanvasHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sp="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF">
+    <UserControl.Resources>
+        <Style x:Key="ModernToolbarButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="9,4"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.70"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.40"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="RootGrid" Background="#F8FAFC">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Banner -->
+        <Border x:Name="HeaderBorder" Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="14,8">
+            <DockPanel>
+                <TextBlock x:Name="TxtHeaderTitle" Text="Scientific Property Visualization" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                <Border x:Name="BadgeSummary" DockPanel.Dock="Right" Background="#E0F2FE" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="4" Padding="8,2">
+                    <TextBlock x:Name="TxtHeaderSummary" Text="Awaiting calculation..." FontWeight="SemiBold" FontSize="11.5" Foreground="#0284C7"/>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <!-- OriginLab Navigation & Export Toolbar -->
+        <Border x:Name="ToolbarBorder" Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="8,5">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <Button x:Name="BtnHome" Style="{StaticResource ModernToolbarButtonStyle}" Content="Home / Reset" ToolTip="Reset viewport to physical limits" Click="BtnHome_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnZoomIn" Style="{StaticResource ModernToolbarButtonStyle}" Content="+ Zoom In" ToolTip="Zoom in 20%" Click="BtnZoomIn_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnZoomOut" Style="{StaticResource ModernToolbarButtonStyle}" Content="- Zoom Out" ToolTip="Zoom out 25%" Click="BtnZoomOut_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnGrid" Style="{StaticResource ModernToolbarButtonStyle}" Content="Grid: On" ToolTip="Toggle scientific gridlines" Click="BtnGrid_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Separator Width="1" Background="#CBD5E1" Margin="6,2"/>
+                    <Button x:Name="BtnCopy" Style="{StaticResource ModernToolbarButtonStyle}" Content="Copy Graph" ToolTip="Copy high-DPI bitmap image to Clipboard" Click="BtnCopy_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnExportImg" Style="{StaticResource ModernToolbarButtonStyle}" Content="Export PNG/SVG..." ToolTip="Save publication figure" Click="BtnExportImg_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnExportCsv" Style="{StaticResource ModernToolbarButtonStyle}" Content="Export CSV Data" ToolTip="Export raw numerical XY series to CSV" Click="BtnExportCsv_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                </StackPanel>
+
+                <!-- Live Coordinate Tracker Badge -->
+                <Border x:Name="CoordsBadge" DockPanel.Dock="Right" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center" Margin="6,0,0,0">
+                    <TextBlock x:Name="TxtCursorCoords" Text="X: --   Y: --" FontFamily="Consolas, Cascadia Code, Courier New" FontSize="11" Foreground="#0F172A"/>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <!-- ScottPlot 5 SkiaSharp Canvas -->
+        <sp:WpfPlot x:Name="WpfPlotControl" Grid.Row="2" Margin="4" MouseMove="WpfPlotControl_MouseMove" MouseLeave="WpfPlotControl_MouseLeave"/>
+    </Grid>
+</UserControl>

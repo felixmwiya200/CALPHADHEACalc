@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyCalphadSuite.Core", "PyCalphadSuite.Core\PyCalphadSuite.Core.csproj", "{5A73963A-BF8D-420B-871B-6924F640368E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyCalphadSuite.Desktop", "PyCalphadSuite.Desktop\PyCalphadSuite.Desktop.csproj", "{C6BC8B6A-D7CE-4FDD-B748-04360E6CEBAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyCalphadSuite.Tests", "PyCalphadSuite.Tests\PyCalphadSuite.Tests.csproj", "{F43710A6-7A6A-466C-882F-DE5278C595BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A73963A-BF8D-420B-871B-6924F640368E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A73963A-BF8D-420B-871B-6924F640368E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A73963A-BF8D-420B-871B-6924F640368E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A73963A-BF8D-420B-871B-6924F640368E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6BC8B6A-D7CE-4FDD-B748-04360E6CEBAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6BC8B6A-D7CE-4FDD-B748-04360E6CEBAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6BC8B6A-D7CE-4FDD-B748-04360E6CEBAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6BC8B6A-D7CE-4FDD-B748-04360E6CEBAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F43710A6-7A6A-466C-882F-DE5278C595BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F43710A6-7A6A-466C-882F-DE5278C595BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F43710A6-7A6A-466C-882F-DE5278C595BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F43710A6-7A6A-466C-882F-DE5278C595BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
