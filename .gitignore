@@ -118,6 +118,7 @@ csharp/publish/
 # Transient Diagnostic Plots & Cache
 scratch_slide12_img.png
 light_theme_plot_test.png
+rhea_paper_extracted.txt
 Databases/.sdat_cache/
 pycalphad_app/database/.tdat_cache/
 

@@ -140,6 +140,10 @@ This repository is publicly shared and open-sourced under the **Apache 2.0 Licen
 +--------------------------------------------------------------------------------------------------------+
 ```
 
+> [!TIP]
+> **Complete SOTA Capabilities Dossier & Synchronization Schedule**:  
+> For the comprehensive, automated state-of-the-art benchmark comparing CALPHAD XOC against Thermo-Calc, Pandat, FactSage, PyCALPHAD 0.12, and OpenCalphad 6, refer to [CALPHAD_CAPABILITIES.md](docs/CALPHAD_CAPABILITIES.md). Updated automatically every Thursday at 14:00 IST.
+
 ### 1. Attached Thermodynamic Databases (8 Active)
 1. **SGTE Unary Database (1991 Dinsdale Assessment)**: Pure element Gibbs free energies $G_i^\phi(T) - H_i^{\text{SER}}$ for 45 elements.
 2. **PanHEA High-Entropy Solution Database**: Assessed binary and ternary Redlich-Kister excess interaction parameters $L_{ij}^{(k)}$ and $L_{ijk}^{(0)}$.
