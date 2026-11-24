@@ -122,12 +122,14 @@ rhea_paper_extracted.txt
 Databases/.sdat_cache/
 pycalphad_app/database/.tdat_cache/
 
-# Agent Configuration & Prompt Instructions (Never commit or upload to version control)
+# Internal System & Developer Configuration
 AGENTS.md
 .agents/
 GEMINI.md
 .agent/
 _agents/
+docs/plans/
+docs/specs/
 
 # =========================================================================
 # Private Local Directories (Kept Strictly Local - Never Uploaded to Git)

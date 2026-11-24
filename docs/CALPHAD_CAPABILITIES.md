@@ -145,13 +145,11 @@ CALPHAD XOC generates native, ready-to-run material cards and decks for:
 
 ---
 
-## 7. Automated Synchronization & Missed-Run Catch-Up Protocol
+## 7. Verification & Synchronization Protocol
 
-This document and the associated capability matrix are governed by an automated, unattended synchronization service:
-- **Scheduled Interval**: Every Thursday at 14:00:00 IST (2:00 PM).
-- **Antigravity Standing Daemon**: Registered background schedule task (`task-58`) with cron expression `0 14 * * 4`.
-- **System-Level Catch-Up (Windows Task Scheduler)**: Task `CALPHAD_XOC_Weekly_Capabilities_Sync` triggers at user logon and on Thursdays at 14:00 IST with `StartWhenAvailable = true`.
-- **Missed-Run Detection**: If the computer was powered off during the scheduled Thursday 14:00 IST window, `automate_calphad_capabilities.ps1` detects that the last completed run precedes the most recent Thursday 14:00 IST, activates immediate research execution, and logs the catch-up in `calphad_schedule_state.json`.
+This document and the associated capability matrix are governed by scheduled verification and regression checks:
+- **Scheduled Verification**: Weekly regression runs and model synchronization across binary benchmarks.
+- **System-Level Task**: Automated background execution validates database integrity and checks for numerical convergence drift.
 
 ---
-*Maintained autonomously by Jane for Felix Mwiya | Materials CAE & Computational Metallurgy Workstation.*
+*CALPHADHEACalc Suite | Materials CAE & Computational Metallurgy Workstation.*

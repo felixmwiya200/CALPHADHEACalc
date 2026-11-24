@@ -6,7 +6,7 @@ Extracts elements, basis species, redox couples, aqueous species, minerals, gase
 and their temperature-dependent equilibrium constants (log K) across the standard
 hydrothermal steam saturation grid [0, 25, 60, 100, 150, 200, 250, 300] °C.
 
-Author: Jane, Chief of Staff & Materials CAE Collaborator
+Author: Felix Mwiya | Materials CAE & Computational Metallurgy
 License: Proprietary / CALPHAD Materials Engineering Suite
 """
 

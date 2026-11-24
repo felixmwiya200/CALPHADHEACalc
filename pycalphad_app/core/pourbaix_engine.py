@@ -16,7 +16,7 @@ Features:
 - Hydrothermal steam temperature scaling from 0 °C to 300 °C (steam saturation pressures up to 86 bar)
 - Extraction of quantitative corrosion metrics: E_pass, E_trans, Delta_E_pass, pH_pass_min
 
-Author: Jane, Chief of Staff & Materials CAE Collaborator
+Author: Felix Mwiya | Materials CAE & Computational Metallurgy
 License: Proprietary / CALPHAD Materials Engineering Suite
 """
 

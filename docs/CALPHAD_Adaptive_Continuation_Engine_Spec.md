@@ -2,7 +2,7 @@
 
 **Document Status**: Validated & Approved  
 **Version**: 1.0.0  
-**Lead System Architect**: Jane (Senior Software Engineering Collaborator)  
+**Lead System Architect**: Felix Mwiya (Computational Metallurgy & Materials CAE)  
 **Date**: November 2026  
 
 ---

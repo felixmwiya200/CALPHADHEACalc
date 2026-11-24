@@ -4,7 +4,7 @@ Unit and Integration Tests for TDAT Databases & Pourbaix Diagram Engine
 Validates the parsing, indexing, and thermodynamic calculations across the
 8 GWB .tdat databases and verifies the Pourbaix (E-pH) phase stability solver.
 
-Author: Jane, Chief of Staff & Materials CAE Collaborator
+Author: Felix Mwiya | Materials CAE & Computational Metallurgy
 License: Proprietary / CALPHAD Materials Engineering Suite
 """
 

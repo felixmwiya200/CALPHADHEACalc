@@ -11,7 +11,7 @@ Central registry managing the 8 authoritative thermodynamic datasets in the Data
 7. thermo_wateq4f.tdat (USGS WATEQ4F Trace Element Database)
 8. thermo_hmw.tdat (Harvie-Møller-Weare Pitzer Hyper-Saline Brine Database)
 
-Author: Jane, Chief of Staff & Materials CAE Collaborator
+Author: Felix Mwiya | Materials CAE & Computational Metallurgy
 License: Proprietary / CALPHAD Materials Engineering Suite
 """
 
