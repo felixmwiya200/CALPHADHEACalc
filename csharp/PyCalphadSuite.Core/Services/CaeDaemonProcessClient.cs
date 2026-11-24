@@ -683,6 +683,75 @@ namespace PyCalphadSuite.Core.Services
             return SendRequestAsync<BinaryLeverRuleDto>("evaluate_binary_lever_rule", p, timeout: TimeSpan.FromSeconds(25), ct: ct);
         }
 
+        #region Kaufman-Mallik Phase Diagram Formalism Methods (Mallik 1986)
+
+        public Task<KaufmanMallikBinaryResultDto> CalculateKaufmanMallikBinaryAsync(
+            double tKelvin,
+            double deltaGa,
+            double deltaGb,
+            double eAlpha,
+            double eBeta,
+            bool useCalories = false,
+            double[]? initialGuess = null,
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                t_kelvin = tKelvin,
+                delta_g_a = deltaGa,
+                delta_g_b = deltaGb,
+                e_alpha = eAlpha,
+                e_beta = eBeta,
+                use_calories = useCalories,
+                initial_guess = initialGuess ?? new[] { 0.1, 0.9 }
+            };
+            return SendRequestAsync<KaufmanMallikBinaryResultDto>("calculate_kaufman_mallik_binary", p, timeout: TimeSpan.FromSeconds(15), ct: ct);
+        }
+
+        public Task<ParameterInversionResultDto> InvertInteractionParametersAsync(
+            double tKelvin,
+            double xAlpha,
+            double xBeta,
+            double deltaGa,
+            double deltaGb,
+            bool useCalories = false,
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                t_kelvin = tKelvin,
+                x_alpha = xAlpha,
+                x_beta = xBeta,
+                delta_g_a = deltaGa,
+                delta_g_b = deltaGb,
+                use_calories = useCalories
+            };
+            return SendRequestAsync<ParameterInversionResultDto>("invert_interaction_parameters", p, timeout: TimeSpan.FromSeconds(15), ct: ct);
+        }
+
+        public Task<MiscibilityGapResultDto> CalculateMiscibilityGapAsync(
+            double interactionParameter,
+            double tKelvin,
+            bool useCalories = false,
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                interaction_parameter = interactionParameter,
+                t_kelvin = tKelvin,
+                use_calories = useCalories
+            };
+            return SendRequestAsync<MiscibilityGapResultDto>("calculate_miscibility_gap", p, timeout: TimeSpan.FromSeconds(15), ct: ct);
+        }
+
+        public async Task<Dictionary<string, KaufmanMallikPresetDto>> GetKaufmanMallikPresetsAsync(CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<KaufmanMallikPresetsContainerDto>("get_kaufman_mallik_presets", new { }, timeout: TimeSpan.FromSeconds(10), ct: ct);
+            return res?.Presets ?? new Dictionary<string, KaufmanMallikPresetDto>();
+        }
+
+        #endregion
+
         #endregion
 
         #endregion

@@ -2548,6 +2548,115 @@ namespace PyCalphadSuite.Core.Models
         public List<string> Systems { get; set; } = new();
     }
 
+    #region Kaufman-Mallik Phase Diagram Formalism Models (Mallik 1986)
+
+    public class KaufmanMallikBinaryResultDto
+    {
+        [JsonPropertyName("converged")]
+        public bool Converged { get; set; }
+
+        [JsonPropertyName("iterations")]
+        public int Iterations { get; set; }
+
+        [JsonPropertyName("t_kelvin")]
+        public double TKelvin { get; set; }
+
+        [JsonPropertyName("x_alpha")]
+        public double XAlpha { get; set; }
+
+        [JsonPropertyName("x_beta")]
+        public double XBeta { get; set; }
+
+        [JsonPropertyName("residual_norm")]
+        public double ResidualNorm { get; set; }
+
+        [JsonPropertyName("unit")]
+        public string Unit { get; set; } = "J/mol";
+    }
+
+    public class ParameterInversionResultDto
+    {
+        [JsonPropertyName("t_kelvin")]
+        public double TKelvin { get; set; }
+
+        [JsonPropertyName("x_alpha")]
+        public double XAlpha { get; set; }
+
+        [JsonPropertyName("x_beta")]
+        public double XBeta { get; set; }
+
+        [JsonPropertyName("e_alpha")]
+        public double EAlpha { get; set; }
+
+        [JsonPropertyName("e_beta")]
+        public double EBeta { get; set; }
+
+        [JsonPropertyName("determinant")]
+        public double Determinant { get; set; }
+
+        [JsonPropertyName("residual_f")]
+        public double ResidualF { get; set; }
+
+        [JsonPropertyName("residual_g")]
+        public double ResidualG { get; set; }
+
+        [JsonPropertyName("unit")]
+        public string Unit { get; set; } = "J/mol";
+    }
+
+    public class MiscibilityGapResultDto
+    {
+        [JsonPropertyName("miscible")]
+        public bool Miscible { get; set; }
+
+        [JsonPropertyName("t_kelvin")]
+        public double TKelvin { get; set; }
+
+        [JsonPropertyName("t_critical")]
+        public double TCritical { get; set; }
+
+        [JsonPropertyName("binodal_x1")]
+        public double BinodalX1 { get; set; }
+
+        [JsonPropertyName("binodal_x2")]
+        public double BinodalX2 { get; set; }
+
+        [JsonPropertyName("spinodal_x1")]
+        public double SpinodalX1 { get; set; }
+
+        [JsonPropertyName("spinodal_x2")]
+        public double SpinodalX2 { get; set; }
+
+        [JsonPropertyName("gap_width")]
+        public double GapWidth { get; set; }
+
+        [JsonPropertyName("unit")]
+        public string Unit { get; set; } = "J/mol";
+    }
+
+    public class KaufmanMallikPresetDto
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = string.Empty;
+
+        [JsonPropertyName("topology")]
+        public string Topology { get; set; } = string.Empty;
+
+        [JsonPropertyName("unit")]
+        public string Unit { get; set; } = "cal/mol";
+    }
+
+    public class KaufmanMallikPresetsContainerDto
+    {
+        [JsonPropertyName("presets")]
+        public Dictionary<string, KaufmanMallikPresetDto> Presets { get; set; } = new();
+    }
+
+    #endregion
+
     #endregion
 
     #endregion

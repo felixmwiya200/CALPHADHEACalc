@@ -1887,6 +1887,108 @@ class CAEDaemon:
         )
         return _to_json_safe(result)
 
+    @classmethod
+    def handle_calculate_kaufman_mallik_binary(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates 2D Newton-Raphson regular solution binary equilibrium (Mallik 1986)."""
+        _ensure_modules()
+        from pycalphad_app.core.kaufman_mallik_engine import KaufmanMallikEngine
+        t_kelvin = float(req.get("t_kelvin", 1200.0))
+        delta_g_a = float(req.get("delta_g_a", 0.0))
+        delta_g_b = float(req.get("delta_g_b", 0.0))
+        e_alpha = float(req.get("e_alpha", 0.0))
+        e_beta = float(req.get("e_beta", 0.0))
+        use_calories = bool(req.get("use_calories", False))
+        initial_guess = req.get("initial_guess") or [0.1, 0.9]
+
+        result = KaufmanMallikEngine.solve_binary_common_tangent(
+            t_kelvin=t_kelvin,
+            delta_g_a=delta_g_a,
+            delta_g_b=delta_g_b,
+            e_alpha=e_alpha,
+            e_beta=e_beta,
+            initial_guess=(float(initial_guess[0]), float(initial_guess[1])),
+            use_calories=use_calories
+        )
+        return _to_json_safe(result)
+
+    @classmethod
+    def handle_invert_interaction_parameters(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Inverts regular solution parameters from experimental phase boundaries (Mallik 1986 App. 1)."""
+        _ensure_modules()
+        from pycalphad_app.core.kaufman_mallik_engine import KaufmanMallikEngine
+        t_kelvin = float(req.get("t_kelvin", 1200.0))
+        x_alpha = float(req.get("x_alpha", 0.2))
+        x_beta = float(req.get("x_beta", 0.8))
+        delta_g_a = float(req.get("delta_g_a", 0.0))
+        delta_g_b = float(req.get("delta_g_b", 0.0))
+        use_calories = bool(req.get("use_calories", False))
+
+        result = KaufmanMallikEngine.invert_interaction_parameters(
+            t_kelvin=t_kelvin,
+            x_alpha=x_alpha,
+            x_beta=x_beta,
+            delta_g_a=delta_g_a,
+            delta_g_b=delta_g_b,
+            use_calories=use_calories
+        )
+        return _to_json_safe(result)
+
+    @classmethod
+    def handle_calculate_kaufman_mallik_ternary(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates 3D Newton-Raphson ternary isothermal tie-lines (Mallik 1986 App. 2)."""
+        _ensure_modules()
+        from pycalphad_app.core.kaufman_mallik_engine import KaufmanMallikEngine
+        t_kelvin = float(req.get("t_kelvin", 2500.0))
+        g_pure_1 = tuple(req.get("g_pure_1", [0.0, 0.0, 0.0]))
+        g_pure_2 = tuple(req.get("g_pure_2", [0.0, 0.0, 0.0]))
+        e1_ij = float(req.get("e1_ij", 0.0))
+        e1_ik = float(req.get("e1_ik", 0.0))
+        e1_jk = float(req.get("e1_jk", 0.0))
+        e2_ij = float(req.get("e2_ij", 0.0))
+        e2_ik = float(req.get("e2_ik", 0.0))
+        e2_jk = float(req.get("e2_jk", 0.0))
+        num_tie_lines = int(req.get("num_tie_lines", 15))
+        use_calories = bool(req.get("use_calories", False))
+
+        result = KaufmanMallikEngine.solve_ternary_isothermal_tie_lines(
+            t_kelvin=t_kelvin,
+            g_pure_1=g_pure_1,
+            g_pure_2=g_pure_2,
+            e1_ij=e1_ij,
+            e1_ik=e1_ik,
+            e1_jk=e1_jk,
+            e2_ij=e2_ij,
+            e2_ik=e2_ik,
+            e2_jk=e2_jk,
+            num_tie_lines=num_tie_lines,
+            use_calories=use_calories
+        )
+        return _to_json_safe(result)
+
+    @classmethod
+    def handle_calculate_miscibility_gap(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates symmetrical miscibility gap and spinodal decomposition (Mallik 1986 Sec. 8.2)."""
+        _ensure_modules()
+        from pycalphad_app.core.kaufman_mallik_engine import KaufmanMallikEngine
+        e_param = float(req.get("interaction_parameter", 2500.0))
+        t_kelvin = float(req.get("t_kelvin", 600.0))
+        use_calories = bool(req.get("use_calories", False))
+
+        result = KaufmanMallikEngine.calculate_miscibility_gap(
+            interaction_parameter=e_param,
+            t_kelvin=t_kelvin,
+            use_calories=use_calories
+        )
+        return _to_json_safe(result or {"miscible": True, "t_kelvin": t_kelvin})
+
+    @classmethod
+    def handle_get_kaufman_mallik_presets(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns verified historical presets from Mallik (1986)."""
+        _ensure_modules()
+        from pycalphad_app.core.kaufman_mallik_engine import KaufmanMallikEngine
+        presets = KaufmanMallikEngine.get_classic_presets()
+        return _to_json_safe({"presets": presets})
+
 
 def run_daemon():
     """Main event loop reading newline-delimited JSON RPC from STDIN."""
@@ -1932,6 +2034,11 @@ def run_daemon():
         "get_binary_systems": CAEDaemon.handle_get_binary_systems,
         "calculate_binary_diagram": CAEDaemon.handle_calculate_binary_diagram,
         "evaluate_binary_lever_rule": CAEDaemon.handle_evaluate_binary_lever_rule,
+        "calculate_kaufman_mallik_binary": CAEDaemon.handle_calculate_kaufman_mallik_binary,
+        "invert_interaction_parameters": CAEDaemon.handle_invert_interaction_parameters,
+        "calculate_kaufman_mallik_ternary": CAEDaemon.handle_calculate_kaufman_mallik_ternary,
+        "calculate_miscibility_gap": CAEDaemon.handle_calculate_miscibility_gap,
+        "get_kaufman_mallik_presets": CAEDaemon.handle_get_kaufman_mallik_presets,
     }
 
     sys.stderr.write(f"[CAEDaemon] Ready v{CAEDaemon.VERSION}. Listening on STDIN...\n")
