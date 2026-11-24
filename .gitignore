@@ -129,5 +129,53 @@ GEMINI.md
 .agent/
 _agents/
 
+# =========================================================================
+# Private Local Directories (Kept Strictly Local - Never Uploaded to Git)
+# =========================================================================
+/App/
+/cpp/
+/Databases/
+/materials_data/
+/opencalphad_gui/
+/scripts/
+/Origin_Plot_Data/
+/figures/
+/temp_runs/
+/scratch/
+/archive/
+
+# =========================================================================
+# Private Research Dossiers, Raw Datasets & Academic Documents
+# =========================================================================
+/*.pdf
+/*.xlsx
+/*.docx
+/*.tex
+/*.zip
+/*.csv
+/COMSOL_*.txt
+/*.json
+/hea-turbine-blade-design.md
+/CALPHAD_Scientific_Desktop_Architecture_Spec.md
+
+# =========================================================================
+# Root Python Scripts, Test Plots & Legacy Launchers (Kept Strictly Local)
+# =========================================================================
+/*.py
+/*.png
+!app_icon.png
+/*.ico
+!app_icon.ico
+/*.m
+/*.bat
+/*.ps1
+/*.sh
+/*.vbs
+/*.spec
+/*.lnk
+/*.html
+/references.bib
+
+
 
 
