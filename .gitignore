@@ -122,4 +122,12 @@ rhea_paper_extracted.txt
 Databases/.sdat_cache/
 pycalphad_app/database/.tdat_cache/
 
+# Agent Configuration & Prompt Instructions (Never commit or upload to version control)
+AGENTS.md
+.agents/
+GEMINI.md
+.agent/
+_agents/
+
+
 
