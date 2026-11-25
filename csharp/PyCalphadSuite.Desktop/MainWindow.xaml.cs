@@ -1328,7 +1328,7 @@ namespace PyCalphadSuite.Desktop
             HostCorrosion.ApplyOtisLiuStyle("Potentiodynamic Polarization in 3.5 wt% NaCl (Tafel)", "Log Current Density log₁₀(i) (μA/cm²)", "Potential E (V vs. SCE)", _isDarkTheme);
             HostPourbaix.ApplyOtisLiuStyle("Pourbaix (E-pH) Aqueous Phase Stability Diagram (GWB .tdat Master Database)", "Solution pH (0 to 14)", "Potential E (V vs. SHE)", _isDarkTheme);
             HostXRD.ApplyOtisLiuStyle("Simulated Powder X-Ray Diffractometer Pattern (Cu-Kα)", "Diffraction Angle 2θ (°)", "Relative Intensity (%)", _isDarkTheme);
-            HostRadar.ApplyOtisLiuStyle("6-Axis Manufacturing Processability & Route Suitability Radar", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
+            HostRadar.ApplyOtisLiuStyle("7-Axis Manufacturing Processability & Route Suitability Radar", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
             HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Sector Matching Scores", "Industrial Sector", "Suitability Index Score (%)", _isDarkTheme);
             HostValidation.ApplyOtisLiuStyle("Literature Validation: Calculated vs. Experimental Parity Plot", "Experimental Benchmark (Normalized %)", "CALPHAD Calculated (%)", _isDarkTheme);
             HostRomComparison.ApplyOtisLiuStyle("Rule of Mixtures (ROM) Comparison: CALPHAD vs. Pure Elemental Baselines", $"Temperature ({u})", "Yield Strength σ_y (MPa)", _isDarkTheme);
@@ -2813,7 +2813,10 @@ namespace PyCalphadSuite.Desktop
         private void RenderRadarPlot(EquilibriumResult res)
         {
             var plot = HostRadar.Plot;
-            HostRadar.ApplyOtisLiuStyle("6-Axis Manufacturing Processability & Route Suitability Radar", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
+            int nAxes = res.Processability?.Axes.Count ?? 7;
+            string radarTitle = $"{nAxes}-Axis Manufacturing Processability & Route Suitability Radar";
+            HostRadar.HeaderTitle = radarTitle;
+            HostRadar.ApplyOtisLiuStyle(radarTitle, "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
 
             var proc = res.Processability;
             if (proc != null && proc.Axes.Count > 0 && proc.Scores.Count == proc.Axes.Count)

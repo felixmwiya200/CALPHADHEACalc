@@ -1040,7 +1040,7 @@
                             </TabControl.Resources>
                         <!-- Tab 15: Processability Radar -->
                         <TabItem Header="Processability Radar">
-                            <ctrl:PlotCanvasHost x:Name="HostRadar" HeaderTitle="6-Axis Manufacturing Processability &amp; Route Suitability Radar" ExportBaseName="Processability_Radar"/>
+                            <ctrl:PlotCanvasHost x:Name="HostRadar" HeaderTitle="7-Axis Manufacturing Processability &amp; Route Suitability Radar" ExportBaseName="Processability_Radar"/>
                         </TabItem>
                         <!-- Tab 16: Industrial Suitability -->
                         <TabItem Header="Industrial Suitability">
