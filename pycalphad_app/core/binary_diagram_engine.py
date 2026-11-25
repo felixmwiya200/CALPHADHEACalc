@@ -2236,27 +2236,33 @@ class BinaryDiagramEngine:
         co_hcp_low = [(0.059, 139.5), (0.050, 70.0), (0.040, 0.0)]
         xs_cl, ys_cl = _interpolate_curve(co_hcp_low, n_pts=20, clip_x_min=0.040, clip_x_max=0.059)
 
-        # 7. Mn-rich alpha-Mn / beta-Mn boundary (727 °C down to 0 °C):
+        # 7. Mn-rich alpha-Mn / beta-Mn two-phase envelope (727 °C down to 0 °C):
+        # Alpha-Mn solvus (right boundary of two-phase field, single-phase alpha-Mn to the right):
         alpha_beta_knots = [(1.00, 727.0), (0.95, 587.8), (0.90, 428.4), (0.85, 0.0)]
         xs_ab, ys_ab = _interpolate_curve(alpha_beta_knots, n_pts=40, clip_x_min=0.85, clip_x_max=1.00)
 
+        # Beta-Mn solvus toward alpha-Mn (left boundary of beta-Mn + alpha-Mn field):
+        beta_alpha_knots = [(0.91, 727.0), (0.86, 520.0), (0.78, 260.0), (0.71, 0.0)]
+        xs_ba, ys_ba = _interpolate_curve(beta_alpha_knots, n_pts=40, clip_x_min=0.71, clip_x_max=0.91)
+
         curves = [
             {"name": "Liquidus", "xs": xs_liq, "ys": [conv(y) for y in ys_liq], "color": "#000000", "width": 2.2, "dash": "solid"},
-            {"name": "Solidus γ-(Co,Mn)", "xs": xs_s_fcc, "ys": [conv(y) for y in ys_s_fcc], "color": "#2563EB", "width": 2.0, "dash": "solid"},
-            {"name": "Solidus β-Mn", "xs": xs_s_beta, "ys": [conv(y) for y in ys_s_beta], "color": "#2563EB", "width": 2.0, "dash": "solid"},
-            {"name": "Solidus δ-Mn (BCC)", "xs": xs_s_bcc, "ys": [conv(y) for y in ys_s_bcc], "color": "#2563EB", "width": 1.8, "dash": "solid"},
+            {"name": "Solidus γ-(Co,Mn)", "xs": xs_s_fcc, "ys": [conv(y) for y in ys_s_fcc], "color": "#000000", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus β-Mn", "xs": xs_s_beta, "ys": [conv(y) for y in ys_s_beta], "color": "#000000", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus δ-Mn (BCC)", "xs": xs_s_bcc, "ys": [conv(y) for y in ys_s_bcc], "color": "#000000", "width": 1.8, "dash": "solid"},
             {"name": "Eutectic Invariant Tie-Line", "xs": [0.582, 0.618], "ys": [conv(1161.0), conv(1161.0)], "color": "#DC2626", "width": 2.0, "dash": "solid"},
             {"name": "Peritectic Invariant Tie-Line", "xs": [0.910, 0.965], "ys": [conv(1185.0), conv(1185.0)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
             {"name": "Upper Invariant Tie-Line (312 °C)", "xs": [0.068, 0.328], "ys": [conv(312.2), conv(312.2)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
             {"name": "Lower Invariant Tie-Line (140 °C)", "xs": [0.059, 0.467], "ys": [conv(139.5), conv(139.5)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
-            {"name": "fcc Ordering Boundary (Left)", "xs": xs_ol, "ys": [conv(y) for y in ys_ol], "color": "#1E3A8A", "width": 1.8, "dash": "solid"},
-            {"name": "fcc Ordering Boundary (Right)", "xs": xs_oru + xs_orl, "ys": [conv(y) for y in ys_oru + ys_orl], "color": "#1E3A8A", "width": 1.8, "dash": "solid"},
-            {"name": "fcc Solvus Corridor", "xs": xs_fsolv, "ys": [conv(y) for y in ys_fsolv], "color": "#059669", "width": 1.8, "dash": "solid"},
-            {"name": "β-Mn Solvus Corridor", "xs": xs_bsolv + xs_lsolv, "ys": [conv(y) for y in ys_bsolv + ys_lsolv], "color": "#7C3AED", "width": 1.8, "dash": "solid"},
-            {"name": "Co ε-HCP Solvus", "xs": xs_cu + xs_cm + xs_cl, "ys": [conv(y) for y in ys_cu + ys_cm + ys_cl], "color": "#0891B2", "width": 1.8, "dash": "solid"},
-            {"name": "Mn-rich β-Mn ⇌ α-Mn Boundary", "xs": xs_ab, "ys": [conv(y) for y in ys_ab], "color": "#059669", "width": 1.8, "dash": "solid"},
-            {"name": "δ-BCC ⇌ γ-FCC Transus", "xs": xs_dg, "ys": [conv(y) for y in ys_dg], "color": "#64748B", "width": 1.5, "dash": "dash"},
-            {"name": "γ-FCC ⇌ β-Mn Transus", "xs": xs_gb, "ys": [conv(y) for y in ys_gb], "color": "#64748B", "width": 1.5, "dash": "dash"},
+            {"name": "fcc Ordering Boundary (Left)", "xs": xs_ol, "ys": [conv(y) for y in ys_ol], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "fcc Ordering Boundary (Right)", "xs": xs_oru + xs_orl, "ys": [conv(y) for y in ys_oru + ys_orl], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "fcc Solvus Corridor", "xs": xs_fsolv, "ys": [conv(y) for y in ys_fsolv], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "β-Mn Solvus Corridor", "xs": xs_bsolv + xs_lsolv, "ys": [conv(y) for y in ys_bsolv + ys_lsolv], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "Co ε-HCP Solvus", "xs": xs_cu + xs_cm + xs_cl, "ys": [conv(y) for y in ys_cu + ys_cm + ys_cl], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "Mn-rich β-Mn ⇌ α-Mn Boundary", "xs": xs_ab, "ys": [conv(y) for y in ys_ab], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "β-Mn Solvus (to α-Mn)", "xs": xs_ba, "ys": [conv(y) for y in ys_ba], "color": "#000000", "width": 1.8, "dash": "solid"},
+            {"name": "δ-BCC ⇌ γ-FCC Transus", "xs": xs_dg, "ys": [conv(y) for y in ys_dg], "color": "#000000", "width": 1.5, "dash": "dash"},
+            {"name": "γ-FCC ⇌ β-Mn Transus", "xs": xs_gb, "ys": [conv(y) for y in ys_gb], "color": "#000000", "width": 1.5, "dash": "dash"},
         ]
 
         invariants = [
@@ -2311,15 +2317,16 @@ class BinaryDiagramEngine:
         ]
 
         regions = [
-            {"label": "Liquid", "x": 0.48, "y": conv(1450.0), "font_size": 13, "color": "#0F172A"},
-            {"label": "fcc", "x": 0.28, "y": conv(900.0), "font_size": 12, "color": "#1E3A8A"},
-            {"label": "β-Mn", "x": 0.70, "y": conv(900.0), "font_size": 12, "color": "#7C3AED"},
-            {"label": "α-Mn", "x": 0.92, "y": conv(250.0), "font_size": 11, "color": "#059669"},
-            {"label": "hcp", "x": 0.035, "y": conv(250.0), "font_size": 10, "color": "#0891B2"},
-            {"label": "bcc", "x": 0.94, "y": conv(1200.0), "font_size": 9, "color": "#334155"},
-            {"label": "fcc", "x": 0.96, "y": conv(1120.0), "font_size": 9, "color": "#1E3A8A"},
-            {"label": "fcc + β-Mn", "x": 0.54, "y": conv(650.0), "font_size": 9, "color": "#475569"},
-            {"label": "fcc + hcp", "x": 0.045, "y": conv(350.0), "font_size": 8, "color": "#475569"}
+            {"label": "Liquid", "x": 0.48, "y": conv(1450.0), "font_size": 13, "color": "#000000"},
+            {"label": "fcc", "x": 0.28, "y": conv(900.0), "font_size": 12, "color": "#000000"},
+            {"label": "β-Mn", "x": 0.70, "y": conv(900.0), "font_size": 12, "color": "#000000"},
+            {"label": "α-Mn", "x": 0.92, "y": conv(250.0), "font_size": 11, "color": "#000000"},
+            {"label": "hcp", "x": 0.035, "y": conv(250.0), "font_size": 10, "color": "#000000"},
+            {"label": "bcc", "x": 0.94, "y": conv(1200.0), "font_size": 9, "color": "#000000"},
+            {"label": "fcc", "x": 0.96, "y": conv(1120.0), "font_size": 9, "color": "#000000"},
+            {"label": "fcc + β-Mn", "x": 0.54, "y": conv(650.0), "font_size": 9, "color": "#000000"},
+            {"label": "fcc + hcp", "x": 0.045, "y": conv(350.0), "font_size": 8, "color": "#000000"},
+            {"label": "β-Mn + α-Mn", "x": 0.80, "y": conv(250.0), "font_size": 8.5, "color": "#000000"}
         ]
 
         return {

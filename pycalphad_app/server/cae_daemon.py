@@ -1902,6 +1902,31 @@ class CAEDaemon:
         return _to_json_safe(result)
 
     @classmethod
+    def handle_get_ternary_systems(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns catalogue of assessed ternary phase diagram systems."""
+        _ensure_modules()
+        from pycalphad_app.core.ternary_diagram_engine import TernaryDiagramEngine
+        systems = TernaryDiagramEngine.get_assessed_systems()
+        return _to_json_safe({"systems": systems})
+
+    @classmethod
+    def handle_calculate_ternary_diagram(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates ternary phase diagram curves, Gibbs grid, tie-lines, and invariant data."""
+        _ensure_modules()
+        from pycalphad_app.core.ternary_diagram_engine import TernaryDiagramEngine
+        system_name = req.get("system_name") or req.get("system") or "Co-Cr-Ni"
+        diagram_type = req.get("diagram_type", "isothermal")
+        temperature_c = float(req.get("temperature_c", req.get("temperature", 800.0)))
+        temp_unit = req.get("temp_unit", "C")
+        result = TernaryDiagramEngine.compute_ternary_diagram(
+            system_name=system_name,
+            diagram_type=diagram_type,
+            temperature_c=temperature_c,
+            temp_unit=temp_unit
+        )
+        return _to_json_safe(result)
+
+    @classmethod
     def handle_calculate_kaufman_mallik_binary(cls, req: Dict[str, Any]) -> Dict[str, Any]:
         """Calculates 2D Newton-Raphson regular solution binary equilibrium (Mallik 1986)."""
         _ensure_modules()
@@ -2048,6 +2073,8 @@ def run_daemon():
         "get_binary_systems": CAEDaemon.handle_get_binary_systems,
         "calculate_binary_diagram": CAEDaemon.handle_calculate_binary_diagram,
         "evaluate_binary_lever_rule": CAEDaemon.handle_evaluate_binary_lever_rule,
+        "get_ternary_systems": CAEDaemon.handle_get_ternary_systems,
+        "calculate_ternary_diagram": CAEDaemon.handle_calculate_ternary_diagram,
         "calculate_kaufman_mallik_binary": CAEDaemon.handle_calculate_kaufman_mallik_binary,
         "invert_interaction_parameters": CAEDaemon.handle_invert_interaction_parameters,
         "calculate_kaufman_mallik_ternary": CAEDaemon.handle_calculate_kaufman_mallik_ternary,

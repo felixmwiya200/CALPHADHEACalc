@@ -264,10 +264,10 @@
                                     <TextBlock Text="Hall-Petch Grain Size:" FontSize="11" FontWeight="Bold" Foreground="#000000"/>
                                     <TextBlock x:Name="LblGrainSize" Text="25 μm" DockPanel.Dock="Right" FontWeight="SemiBold" Foreground="#000000"/>
                                 </DockPanel>
-                                <Slider x:Name="SliderGrain" Minimum="1" Maximum="200" Value="25" ValueChanged="SliderGrain_ValueChanged"/>
+                                <Slider x:Name="SliderGrain" Minimum="1" Maximum="200" Value="25" ValueChanged="SliderGrain_ValueChanged" Height="24" Margin="0,2,0,8"/>
 
                                 <Button x:Name="BtnExperimentalOptions" Content="Experimental Options (Hatch &amp; Grain)..." Click="MenuExperimentalOptions_Click"
-                                        Margin="0,5,0,8" Padding="8,5" Background="#FFFFFF" Foreground="#0F172A" FontWeight="SemiBold" FontSize="11" BorderBrush="#CBD5E1" BorderThickness="1"
+                                        Margin="0,0,0,10" Padding="8,5" Background="#FFFFFF" Foreground="#0F172A" FontWeight="SemiBold" FontSize="11" BorderBrush="#CBD5E1" BorderThickness="1"
                                         ToolTip="Configure Hatch Pitch, Grain Size, Laser AM parameters, and thermomechanical history for all alloy calculations (Ctrl+Shift+E)"/>
 
                                 <TextBlock Text="Temperature Unit:" FontSize="11" FontWeight="Bold" Foreground="#000000" Margin="0,6,0,2"/>
@@ -426,6 +426,73 @@
                                             
                                             <TextBox x:Name="TxtBinaryNotes" Grid.Row="3" FontFamily="Consolas" FontSize="10.5" Background="#F8FAFC" Foreground="#1E293B" BorderBrush="#CBD5E1" IsReadOnly="True" Padding="6" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
                                                      Text="Assessed CALPHAD benchmark diagram computed via Redlich-Kister excess Gibbs energy models and pure element SGTE unary melting parameters."/>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </TabItem>
+                        <!-- Tab: Ternary Phase Diagram (Gibbs Equilateral Triangle & Assessed Benchmarks) -->
+                        <TabItem Header="Ternary Phase Diagram">
+                            <Grid Margin="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Top Control Bar -->
+                                <Border Grid.Row="0" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="8,6" Margin="0,0,0,6">
+                                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="Ternary System:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#0F172A"/>
+                                        <ComboBox x:Name="CmbTernarySystem" Width="260" Height="26" VerticalAlignment="Center" Margin="0,0,10,0" DropDownOpened="CmbTernarySystem_DropDownOpened"/>
+
+                                        <TextBlock Text="Diagram Type:" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#0F172A"/>
+                                        <ComboBox x:Name="CmbTernaryType" Width="170" Height="26" VerticalAlignment="Center" Margin="0,0,10,0" SelectedIndex="0">
+                                            <ComboBoxItem Content="Isothermal Section"/>
+                                            <ComboBoxItem Content="Liquidus Projection"/>
+                                        </ComboBox>
+
+                                        <TextBlock Text="T (°C):" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#0F172A"/>
+                                        <TextBox x:Name="TxtTernaryTemp" Text="800" Width="55" Height="24" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,12,0"/>
+
+                                        <Button x:Name="BtnComputeTernary" Content="Calculate Diagram" Click="BtnComputeTernary_Click" FontWeight="Bold" Background="#0284C7" Foreground="White" Padding="12,4" Margin="0,0,14,0" ToolTip="Compute CALPHAD ternary phase equilibrium diagram on Gibbs triangle"/>
+                                    </WrapPanel>
+                                </Border>
+
+                                <!-- Main Plot & Information Layout -->
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="380"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Left: ScottPlot Canvas Host for Gibbs Triangle -->
+                                    <ctrl:PlotCanvasHost x:Name="HostTernaryDiagram" Grid.Column="0" HeaderTitle="Ternary Phase Diagram (Gibbs Equilateral Triangle)" ExportBaseName="Ternary_Phase_Diagram" Margin="0,0,6,0"/>
+
+                                    <!-- Right: Invariant Reactions & Equilibrium Details Panel -->
+                                    <Border Grid.Column="1" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="140"/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Grid.Row="0" Text="Assessed Invariant Reactions &amp; Equilibria:" FontWeight="Bold" FontSize="11.5" Foreground="#0F172A" Margin="0,0,0,6"/>
+
+                                            <DataGrid x:Name="GridTernaryInvariants" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#F8FAFC" BorderBrush="#CBD5E1" RowHeight="24" FontSize="10.5">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="85"/>
+                                                    <DataGridTextColumn Header="Temp" Binding="{Binding TempFormatted}" Width="65"/>
+                                                    <DataGridTextColumn Header="Equation" Binding="{Binding Equation}" Width="120"/>
+                                                    <DataGridTextColumn Header="Composition" Binding="{Binding Composition}" Width="*"/>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+
+                                            <TextBlock Grid.Row="2" Text="Thermodynamic Assessment &amp; Citations:" FontWeight="Bold" FontSize="11.5" Foreground="#0F172A" Margin="0,8,0,4"/>
+
+                                            <TextBox x:Name="TxtTernaryNotes" Grid.Row="3" FontFamily="Consolas" FontSize="10.5" Background="#F8FAFC" Foreground="#1E293B" BorderBrush="#CBD5E1" IsReadOnly="True" Padding="6" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                                     Text="Assessed CALPHAD ternary phase diagram computed via Redlich-Kister-Muggianu excess Gibbs energy model on an equilateral Gibbs triangle."/>
                                         </Grid>
                                     </Border>
                                 </Grid>

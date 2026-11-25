@@ -121,6 +121,7 @@ namespace PyCalphadSuite.Desktop
             _compositionRows.CollectionChanged += (s, e) =>
             {
                 _ = LoadBinarySystemsAsync();
+                _ = LoadTernarySystemsAsync();
             };
 
             WireChildControlEvents();
@@ -219,6 +220,7 @@ namespace PyCalphadSuite.Desktop
                 _ = CalculateSurfaceSpeciationAsync("FeOH.sdat", 25.0);
                 InitializeRheaTab();
                 _ = LoadBinarySystemsAsync();
+                _ = LoadTernarySystemsAsync();
 
                 if (!string.IsNullOrEmpty(_startupCompositionPath) && File.Exists(_startupCompositionPath))
                 {
@@ -881,6 +883,7 @@ namespace PyCalphadSuite.Desktop
                 });
             }
             _ = LoadBinarySystemsAsync();
+            _ = LoadTernarySystemsAsync();
         }
 
         private void BtnAddElement_Click(object sender, RoutedEventArgs e)
@@ -1307,6 +1310,7 @@ namespace PyCalphadSuite.Desktop
             HostScheil.ApplyOtisLiuStyle("Scheil-Gulliver Non-Equilibrium Solidification Trajectory", "Solid Fraction (f_s)", $"Temperature ({u})", _isDarkTheme);
             HostIsopleth.ApplyOtisLiuStyle("Pseudo-Binary Isopleth Section (Otis & Liu 2016 Fig. 5)", "Solute Mole Fraction x(B)", $"Temperature ({u})", _isDarkTheme);
             HostBinaryDiagram?.ApplyOtisLiuStyle("Binary Phase Diagram", "Atomic Fraction X_B", $"Temperature ({u})", _isDarkTheme);
+            HostTernaryDiagram?.ApplyOtisLiuStyle("Ternary Phase Diagram (Gibbs Equilateral Triangle)", "Barycentric Projection X", "Barycentric Projection Y", _isDarkTheme);
             HostDensity.ApplyOtisLiuStyle("Apparent & Theoretical Density ρ(T)", $"Temperature ({u})", "Density (g/cm³)", _isDarkTheme);
             HostCTE.ApplyOtisLiuStyle("Linear Thermal Expansion Coefficient α(T)", $"Temperature ({u})", "Linear CTE (10⁻⁶ / K)", _isDarkTheme);
             HostThermalCond.ApplyOtisLiuStyle("Thermal Conductivity k(T) (Electronic + Phonon)", $"Temperature ({u})", "Thermal Conductivity (W/(m·K))", _isDarkTheme);
@@ -1349,6 +1353,7 @@ namespace PyCalphadSuite.Desktop
             HostScheil.SetLimitsAndRemember(0.0, 1.0, ConvTemp(1073.15), ConvTemp(1873.15));
             HostIsopleth.SetLimitsAndRemember(0.0, 0.6, ConvTemp(1000.0), ConvTemp(1800.0));
             HostBinaryDiagram?.SetLimitsAndRemember(0.0, 1.0, ConvTemp(400.0), ConvTemp(1800.0));
+            HostTernaryDiagram?.SetLimitsAndRemember(-0.15, 1.15, -0.10, 0.98);
             HostDensity.SetLimitsAndRemember(ConvTemp(250.0), ConvTemp(1650.0), 6.5, 9.0);
             HostCTE.SetLimitsAndRemember(ConvTemp(250.0), ConvTemp(1650.0), 8.0, 26.0);
             HostThermalCond.SetLimitsAndRemember(ConvTemp(250.0), ConvTemp(1650.0), 5.0, 50.0);
@@ -1383,6 +1388,7 @@ namespace PyCalphadSuite.Desktop
             HostScheil.Refresh();
             HostIsopleth.Refresh();
             HostBinaryDiagram?.Refresh();
+            HostTernaryDiagram?.Refresh();
             HostDensity.Refresh();
             HostCTE.Refresh();
             HostThermalCond.Refresh();
@@ -1847,9 +1853,9 @@ namespace PyCalphadSuite.Desktop
                 {
                     double[] tieXs = new[] { inv.XStart, inv.XEnd };
                     double[] tieYs = new[] { inv.Temp, inv.Temp };
-                    var tieLine = plot.Add.ScatterLine(tieXs, tieYs, ScottPlot.Color.FromHex("#1E293B"));
+                    var tieLine = plot.Add.ScatterLine(tieXs, tieYs, ScottPlot.Color.FromHex("#DC2626"));
                     tieLine.LineWidth = 2.0f;
-                    tieLine.LineStyle.Pattern = LinePattern.Dashed;
+                    tieLine.LineStyle.Pattern = LinePattern.Solid;
                 }
 
                 // Node marker at invariant reaction coordinate
@@ -1863,7 +1869,7 @@ namespace PyCalphadSuite.Desktop
             foreach (var reg in diag.Regions)
             {
                 var txt = plot.Add.Text(reg.Label, reg.X, reg.Y);
-                txt.LabelFontColor = ScottPlot.Color.FromHex(reg.Color);
+                txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex(string.IsNullOrEmpty(reg.Color) ? "#000000" : reg.Color);
                 txt.LabelFontSize = (float)reg.FontSize;
                 txt.LabelBold = true;
             }
@@ -1871,8 +1877,8 @@ namespace PyCalphadSuite.Desktop
             // 4. Axis limits
             double xMin = diag.XMin;
             double xMax = diag.XMax;
-            double yMin = diag.YMin > 0 ? diag.YMin : 300.0;
-            double yMax = diag.YMax > yMin ? diag.YMax : 2000.0;
+            double yMin = diag.YMin;
+            double yMax = diag.YMax > yMin ? diag.YMax : (diag.TempUnit == "°C" ? 1800.0 : 2000.0);
             HostBinaryDiagram.SetLimitsAndRemember(xMin, xMax, yMin, yMax);
             HostBinaryDiagram.HeaderSummary = $"{diag.System} | Invariants: {diag.Invariants?.Count ?? 0} | T: {yMin:F0}–{yMax:F0} {u}";
             HostBinaryDiagram.Refresh();
@@ -1919,6 +1925,247 @@ namespace PyCalphadSuite.Desktop
             {
                 BtnBinaryLeverRule.IsEnabled = true;
             }
+        }
+
+        #endregion
+
+        #region Ternary Phase Diagram Handlers & Gibbs Triangle Visualization
+
+        private TernaryDiagramDto? _latestTernaryDiagram;
+        private List<TernarySystemSummaryDto> _availableTernarySystems = new();
+
+        private async Task LoadTernarySystemsAsync()
+        {
+            if (_client == null) return;
+            try
+            {
+                var elems = _compositionRows
+                    .Where(r => !string.IsNullOrWhiteSpace(r.Element) && r.Fraction > 0)
+                    .Select(r => r.Element.Trim())
+                    .ToList();
+                var systems = await _client.GetTernarySystemsAsync();
+                _availableTernarySystems = systems ?? new List<TernarySystemSummaryDto>();
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (CmbTernarySystem != null)
+                    {
+                        var cur = CmbTernarySystem.SelectedItem as string;
+                        var displayItems = _availableTernarySystems.Select(s => $"{s.Name} ({s.Category})").ToList();
+                        CmbTernarySystem.ItemsSource = displayItems;
+                        if (!string.IsNullOrEmpty(cur) && displayItems.Contains(cur))
+                        {
+                            CmbTernarySystem.SelectedItem = cur;
+                        }
+                        else if (displayItems.Count > 0)
+                        {
+                            CmbTernarySystem.SelectedIndex = 0;
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[TernaryDiagram] Failed to load ternary systems: {ex.Message}");
+            }
+        }
+
+        private async void CmbTernarySystem_DropDownOpened(object? sender, EventArgs e)
+        {
+            await LoadTernarySystemsAsync();
+        }
+
+        private async void BtnComputeTernary_Click(object sender, RoutedEventArgs e)
+        {
+            if (_client == null) return;
+
+            string selectedDisplay = CmbTernarySystem?.SelectedItem as string ?? "";
+            string systemSlug = "Co-Cr-Ni";
+            if (!string.IsNullOrEmpty(selectedDisplay))
+            {
+                int parenIdx = selectedDisplay.IndexOf(" (");
+                systemSlug = parenIdx > 0 ? selectedDisplay.Substring(0, parenIdx).Trim() : selectedDisplay.Trim();
+            }
+
+            string diagType = (CmbTernaryType?.SelectedIndex == 1) ? "liquidus" : "isothermal";
+            string u = TempUnitStr();
+            if (!double.TryParse(TxtTernaryTemp?.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double tempC))
+            {
+                tempC = 800.0;
+            }
+
+            try
+            {
+                BtnComputeTernary.IsEnabled = false;
+                BtnComputeTernary.Content = "Calculating...";
+                StatusLabel.Text = $"Calculating CALPHAD ternary equilibrium for {systemSlug} ({diagType})...";
+
+                var diag = await _client.CalculateTernaryDiagramAsync(systemSlug, diagType, tempC, u);
+                _latestTernaryDiagram = diag;
+                RenderTernaryDiagramPlot(diag);
+
+                // Populate invariant reactions table
+                if (GridTernaryInvariants != null && diag.Invariants != null)
+                {
+                    var invList = diag.Invariants.Select(inv => new
+                    {
+                        Type = inv.Type,
+                        TempFormatted = !string.IsNullOrEmpty(inv.TempFormatted) ? inv.TempFormatted : $"{inv.TempC:F1} {u}",
+                        Equation = inv.Equation,
+                        Composition = inv.Composition
+                    }).ToList();
+                    GridTernaryInvariants.ItemsSource = invList;
+                }
+
+                // Update thermodynamic notes
+                if (TxtTernaryNotes != null)
+                {
+                    TxtTernaryNotes.Text = $"System: {diag.System} ({diag.DiagramType})\n" +
+                                          $"Assessed Category: CALPHAD Gibbs Equilateral Projection\n" +
+                                          $"Temperature: {diag.Temperature:F1} {diag.TempUnit}\n" +
+                                          $"Assessed Invariants: {diag.Invariants?.Count ?? 0}\n" +
+                                          $"Boundary Curves: {diag.Curves?.Count ?? 0} monovariant / solvus curves\n" +
+                                          $"Tie-Triangles: {diag.TieTriangles?.Count ?? 0} three-phase equilibria\n" +
+                                          $"Tie-Lines: {diag.TieLines?.Count ?? 0} two-phase tie-lines\n" +
+                                          $"Notes: {diag.LiteratureNotes}";
+                }
+
+                StatusLabel.Text = $"Ternary phase diagram rendered for {diag.System}.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate ternary diagram: {ex.Message}", "Ternary Diagram Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusLabel.Text = "Ternary calculation failed.";
+            }
+            finally
+            {
+                BtnComputeTernary.IsEnabled = true;
+                BtnComputeTernary.Content = "Calculate Diagram";
+            }
+        }
+
+        private void RenderTernaryDiagramPlot(TernaryDiagramDto diag)
+        {
+            if (HostTernaryDiagram == null || diag == null) return;
+            var plot = HostTernaryDiagram.Plot;
+            plot.Clear();
+
+            // Hide standard rectangular Cartesian axes and ticks
+            plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
+            plot.Axes.Left.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
+            plot.Axes.Right.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
+            plot.Axes.Top.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
+            plot.Axes.Bottom.FrameLineStyle.Width = 0;
+            plot.Axes.Left.FrameLineStyle.Width = 0;
+            plot.Axes.Right.FrameLineStyle.Width = 0;
+            plot.Axes.Top.FrameLineStyle.Width = 0;
+            plot.Grid.IsVisible = false;
+
+            // 1. Triangular Grid Lines (10% Barycentric Increments)
+            var gridColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#E2E8F0");
+            foreach (var g in diag.GridLines)
+            {
+                if (g.Xs.Count > 0 && g.Ys.Count > 0)
+                {
+                    var gl = plot.Add.ScatterLine(g.Xs.ToArray(), g.Ys.ToArray(), gridColor);
+                    gl.LineWidth = 0.8f;
+                    gl.LineStyle.Pattern = LinePattern.Dotted;
+                }
+            }
+
+            // 2. Gibbs Equilateral Triangle Outer Perimeter Border
+            if (diag.TriangleBorderX.Count > 0 && diag.TriangleBorderY.Count > 0)
+            {
+                var borderLine = plot.Add.ScatterLine(diag.TriangleBorderX.ToArray(), diag.TriangleBorderY.ToArray(), _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A"));
+                borderLine.LineWidth = 2.4f;
+            }
+            else
+            {
+                double h = Math.Sqrt(3.0) / 2.0;
+                var borderXs = new double[] { 0.0, 1.0, 0.5, 0.0 };
+                var borderYs = new double[] { 0.0, 0.0, h, 0.0 };
+                var borderLine = plot.Add.ScatterLine(borderXs, borderYs, _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A"));
+                borderLine.LineWidth = 2.4f;
+            }
+
+            // 3. Three-Phase Tie-Triangles
+            foreach (var tri in diag.TieTriangles)
+            {
+                if (tri.V1.Count >= 2 && tri.V2.Count >= 2 && tri.V3.Count >= 2)
+                {
+                    var triXs = new double[] { tri.V1[0], tri.V2[0], tri.V3[0], tri.V1[0] };
+                    var triYs = new double[] { tri.V1[1], tri.V2[1], tri.V3[1], tri.V1[1] };
+                    var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
+                    var triLine = plot.Add.ScatterLine(triXs, triYs, triColor);
+                    triLine.LineWidth = 1.4f;
+                    triLine.LineStyle.Pattern = LinePattern.Solid;
+                }
+            }
+
+            // 4. Two-Phase Conjugate Tie-Lines
+            foreach (var tie in diag.TieLines)
+            {
+                if (tie.Xs.Count > 0 && tie.Ys.Count > 0)
+                {
+                    var tieColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tie.Color) ? "#64748B" : tie.Color);
+                    var tl = plot.Add.ScatterLine(tie.Xs.ToArray(), tie.Ys.ToArray(), tieColor);
+                    tl.LineWidth = 1.0f;
+                    tl.LineStyle.Pattern = LinePattern.Dashed;
+                }
+            }
+
+            // 5. Boundary & Monovariant Phase Curves
+            foreach (var curve in diag.Curves)
+            {
+                if (curve.Xs.Count == 0 || curve.Ys.Count == 0) continue;
+                var xs = curve.Xs.ToArray();
+                var ys = curve.Ys.ToArray();
+                var col = ScottPlot.Color.FromHex(string.IsNullOrEmpty(curve.Color) ? "#000000" : curve.Color);
+                var sc = plot.Add.ScatterLine(xs, ys, col);
+                sc.LineWidth = (float)Math.Max(1.5, curve.LineWidth);
+                if (curve.LineStyle == "dash" || curve.LineStyle == "Dashed")
+                {
+                    sc.LineStyle.Pattern = LinePattern.Dashed;
+                }
+                else if (curve.LineStyle == "dot" || curve.LineStyle == "Dotted")
+                {
+                    sc.LineStyle.Pattern = LinePattern.Dotted;
+                }
+                sc.LegendText = curve.Name;
+                HostTernaryDiagram.AddExportSeries(curve.Name, xs, ys);
+            }
+
+            // 6. Phase Region Labels
+            foreach (var lbl in diag.PhaseLabels)
+            {
+                var txt = plot.Add.Text(lbl.Text, lbl.X, lbl.Y);
+                txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex(string.IsNullOrEmpty(lbl.Color) ? "#0F172A" : lbl.Color);
+                txt.LabelFontSize = 10.0f;
+                txt.LabelBold = lbl.Bold;
+                txt.LabelAlignment = Alignment.MiddleCenter;
+            }
+
+            // 7. Vertex Apex Labels
+            foreach (var kvp in diag.ApexLabels)
+            {
+                var apex = kvp.Value;
+                var txt = plot.Add.Text(apex.Name, apex.X, apex.Y);
+                txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A");
+                txt.LabelFontSize = 12.0f;
+                txt.LabelBold = true;
+                txt.LabelAlignment = apex.Align switch
+                {
+                    "Top" => Alignment.LowerCenter,
+                    "Left" => Alignment.UpperLeft,
+                    "Right" => Alignment.UpperRight,
+                    _ => Alignment.MiddleCenter
+                };
+            }
+
+            // Fixed Bounds with Margin for Apex Text
+            HostTernaryDiagram.SetLimitsAndRemember(-0.15, 1.15, -0.10, 0.98);
+            HostTernaryDiagram.HeaderSummary = $"{diag.System} ({diag.DiagramType}) | T={diag.Temperature:F0} {diag.TempUnit} | {diag.LiteratureNotes}";
+            HostTernaryDiagram.Refresh();
         }
 
         #endregion
@@ -5310,6 +5557,7 @@ namespace PyCalphadSuite.Desktop
             ("Scheil_Solidification", HostScheil),
             ("Isopleth_Section", HostIsopleth),
             ("Binary_Phase_Diagram", HostBinaryDiagram),
+            ("Ternary_Phase_Diagram", HostTernaryDiagram),
             ("Density", HostDensity),
             ("Thermal_Expansion", HostCTE),
             ("Thermal_Conductivity", HostThermalCond),

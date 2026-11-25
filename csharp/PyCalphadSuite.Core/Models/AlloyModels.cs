@@ -2548,6 +2548,215 @@ namespace PyCalphadSuite.Core.Models
         public List<string> Systems { get; set; } = new();
     }
 
+    #region Ternary Phase Diagram Formalism Models (Gibbs Equilateral Triangle)
+    public class TernarySystemSummaryDto
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("category")]
+        public string Category { get; set; } = string.Empty;
+
+        [JsonPropertyName("elements")]
+        public List<string> Elements { get; set; } = new();
+
+        [JsonPropertyName("topology")]
+        public string Topology { get; set; } = string.Empty;
+
+        [JsonPropertyName("citation")]
+        public string Citation { get; set; } = string.Empty;
+    }
+
+    public class TernarySystemsContainerDto
+    {
+        [JsonPropertyName("systems")]
+        public List<TernarySystemSummaryDto> Systems { get; set; } = new();
+    }
+
+    public class TernaryCurveDto
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("xs")]
+        public List<double> Xs { get; set; } = new();
+
+        [JsonPropertyName("ys")]
+        public List<double> Ys { get; set; } = new();
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; } = "#1D4ED8";
+
+        [JsonPropertyName("line_style")]
+        public string LineStyle { get; set; } = "Solid";
+
+        [JsonPropertyName("line_width")]
+        public double LineWidth { get; set; } = 2.0;
+    }
+
+    public class TernaryGridLineDto
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("xs")]
+        public List<double> Xs { get; set; } = new();
+
+        [JsonPropertyName("ys")]
+        public List<double> Ys { get; set; } = new();
+
+        [JsonPropertyName("frac")]
+        public double Frac { get; set; }
+
+        [JsonPropertyName("axis")]
+        public string Axis { get; set; } = string.Empty;
+    }
+
+    public class TernaryTieLineDto
+    {
+        [JsonPropertyName("xs")]
+        public List<double> Xs { get; set; } = new();
+
+        [JsonPropertyName("ys")]
+        public List<double> Ys { get; set; } = new();
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; } = "#64748B";
+    }
+
+    public class TernaryTieTriangleDto
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("v1")]
+        public List<double> V1 { get; set; } = new();
+
+        [JsonPropertyName("v2")]
+        public List<double> V2 { get; set; } = new();
+
+        [JsonPropertyName("v3")]
+        public List<double> V3 { get; set; } = new();
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; } = "#FEE2E2";
+
+        [JsonPropertyName("border_color")]
+        public string BorderColor { get; set; } = "#DC2626";
+    }
+
+    public class TernaryPhaseLabelDto
+    {
+        [JsonPropertyName("text")]
+        public string Text { get; set; } = string.Empty;
+
+        [JsonPropertyName("x")]
+        public double X { get; set; }
+
+        [JsonPropertyName("y")]
+        public double Y { get; set; }
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; } = "#0F172A";
+
+        [JsonPropertyName("bold")]
+        public bool Bold { get; set; } = true;
+    }
+
+    public class TernaryApexLabelDto
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("x")]
+        public double X { get; set; }
+
+        [JsonPropertyName("y")]
+        public double Y { get; set; }
+
+        [JsonPropertyName("align")]
+        public string Align { get; set; } = "Center";
+    }
+
+    public class TernaryInvariantDto
+    {
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = string.Empty;
+
+        [JsonPropertyName("temp_c")]
+        public double TempC { get; set; }
+
+        [JsonPropertyName("temp_formatted")]
+        public string TempFormatted { get; set; } = string.Empty;
+
+        [JsonPropertyName("equation")]
+        public string Equation { get; set; } = string.Empty;
+
+        [JsonPropertyName("composition")]
+        public string Composition { get; set; } = string.Empty;
+
+        [JsonPropertyName("desc")]
+        public string Desc { get; set; } = string.Empty;
+    }
+
+    public class TernaryDiagramDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("element_a")]
+        public string ElementA { get; set; } = string.Empty;
+
+        [JsonPropertyName("element_b")]
+        public string ElementB { get; set; } = string.Empty;
+
+        [JsonPropertyName("element_c")]
+        public string ElementC { get; set; } = string.Empty;
+
+        [JsonPropertyName("diagram_type")]
+        public string DiagramType { get; set; } = "isothermal";
+
+        [JsonPropertyName("temperature")]
+        public double Temperature { get; set; }
+
+        [JsonPropertyName("temp_unit")]
+        public string TempUnit { get; set; } = "°C";
+
+        [JsonPropertyName("triangle_border_x")]
+        public List<double> TriangleBorderX { get; set; } = new();
+
+        [JsonPropertyName("triangle_border_y")]
+        public List<double> TriangleBorderY { get; set; } = new();
+
+        [JsonPropertyName("grid_lines")]
+        public List<TernaryGridLineDto> GridLines { get; set; } = new();
+
+        [JsonPropertyName("apex_labels")]
+        public Dictionary<string, TernaryApexLabelDto> ApexLabels { get; set; } = new();
+
+        [JsonPropertyName("curves")]
+        public List<TernaryCurveDto> Curves { get; set; } = new();
+
+        [JsonPropertyName("tie_lines")]
+        public List<TernaryTieLineDto> TieLines { get; set; } = new();
+
+        [JsonPropertyName("tie_triangles")]
+        public List<TernaryTieTriangleDto> TieTriangles { get; set; } = new();
+
+        [JsonPropertyName("phase_labels")]
+        public List<TernaryPhaseLabelDto> PhaseLabels { get; set; } = new();
+
+        [JsonPropertyName("invariants")]
+        public List<TernaryInvariantDto> Invariants { get; set; } = new();
+
+        [JsonPropertyName("literature_notes")]
+        public string LiteratureNotes { get; set; } = string.Empty;
+    }
+    #endregion
+
     #region Kaufman-Mallik Phase Diagram Formalism Models (Mallik 1986)
 
     public class KaufmanMallikBinaryResultDto

@@ -79,4 +79,54 @@ public class ScottPlotLegendTests
         plot.SavePng(testPngPath, 900, 500);
         Assert.True(File.Exists(testPngPath));
     }
+
+    [Fact]
+    public void TestTernaryGibbsTriangleRender()
+    {
+        var plot = new Plot();
+        double sqrt3_2 = Math.Sqrt(3.0) / 2.0;
+
+        // Border
+        double[] borderX = new double[] { 0.0, 1.0, 0.5, 0.0 };
+        double[] borderY = new double[] { 0.0, 0.0, sqrt3_2, 0.0 };
+        var border = plot.Add.ScatterLine(borderX, borderY, ScottPlot.Color.FromHex("#0F172A"));
+        border.LineWidth = 2.0f;
+
+        // Internal grid lines
+        for (int i = 1; i < 10; i++)
+        {
+            double f = i * 0.1;
+            // Constant C (parallel to base)
+            double y = sqrt3_2 * f;
+            double x1 = 0.5 * f;
+            double x2 = 1.0 - 0.5 * f;
+            var g = plot.Add.ScatterLine(new[] { x1, x2 }, new[] { y, y }, ScottPlot.Color.FromHex("#E2E8F0"));
+            g.LineWidth = 0.8f;
+        }
+
+        // Apex labels
+        var txtA = plot.Add.Text("Co", -0.04, -0.03);
+        txtA.LabelBold = true;
+        txtA.LabelFontSize = 13.0f;
+        txtA.LabelAlignment = Alignment.UpperRight;
+
+        var txtB = plot.Add.Text("Cr", 1.04, -0.03);
+        txtB.LabelBold = true;
+        txtB.LabelFontSize = 13.0f;
+        txtB.LabelAlignment = Alignment.UpperLeft;
+
+        var txtC = plot.Add.Text("Ni", 0.50, sqrt3_2 + 0.04);
+        txtC.LabelBold = true;
+        txtC.LabelFontSize = 13.0f;
+        txtC.LabelAlignment = Alignment.LowerCenter;
+
+        plot.Axes.SetLimits(-0.15, 1.15, -0.10, 0.98);
+        plot.Axes.Bottom.TickLabelStyle.IsVisible = false;
+        plot.Axes.Left.TickLabelStyle.IsVisible = false;
+        plot.Grid.IsVisible = false;
+
+        string testPngPath = Path.Combine(Directory.GetCurrentDirectory(), "test_ternary_gibbs.png");
+        plot.SavePng(testPngPath, 800, 700);
+        Assert.True(File.Exists(testPngPath));
+    }
 }

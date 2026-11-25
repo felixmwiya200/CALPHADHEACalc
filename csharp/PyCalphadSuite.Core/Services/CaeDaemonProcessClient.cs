@@ -683,6 +683,29 @@ namespace PyCalphadSuite.Core.Services
             return SendRequestAsync<BinaryLeverRuleDto>("evaluate_binary_lever_rule", p, timeout: TimeSpan.FromSeconds(25), ct: ct);
         }
 
+        public async Task<List<TernarySystemSummaryDto>> GetTernarySystemsAsync(CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<TernarySystemsContainerDto>("get_ternary_systems", new { }, timeout: TimeSpan.FromSeconds(10), ct: ct);
+            return res?.Systems ?? new List<TernarySystemSummaryDto>();
+        }
+
+        public Task<TernaryDiagramDto> CalculateTernaryDiagramAsync(
+            string systemName,
+            string diagramType = "isothermal",
+            double temperatureC = 800.0,
+            string tempUnit = "C",
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                system_name = systemName,
+                diagram_type = diagramType,
+                temperature_c = temperatureC,
+                temp_unit = tempUnit
+            };
+            return SendRequestAsync<TernaryDiagramDto>("calculate_ternary_diagram", p, timeout: TimeSpan.FromSeconds(20), ct: ct);
+        }
+
         #region Kaufman-Mallik Phase Diagram Formalism Methods (Mallik 1986)
 
         public Task<KaufmanMallikBinaryResultDto> CalculateKaufmanMallikBinaryAsync(
