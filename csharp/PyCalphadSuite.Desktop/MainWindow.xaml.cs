@@ -1328,7 +1328,7 @@ namespace PyCalphadSuite.Desktop
             HostPourbaix.ApplyOtisLiuStyle("Pourbaix (E-pH) Aqueous Phase Stability Diagram (GWB .tdat Master Database)", "Solution pH (0 to 14)", "Potential E (V vs. SHE)", _isDarkTheme);
             HostXRD.ApplyOtisLiuStyle("Simulated Powder X-Ray Diffractometer Pattern (Cu-Kα)", "Diffraction Angle 2θ (°)", "Relative Intensity (%)", _isDarkTheme);
             HostRadar.ApplyOtisLiuStyle("7-Axis Manufacturing Processability & Route Suitability Radar", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
-            HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Sector Matching Scores", "Industrial Sector", "Suitability Index Score (%)", _isDarkTheme);
+            HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Engineering Sector Matching Scores", "Suitability Score (%)", "Industrial Application Sector", _isDarkTheme);
             HostValidation.ApplyOtisLiuStyle("Literature Validation: Calculated vs. Experimental Parity Plot", "Experimental Benchmark (Normalized %)", "CALPHAD Calculated (%)", _isDarkTheme);
             HostRomComparison.ApplyOtisLiuStyle("Rule of Mixtures (ROM) Comparison: CALPHAD vs. Pure Elemental Baselines", $"Temperature ({u})", "Yield Strength σ_y (MPa)", _isDarkTheme);
             HostSurfaceSpeciation?.ApplyOtisLiuStyle("Passive Film Oxide Surface Charge Density σ₀ (µC/cm²) & Site Speciation vs. Solution pH", "Solution pH (0 to 14)", "Surface Charge Density σ₀ (µC/cm²)", _isDarkTheme);
@@ -1370,7 +1370,7 @@ namespace PyCalphadSuite.Desktop
             HostPourbaix.SetLimitsAndRemember(0.0, 14.0, -2.0, 2.0);
             HostXRD.SetLimitsAndRemember(20.0, 105.0, 0.0, 118.0);
             HostRadar.SetLimitsAndRemember(-1.45, 1.45, -1.40, 1.40);
-            HostSuitability.SetLimitsAndRemember(0.0, 13.0, 0.0, 112.0);
+            HostSuitability.SetLimitsAndRemember(0.0, 112.0, 0.4, 13.0);
             HostValidation.SetLimitsAndRemember(0.0, 108.0, 0.0, 108.0);
             HostRomComparison.SetLimitsAndRemember(ConvTemp(50.0), ConvTemp(1600.0), 0.0, 1500.0);
 
@@ -2877,34 +2877,53 @@ namespace PyCalphadSuite.Desktop
         private void RenderSuitabilityPlot(EquilibriumResult res)
         {
             var plot = HostSuitability.Plot;
-            HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Engineering Sector Matching Scores", "Industrial Application Sector", "Suitability Score (%)", _isDarkTheme);
+            HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Engineering Sector Matching Scores", "Suitability Score (%)", "Industrial Application Sector", _isDarkTheme);
 
             if (res.ApplicationScores.Count > 0)
             {
                 var top = res.ApplicationScores.Take(12).ToList();
-                var xs = Enumerable.Range(1, top.Count).Select(i => (double)i).ToArray();
-                var ys = top.Select(a => a.Score).ToArray();
-                var xLabels = top.Select(a => a.Name.Length > 18 ? a.Name[..16] + "…" : a.Name).ToArray();
+                int count = top.Count;
+                var yPositions = Enumerable.Range(0, count).Select(i => (double)(count - i)).ToArray();
+                var scores = top.Select(a => a.Score).ToArray();
+                var sectorNames = top.Select(a => a.Name).ToArray();
 
-                var bars = plot.Add.Bars(xs, ys);
-                bars.Color = ScottPlot.Color.FromHex("#2563EB");
+                var bars = plot.Add.Bars(yPositions, scores);
+                bars.Horizontal = true;
+                bars.Color = ScottPlot.Color.FromHex("#1D4ED8");
                 bars.LegendText = "Sector Suitability Score (%)";
-                HostSuitability.AddExportSeries("Sector Suitability Score (%)", xs, ys);
+                HostSuitability.AddExportSeries("Sector Suitability Score (%)", scores, yPositions);
 
-                plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(xs, xLabels);
-                plot.Axes.Bottom.TickLabelStyle.Rotation = -25;
-                plot.Axes.Bottom.TickLabelStyle.FontSize = 9.0f;
-
-                for (int i = 0; i < top.Count; i++)
+                foreach (var b in bars.Bars)
                 {
-                    var valTxt = plot.Add.Text($"{ys[i]:F0}%", xs[i], Math.Min(107.0, ys[i] + 3.0));
-                    valTxt.LabelFontSize = 8.5f;
+                    b.LineWidth = 1.0f;
+                    b.LineColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#0F172A");
+                }
+
+                plot.Axes.Left.TickGenerator = new ScottPlot.TickGenerators.NumericManual(yPositions, sectorNames);
+                plot.Axes.Left.TickLabelStyle.FontSize = 10.0f;
+                plot.Axes.Left.TickLabelStyle.Bold = true;
+                plot.Axes.Left.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
+                plot.Axes.Left.MinimumSize = 220f;
+
+                plot.Axes.Bottom.TickLabelStyle.FontSize = 10.5f;
+                plot.Axes.Bottom.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
+
+                for (int i = 0; i < count; i++)
+                {
+                    var valTxt = plot.Add.Text($"{scores[i]:F0}%", scores[i] + 1.2, yPositions[i]);
+                    valTxt.LabelFontSize = 9.5f;
                     valTxt.LabelBold = true;
+                    valTxt.LabelAlignment = Alignment.MiddleLeft;
                     valTxt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
                 }
 
+                var line75 = plot.Add.VerticalLine(75.0);
+                line75.LineColor = ScottPlot.Color.FromHex("#64748B");
+                line75.LinePattern = LinePattern.Dashed;
+                line75.LineWidth = 1.0f;
+
                 HostSuitability.HeaderSummary = $"Top Sector: {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
-                HostSuitability.SetLimitsAndRemember(0.2, top.Count + 0.8, 0.0, 114.0);
+                HostSuitability.SetLimitsAndRemember(0.0, 112.0, 0.4, count + 0.6);
             }
             HostSuitability.Refresh();
         }
