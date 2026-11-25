@@ -267,7 +267,7 @@
                                 <Slider x:Name="SliderGrain" Minimum="1" Maximum="200" Value="25" ValueChanged="SliderGrain_ValueChanged"/>
 
                                 <Button x:Name="BtnExperimentalOptions" Content="Experimental Options (Hatch &amp; Grain)..." Click="MenuExperimentalOptions_Click"
-                                        Margin="0,4,0,6" Padding="6,4" Background="#FFFFFF" Foreground="#1D4ED8" FontWeight="Bold" BorderBrush="#1D4ED8" BorderThickness="1.2"
+                                        Margin="0,5,0,8" Padding="8,5" Background="#FFFFFF" Foreground="#0F172A" FontWeight="SemiBold" FontSize="11" BorderBrush="#CBD5E1" BorderThickness="1"
                                         ToolTip="Configure Hatch Pitch, Grain Size, Laser AM parameters, and thermomechanical history for all alloy calculations (Ctrl+Shift+E)"/>
 
                                 <TextBlock Text="Temperature Unit:" FontSize="11" FontWeight="Bold" Foreground="#000000" Margin="0,6,0,2"/>

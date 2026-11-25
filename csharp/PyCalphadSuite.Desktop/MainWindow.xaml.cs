@@ -577,15 +577,14 @@ namespace PyCalphadSuite.Desktop
 
             if (BtnExperimentalOptions != null)
             {
-                BtnExperimentalOptions.Background = isDark
-                    ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#2A2D32"))
-                    : (isGrey ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#E2E8F0")) : new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#EFF6FF")));
-                BtnExperimentalOptions.Foreground = isDark
-                    ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#93C5FD"))
-                    : new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#1D4ED8"));
-                BtnExperimentalOptions.BorderBrush = isDark
-                    ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#3B82F6"))
-                    : new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#93C5FD"));
+                var btnBg = isDark ? "#21262D" : (isGrey ? "#E2E8F0" : "#FFFFFF");
+                var btnFg = isDark ? "#F0F6FC" : "#0F172A";
+                var btnBorder = isDark ? "#30363D" : "#CBD5E1";
+
+                BtnExperimentalOptions.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnBg));
+                BtnExperimentalOptions.Foreground = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnFg));
+                BtnExperimentalOptions.BorderBrush = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnBorder));
+                BtnExperimentalOptions.BorderThickness = new Thickness(1.0);
             }
 
             CrystalStructureView?.ApplyTheme(isDark);
