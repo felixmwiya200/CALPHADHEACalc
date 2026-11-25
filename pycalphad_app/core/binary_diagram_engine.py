@@ -2140,102 +2140,199 @@ class BinaryDiagramEngine:
     # -------------------------------------------------------------------------
     # 17. Co-Mn (Cobalt-Manganese) Assessed Benchmark
     # References: W. Huang, CALPHAD 13 (1989) 231-242; H. Okamoto, ASM Alloy Phase Diagr.
+    # Assessed high-temperature equilibria, central FCC ordering/miscibility boundary,
+    # FCC <-> beta-Mn corridor, Co HCP allotropy, and Mn allotropes (delta-BCC, gamma-FCC, beta-Mn, alpha-Mn).
     # -------------------------------------------------------------------------
     @classmethod
     def _compute_co_mn(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
         conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
         u = "K" if is_k else "°C"
 
-        # Liquidus curve: Co (1495 °C) to eutectic minimum (1161 °C at 78 at% Mn) to peritectic (1185 °C at 96 at% Mn) to Mn (1246 °C)
-        l_knots_1 = [(0.00, 1495.0), (0.15, 1385.0), (0.35, 1270.0), (0.55, 1205.0), (0.70, 1172.0), (0.78, 1161.0)]
-        l_knots_2 = [(0.78, 1161.0), (0.84, 1166.0), (0.90, 1174.0), (0.96, 1185.0)]
-        l_knots_3 = [(0.96, 1185.0), (0.98, 1215.0), (1.00, 1246.0)]
+        # 1. Liquidus curves:
+        # Co (1495 °C) down to eutectic (1161 °C at 60.1 at% Mn)
+        l_knots_1 = [
+            (0.00, 1495.0), (0.05, 1461.3), (0.10, 1424.7), (0.15, 1391.5), (0.20, 1355.0),
+            (0.30, 1295.2), (0.40, 1242.1), (0.50, 1195.6), (0.55, 1175.6), (0.601, 1161.0)
+        ]
+        # Eutectic (1161 °C) rising to peritectic (1185 °C at 91.0 at% Mn)
+        l_knots_2 = [
+            (0.601, 1161.0), (0.65, 1161.5), (0.70, 1163.4), (0.80, 1170.0), (0.88, 1179.0), (0.910, 1185.0)
+        ]
+        # Peritectic (1185 °C) rising to pure Mn (1246 °C at 100 at% Mn)
+        l_knots_3 = [
+            (0.910, 1185.0), (0.93, 1196.0), (0.96, 1216.5), (1.00, 1246.0)
+        ]
 
         xs_liq: List[float] = []
         ys_liq: List[float] = []
-        for knots, count in [(l_knots_1, 60), (l_knots_2, 30), (l_knots_3, 20)]:
+        for knots, count in [(l_knots_1, 60), (l_knots_2, 35), (l_knots_3, 25)]:
             xs, ys = _interpolate_curve(knots, n_pts=count, clip_x_min=0.0, clip_x_max=1.0)
             xs_liq.extend(xs)
             ys_liq.extend(ys)
 
-        # Solidus curves:
-        # γ-(Co,Mn) FCC solid solution solidus (0 to 78 at% Mn)
-        s_knots_gamma = [(0.00, 1495.0), (0.10, 1345.0), (0.25, 1235.0), (0.45, 1178.0), (0.65, 1164.0), (0.78, 1161.0)]
-        xs_s_gamma, ys_s_gamma = _interpolate_curve(s_knots_gamma, n_pts=70, clip_x_min=0.0, clip_x_max=0.78)
+        # 2. Solidus curves:
+        # gamma-(Co,Mn) FCC solid solution solidus (0.00 to 0.582 Mn at 1161 °C)
+        s_fcc_knots = [
+            (0.00, 1495.0), (0.05, 1444.6), (0.10, 1401.5), (0.15, 1364.9), (0.20, 1331.7),
+            (0.30, 1272.0), (0.40, 1222.1), (0.50, 1182.3), (0.55, 1169.0), (0.582, 1161.0)
+        ]
+        xs_s_fcc, ys_s_fcc = _interpolate_curve(s_fcc_knots, n_pts=60, clip_x_min=0.0, clip_x_max=0.582)
 
-        # δ-Mn BCC solidus (96 to 100 at% Mn)
-        s_knots_delta = [(0.96, 1185.0), (0.98, 1220.0), (1.00, 1246.0)]
-        xs_s_delta, ys_s_delta = _interpolate_curve(s_knots_delta, n_pts=25, clip_x_min=0.96, clip_x_max=1.0)
+        # beta-Mn solidus (0.618 to 0.910 Mn at 1161-1185 °C)
+        s_beta_knots = [
+            (0.618, 1161.0), (0.70, 1163.0), (0.80, 1170.0), (0.88, 1179.0), (0.910, 1185.0)
+        ]
+        xs_s_beta, ys_s_beta = _interpolate_curve(s_beta_knots, n_pts=35, clip_x_min=0.618, clip_x_max=0.910)
 
-        # γ-Mn / β-Mn solid-state boundary
-        trans_gamma_beta = [(0.78, 1161.0), (0.82, 1140.0), (0.88, 1115.0), (0.95, 1095.0), (1.00, 1095.0)]
-        xs_gb, ys_gb = _interpolate_curve(trans_gamma_beta, n_pts=40, clip_x_min=0.78, clip_x_max=1.0)
+        # delta-Mn BCC solidus (0.910 to 1.000 Mn at 1185-1246 °C)
+        s_bcc_knots = [
+            (0.910, 1185.0), (0.94, 1202.0), (0.97, 1223.0), (1.00, 1246.0)
+        ]
+        xs_s_bcc, ys_s_bcc = _interpolate_curve(s_bcc_knots, n_pts=25, clip_x_min=0.910, clip_x_max=1.000)
 
-        # β-Mn / α-Mn solid-state transition
-        trans_beta_alpha = [(0.70, 707.0), (0.80, 707.0), (0.90, 707.0), (1.00, 707.0)]
-        xs_ba, ys_ba = _interpolate_curve(trans_beta_alpha, n_pts=30, clip_x_min=0.70, clip_x_max=1.0)
+        # 3. High-temperature Mn allotropic transitions near pure Mn:
+        # delta-BCC -> gamma-FCC transus
+        delta_gamma_knots = [(0.910, 1185.0), (0.94, 1160.0), (0.97, 1145.0), (1.00, 1138.0)]
+        xs_dg, ys_dg = _interpolate_curve(delta_gamma_knots, n_pts=25, clip_x_min=0.910, clip_x_max=1.000)
 
-        # Co HCP-FCC allotropic transus (422 °C at pure Co)
-        co_trans = [(0.00, 422.0), (0.05, 380.0), (0.12, 300.0), (0.20, 200.0)]
-        xs_co, ys_co = _interpolate_curve(co_trans, n_pts=25, clip_x_min=0.0, clip_x_max=0.20)
+        # gamma-FCC -> beta-Mn transus
+        gamma_beta_knots = [(0.910, 1185.0), (0.93, 1140.0), (0.96, 1115.0), (1.00, 1100.0)]
+        xs_gb, ys_gb = _interpolate_curve(gamma_beta_knots, n_pts=25, clip_x_min=0.910, clip_x_max=1.000)
+
+        # 4. Central FCC ordering / miscibility envelope (peak at ~890 °C, 8.8 at% Mn):
+        fcc_ord_left = [(0.088, 890.0), (0.075, 600.0), (0.070, 450.0), (0.068, 312.2)]
+        xs_ol, ys_ol = _interpolate_curve(fcc_ord_left, n_pts=30, clip_x_min=0.068, clip_x_max=0.088)
+
+        fcc_ord_right_up = [(0.088, 890.0), (0.10, 850.2), (0.15, 733.9), (0.20, 637.6), (0.25, 500.0), (0.30, 391.9), (0.328, 312.2)]
+        xs_oru, ys_oru = _interpolate_curve(fcc_ord_right_up, n_pts=40, clip_x_min=0.088, clip_x_max=0.328)
+
+        fcc_ord_right_low = [(0.328, 312.2), (0.36, 230.0), (0.407, 139.5)]
+        xs_orl, ys_orl = _interpolate_curve(fcc_ord_right_low, n_pts=25, clip_x_min=0.328, clip_x_max=0.407)
+
+        # 5. FCC <-> beta-Mn two-phase corridor:
+        # Left boundary (FCC solvus): (0.582, 1161.0) down to (0.407, 139.5)
+        fcc_solvus_knots = [
+            (0.582, 1161.0), (0.55, 1006.3), (0.50, 787.1), (0.46, 550.0), (0.43, 300.0), (0.407, 139.5)
+        ]
+        xs_fsolv, ys_fsolv = _interpolate_curve(fcc_solvus_knots, n_pts=50, clip_x_min=0.407, clip_x_max=0.582)
+
+        # Right boundary (beta-Mn solvus): (0.618, 1161.0) down to (0.467, 139.5)
+        beta_solvus_knots = [
+            (0.618, 1161.0), (0.60, 1109.2), (0.55, 866.8), (0.50, 481.5), (0.48, 300.0), (0.467, 139.5)
+        ]
+        xs_bsolv, ys_bsolv = _interpolate_curve(beta_solvus_knots, n_pts=50, clip_x_min=0.467, clip_x_max=0.618)
+
+        # Corridor below 139.5 °C:
+        low_solvus_knots = [(0.467, 139.5), (0.48, 100.0), (0.52, 0.0)]
+        xs_lsolv, ys_lsolv = _interpolate_curve(low_solvus_knots, n_pts=25, clip_x_min=0.467, clip_x_max=0.520)
+
+        # 6. Co-rich allotropic boundaries (Pure Co 422 °C epsilon-HCP <-> alpha-FCC):
+        co_hcp_up = [(0.00, 422.0), (0.03, 370.0), (0.05, 338.7), (0.068, 312.2)]
+        xs_cu, ys_cu = _interpolate_curve(co_hcp_up, n_pts=25, clip_x_min=0.00, clip_x_max=0.068)
+
+        co_hcp_mid = [(0.068, 312.2), (0.063, 220.0), (0.059, 139.5)]
+        xs_cm, ys_cm = _interpolate_curve(co_hcp_mid, n_pts=20, clip_x_min=0.059, clip_x_max=0.068)
+
+        co_hcp_low = [(0.059, 139.5), (0.050, 70.0), (0.040, 0.0)]
+        xs_cl, ys_cl = _interpolate_curve(co_hcp_low, n_pts=20, clip_x_min=0.040, clip_x_max=0.059)
+
+        # 7. Mn-rich alpha-Mn / beta-Mn boundary (727 °C down to 0 °C):
+        alpha_beta_knots = [(1.00, 727.0), (0.95, 587.8), (0.90, 428.4), (0.85, 0.0)]
+        xs_ab, ys_ab = _interpolate_curve(alpha_beta_knots, n_pts=40, clip_x_min=0.85, clip_x_max=1.00)
 
         curves = [
             {"name": "Liquidus", "xs": xs_liq, "ys": [conv(y) for y in ys_liq], "color": "#000000", "width": 2.2, "dash": "solid"},
-            {"name": "Solidus γ-(Co,Mn)", "xs": xs_s_gamma, "ys": [conv(y) for y in ys_s_gamma], "color": "#2563EB", "width": 2.0, "dash": "solid"},
-            {"name": "Solidus δ-Mn", "xs": xs_s_delta, "ys": [conv(y) for y in ys_s_delta], "color": "#2563EB", "width": 2.0, "dash": "solid"},
-            {"name": "Eutectic Invariant Tie-Line", "xs": [0.65, 0.88], "ys": [conv(1161.0), conv(1161.0)], "color": "#DC2626", "width": 1.8, "dash": "dash"},
-            {"name": "Peritectic Invariant Tie-Line", "xs": [0.88, 1.00], "ys": [conv(1185.0), conv(1185.0)], "color": "#D97706", "width": 1.8, "dash": "dash"},
-            {"name": "γ-Mn ⇌ β-Mn Transus", "xs": xs_gb, "ys": [conv(y) for y in ys_gb], "color": "#7C3AED", "width": 1.5, "dash": "dot"},
-            {"name": "β-Mn ⇌ α-Mn Boundary", "xs": xs_ba, "ys": [conv(y) for y in ys_ba], "color": "#059669", "width": 1.5, "dash": "dot"},
-            {"name": "Co ε-HCP ⇌ α-FCC Transus", "xs": xs_co, "ys": [conv(y) for y in ys_co], "color": "#0891B2", "width": 1.5, "dash": "dashdot"},
+            {"name": "Solidus γ-(Co,Mn)", "xs": xs_s_fcc, "ys": [conv(y) for y in ys_s_fcc], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus β-Mn", "xs": xs_s_beta, "ys": [conv(y) for y in ys_s_beta], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus δ-Mn (BCC)", "xs": xs_s_bcc, "ys": [conv(y) for y in ys_s_bcc], "color": "#2563EB", "width": 1.8, "dash": "solid"},
+            {"name": "Eutectic Invariant Tie-Line", "xs": [0.582, 0.618], "ys": [conv(1161.0), conv(1161.0)], "color": "#DC2626", "width": 2.0, "dash": "solid"},
+            {"name": "Peritectic Invariant Tie-Line", "xs": [0.910, 0.965], "ys": [conv(1185.0), conv(1185.0)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
+            {"name": "Upper Invariant Tie-Line (312 °C)", "xs": [0.068, 0.328], "ys": [conv(312.2), conv(312.2)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
+            {"name": "Lower Invariant Tie-Line (140 °C)", "xs": [0.059, 0.467], "ys": [conv(139.5), conv(139.5)], "color": "#DC2626", "width": 1.8, "dash": "solid"},
+            {"name": "fcc Ordering Boundary (Left)", "xs": xs_ol, "ys": [conv(y) for y in ys_ol], "color": "#1E3A8A", "width": 1.8, "dash": "solid"},
+            {"name": "fcc Ordering Boundary (Right)", "xs": xs_oru + xs_orl, "ys": [conv(y) for y in ys_oru + ys_orl], "color": "#1E3A8A", "width": 1.8, "dash": "solid"},
+            {"name": "fcc Solvus Corridor", "xs": xs_fsolv, "ys": [conv(y) for y in ys_fsolv], "color": "#059669", "width": 1.8, "dash": "solid"},
+            {"name": "β-Mn Solvus Corridor", "xs": xs_bsolv + xs_lsolv, "ys": [conv(y) for y in ys_bsolv + ys_lsolv], "color": "#7C3AED", "width": 1.8, "dash": "solid"},
+            {"name": "Co ε-HCP Solvus", "xs": xs_cu + xs_cm + xs_cl, "ys": [conv(y) for y in ys_cu + ys_cm + ys_cl], "color": "#0891B2", "width": 1.8, "dash": "solid"},
+            {"name": "Mn-rich β-Mn ⇌ α-Mn Boundary", "xs": xs_ab, "ys": [conv(y) for y in ys_ab], "color": "#059669", "width": 1.8, "dash": "solid"},
+            {"name": "δ-BCC ⇌ γ-FCC Transus", "xs": xs_dg, "ys": [conv(y) for y in ys_dg], "color": "#64748B", "width": 1.5, "dash": "dash"},
+            {"name": "γ-FCC ⇌ β-Mn Transus", "xs": xs_gb, "ys": [conv(y) for y in ys_gb], "color": "#64748B", "width": 1.5, "dash": "dash"},
         ]
 
         invariants = [
             {
                 "type": "Eutectic",
                 "temp": conv(1161.0),
-                "x_reaction": 0.78,
-                "x_start": 0.65,
-                "x_end": 0.88,
-                "equation": "L (78 at% Mn) ⇌ γ-(Co,Mn) + β-Mn"
+                "x_reaction": 0.601,
+                "x_start": 0.582,
+                "x_end": 0.618,
+                "equation": "Liquid (60.1 at% Mn) ⇌ γ-(Co,Mn) + β-Mn (1161 °C)"
             },
             {
                 "type": "Peritectic",
                 "temp": conv(1185.0),
-                "x_reaction": 0.96,
-                "x_start": 0.88,
-                "x_end": 1.00,
-                "equation": "L (96 at% Mn) + δ-Mn ⇌ γ-Mn"
+                "x_reaction": 0.910,
+                "x_start": 0.910,
+                "x_end": 0.965,
+                "equation": "Liquid (91.0 at% Mn) + δ-Mn (BCC) ⇌ γ-Mn (FCC) (1185 °C)"
+            },
+            {
+                "type": "Peritectoid / Ordering Invariant",
+                "temp": conv(312.2),
+                "x_reaction": 0.068,
+                "x_start": 0.068,
+                "x_end": 0.328,
+                "equation": "ε-HCP + fcc₂ ⇌ fcc₁ (312 °C)"
+            },
+            {
+                "type": "Solid-State Invariant",
+                "temp": conv(139.5),
+                "x_reaction": 0.059,
+                "x_start": 0.059,
+                "x_end": 0.467,
+                "equation": "ε-HCP + β-Mn ⇌ Intermediate Ordered Phase (140 °C)"
             },
             {
                 "type": "Allotropic Transition",
                 "temp": conv(422.0),
-                "x_reaction": 0.00,
-                "x_start": 0.00,
-                "x_end": 0.20,
-                "equation": "ε-HCP ⇌ α-FCC (Pure Cobalt Allotropy)"
+                "x_reaction": 0.000,
+                "x_start": 0.000,
+                "x_end": 0.068,
+                "equation": "Pure Cobalt ε-HCP ⇌ α-FCC Allotropic Transition (422 °C)"
+            },
+            {
+                "type": "Allotropic Transition",
+                "temp": conv(727.0),
+                "x_reaction": 1.000,
+                "x_start": 0.850,
+                "x_end": 1.000,
+                "equation": "Pure Manganese β-Mn ⇌ α-Mn Allotropic Transition (727 °C)"
             }
         ]
 
         regions = [
-            {"label": "Liquid Solution (L)", "x": 0.45, "y": conv(1360.0), "font_size": 13, "color": "#0F172A"},
-            {"label": "γ-(Co,Mn) FCC Solid Solution", "x": 0.32, "y": conv(850.0), "font_size": 11, "color": "#1E3A8A"},
-            {"label": "β-Mn + γ-(Co,Mn)", "x": 0.82, "y": conv(880.0), "font_size": 10, "color": "#7C3AED"},
-            {"label": "α-Mn + γ-(Co,Mn)", "x": 0.85, "y": conv(450.0), "font_size": 10, "color": "#059669"},
-            {"label": "ε-HCP (Co)", "x": 0.05, "y": conv(250.0), "font_size": 10, "color": "#0891B2"}
+            {"label": "Liquid", "x": 0.48, "y": conv(1450.0), "font_size": 13, "color": "#0F172A"},
+            {"label": "fcc", "x": 0.28, "y": conv(900.0), "font_size": 12, "color": "#1E3A8A"},
+            {"label": "β-Mn", "x": 0.70, "y": conv(900.0), "font_size": 12, "color": "#7C3AED"},
+            {"label": "α-Mn", "x": 0.92, "y": conv(250.0), "font_size": 11, "color": "#059669"},
+            {"label": "hcp", "x": 0.035, "y": conv(250.0), "font_size": 10, "color": "#0891B2"},
+            {"label": "bcc", "x": 0.94, "y": conv(1200.0), "font_size": 9, "color": "#334155"},
+            {"label": "fcc", "x": 0.96, "y": conv(1120.0), "font_size": 9, "color": "#1E3A8A"},
+            {"label": "fcc + β-Mn", "x": 0.54, "y": conv(650.0), "font_size": 9, "color": "#475569"},
+            {"label": "fcc + hcp", "x": 0.045, "y": conv(350.0), "font_size": 8, "color": "#475569"}
         ]
 
         return {
             "system": "Co-Mn",
             "element_a": "Co",
             "element_b": "Mn",
-            "x_axis_label": "Atomic Fraction of Mn X(Mn) [at%]",
+            "x_axis_label": "Mole fraction Mn",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
             "x_max": 1.0,
-            "y_min": conv(150.0),
-            "y_max": conv(1560.0),
+            "y_min": conv(0.0),
+            "y_max": conv(1800.0),
             "curves": curves,
             "invariants": invariants,
             "regions": regions,

@@ -297,14 +297,34 @@ def test_co_mn_benchmark():
     diag = BinaryDiagramEngine.compute_binary_diagram("Co-Mn (Cobalt-Manganese Benchmark)", temp_unit="C")
     assert diag["element_a"] == "Co"
     assert diag["element_b"] == "Mn"
+    assert diag["y_min"] == 0.0
+    assert diag["y_max"] == 1800.0
+
     inv_types = [inv["type"] for inv in diag["invariants"]]
     assert "Eutectic" in inv_types
     assert "Peritectic" in inv_types
     assert "Allotropic Transition" in inv_types
+    assert "Peritectoid / Ordering Invariant" in inv_types
+    assert "Solid-State Invariant" in inv_types
+
     inv_temps = [inv["temp"] for inv in diag["invariants"]]
     assert 1161.0 in inv_temps
     assert 1185.0 in inv_temps
     assert 422.0 in inv_temps
+    assert 312.2 in inv_temps
+    assert 139.5 in inv_temps
+    assert 727.0 in inv_temps
+
+    curve_names = [c["name"] for c in diag["curves"]]
+    assert "Liquidus" in curve_names
+    assert "Solidus γ-(Co,Mn)" in curve_names
+    assert "Solidus β-Mn" in curve_names
+    assert "fcc Ordering Boundary (Left)" in curve_names
+    assert "fcc Ordering Boundary (Right)" in curve_names
+    assert "fcc Solvus Corridor" in curve_names
+    assert "β-Mn Solvus Corridor" in curve_names
+    assert "Co ε-HCP Solvus" in curve_names
+    assert "Mn-rich β-Mn ⇌ α-Mn Boundary" in curve_names
 
 
 def test_ti_v_benchmark():
