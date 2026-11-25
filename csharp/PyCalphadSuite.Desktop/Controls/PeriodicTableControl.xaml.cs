@@ -1,5 +1,5 @@
 // <copyright file="PeriodicTableControl.xaml.cs" company="PyCALPHAD Materials CAE">
-// Complete 118-element interactive IUPAC Periodic Table in C# WPF.
+// Complete 118-element interactive IUPAC Periodic Table in C# WPF matching high-contrast reference chart styling.
 // </copyright>
 
 using System;
@@ -15,6 +15,11 @@ namespace PyCalphadSuite.Desktop.Controls
 {
     public partial class PeriodicTableControl : UserControl
     {
+        private static readonly HashSet<string> HalogenSymbols = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "F", "Cl", "Br", "I", "At", "Ts"
+        };
+
         private readonly Dictionary<string, ToggleButton> _tiles = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ElementDto> _elementData = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _selectedSymbols = new(StringComparer.OrdinalIgnoreCase);
@@ -57,9 +62,13 @@ namespace PyCalphadSuite.Desktop.Controls
             TxtSelectedList.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(fgHex));
             TxtHoverInfo.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(mutedHex));
 
-            foreach (var kvp in _tiles)
+            SyncRibbonCategoryButtons();
+
+            if (_cachedElements != null && _cachedElements.Count > 0)
             {
-                StyleTile(kvp.Value, kvp.Value.IsChecked == true);
+                var currentSelected = _selectedSymbols.ToList();
+                PopulateElements(_cachedElements);
+                SyncSelectedElements(currentSelected);
             }
         }
 
@@ -78,11 +87,11 @@ namespace PyCalphadSuite.Desktop.Controls
             {
                 GridElements.RowDefinitions.Add(new RowDefinition { Height = new GridLength(68) });
             }
-            GridElements.RowDefinitions.Add(new RowDefinition { Height = new GridLength(10) });
+            GridElements.RowDefinitions.Add(new RowDefinition { Height = new GridLength(12) });
             GridElements.RowDefinitions.Add(new RowDefinition { Height = new GridLength(68) });
             GridElements.RowDefinitions.Add(new RowDefinition { Height = new GridLength(68) });
 
-            // Col 0: Period numbers | Cols 1..18: IUPAC Groups 1..18 (74 px width gives generous room for full element names)
+            // Col 0: Period numbers | Cols 1..18: IUPAC Groups 1..18
             GridElements.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(36) });
             for (int c = 1; c <= 18; c++)
             {
@@ -140,33 +149,17 @@ namespace PyCalphadSuite.Desktop.Controls
                 GridElements.Children.Add(pLbl);
             }
 
-            var centerBanner = new Border
-            {
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#2B2D31" : "#F8FAFC")),
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#3F4248" : "#CBD5E1")),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(4),
-                Margin = new Thickness(8, 6, 8, 6),
-                Padding = new Thickness(8, 4, 8, 4),
-                Child = new TextBlock
-                {
-                    Text = "IUPAC PERIODIC TABLE OF THE ELEMENTS\n18 Groups  •  7 Periods  •  Complete 118-Element CALPHAD Registry",
-                    FontSize = 11.5,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#F2F3F5" : "#0F172A")),
-                    TextAlignment = TextAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
-                }
-            };
+            // Center Banner: Faithful Reference Chart Anatomy Sample & 10-Category Legend (Rows 1..3, Cols 3..12)
+            var centerBanner = BuildCenterBanner();
             Grid.SetRow(centerBanner, 1);
             Grid.SetColumn(centerBanner, 3);
-            Grid.SetRowSpan(centerBanner, 2);
+            Grid.SetRowSpan(centerBanner, 3);
             Grid.SetColumnSpan(centerBanner, 10);
             GridElements.Children.Add(centerBanner);
 
-            AddSeriesMarker(6, 3, "57–71 *\nLa–Lu\nLanthanides", _isDark ? "#3C2337" : "#FAE8FF", _isDark ? "#76376C" : "#E879F9", _isDark ? "#F0ABFC" : "#701A75");
-            AddSeriesMarker(7, 3, "89–103 **\nAc–Lr\nActinides", _isDark ? "#2E223B" : "#EDE9FE", _isDark ? "#5B357A" : "#A78BFA", _isDark ? "#D8B4FE" : "#4C1D95");
+            // Lanthanide & Actinide Series Placeholders
+            AddSeriesMarker(6, 3, "57–71 *\nLa–Lu\nLanthanides", "#FEFBCB", "#000000", "#000000");
+            AddSeriesMarker(7, 3, "89–103 **\nAc–Lr\nActinides", "#FAC2A4", "#000000", "#000000");
             AddSeriesRowLabel(9, "* Lanthanides");
             AddSeriesRowLabel(10, "** Actinides");
 
@@ -177,70 +170,124 @@ namespace PyCalphadSuite.Desktop.Controls
                 int rowIdx = Math.Clamp(el.GridRow, 1, 10);
                 int colIdx = Math.Clamp(el.GridCol, 1, 18);
 
-                var (bgHex, borderHex, fgHex) = GetCategoryPalette(el.Category, _isDark);
+                string resolvedCat = ResolveCategory(el);
+                var (bgHex, borderHex, fgHex) = GetCategoryPalette(resolvedCat, el.Symbol);
                 string shortName = el.Name;
                 double tmC = el.TmK - 273.15;
 
                 var tb = new ToggleButton
                 {
+                    Style = (Style)FindResource("ElementTileButtonStyle"),
                     Margin = new Thickness(0.8),
-                    Padding = new Thickness(1, 1, 1, 1),
                     Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bgHex)),
                     BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(borderHex)),
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(fgHex)),
-                    BorderThickness = new Thickness(1),
+                    BorderThickness = new Thickness(1.2),
                     Tag = el.Symbol,
                     Cursor = System.Windows.Input.Cursors.Hand,
                     ToolTip = $"{el.Name} ({el.Symbol}) | Z={el.Z}\n" +
+                              $"Category: {FormatCategoryName(resolvedCat)}\n" +
                               $"Atomic Mass: {el.AtomicMass:F3} g/mol | VEC: {el.Vec:F1}\n" +
                               $"Structure: {el.CrystalStructure} | Tm: {el.TmK:F1} K ({tmC:F1} °C)\n" +
                               $"Density: {el.DensityGCm3:F3} g/cm³ | E: {el.YoungsModulusGpa:F1} GPa"
                 };
 
-                // Dynamic font sizing ensures long names like Praseodymium or Darmstadtium are never cut short
-                double nameFontSize = shortName.Length switch
-                {
-                    >= 13 => 4.8,
-                    >= 11 => 5.2,
-                    >= 9  => 5.8,
-                    >= 7  => 6.3,
-                    _     => 6.9
-                };
+                // 4-row layout matching reference chart cell anatomy
+                var tileGrid = new Grid();
+                tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(14) });
+                tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(28) });
+                tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(13) });
+                tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(13) });
 
-                var content = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-                content.Children.Add(new TextBlock
+                // Row 0: Top Dock with Selection Badge (Left) and Atomic Number Z (Right)
+                var topDock = new DockPanel { LastChildFill = false };
+                Grid.SetRow(topDock, 0);
+
+                var txtCheck = new TextBlock
+                {
+                    Name = "TxtCheck",
+                    Text = "✓",
+                    FontSize = 9.0,
+                    FontWeight = FontWeights.ExtraBold,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D4ED8")),
+                    Margin = new Thickness(3, 0, 0, 0),
+                    Visibility = Visibility.Collapsed
+                };
+                DockPanel.SetDock(txtCheck, Dock.Left);
+                topDock.Children.Add(txtCheck);
+
+                var txtZ = new TextBlock
                 {
                     Text = el.Z.ToString(),
-                    FontSize = 7.0,
-                    FontWeight = FontWeights.SemiBold,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    Margin = new Thickness(2, 0, 0, 0)
-                });
-                content.Children.Add(new TextBlock
+                    FontSize = 8.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = Brushes.Black,
+                    Margin = new Thickness(0, 1, 3, 0)
+                };
+                DockPanel.SetDock(txtZ, Dock.Right);
+                topDock.Children.Add(txtZ);
+                tileGrid.Children.Add(topDock);
+
+                // Row 1: Symbol (Prominent, Bold, Centered)
+                var txtSym = new TextBlock
                 {
                     Text = el.Symbol,
-                    FontSize = 12.0,
+                    FontSize = el.Symbol.Length switch
+                    {
+                        1 => 21.0,
+                        2 => 19.0,
+                        _ => 15.0
+                    },
                     FontWeight = FontWeights.Bold,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                });
-                content.Children.Add(new TextBlock
+                    Foreground = Brushes.Black,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, -2, 0, 0)
+                };
+                Grid.SetRow(txtSym, 1);
+                tileGrid.Children.Add(txtSym);
+
+                // Row 2: Element Name (Sentence Case, Centered)
+                double nameFontSize = shortName.Length switch
+                {
+                    >= 14 => 5.0,
+                    >= 12 => 5.4,
+                    >= 10 => 6.0,
+                    >= 8  => 6.6,
+                    _     => 7.2
+                };
+                var txtName = new TextBlock
                 {
                     Text = shortName,
                     FontSize = nameFontSize,
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = Brushes.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
                     TextTrimming = TextTrimming.None,
-                    TextWrapping = TextWrapping.NoWrap,
-                    MaxWidth = 72,
-                    Opacity = 0.95
-                });
-                content.Children.Add(new TextBlock
+                    TextWrapping = TextWrapping.NoWrap
+                };
+                Grid.SetRow(txtName, 2);
+                tileGrid.Children.Add(txtName);
+
+                // Row 3: Atomic Weight (Centered)
+                string massStr = el.AtomicMass >= 200 && Math.Abs(el.AtomicMass - Math.Round(el.AtomicMass)) < 0.001
+                    ? $"[{Math.Round(el.AtomicMass):F0}]"
+                    : el.AtomicMass.ToString("F3").TrimEnd('0').TrimEnd('.');
+                if (massStr.Length > 7) massStr = el.AtomicMass.ToString("F2");
+
+                var txtMass = new TextBlock
                 {
-                    Text = el.AtomicMass.ToString("F2"),
-                    FontSize = 6.4,
+                    Text = massStr,
+                    FontSize = 6.8,
+                    Foreground = Brushes.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    Opacity = 0.85
-                });
-                tb.Content = content;
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 0, 0, 1)
+                };
+                Grid.SetRow(txtMass, 3);
+                tileGrid.Children.Add(txtMass);
+
+                tb.Content = tileGrid;
 
                 tb.Checked += (s, _) =>
                 {
@@ -265,7 +312,8 @@ namespace PyCalphadSuite.Desktop.Controls
                     if (s is ToggleButton btn && btn.Tag is string sym && _elementData.TryGetValue(sym, out var d))
                     {
                         double dTmC = d.TmK - 273.15;
-                        TxtHoverInfo.Text = $"{d.Name} ({d.Symbol}) • Z={d.Z} • {d.AtomicMass:F2} g/mol • Tm={d.TmK:F0} K ({dTmC:F0} °C) • ρ={d.DensityGCm3:F2} g/cm³ • {d.CrystalStructure}";
+                        string catName = FormatCategoryName(ResolveCategory(d));
+                        TxtHoverInfo.Text = $"{d.Name} ({d.Symbol}) • Z={d.Z} • {catName} • {d.AtomicMass:F2} g/mol • Tm={d.TmK:F0} K ({dTmC:F0} °C) • ρ={d.DensityGCm3:F2} g/cm³ • {d.CrystalStructure}";
                     }
                 };
 
@@ -276,15 +324,178 @@ namespace PyCalphadSuite.Desktop.Controls
             }
         }
 
+        private Border BuildCenterBanner()
+        {
+            var container = new Border
+            {
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#26282D" : "#FFFFFF")),
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#3F4248" : "#CBD5E1")),
+                BorderThickness = new Thickness(1.5),
+                CornerRadius = new CornerRadius(0),
+                Margin = new Thickness(6, 4, 6, 4),
+                Padding = new Thickness(12, 8, 12, 8)
+            };
+
+            var rootGrid = new Grid();
+            rootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(270) });
+            rootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            // --- Left: Sample Anatomy Card with Indicator Callouts ---
+            var sampleCardGrid = new Grid { VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Left };
+            sampleCardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
+            sampleCardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(185) });
+
+            var sampleTile = new Border
+            {
+                Width = 74,
+                Height = 68,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD9F9")),
+                BorderBrush = Brushes.Black,
+                BorderThickness = new Thickness(1.5),
+                CornerRadius = new CornerRadius(0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            var tileGrid = new Grid();
+            tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(14) });
+            tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(28) });
+            tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(13) });
+            tileGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(13) });
+
+            var sZ = new TextBlock { Text = "26", FontSize = 8.5, FontWeight = FontWeights.Bold, Foreground = Brushes.Black, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 1, 4, 0) };
+            Grid.SetRow(sZ, 0); tileGrid.Children.Add(sZ);
+
+            var sSym = new TextBlock { Text = "Fe", FontSize = 21.0, FontWeight = FontWeights.Bold, Foreground = Brushes.Black, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, -2, 0, 0) };
+            Grid.SetRow(sSym, 1); tileGrid.Children.Add(sSym);
+
+            var sName = new TextBlock { Text = "Iron", FontSize = 7.2, FontWeight = FontWeights.SemiBold, Foreground = Brushes.Black, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetRow(sName, 2); tileGrid.Children.Add(sName);
+
+            var sMass = new TextBlock { Text = "55.845", FontSize = 6.8, Foreground = Brushes.Black, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetRow(sMass, 3); tileGrid.Children.Add(sMass);
+            sampleTile.Child = tileGrid;
+            Grid.SetColumn(sampleTile, 0);
+            sampleCardGrid.Children.Add(sampleTile);
+
+            var calloutsStack = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
+            var cFg = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#E2E8F0" : "#1E293B"));
+
+            calloutsStack.Children.Add(new TextBlock { Text = "······· Atomic Number", FontSize = 9.5, FontWeight = FontWeights.SemiBold, Foreground = cFg, Margin = new Thickness(0, 0, 0, 4) });
+            calloutsStack.Children.Add(new TextBlock { Text = "······· Chemical Symbol", FontSize = 9.5, FontWeight = FontWeights.Bold, Foreground = cFg, Margin = new Thickness(0, 2, 0, 4) });
+            calloutsStack.Children.Add(new TextBlock { Text = "······· Element Name", FontSize = 9.5, FontWeight = FontWeights.SemiBold, Foreground = cFg, Margin = new Thickness(0, 2, 0, 4) });
+            calloutsStack.Children.Add(new TextBlock { Text = "······· Atomic Weight", FontSize = 9.5, FontWeight = FontWeights.Normal, Foreground = cFg, Margin = new Thickness(0, 2, 0, 0) });
+
+            Grid.SetColumn(calloutsStack, 1);
+            sampleCardGrid.Children.Add(calloutsStack);
+            Grid.SetColumn(sampleCardGrid, 0);
+            rootGrid.Children.Add(sampleCardGrid);
+
+            // --- Right: Title and 10-Category Palette Legend ---
+            var rightPanel = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(14, 0, 0, 0) };
+
+            var headerStack = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
+            headerStack.Children.Add(new TextBlock
+            {
+                Text = "IUPAC PERIODIC TABLE OF THE ELEMENTS",
+                FontSize = 13.0,
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#F8FAFC" : "#0F172A")),
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            headerStack.Children.Add(new TextBlock
+            {
+                Text = "  •  18 Groups  •  7 Periods",
+                FontSize = 10.5,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#94A3B8" : "#64748B")),
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            rightPanel.Children.Add(headerStack);
+
+            var legendGrid = new Grid();
+            legendGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            legendGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            var col1 = new StackPanel();
+            var col2 = new StackPanel();
+
+            col1.Children.Add(CreateLegendItem("Reactive Nonmetals", "nonmetal", "#B4A0DC"));
+            col1.Children.Add(CreateLegendItem("Alkali Metals", "alkali", "#69C5F8"));
+            col1.Children.Add(CreateLegendItem("Alkaline Earth Metals", "alkaline-earth", "#FAB147"));
+            col1.Children.Add(CreateLegendItem("Transition Metals", "transition", "#CBD9F9"));
+            col1.Children.Add(CreateLegendItem("Metalloids", "metalloid", "#FDE573"));
+
+            col2.Children.Add(CreateLegendItem("Post-Transition Metals", "post-transition", "#C2EF97"));
+            col2.Children.Add(CreateLegendItem("Halogens", "halogen", "#F598CE"));
+            col2.Children.Add(CreateLegendItem("Noble Gases", "noble", "#75D09F"));
+            col2.Children.Add(CreateLegendItem("Lanthanides", "lanthanide", "#FEFBCB"));
+            col2.Children.Add(CreateLegendItem("Actinides", "actinide", "#FAC2A4"));
+
+            Grid.SetColumn(col1, 0);
+            Grid.SetColumn(col2, 1);
+            legendGrid.Children.Add(col1);
+            legendGrid.Children.Add(col2);
+            rightPanel.Children.Add(legendGrid);
+
+            Grid.SetColumn(rightPanel, 1);
+            rootGrid.Children.Add(rightPanel);
+            container.Child = rootGrid;
+            return container;
+        }
+
+        private FrameworkElement CreateLegendItem(string label, string code, string colorHex)
+        {
+            var sp = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0, 2, 8, 2),
+                Cursor = System.Windows.Input.Cursors.Hand,
+                ToolTip = $"Click to filter by {label}"
+            };
+
+            var swatch = new Border
+            {
+                Width = 20,
+                Height = 13,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorHex)),
+                BorderBrush = Brushes.Black,
+                BorderThickness = new Thickness(1.2),
+                CornerRadius = new CornerRadius(0),
+                Margin = new Thickness(0, 0, 7, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            sp.Children.Add(swatch);
+
+            var txt = new TextBlock
+            {
+                Text = label,
+                FontSize = 9.5,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#E2E8F0" : "#1E293B")),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            sp.Children.Add(txt);
+
+            sp.MouseDown += (_, _) =>
+            {
+                _activeCategory = string.Equals(_activeCategory, code, StringComparison.OrdinalIgnoreCase) ? "all" : code;
+                SyncRibbonCategoryButtons();
+                ApplyTileFilters();
+            };
+
+            return sp;
+        }
+
         private void AddSeriesMarker(int row, int col, string text, string bgHex, string borderHex, string fgHex)
         {
             var border = new Border
             {
-                Margin = new Thickness(1.5),
+                Margin = new Thickness(0.8),
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bgHex)),
                 BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(borderHex)),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(3),
+                BorderThickness = new Thickness(1.2),
+                CornerRadius = new CornerRadius(0),
                 Child = new TextBlock
                 {
                     Text = text,
@@ -328,6 +539,7 @@ namespace PyCalphadSuite.Desktop.Controls
                 bool shouldCheck = targetSet.Contains(kvp.Key);
                 kvp.Value.IsChecked = shouldCheck;
                 if (shouldCheck) _selectedSymbols.Add(kvp.Key);
+                StyleTile(kvp.Value, shouldCheck);
             }
             UpdateSelectionStatus();
         }
@@ -335,54 +547,91 @@ namespace PyCalphadSuite.Desktop.Controls
         private void StyleTile(ToggleButton btn, bool selected)
         {
             var sym = btn.Tag as string ?? "";
+            if (!_elementData.TryGetValue(sym, out var el)) return;
+
+            var (bgHex, _, _) = GetCategoryPalette(ResolveCategory(el), sym);
+            btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bgHex));
+
             if (selected)
             {
-                btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#15803D"));
-                btn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
-                btn.Foreground = Brushes.White;
-                btn.BorderThickness = new Thickness(2);
+                btn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1D4ED8"));
+                btn.BorderThickness = new Thickness(3.0);
             }
-            else if (_elementData.TryGetValue(sym, out var el))
+            else
             {
-                var (bgHex, borderHex, fgHex) = GetCategoryPalette(el.Category, _isDark);
-                btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(bgHex));
-                btn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(borderHex));
-                btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(fgHex));
-                btn.BorderThickness = new Thickness(1);
+                btn.BorderBrush = Brushes.Black;
+                btn.BorderThickness = new Thickness(1.2);
+            }
+
+            if (btn.Content is Grid g && g.Children.Count > 0 && g.Children[0] is DockPanel dp)
+            {
+                foreach (UIElement child in dp.Children)
+                {
+                    if (child is TextBlock tb && tb.Name == "TxtCheck")
+                    {
+                        tb.Visibility = selected ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                }
             }
         }
 
-        private static (string bg, string border, string fg) GetCategoryPalette(string category, bool isDark = true)
+        public static string ResolveCategory(ElementDto el)
         {
-            if (!isDark)
+            if (HalogenSymbols.Contains(el.Symbol)) return "halogen";
+            var cat = (el.Category ?? "").ToLowerInvariant().Trim();
+            return cat switch
             {
-                return (category ?? "").ToLowerInvariant() switch
-                {
-                    "transition" => ("#F3E8FF", "#C084FC", "#581C87"),
-                    "post-transition" => ("#DCFCE7", "#4ADE80", "#14532D"),
-                    "metalloid" => ("#FEF3C7", "#FBBF24", "#78350F"),
-                    "nonmetal" => ("#DBEAFE", "#60A5FA", "#1E3A8A"),
-                    "alkali" => ("#FEE2E2", "#F87171", "#7F1D1D"),
-                    "alkaline-earth" => ("#FFEDD5", "#FB923C", "#7C2D12"),
-                    "noble" => ("#F3F4F6", "#9CA3AF", "#1F2937"),
-                    "lanthanide" => ("#FAE8FF", "#E879F9", "#701A75"),
-                    "actinide" => ("#EDE9FE", "#A78BFA", "#4C1D95"),
-                    _ => ("#F1F5F9", "#94A3B8", "#0F172A")
-                };
+                "noble" or "noble-gas" or "noble gas" => "noble",
+                "alkali" or "alkali-metal" => "alkali",
+                "alkaline-earth" or "alkaline earth" => "alkaline-earth",
+                "transition" or "transition-metal" => "transition",
+                "post-transition" or "post transition" or "other-metal" or "other metal" => "post-transition",
+                "metalloid" or "semimetal" => "metalloid",
+                "nonmetal" or "reactive-nonmetal" => "nonmetal",
+                "lanthanide" => "lanthanide",
+                "actinide" => "actinide",
+                _ => cat
+            };
+        }
+
+        public static (string bg, string border, string fg) GetCategoryPalette(string category, string symbol = "")
+        {
+            if (HalogenSymbols.Contains(symbol))
+            {
+                return ("#F598CE", "#000000", "#000000");
             }
 
-            return (category ?? "").ToLowerInvariant() switch
+            return (category ?? "").ToLowerInvariant().Trim() switch
             {
-                "transition" => ("#2E283F", "#524673", "#D8B4FE"),
-                "post-transition" => ("#1E332A", "#356250", "#86EFAC"),
-                "metalloid" => ("#362C1C", "#6B5329", "#FCD34D"),
-                "nonmetal" => ("#1F2E40", "#35567D", "#93C5FD"),
-                "alkali" => ("#3C2227", "#773641", "#FCA5A5"),
-                "alkaline-earth" => ("#39271C", "#70452D", "#FDBA74"),
-                "noble" => ("#2B2D32", "#4B515C", "#E2E8F0"),
-                "lanthanide" => ("#3C2337", "#76376C", "#F0ABFC"),
-                "actinide" => ("#2E223B", "#5B357A", "#D8B4FE"),
-                _ => ("#26282D", "#404550", "#F1F5F9")
+                "nonmetal" => ("#B4A0DC", "#000000", "#000000"),        // Soft Lavender Lilac
+                "alkali" => ("#69C5F8", "#000000", "#000000"),          // Vibrant Sky Blue
+                "alkaline-earth" => ("#FAB147", "#000000", "#000000"),  // Warm Golden Amber
+                "transition" => ("#CBD9F9", "#000000", "#000000"),      // Soft Periwinkle Ice Blue
+                "metalloid" => ("#FDE573", "#000000", "#000000"),       // Canary Yellow
+                "post-transition" => ("#C2EF97", "#000000", "#000000"), // Soft Light Mint Green
+                "halogen" => ("#F598CE", "#000000", "#000000"),         // Candy Rose Pink
+                "noble" => ("#75D09F", "#000000", "#000000"),           // Mint Aqua / Seafoam
+                "lanthanide" => ("#FEFBCB", "#000000", "#000000"),      // Pale Lemon Chiffon / Cream
+                "actinide" => ("#FAC2A4", "#000000", "#000000"),        // Soft Peach / Apricot
+                _ => ("#E2E8F0", "#000000", "#000000")
+            };
+        }
+
+        private static string FormatCategoryName(string cat)
+        {
+            return cat.ToLowerInvariant().Trim() switch
+            {
+                "nonmetal" => "Reactive Nonmetal",
+                "alkali" => "Alkali Metal",
+                "alkaline-earth" => "Alkaline Earth Metal",
+                "transition" => "Transition Metal",
+                "metalloid" => "Metalloid",
+                "post-transition" => "Post-Transition Metal",
+                "halogen" => "Halogen",
+                "noble" => "Noble Gas",
+                "lanthanide" => "Lanthanide",
+                "actinide" => "Actinide",
+                _ => cat
             };
         }
 
@@ -407,8 +656,13 @@ namespace PyCalphadSuite.Desktop.Controls
         private void BtnCategoryFilter_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button clicked || clicked.Tag is not string cat) return;
-            _activeCategory = cat;
+            _activeCategory = string.Equals(_activeCategory, cat, StringComparison.OrdinalIgnoreCase) ? "all" : cat;
+            SyncRibbonCategoryButtons();
+            ApplyTileFilters();
+        }
 
+        private void SyncRibbonCategoryButtons()
+        {
             foreach (var child in PanelCategoryFilters.Children)
             {
                 if (child is Button b)
@@ -420,7 +674,6 @@ namespace PyCalphadSuite.Desktop.Controls
                     b.BorderThickness = new Thickness(active ? 1.5 : 1.0);
                 }
             }
-            ApplyTileFilters();
         }
 
         private void ApplyTileFilters()
@@ -430,13 +683,14 @@ namespace PyCalphadSuite.Desktop.Controls
             {
                 if (_elementData.TryGetValue(kvp.Key, out var d))
                 {
+                    string cat = ResolveCategory(d);
                     bool catMatch = _activeCategory == "all"
-                                 || string.Equals(d.Category, _activeCategory, StringComparison.OrdinalIgnoreCase);
+                                 || string.Equals(cat, _activeCategory, StringComparison.OrdinalIgnoreCase);
                     bool textMatch = string.IsNullOrEmpty(q)
                                   || d.Symbol.ToLowerInvariant().Contains(q)
                                   || d.Name.ToLowerInvariant().Contains(q)
                                   || d.Z.ToString() == q;
-                    kvp.Value.Opacity = (catMatch && textMatch) ? 1.0 : 0.18;
+                    kvp.Value.Opacity = (catMatch && textMatch) ? 1.0 : 0.15;
                 }
             }
         }
