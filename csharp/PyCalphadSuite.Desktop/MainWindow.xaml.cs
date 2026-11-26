@@ -1502,6 +1502,25 @@ namespace PyCalphadSuite.Desktop
 
             double[] xs = new[] { ConvTemp(300.0), ConvTemp(1800.0) };
 
+            // 1. Shaded Freezing Range Envelope (Solidification Mushy Zone: L + Solid)
+            if (tLiqK > tSolK && tSolK > 100.0)
+            {
+                double xSol = ConvTemp(tSolK);
+                double xLiq = ConvTemp(tLiqK);
+                var freezeCoords = new Coordinates[]
+                {
+                    new(xSol, 0.0),
+                    new(xSol, 1.05),
+                    new(xLiq, 1.05),
+                    new(xLiq, 0.0),
+                    new(xSol, 0.0)
+                };
+                var freezePoly = plot.Add.Polygon(freezeCoords);
+                freezePoly.FillColor = ScottPlot.Color.FromHex("#F59E0B").WithAlpha(0.12f);
+                freezePoly.LineColor = ScottPlot.Colors.Transparent;
+                freezePoly.LegendText = $"Freezing Range (ΔT={ConvTemp(tLiqK) - ConvTemp(tSolK):F0} {u})";
+            }
+
             if (res.PhaseCurves != null && res.PhaseCurves.TK.Count > 0 && res.PhaseCurves.Series.Count > 0)
             {
                 xs = res.PhaseCurves.TK.Select(ConvTemp).ToArray();
@@ -1535,6 +1554,22 @@ namespace PyCalphadSuite.Desktop
                     {
                         // LTTB downsampling for ultra-dense step simulations
                         (plotXs, plotYs) = LttbDownsampler.Downsample(xs, ys, 2000);
+                    }
+
+                    // Rich translucent filled area beneath each phase curve (PyCalphad / Thermo-Calc / JMatPro standard)
+                    if (plotYs.Any(v => v > 0.001))
+                    {
+                        var polyCoords = new List<Coordinates> { new(plotXs[0], 0.0) };
+                        for (int pi = 0; pi < plotXs.Length; pi++)
+                        {
+                            polyCoords.Add(new Coordinates(plotXs[pi], plotYs[pi]));
+                        }
+                        polyCoords.Add(new Coordinates(plotXs[^1], 0.0));
+                        polyCoords.Add(new Coordinates(plotXs[0], 0.0));
+
+                        var poly = plot.Add.Polygon(polyCoords.ToArray());
+                        poly.FillColor = col.WithAlpha(0.24f);
+                        poly.LineColor = ScottPlot.Colors.Transparent;
                     }
 
                     var sc = plot.Add.ScatterLine(plotXs, plotYs, col);
@@ -1623,7 +1658,14 @@ namespace PyCalphadSuite.Desktop
                 HostEquilibrium.HeaderSummary = $"Solidus: {ConvTemp(tSolK):F1} {u}  |  Liquidus: {ConvTemp(tLiqK):F1} {u}";
             }
 
-            HostEquilibrium.SetLimitsAndRemember(xs.Min(), xs.Max(), 0.0, 1.06);
+            // Adaptive auto-focus temperature bounds:
+            // Frame to active transformation window [T_min, T_liquidus + headroom] so solid-state reactions are not crushed
+            double xMin = xs.Min();
+            double activeTMaxK = tLiqK > 400.0
+                ? Math.Max(tLiqK + Math.Clamp(0.10 * (tLiqK - 300.0), 60.0, 160.0), 1600.0)
+                : 1800.0;
+            double xMaxFocus = Math.Min(xs.Max(), ConvTemp(activeTMaxK));
+            HostEquilibrium.SetLimitsAndRemember(xMin, xMaxFocus, 0.0, 1.04);
             HostEquilibrium.Refresh();
         }
 
@@ -3023,6 +3065,22 @@ namespace PyCalphadSuite.Desktop
                 var tt = res.Xrd.TwoTheta.ToArray();
                 var intens = res.Xrd.IntensityPct.ToArray();
 
+                // OriginLab-grade subtle translucent shaded area beneath diffractogram profile
+                if (tt.Length > 0 && intens.Length == tt.Length)
+                {
+                    var polyCoords = new List<Coordinates> { new(tt[0], 0.0) };
+                    for (int i = 0; i < tt.Length; i++)
+                    {
+                        polyCoords.Add(new Coordinates(tt[i], intens[i]));
+                    }
+                    polyCoords.Add(new Coordinates(tt[^1], 0.0));
+                    polyCoords.Add(new Coordinates(tt[0], 0.0));
+
+                    var poly = plot.Add.Polygon(polyCoords.ToArray());
+                    poly.FillColor = ScottPlot.Color.FromHex("#1D4ED8").WithAlpha(0.12f);
+                    poly.LineColor = ScottPlot.Colors.Transparent;
+                }
+
                 var sc = plot.Add.ScatterLine(tt, intens, ScottPlot.Color.FromHex("#1D4ED8"));
                 sc.LineWidth = 2.2f;
                 sc.LegendText = "Simulated XRD Profile";
@@ -3177,8 +3235,17 @@ namespace PyCalphadSuite.Desktop
                 bars.LegendText = "Sector Suitability Score (%)";
                 HostSuitability.AddExportSeries("Sector Suitability Score (%)", scores, yPositions);
 
-                foreach (var b in bars.Bars)
+                for (int i = 0; i < count; i++)
                 {
+                    var b = bars.Bars[i];
+                    var item = top[i];
+                    string barHex = item.Score >= 75.0 ? "#10B981" // Emerald Prime Candidate
+                                  : item.Score >= 50.0 ? "#2563EB" // Royal Blue Suitable
+                                  : item.Score >= 35.0 ? "#F59E0B" // Warm Amber Marginal
+                                  : item.Tier.Contains("Veto", StringComparison.OrdinalIgnoreCase) ? "#DC2626" // Crimson Vetoed
+                                  : "#64748B"; // Slate Grey Unsuitable
+
+                    b.FillColor = ScottPlot.Color.FromHex(barHex).WithAlpha(0.85f);
                     b.LineWidth = 1.0f;
                     b.LineColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#0F172A");
                 }
@@ -3187,27 +3254,38 @@ namespace PyCalphadSuite.Desktop
                 plot.Axes.Left.TickLabelStyle.FontSize = 10.0f;
                 plot.Axes.Left.TickLabelStyle.Bold = true;
                 plot.Axes.Left.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
-                plot.Axes.Left.MinimumSize = 280f;
+                plot.Axes.Left.MinimumSize = 310f;
 
                 plot.Axes.Bottom.TickLabelStyle.FontSize = 10.5f;
                 plot.Axes.Bottom.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
 
                 for (int i = 0; i < count; i++)
                 {
-                    var valTxt = plot.Add.Text($"{scores[i]:F0}%", scores[i] + 1.2, yPositions[i]);
-                    valTxt.LabelFontSize = 9.5f;
+                    string tierTag = top[i].Score >= 75.0 ? "Prime"
+                                   : top[i].Score >= 50.0 ? "Suitable"
+                                   : top[i].Score >= 35.0 ? "Marginal"
+                                   : top[i].Tier.Contains("Veto", StringComparison.OrdinalIgnoreCase) ? "Vetoed"
+                                   : "Unsuitable";
+
+                    var valTxt = plot.Add.Text($"{scores[i]:F1}% [{tierTag}]", scores[i] + 1.4, yPositions[i]);
+                    valTxt.LabelFontSize = 9.0f;
                     valTxt.LabelBold = true;
                     valTxt.LabelAlignment = Alignment.MiddleLeft;
                     valTxt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
                 }
 
-                var line75 = plot.Add.VerticalLine(75.0);
-                line75.LineColor = ScottPlot.Color.FromHex("#64748B");
-                line75.LinePattern = LinePattern.Dashed;
-                line75.LineWidth = 1.0f;
+                var line50 = plot.Add.VerticalLine(50.0);
+                line50.LineColor = ScottPlot.Color.FromHex("#94A3B8");
+                line50.LinePattern = LinePattern.Dotted;
+                line50.LineWidth = 1.0f;
 
-                HostSuitability.HeaderSummary = $"Top Match: {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
-                HostSuitability.SetLimitsAndRemember(0.0, 112.0, 0.4, count + 0.6);
+                var line75 = plot.Add.VerticalLine(75.0);
+                line75.LineColor = ScottPlot.Color.FromHex("#10B981");
+                line75.LinePattern = LinePattern.Dashed;
+                line75.LineWidth = 1.2f;
+
+                HostSuitability.HeaderSummary = $"Top Match: Rank 1 - {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
+                HostSuitability.SetLimitsAndRemember(0.0, 116.0, 0.4, count + 0.6);
             }
             HostSuitability.Refresh();
         }
@@ -3715,23 +3793,29 @@ namespace PyCalphadSuite.Desktop
 
         private static Dictionary<string, ScottPlot.Color> GetCalphadPalette() => new(StringComparer.OrdinalIgnoreCase)
         {
-            { "LIQUID", ScottPlot.Color.FromHex("#1B8A44") },
-            { "FCC_A1", ScottPlot.Color.FromHex("#801A1A") },
-            { "FCC", ScottPlot.Color.FromHex("#1D4ED8") },
-            { "BCC_A2", ScottPlot.Color.FromHex("#1E293B") },
-            { "BCC", ScottPlot.Color.FromHex("#D97706") },
-            { "B2_BCC", ScottPlot.Color.FromHex("#000000") },
-            { "B2", ScottPlot.Color.FromHex("#7C3AED") },
-            { "HCP_A3", ScottPlot.Color.FromHex("#CA8A04") },
-            { "SIGMA", ScottPlot.Color.FromHex("#DC2626") },
-            { "LAVES_C14", ScottPlot.Color.FromHex("#EA580C") },
-            { "LAVES_C15", ScottPlot.Color.FromHex("#9333EA") },
-            { "LAVES_C36", ScottPlot.Color.FromHex("#C026D3") },
-            { "MU_PHASE", ScottPlot.Color.FromHex("#0891B2") },
-            { "CHI_A12", ScottPlot.Color.FromHex("#BE123C") },
-            { "L12_FCC", ScottPlot.Color.FromHex("#059669") },
-            { "GAMMA_PRIME", ScottPlot.Color.FromHex("#059669") },
-            { "GAMMA_DOUBLE_PRIME", ScottPlot.Color.FromHex("#2563EB") },
+            { "LIQUID", ScottPlot.Color.FromHex("#0072B2") },              // Royal Ocean Blue (Thermo-Calc / Okabe-Ito Liquid)
+            { "FCC_A1", ScottPlot.Color.FromHex("#2563EB") },              // Royal Blue (FCC Austenite)
+            { "FCC", ScottPlot.Color.FromHex("#2563EB") },                 // Royal Blue
+            { "BCC_A2", ScottPlot.Color.FromHex("#E69F00") },              // Warm Amber / Gold-Orange (BCC Ferrite)
+            { "BCC", ScottPlot.Color.FromHex("#E69F00") },                 // Warm Amber
+            { "B2_BCC", ScottPlot.Color.FromHex("#56B4E9") },              // Vivid Sky Cyan (Ordered B2)
+            { "B2", ScottPlot.Color.FromHex("#56B4E9") },                  // Vivid Sky Cyan
+            { "HCP_A3", ScottPlot.Color.FromHex("#009E73") },              // Emerald Green (HCP)
+            { "HCP", ScottPlot.Color.FromHex("#009E73") },                 // Emerald Green
+            { "SIGMA", ScottPlot.Color.FromHex("#882255") },               // Plum / Wine Magenta (Brittle Sigma)
+            { "LAVES_C14", ScottPlot.Color.FromHex("#AA3377") },           // Deep Orchid Purple
+            { "LAVES_C15", ScottPlot.Color.FromHex("#9333EA") },           // Vibrant Purple
+            { "LAVES_C36", ScottPlot.Color.FromHex("#C026D3") },           // Fuchsia Orchid
+            { "MU_PHASE", ScottPlot.Color.FromHex("#0891B2") },            // Cyan Teal
+            { "CHI_A12", ScottPlot.Color.FromHex("#BE123C") },             // Crimson
+            { "L12_FCC", ScottPlot.Color.FromHex("#EE6677") },             // Coral / Rose Red (Ordered L12 Gamma Prime)
+            { "L12", ScottPlot.Color.FromHex("#EE6677") },                 // Coral Rose
+            { "GAMMA_PRIME", ScottPlot.Color.FromHex("#EE6677") },         // Coral Rose
+            { "GAMMA_DOUBLE_PRIME", ScottPlot.Color.FromHex("#3B82F6") },  // Azure Blue
+            { "M7C3", ScottPlot.Color.FromHex("#332288") },                // Deep Indigo Carbide
+            { "M23C6", ScottPlot.Color.FromHex("#047857") },               // Forest Green Carbide
+            { "MC_CARBIDE", ScottPlot.Color.FromHex("#0F766E") },          // Dark Teal
+            { "CEMENTITE", ScottPlot.Color.FromHex("#7F180D") },           // Burgundy Brown
             { "AG3SN_IMC", ScottPlot.Color.FromHex("#0D9488") },
             { "CU6SN5_IMC", ScottPlot.Color.FromHex("#B45309") },
             { "CU3SN_IMC", ScottPlot.Color.FromHex("#9A3412") }
@@ -3739,12 +3823,16 @@ namespace PyCalphadSuite.Desktop
 
         private static ScottPlot.Color[] GetAcademicColors() => new[]
         {
-            ScottPlot.Color.FromHex("#1D4ED8"),
-            ScottPlot.Color.FromHex("#D97706"),
-            ScottPlot.Color.FromHex("#16A34A"),
-            ScottPlot.Color.FromHex("#7C3AED"),
-            ScottPlot.Color.FromHex("#DC2626"),
-            ScottPlot.Color.FromHex("#0891B2")
+            ScottPlot.Color.FromHex("#0072B2"), // Deep Ocean Blue
+            ScottPlot.Color.FromHex("#E69F00"), // Warm Amber
+            ScottPlot.Color.FromHex("#009E73"), // Emerald Green
+            ScottPlot.Color.FromHex("#D55E00"), // Vermilion
+            ScottPlot.Color.FromHex("#56B4E9"), // Sky Cyan
+            ScottPlot.Color.FromHex("#EE6677"), // Coral Rose
+            ScottPlot.Color.FromHex("#882255"), // Plum Wine
+            ScottPlot.Color.FromHex("#332288"), // Indigo
+            ScottPlot.Color.FromHex("#AA3377"), // Orchid Purple
+            ScottPlot.Color.FromHex("#44AA99")  // Muted Teal
         };
 
         #endregion

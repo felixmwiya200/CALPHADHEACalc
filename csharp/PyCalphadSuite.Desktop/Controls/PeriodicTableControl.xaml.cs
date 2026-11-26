@@ -25,6 +25,7 @@ namespace PyCalphadSuite.Desktop.Controls
         private readonly HashSet<string> _selectedSymbols = new(StringComparer.OrdinalIgnoreCase);
         private string _activeCategory = "all";
         private bool _isDark = true;
+        private bool _isGrey = false;
         private List<ElementDto>? _cachedElements;
 
         public event Action<Dictionary<string, double>>? ApplyCompositionRequested;
@@ -48,6 +49,7 @@ namespace PyCalphadSuite.Desktop.Controls
         public void ApplyTheme(bool isDark, bool isGrey)
         {
             _isDark = isDark;
+            _isGrey = isGrey;
             var bgHex = isDark ? "#202225" : (isGrey ? "#F1F5F9" : "#FFFFFF");
             var barHex = isDark ? "#2B2D31" : (isGrey ? "#E2E8F0" : "#F8FAFC");
             var borderHex = isDark ? "#3F4248" : (isGrey ? "#CBD5E1" : "#CBD5E1");
@@ -703,10 +705,10 @@ namespace PyCalphadSuite.Desktop.Controls
         {
             if (PanelCategoryFilters == null) return;
             bool dark = isDarkOverride ?? _isDark;
-            bool grey = isGreyOverride ?? false;
+            bool grey = isGreyOverride ?? _isGrey;
             string unselectedBg = dark ? "#2B2D31" : (grey ? "#E2E8F0" : "#FFFFFF");
             string unselectedFg = dark ? "#F2F3F5" : "#0F172A";
-            string unselectedBorder = dark ? "#4E5058" : "#CBD5E1";
+            string unselectedBorder = dark ? "#4E5058" : "#94A3B8";
 
             foreach (var child in PanelCategoryFilters.Children)
             {
@@ -732,10 +734,10 @@ namespace PyCalphadSuite.Desktop.Controls
         {
             if (PanelQuickPresets == null) return;
             bool dark = isDarkOverride ?? _isDark;
-            bool grey = isGreyOverride ?? false;
+            bool grey = isGreyOverride ?? _isGrey;
             string btnBg = dark ? "#2B2D31" : (grey ? "#E2E8F0" : "#FFFFFF");
             string btnFg = dark ? "#F2F3F5" : "#0F172A";
-            string btnBorder = dark ? "#4E5058" : "#CBD5E1";
+            string btnBorder = dark ? "#4E5058" : "#94A3B8";
 
             foreach (var child in PanelQuickPresets.Children)
             {
