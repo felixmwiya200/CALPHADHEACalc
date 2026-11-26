@@ -742,11 +742,14 @@ class CAEDaemon:
         # -------------------------------------------------------------------
         # 8. XRD Diffractogram & Industrial Suitability & Processability
         # -------------------------------------------------------------------
+        xrd_res = XRDEngine.calculate_xrd(at_comp, is_coating=is_coating, thermo_metrics=thermo_res)
         xrd_bench = MaterialDatabaseSelector.get_xrd_benchmark(db_name)
-        if xrd_bench:
-            xrd_res = xrd_bench
-        else:
-            xrd_res = XRDEngine.calculate_xrd(at_comp, is_coating=is_coating, thermo_metrics=thermo_res)
+        if xrd_bench and not xrd_res.get("HasBenchmark"):
+            xrd_res["HasBenchmark"] = True
+            xrd_res["BenchmarkTitle"] = f"{db_name} Experimental Reference"
+            xrd_res["BenchmarkCitation"] = xrd_bench.get("citation", "")
+            xrd_res["BenchmarkTwoTheta"] = xrd_bench.get("two_theta_deg", [])
+            xrd_res["BenchmarkIntensity"] = xrd_bench.get("intensity_exp_norm", xrd_bench.get("intensity_norm", []))
 
         # Normalize & downsample continuous XRD trace cleanly to ~400 points for instant IPC
         tt_arr = xrd_res.get("TwoTheta_deg", xrd_res.get("two_theta_deg", []))
@@ -2053,6 +2056,83 @@ class CAEDaemon:
         presets = KaufmanMallikEngine.get_classic_presets()
         return _to_json_safe({"presets": presets})
 
+    @classmethod
+    def handle_calculate_spinodal_decomposition(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates symmetric regular solution binodal, spinodal, and Cahn-Hilliard kinetics."""
+        _ensure_modules()
+        from pycalphad_app.core.spinodal_engine import SpinodalEngine
+        tc_c = float(req.get("critical_temp_c", req.get("tc_c", 900.0)))
+        omega = req.get("interaction_parameter_omega", req.get("omega"))
+        omega_val = float(omega) if omega is not None else None
+        kappa = float(req.get("gradient_energy_kappa", 1.8e-15))
+        mobility = float(req.get("atomic_mobility", 1.0e-20))
+
+        engine = SpinodalEngine(tc_c=tc_c, omega=omega_val, kappa=kappa, mobility=mobility)
+
+        t_min_c = float(req.get("t_min_c", 200.0))
+        t_max_c = float(req.get("t_max_c", 1050.0))
+        n_points = int(req.get("n_points", 150))
+        diagram = engine.generate_diagram_data(t_min_c=t_min_c, t_max_c=t_max_c, n_points=n_points)
+
+        x_eval = req.get("x")
+        t_eval_c = req.get("t_c")
+        point_eval = None
+        kinetics = None
+        if x_eval is not None and t_eval_c is not None:
+            x_f = float(x_eval)
+            t_f = float(t_eval_c)
+            st = engine.classify_stability(x_f, t_f)
+            dg = engine.free_energy_of_mixing(x_f, t_f)
+            kin = engine.compute_cahn_hilliard_kinetics(x_f, t_f)
+            point_eval = {
+                "x": x_f,
+                "t_c": t_f,
+                "stability": st,
+                "delta_g_mix_J_mol": dg["G_mix_J_mol"],
+                "dG_dx_J_mol": dg["dG_dx_J_mol"],
+                "d2G_dx2_J_mol": dg["d2G_dx2_J_mol"],
+            }
+            kinetics = kin
+
+        return _to_json_safe({
+            "diagram": diagram,
+            "point_evaluation": point_eval,
+            "cahn_hilliard_kinetics": kinetics,
+        })
+
+    @classmethod
+    def handle_calculate_unary_diagram(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates unary substance P-T phase diagram curves (sublimation, vaporization, fusion)."""
+        _ensure_modules()
+        from pycalphad_app.core.unary_diagram_engine import UnaryDiagramEngine
+        substance = str(req.get("substance", "H2O"))
+        engine = UnaryDiagramEngine(substance=substance)
+
+        t_min_c = float(req.get("t_min_c", -100.0))
+        t_max_c = float(req.get("t_max_c", 500.0))
+        log_p_min = float(req.get("log_p_min", -3.0))
+        log_p_max = float(req.get("log_p_max", 3.0))
+        num_points = int(req.get("num_points", 150))
+
+        curves = engine.compute_diagram_curves(
+            t_min_c=t_min_c,
+            t_max_c=t_max_c,
+            log_p_min=log_p_min,
+            log_p_max=log_p_max,
+            num_points=num_points,
+        )
+
+        t_eval_c = req.get("t_c")
+        log_p_eval = req.get("log_p")
+        point_phase = None
+        if t_eval_c is not None and log_p_eval is not None:
+            point_phase = engine.evaluate_phase(float(t_eval_c), float(log_p_eval))
+
+        return _to_json_safe({
+            "diagram": curves,
+            "evaluated_phase": point_phase,
+        })
+
 
 def run_daemon():
     """Main event loop reading newline-delimited JSON RPC from STDIN."""
@@ -2105,6 +2185,8 @@ def run_daemon():
         "calculate_kaufman_mallik_ternary": CAEDaemon.handle_calculate_kaufman_mallik_ternary,
         "calculate_miscibility_gap": CAEDaemon.handle_calculate_miscibility_gap,
         "get_kaufman_mallik_presets": CAEDaemon.handle_get_kaufman_mallik_presets,
+        "calculate_spinodal_decomposition": CAEDaemon.handle_calculate_spinodal_decomposition,
+        "calculate_unary_diagram": CAEDaemon.handle_calculate_unary_diagram,
     }
 
     sys.stderr.write(f"[CAEDaemon] Ready v{CAEDaemon.VERSION}. Listening on STDIN...\n")

@@ -200,11 +200,14 @@ class IterativeSolver:
             thermo_res, {"Process": self.process_type}
         )
 
+        xrd_res = XRDEngine.calculate_xrd(self.normalized_comp, is_coating=False, thermo_metrics=thermo_res)
         xrd_bench = MaterialDatabaseSelector.get_xrd_benchmark(self.database_name)
-        if xrd_bench:
-            xrd_res = xrd_bench
-        else:
-            xrd_res = XRDEngine.calculate_xrd(self.normalized_comp, is_coating=False, thermo_metrics=thermo_res)
+        if xrd_bench and not xrd_res.get("HasBenchmark"):
+            xrd_res["HasBenchmark"] = True
+            xrd_res["BenchmarkTitle"] = f"{self.database_name} Reference Benchmark"
+            xrd_res["BenchmarkCitation"] = xrd_bench.get("citation", "")
+            xrd_res["BenchmarkTwoTheta"] = xrd_bench.get("two_theta_deg", [])
+            xrd_res["BenchmarkIntensity"] = xrd_bench.get("intensity_exp_norm", xrd_bench.get("intensity_norm", []))
 
         all_metrics = {"composition": self.normalized_comp}
         all_metrics.update(thermo_res)

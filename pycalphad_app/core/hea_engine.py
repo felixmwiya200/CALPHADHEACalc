@@ -1822,10 +1822,46 @@ class HEAEngine(BaseAlloyEngine):
             rk_phase = "LIQUID"
         elif t_c >= t_sol_c:
             f_liq = (t_c - t_sol_c) / max(1.0, (t_liq_c - t_sol_c))
-            phase_base = "FCC" if trans["VEC"] >= 8.0 else "BCC"
-            phases = {"Liquid": float(f_liq), phase_base: float(1.0 - f_liq)}
-            dominant = f"Liquid + {phase_base}"
-            rk_phase = "LIQUID" if f_liq >= 0.5 else ("FCC_A1" if phase_base == "FCC" else "BCC_A2")
+            f_solid = max(0.0, 1.0 - f_liq)
+            is_hcp_matrix = trans["PhasePrediction_Guo"] == "Single Phase HCP"
+            phases = {"Liquid": float(f_liq)}
+
+            if is_hcp_matrix:
+                phases["HCP"] = float(f_solid)
+                dominant = "Liquid + HCP"
+                rk_phase = "LIQUID" if f_liq >= 0.5 else "HCP_A3"
+            else:
+                base_phases = thermo.get("Phases", {})
+                fcc0 = float(base_phases.get("FCC", 0.0))
+                bcc0 = float(base_phases.get("BCC", 0.0))
+                mat0 = fcc0 + bcc0
+
+                if mat0 > 1e-6 and fcc0 > 0.001 and bcc0 > 0.001:
+                    # Dual-phase solid solution (e.g. AlxCoCrFeNi)
+                    # Continuous solidification apportionment matching solidus phase fractions
+                    vec_val = trans.get("VEC", 7.5)
+                    primary = "FCC" if vec_val >= 8.0 else ("BCC" if vec_val < 7.5 else ("FCC" if fcc0 >= bcc0 else "BCC"))
+                    secondary = "BCC" if primary == "FCC" else "FCC"
+                    sec_ratio = (bcc0 if secondary == "BCC" else fcc0) / mat0
+
+                    t_norm = (t_c - t_sol_c) / max(1.0, (t_liq_c - t_sol_c))
+                    # Secondary phase solidifies closer to solidus; smoothly transitions to 0 at liquidus
+                    w_sec = max(0.0, 1.0 - t_norm) ** 1.35
+                    f_sec = f_solid * sec_ratio * w_sec
+                    f_prim = max(0.0, f_solid - f_sec)
+
+                    if f_prim > 0.001:
+                        phases[primary] = float(f_prim)
+                    if f_sec > 0.001:
+                        phases[secondary] = float(f_sec)
+
+                    dominant = f"Liquid + {primary}" if f_prim >= f_sec else f"Liquid + {secondary}"
+                    rk_phase = "LIQUID" if f_liq >= 0.5 else ("FCC_A1" if primary == "FCC" else "BCC_A2")
+                else:
+                    phase_base = "FCC" if (fcc0 > bcc0 or (mat0 <= 1e-6 and trans["VEC"] >= 8.0)) else "BCC"
+                    phases[phase_base] = float(f_solid)
+                    dominant = f"Liquid + {phase_base}"
+                    rk_phase = "LIQUID" if f_liq >= 0.5 else ("FCC_A1" if phase_base == "FCC" else "BCC_A2")
         else:
             base_phases = thermo["Phases"]
             imc_eval = thermo.get("IMC_Evaluation", {})

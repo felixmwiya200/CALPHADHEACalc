@@ -372,7 +372,7 @@ class XRDEngine:
             poly = imc_eval.get("LavesPolytype")
 
             # Require substantial Laves tendency (>= 0.15) before adding secondary peak sets
-            laves_frac = float(imc_eval.get("LavesFraction", 0.0))
+            laves_frac = float(imc_eval.get("MaxLavesFraction", imc_eval.get("LavesFraction", 0.0)))
             if laves_frac >= 0.15:
                 if poly == "LAVES_C15":
                     if "Zr" in comp_map and comp_map.get("Fe", 0.0) > 0.05:

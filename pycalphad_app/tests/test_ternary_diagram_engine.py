@@ -72,6 +72,51 @@ def test_compute_assessed_ternary(sys_id):
     assert len(res["grid_lines"]) > 0
     assert len(res["curves"]) > 0
     assert len(res["invariants"]) > 0
+
+
+def test_solve_quadric_liquidus_curved_surfaces():
+    # Test solving 3-field quadric curved liquidus surface
+    res = TernaryDiagramEngine.solve_quadric_liquidus(
+        tm_a=1000.0, tm_b=920.0, tm_c=1060.0,
+        e_ab=(0.45, 780.0),
+        e_bc=(0.50, 810.0),
+        e_ca=(0.40, 850.0),
+        e_ternary=(0.35, 0.37, 0.28, 705.0),
+        sag=0.16
+    )
+    assert "quad_a" in res
+    assert "quad_b" in res
+    assert "quad_c" in res
+    assert len(res["quad_a"]) == 6
+    assert len(res["quad_b"]) == 6
+    assert len(res["quad_c"]) == 6
+
+    # Verify quadric A passes through corner A [1, 0, 0] at Tm_A = 1000.0
+    mono_a = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    t_a = sum(res["quad_a"][i] * mono_a[i] for i in range(6))
+    assert abs(t_a - 1000.0) < 1e-4
+
+    # Verify quadric A passes through ternary eutectic E at TE = 705.0
+    ea, eb, ec = 0.35, 0.37, 0.28
+    mono_e = [ea*ea, eb*eb, ec*ec, ea*eb, ea*ec, eb*ec]
+    t_ea = sum(res["quad_a"][i] * mono_e[i] for i in range(6))
+    assert abs(t_ea - 705.0) < 1e-4
+
+
+def test_ceramic_mas_cordierite_system():
+    diag = TernaryDiagramEngine.compute_ternary_diagram("MgO-Al2O3-SiO2")
+    assert diag["system"] == "MgO-Al2O3-SiO2"
+    assert len(diag["tie_triangles"]) == 9  # 9 Alkemade compatibility triangles
+    assert any(inv["temp_c"] == 1355.0 for inv in diag["invariants"])  # E1 1355 C
+    assert any("Cordierite" in lbl["name"] for lbl in diag["phase_labels"])
+
+
+def test_ceramic_azs_refractory_system():
+    diag = TernaryDiagramEngine.compute_ternary_diagram("Al2O3-SiO2-ZrO2")
+    assert diag["system"] == "Al2O3-SiO2-ZrO2"
+    assert len(diag["tie_triangles"]) == 3  # 3 Alkemade triangles
+    assert any(inv["temp_c"] == 1705.0 for inv in diag["invariants"])  # Eutectic 1705 C
+    assert any("Zircon" in lbl["name"] for lbl in diag["phase_labels"])
     assert "apex_labels" in res
     assert res["apex_labels"]["A"]["name"] != ""
     assert res["apex_labels"]["B"]["name"] != ""
@@ -98,3 +143,48 @@ def test_compute_arbitrary_ternary():
     assert res["element_c"] == "Mo"
     assert len(res["curves"]) > 0
     assert len(res["invariants"]) > 0
+
+
+def test_solve_quadric_liquidus_curved_surfaces():
+    # Test solving 3-field quadric curved liquidus surface
+    res = TernaryDiagramEngine.solve_quadric_liquidus(
+        tm_a=1000.0, tm_b=920.0, tm_c=1060.0,
+        e_ab=(0.45, 780.0),
+        e_bc=(0.50, 810.0),
+        e_ca=(0.40, 850.0),
+        e_ternary=(0.35, 0.37, 0.28, 705.0),
+        sag=0.16
+    )
+    assert "quad_a" in res
+    assert "quad_b" in res
+    assert "quad_c" in res
+    assert len(res["quad_a"]) == 6
+    assert len(res["quad_b"]) == 6
+    assert len(res["quad_c"]) == 6
+
+    # Verify quadric A passes through corner A [1, 0, 0] at Tm_A = 1000.0
+    mono_a = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    t_a = sum(res["quad_a"][i] * mono_a[i] for i in range(6))
+    assert abs(t_a - 1000.0) < 1e-4
+
+    # Verify quadric A passes through ternary eutectic E at TE = 705.0
+    ea, eb, ec = 0.35, 0.37, 0.28
+    mono_e = [ea*ea, eb*eb, ec*ec, ea*eb, ea*ec, eb*ec]
+    t_ea = sum(res["quad_a"][i] * mono_e[i] for i in range(6))
+    assert abs(t_ea - 705.0) < 1e-4
+
+
+def test_ceramic_mas_cordierite_system():
+    diag = TernaryDiagramEngine.compute_ternary_diagram("MgO-Al2O3-SiO2")
+    assert diag["system"] == "MgO-Al2O3-SiO2"
+    assert len(diag["tie_triangles"]) == 9  # 9 Alkemade compatibility triangles
+    assert any(inv["temp_c"] == 1355.0 for inv in diag["invariants"])  # E1 1355 C
+    assert any("Cordierite" in lbl["name"] for lbl in diag["phase_labels"])
+
+
+def test_ceramic_azs_refractory_system():
+    diag = TernaryDiagramEngine.compute_ternary_diagram("Al2O3-SiO2-ZrO2")
+    assert diag["system"] == "Al2O3-SiO2-ZrO2"
+    assert len(diag["tie_triangles"]) == 3  # 3 Alkemade triangles
+    assert any(inv["temp_c"] == 1705.0 for inv in diag["invariants"])  # Eutectic 1705 C
+    assert any("Zircon" in lbl["name"] for lbl in diag["phase_labels"])

@@ -568,3 +568,43 @@ def test_fe_ni_solidus_liquidus_ordering():
     for x, yl, ys in zip(liq["xs"], liq["ys"], sol["ys"]):
         assert ys <= yl + 1e-2, f"Solidus exceeds Liquidus at x={x}: sol={ys} > liq={yl}"
     assert any(inv["type"] == "Peritectic" and abs(inv["temp"] - 1513.0) < 1.0 for inv in diag["invariants"])
+
+
+def test_canonical_archetypes_au_cu_minimum():
+    diag = BinaryDiagramEngine.compute_binary_diagram("Au-Cu", temp_unit="C")
+    assert diag["system"] == "Au-Cu"
+    assert len(diag["curves"]) >= 4
+    min_inv = next(inv for inv in diag["invariants"] if inv["type"] == "Congruent Minimum")
+    assert abs(min_inv["temperature"] - 910.0) < 1e-2
+    assert min_inv["composition"] == 0.50
+
+
+def test_canonical_archetypes_ag_pt_peritectic():
+    diag = BinaryDiagramEngine.compute_binary_diagram("Ag-Pt", temp_unit="C")
+    assert diag["system"] == "Ag-Pt"
+    peri_inv = next(inv for inv in diag["invariants"] if inv["type"] == "Peritectic")
+    assert abs(peri_inv["temperature"] - 1186.0) < 1e-2
+    assert peri_inv["composition"] == 0.55
+
+
+def test_canonical_archetypes_cu_pb_monotectic():
+    diag = BinaryDiagramEngine.compute_binary_diagram("Cu-Pb", temp_unit="C")
+    assert diag["system"] == "Cu-Pb"
+    mono_inv = next(inv for inv in diag["invariants"] if inv["type"] == "Monotectic")
+    assert abs(mono_inv["temperature"] - 955.0) < 1e-2
+    assert any("Miscibility Dome" in c["name"] for c in diag["curves"])
+
+
+def test_canonical_archetypes_ag_al_peritectoid():
+    diag = BinaryDiagramEngine.compute_binary_diagram("Ag-Al", temp_unit="C")
+    assert diag["system"] == "Ag-Al"
+    perid_inv = next(inv for inv in diag["invariants"] if inv["type"] == "Peritectoid")
+    assert abs(perid_inv["temperature"] - 610.0) < 1e-2
+
+
+def test_canonical_archetypes_na_zn_syntectic():
+    diag = BinaryDiagramEngine.compute_binary_diagram("Na-Zn", temp_unit="C")
+    assert diag["system"] == "Na-Zn"
+    syn_inv = next(inv for inv in diag["invariants"] if inv["type"] == "Syntectic")
+    assert abs(syn_inv["temperature"] - 557.0) < 1e-2
+    assert any("Liquid Dome" in c["name"] for c in diag["curves"])

@@ -130,6 +130,12 @@ class BinaryDiagramEngine:
         "Co-Zr",
         "Co-Y",
         "Cr-Y",
+        # Canonical reaction archetypes
+        "Au-Cu",
+        "Ag-Pt",
+        "Cu-Pb",
+        "Ag-Al",
+        "Na-Zn",
     ]
 
     ASSESSED_PAIR_MAP: Dict[frozenset, str] = {
@@ -179,6 +185,11 @@ class BinaryDiagramEngine:
         frozenset(["Co", "Zr"]): "Co-Zr",
         frozenset(["Co", "Y"]): "Co-Y",
         frozenset(["Cr", "Y"]): "Cr-Y",
+        frozenset(["Au", "Cu"]): "Au-Cu",
+        frozenset(["Ag", "Pt"]): "Ag-Pt",
+        frozenset(["Cu", "Pb"]): "Cu-Pb",
+        frozenset(["Ag", "Al"]): "Ag-Al",
+        frozenset(["Na", "Zn"]): "Na-Zn",
     }
 
     DATABASE_BINARY_SYSTEMS: Dict[str, List[str]] = {
@@ -379,6 +390,16 @@ class BinaryDiagramEngine:
             return cls._compute_co_y(is_k, n_points)
         elif "cr-y" in sys_lower or "y-cr" in sys_lower:
             return cls._compute_cr_y(is_k, n_points)
+        elif "au-cu" in sys_lower or "cu-au" in sys_lower:
+            return cls._compute_au_cu(is_k, n_points)
+        elif "ag-pt" in sys_lower or "pt-ag" in sys_lower:
+            return cls._compute_ag_pt(is_k, n_points)
+        elif "cu-pb" in sys_lower or "pb-cu" in sys_lower:
+            return cls._compute_cu_pb(is_k, n_points)
+        elif "ag-al" in sys_lower or "al-ag" in sys_lower:
+            return cls._compute_ag_al(is_k, n_points)
+        elif "na-zn" in sys_lower or "zn-na" in sys_lower:
+            return cls._compute_na_zn(is_k, n_points)
         else:
             parts = system_name.split()[0].split("-")
             el_a = parts[0].strip().capitalize()
@@ -5015,4 +5036,404 @@ class BinaryDiagramEngine:
             "phase2_name": "Solid Matrix",
             "phase2_fraction": round(f_sol, 4),
             "phase2_comp": round(max(diag["x_min"], x_val * 0.85), 4)
+        }
+
+    # -------------------------------------------------------------------------
+    # Canonical Binary Archetype 1: Au-Cu Isomorphous with Congruent Minimum
+    # -------------------------------------------------------------------------
+    @classmethod
+    def _compute_au_cu(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Liquidus branches meeting at minimum (910 C, 50 at% Cu)
+        l_knots_1 = [(0.0, 1064.18), (0.15, 1020.0), (0.30, 965.0), (0.42, 925.0), (0.50, 910.0)]
+        l_knots_2 = [(0.50, 910.0), (0.60, 935.0), (0.75, 995.0), (0.90, 1050.0), (1.0, 1084.62)]
+        xs_l1, ys_l1 = _interpolate_curve(l_knots_1, n_pts=n_pts // 2)
+        xs_l2, ys_l2 = _interpolate_curve(l_knots_2, n_pts=n_pts // 2)
+
+        # Solidus branches meeting at minimum
+        s_knots_1 = [(0.0, 1064.18), (0.15, 985.0), (0.30, 935.0), (0.42, 915.0), (0.50, 910.0)]
+        s_knots_2 = [(0.50, 910.0), (0.60, 920.0), (0.75, 960.0), (0.90, 1030.0), (1.0, 1084.62)]
+        xs_s1, ys_s1 = _interpolate_curve(s_knots_1, n_pts=n_pts // 2)
+        xs_s2, ys_s2 = _interpolate_curve(s_knots_2, n_pts=n_pts // 2)
+
+        # Low-temperature ordered superlattices (Au3Cu, AuCu, AuCu3)
+        ord_aucu_knots = [(0.40, 200.0), (0.45, 360.0), (0.50, 410.0), (0.55, 360.0), (0.60, 200.0)]
+        xs_ord, ys_ord = _interpolate_curve(ord_aucu_knots, n_pts=45)
+
+        curves = [
+            {"name": "Liquidus (Au Branch)", "xs": xs_l1, "ys": [conv(t) for t in ys_l1], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Liquidus (Cu Branch)", "xs": xs_l2, "ys": [conv(t) for t in ys_l2], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Solidus (Au Branch)", "xs": xs_s1, "ys": [conv(t) for t in ys_s1], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus (Cu Branch)", "xs": xs_s2, "ys": [conv(t) for t in ys_s2], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Ordered AuCu (L1₀ / L1₂)", "xs": xs_ord, "ys": [conv(t) for t in ys_ord], "color": "#DC2626", "width": 1.8, "dash": "dash"},
+        ]
+
+        invariants = [
+            {
+                "type": "Congruent Minimum",
+                "temperature": conv(910.0),
+                "composition": 0.50,
+                "reaction": "L ⇌ α (Congruent Melting)",
+                "phases": ["Liquid", "α (FCC)"]
+            },
+            {
+                "type": "Order-Disorder Peak",
+                "temperature": conv(410.0),
+                "composition": 0.50,
+                "reaction": "α (Disordered FCC) ⇌ AuCu-I (Ordered L1₀)",
+                "phases": ["α (FCC)", "AuCu"]
+            }
+        ]
+
+        regions = [
+            {"name": "Liquid (L)", "x": 0.50, "y": conv(1020.0), "color": "#1E40AF"},
+            {"name": "α + L", "x": 0.25, "y": conv(950.0), "color": "#475569"},
+            {"name": "α + L", "x": 0.75, "y": conv(950.0), "color": "#475569"},
+            {"name": "α (FCC Solid Solution)", "x": 0.50, "y": conv(650.0), "color": "#1E293B"},
+            {"name": "Ordered AuCu", "x": 0.50, "y": conv(280.0), "color": "#991B1B"},
+        ]
+
+        return {
+            "system": "Au-Cu",
+            "element_a": "Au",
+            "element_b": "Cu",
+            "temp_unit": u,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": conv(150.0),
+            "t_max": conv(1150.0),
+            "curves": curves,
+            "invariants": invariants,
+            "regions": regions,
+            "tie_lines": [],
+            "annotations": [
+                {"text": "Congruent Minimum: 910 °C · 50 at% Cu", "x": 0.50, "y": conv(890.0)}
+            ]
+        }
+
+    # -------------------------------------------------------------------------
+    # Canonical Binary Archetype 2: Ag-Pt Peritectic Reaction
+    # -------------------------------------------------------------------------
+    @classmethod
+    def _compute_ag_pt(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Liquidus from Pt (1768.3 C) down to peritectic (1186 C, 55 at% Ag)
+        pt_l_knots = [(0.0, 1768.3), (0.15, 1610.0), (0.30, 1450.0), (0.45, 1290.0), (0.55, 1186.0)]
+        xs_pt_l, ys_pt_l = _interpolate_curve(pt_l_knots, n_pts=n_pts // 2)
+
+        # Liquidus from peritectic to Ag (961.78 C)
+        ag_l_knots = [(0.55, 1186.0), (0.70, 1110.0), (0.85, 1030.0), (1.0, 961.78)]
+        xs_ag_l, ys_ag_l = _interpolate_curve(ag_l_knots, n_pts=n_pts // 2)
+
+        # Alpha (Pt-rich solidus): (0.0, 1768.3) to (0.25, 1186.0)
+        pt_s_knots = [(0.0, 1768.3), (0.10, 1550.0), (0.18, 1340.0), (0.25, 1186.0)]
+        xs_pt_s, ys_pt_s = _interpolate_curve(pt_s_knots, n_pts=45)
+
+        # Solvus curves below 1186 C
+        solv_a_knots = [(0.25, 1186.0), (0.21, 1000.0), (0.17, 800.0), (0.14, 600.0)]
+        solv_b_knots = [(0.45, 1186.0), (0.42, 1000.0), (0.39, 800.0), (0.37, 600.0)]
+        xs_sa, ys_sa = _interpolate_curve(solv_a_knots, n_pts=40)
+        xs_sb, ys_sb = _interpolate_curve(solv_b_knots, n_pts=40)
+
+        # Beta (Ag-rich) solidus: (0.45, 1186.0) to (1.0, 961.78)
+        ag_s_knots = [(0.45, 1186.0), (0.60, 1120.0), (0.80, 1040.0), (1.0, 961.78)]
+        xs_ag_s, ys_ag_s = _interpolate_curve(ag_s_knots, n_pts=45)
+
+        curves = [
+            {"name": "Liquidus (Pt-rich)", "xs": xs_pt_l, "ys": [conv(t) for t in ys_pt_l], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Liquidus (Ag-rich)", "xs": xs_ag_l, "ys": [conv(t) for t in ys_ag_l], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Solidus (α Pt)", "xs": xs_pt_s, "ys": [conv(t) for t in ys_pt_s], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Solidus (β Ag)", "xs": xs_ag_s, "ys": [conv(t) for t in ys_ag_s], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "Solvus α", "xs": xs_sa, "ys": [conv(t) for t in ys_sa], "color": "#059669", "width": 1.6, "dash": "dash"},
+            {"name": "Solvus β", "xs": xs_sb, "ys": [conv(t) for t in ys_sb], "color": "#059669", "width": 1.6, "dash": "dash"},
+        ]
+
+        invariants = [
+            {
+                "type": "Peritectic",
+                "temperature": conv(1186.0),
+                "composition": 0.55,
+                "reaction": "L (55 at% Ag) + α (25 at% Ag) ⇌ β (45 at% Ag)",
+                "phases": ["Liquid", "α (Pt-rich)", "β (Ag-rich)"]
+            }
+        ]
+
+        regions = [
+            {"name": "Liquid (L)", "x": 0.75, "y": conv(1400.0), "color": "#1E40AF"},
+            {"name": "α + L", "x": 0.35, "y": conv(1350.0), "color": "#475569"},
+            {"name": "α (FCC Pt)", "x": 0.10, "y": conv(1200.0), "color": "#1E293B"},
+            {"name": "β + L", "x": 0.70, "y": conv(1060.0), "color": "#475569"},
+            {"name": "α + β", "x": 0.35, "y": conv(900.0), "color": "#475569"},
+            {"name": "β (FCC Ag)", "x": 0.85, "y": conv(800.0), "color": "#1E293B"},
+        ]
+
+        tie_lines = [
+            {"y": conv(1186.0), "x_start": 0.25, "x_end": 0.55, "label": "Peritectic Isotherm: 1186 °C"}
+        ]
+
+        return {
+            "system": "Ag-Pt",
+            "element_a": "Pt",
+            "element_b": "Ag",
+            "temp_unit": u,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": conv(500.0),
+            "t_max": conv(1850.0),
+            "curves": curves,
+            "invariants": invariants,
+            "regions": regions,
+            "tie_lines": tie_lines,
+            "annotations": [
+                {"text": "Peritectic: 1186 °C · L + α ⇌ β", "x": 0.55, "y": conv(1210.0)}
+            ]
+        }
+
+    # -------------------------------------------------------------------------
+    # Canonical Binary Archetype 3: Cu-Pb Monotectic with Liquid Miscibility Gap
+    # -------------------------------------------------------------------------
+    @classmethod
+    def _compute_cu_pb(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Liquidus from Cu (1084.62 C) down to monotectic (955 C, 36 at% Pb)
+        cu_l_knots = [(0.0, 1084.62), (0.10, 1045.0), (0.22, 995.0), (0.36, 955.0)]
+        xs_cu_l, ys_cu_l = _interpolate_curve(cu_l_knots, n_pts=n_pts // 3)
+
+        # Liquid miscibility gap dome L1 + L2 above 955 C peaking at Tc = 1250 C, 36 at% Pb
+        dome_knots = [
+            (0.05, 955.0), (0.12, 1100.0), (0.22, 1200.0), (0.36, 1250.0),
+            (0.50, 1200.0), (0.58, 1100.0), (0.63, 955.0)
+        ]
+        xs_dome, ys_dome = _interpolate_curve(dome_knots, n_pts=55)
+
+        # Monotectic liquidus to eutectic: from (0.63, 955) down to (0.99, 326 C)
+        l2_knots = [(0.63, 955.0), (0.75, 780.0), (0.87, 560.0), (0.95, 410.0), (0.99, 326.0)]
+        xs_l2, ys_l2 = _interpolate_curve(l2_knots, n_pts=n_pts // 2)
+
+        # Pure Pb melting arm
+        pb_l_knots = [(0.99, 326.0), (1.0, 327.46)]
+        xs_pbl, ys_pbl = _interpolate_curve(pb_l_knots, n_pts=15)
+
+        curves = [
+            {"name": "Cu Liquidus", "xs": xs_cu_l, "ys": [conv(t) for t in ys_cu_l], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Liquid Miscibility Dome (L₁ + L₂)", "xs": xs_dome, "ys": [conv(t) for t in ys_dome], "color": "#DC2626", "width": 2.0, "dash": "dash"},
+            {"name": "L₂ Liquidus", "xs": xs_l2, "ys": [conv(t) for t in ys_l2], "color": "#000000", "width": 2.0, "dash": "solid"},
+            {"name": "Pb Liquidus", "xs": xs_pbl, "ys": [conv(t) for t in ys_pbl], "color": "#000000", "width": 2.0, "dash": "solid"},
+        ]
+
+        invariants = [
+            {
+                "type": "Monotectic",
+                "temperature": conv(955.0),
+                "composition": 0.36,
+                "reaction": "L₁ (36 at% Pb) ⇌ α (Cu, ~0.05) + L₂ (63 at% Pb)",
+                "phases": ["Liquid 1", "α (Cu)", "Liquid 2"]
+            },
+            {
+                "type": "Eutectic",
+                "temperature": conv(326.0),
+                "composition": 0.99,
+                "reaction": "L₂ (99 at% Pb) ⇌ α (Cu) + β (Pb)",
+                "phases": ["Liquid 2", "α (Cu)", "β (Pb)"]
+            }
+        ]
+
+        regions = [
+            {"name": "Homogeneous Liquid (L)", "x": 0.36, "y": conv(1320.0), "color": "#1E40AF"},
+            {"name": "Liquid Immiscibility (L₁ + L₂)", "x": 0.36, "y": conv(1100.0), "color": "#DC2626"},
+            {"name": "α + L₁", "x": 0.15, "y": conv(1000.0), "color": "#475569"},
+            {"name": "α (Cu) + L₂", "x": 0.45, "y": conv(650.0), "color": "#475569"},
+            {"name": "α (Cu) + β (Pb)", "x": 0.50, "y": conv(180.0), "color": "#1E293B"},
+        ]
+
+        tie_lines = [
+            {"y": conv(955.0), "x_start": 0.05, "x_end": 0.63, "label": "Monotectic: 955 °C"},
+            {"y": conv(326.0), "x_start": 0.01, "x_end": 0.99, "label": "Eutectic: 326 °C"}
+        ]
+
+        return {
+            "system": "Cu-Pb",
+            "element_a": "Cu",
+            "element_b": "Pb",
+            "temp_unit": u,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": conv(100.0),
+            "t_max": conv(1400.0),
+            "curves": curves,
+            "invariants": invariants,
+            "regions": regions,
+            "tie_lines": tie_lines,
+            "annotations": [
+                {"text": "Monotectic: 955 °C · L₁ ⇌ α + L₂", "x": 0.36, "y": conv(980.0)},
+                {"text": "Liquid Dome Max: 1250 °C", "x": 0.36, "y": conv(1270.0)}
+            ]
+        }
+
+    # -------------------------------------------------------------------------
+    # Canonical Binary Archetype 4: Ag-Al Solid-State Peritectoid Reaction
+    # -------------------------------------------------------------------------
+    @classmethod
+    def _compute_ag_al(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Liquidus lines
+        ag_l = [(0.0, 961.78), (0.15, 870.0), (0.28, 779.0)]
+        al_l = [(0.28, 779.0), (0.45, 720.0), (0.70, 665.0), (1.0, 660.32)]
+        xs_l1, ys_l1 = _interpolate_curve(ag_l, n_pts=40)
+        xs_l2, ys_l2 = _interpolate_curve(al_l, n_pts=50)
+
+        # High-temperature solid-state boundaries (alpha Ag and beta-phase)
+        a_bnd = [(0.25, 610.0), (0.27, 720.0), (0.28, 779.0)]
+        b_bnd = [(0.55, 610.0), (0.50, 720.0), (0.45, 779.0)]
+        xs_ab, ys_ab = _interpolate_curve(a_bnd, n_pts=35)
+        xs_bb, ys_bb = _interpolate_curve(b_bnd, n_pts=35)
+
+        # Peritectoid product gamma phase (Ag3Al / Ag2Al) formed below 610 C
+        gam_left = [(0.25, 610.0), (0.28, 500.0), (0.30, 300.0)]
+        gam_mid = [(0.33, 610.0), (0.34, 450.0), (0.35, 300.0)]
+        gam_right = [(0.55, 610.0), (0.50, 450.0), (0.46, 300.0)]
+        xs_gl, ys_gl = _interpolate_curve(gam_left, n_pts=35)
+        xs_gm, ys_gm = _interpolate_curve(gam_mid, n_pts=35)
+        xs_gr, ys_gr = _interpolate_curve(gam_right, n_pts=35)
+
+        curves = [
+            {"name": "Liquidus (Ag)", "xs": xs_l1, "ys": [conv(t) for t in ys_l1], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "Liquidus (Al)", "xs": xs_l2, "ys": [conv(t) for t in ys_l2], "color": "#000000", "width": 2.2, "dash": "solid"},
+            {"name": "α-Phase Boundary", "xs": xs_ab, "ys": [conv(t) for t in ys_ab], "color": "#2563EB", "width": 1.8, "dash": "solid"},
+            {"name": "β-Phase Boundary", "xs": xs_bb, "ys": [conv(t) for t in ys_bb], "color": "#059669", "width": 1.8, "dash": "solid"},
+            {"name": "γ Peritectoid Solvus Left", "xs": xs_gl, "ys": [conv(t) for t in ys_gl], "color": "#DC2626", "width": 1.8, "dash": "dash"},
+            {"name": "γ Phase Center", "xs": xs_gm, "ys": [conv(t) for t in ys_gm], "color": "#9333EA", "width": 2.0, "dash": "solid"},
+            {"name": "γ Peritectoid Solvus Right", "xs": xs_gr, "ys": [conv(t) for t in ys_gr], "color": "#DC2626", "width": 1.8, "dash": "dash"},
+        ]
+
+        invariants = [
+            {
+                "type": "Peritectoid",
+                "temperature": conv(610.0),
+                "composition": 0.33,
+                "reaction": "α (25 at% Al) + β (55 at% Al) ⇌ γ (33 at% Al, Ag₃Al)",
+                "phases": ["α (FCC Ag)", "β (BCC)", "γ (HCP Ag₂Al/Ag₃Al)"]
+            },
+            {
+                "type": "Eutectic",
+                "temperature": conv(779.0),
+                "composition": 0.28,
+                "reaction": "L ⇌ α + β",
+                "phases": ["Liquid", "α", "β"]
+            }
+        ]
+
+        regions = [
+            {"name": "Liquid (L)", "x": 0.50, "y": conv(850.0), "color": "#1E40AF"},
+            {"name": "α (FCC Ag)", "x": 0.10, "y": conv(500.0), "color": "#1E293B"},
+            {"name": "α + β", "x": 0.38, "y": conv(680.0), "color": "#475569"},
+            {"name": "α + γ", "x": 0.20, "y": conv(450.0), "color": "#475569"},
+            {"name": "γ (Ag₃Al)", "x": 0.35, "y": conv(450.0), "color": "#6B21A8"},
+            {"name": "γ + β", "x": 0.45, "y": conv(450.0), "color": "#475569"},
+            {"name": "β / Al Matrix", "x": 0.85, "y": conv(450.0), "color": "#1E293B"},
+        ]
+
+        tie_lines = [
+            {"y": conv(610.0), "x_start": 0.25, "x_end": 0.55, "label": "Peritectoid: 610 °C"}
+        ]
+
+        return {
+            "system": "Ag-Al",
+            "element_a": "Ag",
+            "element_b": "Al",
+            "temp_unit": u,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": conv(200.0),
+            "t_max": conv(1050.0),
+            "curves": curves,
+            "invariants": invariants,
+            "regions": regions,
+            "tie_lines": tie_lines,
+            "annotations": [
+                {"text": "Peritectoid: 610 °C · α + β ⇌ γ", "x": 0.33, "y": conv(630.0)}
+            ]
+        }
+
+    # -------------------------------------------------------------------------
+    # Canonical Binary Archetype 5: Na-Zn Syntectic Reaction
+    # -------------------------------------------------------------------------
+    @classmethod
+    def _compute_na_zn(cls, is_k: bool, n_pts: int) -> Dict[str, Any]:
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Liquid miscibility gap above syntectic (557 C) peaking at Tc = 640 C, 50 at% Zn
+        dome_knots = [
+            (0.35, 557.0), (0.38, 595.0), (0.44, 625.0), (0.50, 640.0),
+            (0.56, 625.0), (0.62, 595.0), (0.66, 557.0)
+        ]
+        xs_dome, ys_dome = _interpolate_curve(dome_knots, n_pts=45)
+
+        # L1 liquidus branch to pure Na (97.8 C)
+        l1_knots = [(0.0, 97.8), (0.10, 280.0), (0.22, 440.0), (0.35, 557.0)]
+        xs_l1, ys_l1 = _interpolate_curve(l1_knots, n_pts=40)
+
+        # L2 liquidus branch to pure Zn (419.53 C)
+        l2_knots = [(0.66, 557.0), (0.80, 500.0), (0.92, 445.0), (1.0, 419.53)]
+        xs_l2, ys_l2 = _interpolate_curve(l2_knots, n_pts=40)
+
+        # Intermetallic compound stoichiometric line NaZn13 (approx 92.8 at% Zn, nominal model at 0.50 for archetype)
+        comp_knots = [(0.50, 100.0), (0.50, 557.0)]
+        xs_comp, ys_comp = _interpolate_curve(comp_knots, n_pts=20)
+
+        curves = [
+            {"name": "Liquid Dome (L₁ + L₂)", "xs": xs_dome, "ys": [conv(t) for t in ys_dome], "color": "#DC2626", "width": 2.2, "dash": "dash"},
+            {"name": "L₁ Liquidus", "xs": xs_l1, "ys": [conv(t) for t in ys_l1], "color": "#000000", "width": 2.0, "dash": "solid"},
+            {"name": "L₂ Liquidus", "xs": xs_l2, "ys": [conv(t) for t in ys_l2], "color": "#000000", "width": 2.0, "dash": "solid"},
+            {"name": "Intermetallic Compound (NaZn₁₃)", "xs": xs_comp, "ys": [conv(t) for t in ys_comp], "color": "#7C3AED", "width": 2.4, "dash": "solid"},
+        ]
+
+        invariants = [
+            {
+                "type": "Syntectic",
+                "temperature": conv(557.0),
+                "composition": 0.50,
+                "reaction": "L₁ (35 at% Zn) + L₂ (66 at% Zn) ⇌ NaZn₁₃ (Solid Compound)",
+                "phases": ["Liquid 1", "Liquid 2", "NaZn₁₃"]
+            }
+        ]
+
+        regions = [
+            {"name": "Homogeneous Liquid (L)", "x": 0.50, "y": conv(680.0), "color": "#1E40AF"},
+            {"name": "Liquid Immiscibility (L₁ + L₂)", "x": 0.50, "y": conv(600.0), "color": "#DC2626"},
+            {"name": "L₁ + Compound", "x": 0.35, "y": conv(350.0), "color": "#475569"},
+            {"name": "Compound + L₂", "x": 0.70, "y": conv(480.0), "color": "#475569"},
+            {"name": "α(Na) + NaZn₁₃", "x": 0.25, "y": conv(70.0), "color": "#1E293B"},
+            {"name": "NaZn₁₃ + β(Zn)", "x": 0.75, "y": conv(250.0), "color": "#1E293B"},
+        ]
+
+        tie_lines = [
+            {"y": conv(557.0), "x_start": 0.35, "x_end": 0.66, "label": "Syntectic: 557 °C"}
+        ]
+
+        return {
+            "system": "Na-Zn",
+            "element_a": "Na",
+            "element_b": "Zn",
+            "temp_unit": u,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": conv(50.0),
+            "t_max": conv(750.0),
+            "curves": curves,
+            "invariants": invariants,
+            "regions": regions,
+            "tie_lines": tie_lines,
+            "annotations": [
+                {"text": "Syntectic: 557 °C · L₁ + L₂ ⇌ Compound", "x": 0.50, "y": conv(575.0)}
+            ]
         }

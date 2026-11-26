@@ -129,6 +129,8 @@ class TernaryDiagramEngine:
         "Cr-Fe-Nb",
         "Al-Cu-Y",
         "Fe-Sb-O",
+        "MgO-Al2O3-SiO2",
+        "Al2O3-SiO2-ZrO2",
     ]
 
     @classmethod
@@ -153,6 +155,8 @@ class TernaryDiagramEngine:
             {"id": "Cr-Fe-Nb", "name": "Cr-Fe-Nb (PyCalphad Laves C14 Benchmark @ 1323 K)", "category": "Refractory & Steel", "elements": ["Cr", "Fe", "Nb"], "topology": "BCC + C14 Laves + Sigma", "citation": "C. Jacob et al., Calphad 54 (2016) 130-141"},
             {"id": "Al-Cu-Y", "name": "Al-Cu-Y (PyCalphad Heusler & Intermetallics)", "category": "Light Alloys", "elements": ["Al", "Cu", "Y"], "topology": "FCC + Tau1-Tau6 + Liquid Gap", "citation": "C. Zhang et al., Calphad 35 (2011) 607-617"},
             {"id": "Fe-Sb-O", "name": "Fe-Sb-O (PyCalphad Slag & Oxide MQMQA Model)", "category": "Oxides & Slags", "elements": ["Fe", "Sb", "O"], "topology": "Slag Liquid + Spinel + Hematite", "citation": "M. Shishin et al., Calphad 65 (2019) 211-224"},
+            {"id": "MgO-Al2O3-SiO2", "name": "MgO-Al2O3-SiO2 (MAS Cordierite Ceramic)", "category": "Ceramics & Refractories", "elements": ["SiO2", "MgO", "Al2O3"], "topology": "Cordierite + Mullite + Spinel + Forsterite", "citation": "Levin, Robbins & McMurdie (ACerS Sys 712); J. Petrology 2(3):324"},
+            {"id": "Al2O3-SiO2-ZrO2", "name": "Al2O3-SiO2-ZrO2 (AZS Fused-Cast Refractory)", "category": "Ceramics & Refractories", "elements": ["SiO2", "ZrO2", "Al2O3"], "topology": "Zirconia + Mullite + Zircon + Corundum", "citation": "ACerS Phase Equilibria Diagrams; Refractories Handbook (2018)"},
         ]
         return catalog
 
@@ -252,6 +256,10 @@ class TernaryDiagramEngine:
             return cls._compute_al_cu_y(diagram_type, t_c, is_k)
         elif "fe-sb-o" in sys_lower or "fesbo" in sys_lower:
             return cls._compute_fe_sb_o(diagram_type, t_c, is_k)
+        elif "mgo-al2o3-sio2" in sys_lower or "mas" in sys_lower or "sio2-mgo-al2o3" in sys_lower:
+            return cls._compute_mgo_al2o3_sio2(diagram_type, t_c, is_k)
+        elif "al2o3-sio2-zro2" in sys_lower or "azs" in sys_lower or "sio2-zro2-al2o3" in sys_lower:
+            return cls._compute_al2o3_sio2_zro2(diagram_type, t_c, is_k)
         else:
             # Parse arbitrary triplet
             parts = [p.strip().capitalize() for p in sys_clean.replace("_", "-").split("-")]
@@ -1222,4 +1230,343 @@ class TernaryDiagramEngine:
             "phase_labels": labels,
             "invariants": inv_formatted,
             "literature_notes": notes,
+        }
+
+    # =========================================================================
+    # 3D Quadric Curved Liquidus Surface Formulation
+    # References: Surajcuriousanimator/PhaseDiagrams (ternaryMath.js)
+    # =========================================================================
+    @staticmethod
+    def solve_quadric_liquidus(
+        tm_a: float, tm_b: float, tm_c: float,
+        e_ab: Tuple[float, float],  # (a_frac, Te_ab)
+        e_bc: Tuple[float, float],  # (b_frac, Te_bc)
+        e_ca: Tuple[float, float],  # (a_frac, Te_ca)
+        e_ternary: Tuple[float, float, float, float],  # (ea, eb, ec, Te)
+        sag: float = 0.16
+    ) -> Dict[str, Any]:
+        """
+        Solves 3-field 6-parameter quadric curved liquidus surface:
+        T(a,b,c) = sum Q_k * m_k(a,b,c), m = [a^2, b^2, c^2, ab, ac, bc]
+        Passing continuously through pure corners, binary eutectics, ternary eutectic,
+        and mid-edge sag points with quadratic curvature matching prism walls.
+        """
+        def mono(p):
+            a, b, c = p
+            return [a * a, b * b, c * c, a * b, a * c, b * c]
+
+        def mid(p, q):
+            return [(p[i] + q[i]) / 2.0 for i in range(3)]
+
+        pa = [1.0, 0.0, 0.0]
+        pb = [0.0, 1.0, 0.0]
+        pc = [0.0, 0.0, 1.0]
+
+        e1p = [e_ab[0], 1.0 - e_ab[0], 0.0]
+        e2p = [0.0, e_bc[0], 1.0 - e_bc[0]]
+        e3p = [e_ca[0], 0.0, 1.0 - e_ca[0]]
+
+        ea, eb, ec, te = e_ternary
+        ep = [ea, eb, ec]
+
+        # Field A: corner A, e1, e3, E, mid(A, e1), mid(A, e3)
+        rows_a = [mono(pa), mono(e1p), mono(e3p), mono(ep), mono(mid(pa, e1p)), mono(mid(pa, e3p))]
+        rhs_a = [tm_a, e_ab[1], e_ca[1], te,
+                 (tm_a + e_ab[1]) / 2.0 + sag * (tm_a - e_ab[1]),
+                 (tm_a + e_ca[1]) / 2.0 + sag * (tm_a - e_ca[1])]
+        q_a = np.linalg.solve(rows_a, rhs_a).tolist()
+
+        # Field B: corner B, e1, e2, E, mid(B, e1), mid(B, e2)
+        rows_b = [mono(pb), mono(e1p), mono(e2p), mono(ep), mono(mid(pb, e1p)), mono(mid(pb, e2p))]
+        rhs_b = [tm_b, e_ab[1], e_bc[1], te,
+                 (tm_b + e_ab[1]) / 2.0 + sag * (tm_b - e_ab[1]),
+                 (tm_b + e_bc[1]) / 2.0 + sag * (tm_b - e_bc[1])]
+        q_b = np.linalg.solve(rows_b, rhs_b).tolist()
+
+        # Field C: corner C, e2, e3, E, mid(C, e2), mid(C, e3)
+        rows_c = [mono(pc), mono(e2p), mono(e3p), mono(ep), mono(mid(pc, e2p)), mono(mid(pc, e3p))]
+        rhs_c = [tm_c, e_bc[1], e_ca[1], te,
+                 (tm_c + e_bc[1]) / 2.0 + sag * (tm_c - e_bc[1]),
+                 (tm_c + e_ca[1]) / 2.0 + sag * (tm_c - e_ca[1])]
+        q_c = np.linalg.solve(rows_c, rhs_c).tolist()
+
+        return {
+            "quad_a": q_a,
+            "quad_b": q_b,
+            "quad_c": q_c,
+            "ternary_eutectic": {"a": ea, "b": eb, "c": ec, "T": te},
+            "eutectics": {
+                "AB": {"a": e1p[0], "b": e1p[1], "c": 0.0, "T": e_ab[1]},
+                "BC": {"a": 0.0, "b": e2p[1], "c": e2p[2], "T": e_bc[1]},
+                "CA": {"a": e3p[0], "b": 0.0, "c": e3p[2], "T": e_ca[1]}
+            }
+        }
+
+    # =========================================================================
+    # Ceramic Ternary System 1: MgO-Al2O3-SiO2 (MAS Cordierite Ceramics)
+    # References: ACerS Sys 712, J. Petrology 2(3):324, J. Mater. Res. (2005)
+    # =========================================================================
+    @classmethod
+    def _compute_mgo_al2o3_sio2(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
+        el_a, el_b, el_c = "SiO2", "MgO", "Al2O3"
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Coordinates of intermediate stoichiometric ceramic compounds: (a=SiO2, b=MgO, c=Al2O3)
+        # Weight fractions:
+        # Mullite: 28.2 wt% SiO2, 0.0 wt% MgO, 71.8 wt% Al2O3
+        # Spinel: 0.0 wt% SiO2, 28.3 wt% MgO, 71.7 wt% Al2O3
+        # Forsterite: 42.7 wt% SiO2, 57.3 wt% MgO, 0.0 wt% Al2O3
+        # Protoenstatite: 59.8 wt% SiO2, 40.2 wt% MgO, 0.0 wt% Al2O3
+        # Cordierite: 51.5 wt% SiO2, 13.7 wt% MgO, 34.8 wt% Al2O3
+        # Sapphirine: 15.1 wt% SiO2, 20.3 wt% MgO, 64.6 wt% Al2O3
+        pt_crist = barycentric_to_cartesian(1.0, 0.0, 0.0)
+        pt_peri = barycentric_to_cartesian(0.0, 1.0, 0.0)
+        pt_corun = barycentric_to_cartesian(0.0, 0.0, 1.0)
+
+        pt_mul = barycentric_to_cartesian(0.282, 0.000, 0.718)
+        pt_sp = barycentric_to_cartesian(0.000, 0.283, 0.717)
+        pt_fo = barycentric_to_cartesian(0.427, 0.573, 0.000)
+        pt_en = barycentric_to_cartesian(0.598, 0.402, 0.000)
+        pt_cord = barycentric_to_cartesian(0.515, 0.137, 0.348)
+        pt_saph = barycentric_to_cartesian(0.151, 0.203, 0.646)
+
+        curves = []
+        tie_lines = []
+        tie_triangles = []
+        labels = []
+
+        # Subsolidus Alkemade compatibility lines
+        alkemade_joins = [
+            (pt_peri, pt_fo, "Periclase-Forsterite"),
+            (pt_peri, pt_sp, "Periclase-Spinel"),
+            (pt_fo, pt_sp, "Forsterite-Spinel"),
+            (pt_fo, pt_saph, "Forsterite-Sapphirine"),
+            (pt_fo, pt_cord, "Forsterite-Cordierite"),
+            (pt_fo, pt_en, "Forsterite-Protoenstatite"),
+            (pt_en, pt_cord, "Protoenstatite-Cordierite"),
+            (pt_en, pt_crist, "Protoenstatite-Cristobalite"),
+            (pt_cord, pt_crist, "Cordierite-Cristobalite"),
+            (pt_cord, pt_mul, "Cordierite-Mullite"),
+            (pt_cord, pt_saph, "Cordierite-Sapphirine"),
+            (pt_saph, pt_sp, "Sapphirine-Spinel"),
+            (pt_saph, pt_corun, "Sapphirine-Corundum"),
+            (pt_saph, pt_mul, "Sapphirine-Mullite"),
+            (pt_sp, pt_corun, "Spinel-Corundum"),
+            (pt_mul, pt_crist, "Mullite-Cristobalite"),
+            (pt_mul, pt_corun, "Mullite-Corundum"),
+        ]
+
+        for p1, p2, name in alkemade_joins:
+            curves.append({
+                "name": f"Alkemade Line: {name}",
+                "xs": [p1[0], p2[0]],
+                "ys": [p1[1], p2[1]],
+                "color": "#64748B",
+                "line_style": "Solid",
+                "line_width": 1.2
+            })
+
+        # Alkemade Compatibility Triangles with semantic shading
+        triangles = [
+            (pt_peri, pt_fo, pt_sp, "Periclase + Forsterite + Spinel", "#8B5CF6", "#A855F7"),
+            (pt_fo, pt_sp, pt_saph, "Forsterite + Spinel + Sapphirine", "#22C55E", "#10B981"),
+            (pt_fo, pt_saph, pt_cord, "Forsterite + Sapphirine + Cordierite", "#EC4899", "#F43F5E"),
+            (pt_fo, pt_cord, pt_en, "Forsterite + Cordierite + Protoenstatite", "#14B8A6", "#06B6D4"),
+            (pt_en, pt_cord, pt_crist, "Protoenstatite + Cordierite + Cristobalite", "#38BDF8", "#0284C7"),
+            (pt_cord, pt_saph, pt_mul, "Cordierite + Sapphirine + Mullite", "#EF4444", "#DC2626"),
+            (pt_cord, pt_mul, pt_crist, "Cordierite + Mullite + Cristobalite", "#F59E0B", "#D97706"),
+            (pt_saph, pt_sp, pt_corun, "Sapphirine + Spinel + Corundum", "#F97316", "#EA580C"),
+            (pt_saph, pt_corun, pt_mul, "Sapphirine + Corundum + Mullite", "#E11D48", "#BE123C"),
+        ]
+
+        for p1, p2, p3, tri_label, fill_hex, border_hex in triangles:
+            tie_triangles.append({
+                "v1": list(p1),
+                "v2": list(p2),
+                "v3": list(p3),
+                "label": tri_label,
+                "color": fill_hex,
+                "border_color": border_hex
+            })
+
+        # Liquidus projection boundary valleys converging at ternary eutectic E1 (1355 C)
+        pt_e1 = barycentric_to_cartesian(0.53, 0.17, 0.30)
+        pt_e2 = barycentric_to_cartesian(0.48, 0.28, 0.24)
+        pt_p = barycentric_to_cartesian(0.46, 0.12, 0.42)
+
+        curves.append({
+            "name": "Liquidus Boundary E₁ Valley",
+            "xs": [pt_e1[0], pt_e2[0]],
+            "ys": [pt_e1[1], pt_e2[1]],
+            "color": "#1E40AF",
+            "line_style": "Solid",
+            "line_width": 2.2
+        })
+        curves.append({
+            "name": "Liquidus Boundary Peritectic P-E₁",
+            "xs": [pt_p[0], pt_e1[0]],
+            "ys": [pt_p[1], pt_e1[1]],
+            "color": "#1E40AF",
+            "line_style": "Solid",
+            "line_width": 2.2
+        })
+
+        # Phase compound labels
+        labels = [
+            {"name": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7"},
+            {"name": "Periclase (MgO)", "x": pt_peri[0], "y": pt_peri[1] - 0.03, "color": "#7C3AED"},
+            {"name": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C"},
+            {"name": "Cordierite", "x": pt_cord[0], "y": pt_cord[1], "color": "#BE185D"},
+            {"name": "Mullite", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C"},
+            {"name": "Spinel", "x": pt_sp[0], "y": pt_sp[1] + 0.02, "color": "#6D28D9"},
+            {"name": "Forsterite", "x": pt_fo[0] - 0.02, "y": pt_fo[1], "color": "#15803D"},
+            {"name": "Enstatite", "x": pt_en[0] - 0.02, "y": pt_en[1], "color": "#0F766E"},
+            {"name": "Sapphirine", "x": pt_saph[0] + 0.02, "y": pt_saph[1], "color": "#C2410C"},
+        ]
+
+        invariants = [
+            {"type": "Eutectic", "temp_c": 1355.0, "equation": "L ⇌ Protoenstatite + Cordierite + Tridymite", "composition": "SiO2:51.5 wt%, MgO:13.7 wt%, Al2O3:34.8 wt%", "desc": "E₁: Lowest melting invariant in MAS cordierite glass-ceramics"},
+            {"type": "Eutectic", "temp_c": 1364.0, "equation": "L ⇌ Forsterite + Protoenstatite + Cordierite", "composition": "SiO2:48.0 wt%, MgO:28.0 wt%, Al2O3:24.0 wt%", "desc": "E₂: Adjacent eutectic on forsterite-cordierite boundary"},
+            {"type": "Peritectic", "temp_c": 1440.0, "equation": "L + Mullite ⇌ Cordierite + Tridymite", "composition": "SiO2:46.0 wt%, MgO:12.0 wt%, Al2O3:42.0 wt%", "desc": "P: Peritectic reaction consuming primary mullite"},
+        ]
+
+        grid = cls.generate_gibbs_triangle_grid()
+        return {
+            "system": "MgO-Al2O3-SiO2",
+            "element_a": el_a,
+            "element_b": el_b,
+            "element_c": el_c,
+            "diagram_type": diag_type,
+            "temperature": conv(t_c),
+            "temp_unit": u,
+            "triangle_border_x": grid["border_x"],
+            "triangle_border_y": grid["border_y"],
+            "grid_lines": grid["grid_lines"],
+            "apex_labels": {
+                "A": {"name": el_a, "x": -0.04, "y": -0.03, "align": "Right"},
+                "B": {"name": el_b, "x": 1.04, "y": -0.03, "align": "Left"},
+                "C": {"name": el_c, "x": 0.50, "y": SQRT3_OVER_2 + 0.04, "align": "Center"},
+            },
+            "curves": curves,
+            "tie_lines": tie_lines,
+            "tie_triangles": tie_triangles,
+            "phase_labels": labels,
+            "invariants": invariants,
+            "literature_notes": "MgO-Al₂O₃-SiO₂ (MAS) ceramic system with 9 Alkemade compatibility triangles, exact stoichiometric compounds (Cordierite 2MgO·2Al₂O₃·5SiO₂, Mullite 3Al₂O₃·2SiO₂, Spinel MgAl₂O₄), and E₁ eutectic at 1355 °C.",
+        }
+
+    # =========================================================================
+    # Ceramic Ternary System 2: Al2O3-SiO2-ZrO2 (AZS Fused-Cast Refractories)
+    # References: ACerS Phase Equilibria Diagrams, Refractories Handbook (2018)
+    # =========================================================================
+    @classmethod
+    def _compute_al2o3_sio2_zro2(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
+        el_a, el_b, el_c = "SiO2", "ZrO2", "Al2O3"
+        conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
+        u = "K" if is_k else "°C"
+
+        # Coordinates of intermediate stoichiometric ceramic compounds: (a=SiO2, b=ZrO2, c=Al2O3)
+        # Mullite: 28.2 wt% SiO2, 0.0 wt% ZrO2, 71.8 wt% Al2O3
+        # Zircon: 32.8 wt% SiO2, 67.2 wt% ZrO2, 0.0 wt% Al2O3
+        pt_crist = barycentric_to_cartesian(1.0, 0.0, 0.0)
+        pt_zirc = barycentric_to_cartesian(0.0, 1.0, 0.0)
+        pt_corun = barycentric_to_cartesian(0.0, 0.0, 1.0)
+
+        pt_mul = barycentric_to_cartesian(0.282, 0.000, 0.718)
+        pt_zircon = barycentric_to_cartesian(0.328, 0.672, 0.000)
+
+        curves = []
+        tie_lines = []
+        tie_triangles = []
+        labels = []
+
+        # Subsolidus Alkemade compatibility joins
+        alkemade_joins = [
+            (pt_crist, pt_zircon, "Cristobalite-Zircon"),
+            (pt_zircon, pt_zirc, "Zircon-Zirconia"),
+            (pt_zirc, pt_corun, "Zirconia-Corundum"),
+            (pt_corun, pt_mul, "Corundum-Mullite"),
+            (pt_mul, pt_crist, "Mullite-Cristobalite"),
+            (pt_mul, pt_zirc, "Mullite-Zirconia (Refractory Join)"),
+            (pt_mul, pt_zircon, "Mullite-Zircon"),
+        ]
+
+        for p1, p2, name in alkemade_joins:
+            curves.append({
+                "name": f"Alkemade Line: {name}",
+                "xs": [p1[0], p2[0]],
+                "ys": [p1[1], p2[1]],
+                "color": "#64748B",
+                "line_style": "Solid",
+                "line_width": 1.2
+            })
+
+        # Alkemade Compatibility Triangles with semantic shading
+        triangles = [
+            (pt_crist, pt_zircon, pt_mul, "Cristobalite + Zircon + Mullite", "#38BDF8", "#0284C7"),
+            (pt_zircon, pt_zirc, pt_mul, "Zircon + Zirconia + Mullite", "#84CC16", "#65A30D"),
+            (pt_mul, pt_zirc, pt_corun, "Mullite + Zirconia + Corundum (AZS Core)", "#F59E0B", "#D97706"),
+        ]
+
+        for p1, p2, p3, tri_label, fill_hex, border_hex in triangles:
+            tie_triangles.append({
+                "v1": list(p1),
+                "v2": list(p2),
+                "v3": list(p3),
+                "label": tri_label,
+                "color": fill_hex,
+                "border_color": border_hex
+            })
+
+        # Liquidus projection valley boundary lines converging at ternary eutectic E (1705 C)
+        pt_e = barycentric_to_cartesian(0.40, 0.25, 0.35)
+        pt_p = barycentric_to_cartesian(0.20, 0.32, 0.48)
+
+        curves.append({
+            "name": "Liquidus Boundary E Valley",
+            "xs": [pt_e[0], pt_p[0]],
+            "ys": [pt_e[1], pt_p[1]],
+            "color": "#1E40AF",
+            "line_style": "Solid",
+            "line_width": 2.2
+        })
+
+        # Phase compound labels
+        labels = [
+            {"name": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7"},
+            {"name": "Zirconia (ZrO₂)", "x": pt_zirc[0], "y": pt_zirc[1] - 0.03, "color": "#D97706"},
+            {"name": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C"},
+            {"name": "Mullite (3Al₂O₃·2SiO₂)", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C"},
+            {"name": "Zircon (ZrSiO₄)", "x": pt_zircon[0] - 0.02, "y": pt_zircon[1], "color": "#4D7C0F"},
+        ]
+
+        invariants = [
+            {"type": "Eutectic", "temp_c": 1705.0, "equation": "L ⇌ Mullite + Zirconia + Cristobalite", "composition": "SiO2:40 wt%, ZrO2:25 wt%, Al2O3:35 wt%", "desc": "E: Ternary eutectic in fused-cast AZS refractories"},
+            {"type": "Peritectic", "temp_c": 1890.0, "equation": "L + Corundum ⇌ Mullite + Zirconia", "composition": "SiO2:20 wt%, ZrO2:32 wt%, Al2O3:48 wt%", "desc": "P: Peritectic reaction for reaction-sintered composites"},
+        ]
+
+        grid = cls.generate_gibbs_triangle_grid()
+        return {
+            "system": "Al2O3-SiO2-ZrO2",
+            "element_a": el_a,
+            "element_b": el_b,
+            "element_c": el_c,
+            "diagram_type": diag_type,
+            "temperature": conv(t_c),
+            "temp_unit": u,
+            "triangle_border_x": grid["border_x"],
+            "triangle_border_y": grid["border_y"],
+            "grid_lines": grid["grid_lines"],
+            "apex_labels": {
+                "A": {"name": el_a, "x": -0.04, "y": -0.03, "align": "Right"},
+                "B": {"name": el_b, "x": 1.04, "y": -0.03, "align": "Left"},
+                "C": {"name": el_c, "x": 0.50, "y": SQRT3_OVER_2 + 0.04, "align": "Center"},
+            },
+            "curves": curves,
+            "tie_lines": tie_lines,
+            "tie_triangles": tie_triangles,
+            "phase_labels": labels,
+            "invariants": invariants,
+            "literature_notes": "Al₂O₃-SiO₂-ZrO₂ (AZS) fused-cast refractory system with 3 Alkemade compatibility triangles, stoichiometric Mullite and Zircon, and ternary eutectic at 1705 °C.",
         }
