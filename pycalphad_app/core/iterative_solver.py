@@ -19,6 +19,7 @@ from pycalphad_app.core.xrd_engine import XRDEngine
 from pycalphad_app.core.application_scorer import ApplicationScorer
 from pycalphad_app.core.lattice_distortion_engine import LatticeDistortionEngine
 from pycalphad_app.core.pycalphad_embed import PyCalphadEmbed
+from pycalphad_app.core.base_alloy_engine import BaseAlloyEngine
 from pycalphad_app.database.material_selector import MaterialDatabaseSelector
 
 
@@ -97,7 +98,7 @@ class IterativeSolver:
                 "step_index": self.current_step,
                 "temperature": self.current_temp,
                 "is_completed": True,
-                "message": "Calculation already at maximum temperature."
+                "message": "Calculation already at target boundary temperature."
             }
 
         t_now = self.current_temp
@@ -111,21 +112,26 @@ class IterativeSolver:
             self._mech_cache = self.engine.compute_mechanical_properties(self._thermo_cache, self._trans_cache)
 
         t_sol = float(self._thermo_cache.get("Solidus_K", 1400.0))
-        t_liq = float(self._thermo_cache.get("Liquidus_K", 1600.0))
+        t_liq = float(self._thermo_cache.get("Liquidus_K", max(t_sol + 20.0, 1600.0)))
 
         # 2. Compute instantaneous phase fractions at temperature t_now
         step_state = self.engine.compute_single_temperature_step(t_now)
         phases = step_state.get("Phases", {})
 
-        # Temperature-dependent mechanical strength
+        # Temperature-dependent mechanical strength with semi-solid mushy zone transition
         base_yield = float(self._mech_cache.get("YieldStrength_MPa", 450.0))
         if t_now <= 300.0:
             yield_str = base_yield
+        elif t_now >= t_liq:
+            yield_str = 0.0
         elif t_now >= t_sol:
-            yield_str = 5.0
+            # Semi-solid mushy zone: dendritic coherence drops non-linearly towards liquidus
+            mushy_frac = (t_now - t_sol) / max(1.0, (t_liq - t_sol))
+            yield_str = max(0.5, 15.0 * ((1.0 - mushy_frac) ** 1.8))
         else:
             yield_str = base_yield * max(0.05, (1.0 - (t_now - 300.0) / max(50.0, (t_sol - 300.0))) ** 1.2)
         hardness_hv = yield_str / 3.1
+        rockwell_dict = BaseAlloyEngine.hv_to_rockwell(hardness_hv)
 
         step_res = {
             "step_index": self.current_step,
@@ -133,6 +139,9 @@ class IterativeSolver:
             "phases": phases,
             "yield_strength_mpa": float(yield_str),
             "hardness_hv": float(hardness_hv),
+            "hardness_hrc": float(rockwell_dict["RockwellHardness_HRC"]),
+            "hardness_hrb": float(rockwell_dict["RockwellHardness_HRB"]),
+            "rockwell_hardness": rockwell_dict["RockwellHardness"],
             "dominant_phase": step_state.get("DominantPhase", "Solid Solution"),
             "is_completed": False
         }
@@ -159,7 +168,7 @@ class IterativeSolver:
         the full 8-domain results payload for the main window views.
         """
         t0 = time.perf_counter()
-        total_steps = int(np.ceil((self.t_stop - self.t_start) / self.t_step)) + 1
+        total_steps = int(np.ceil(abs(self.t_stop - self.t_start) / self.t_step)) + 1
         
         step_idx = 0
         while not self.is_completed:
@@ -244,5 +253,7 @@ class IterativeSolver:
             "application_scores": app_scores,
             "elapsed_ms": elapsed_ms,
             "history_temperatures": self.history_temperatures,
-            "history_steps": self.history_steps
+            "history_steps": self.history_steps,
+            "history_yield_strength": [s["yield_strength_mpa"] for s in self.history_steps],
+            "history_hardness_hv": [s["hardness_hv"] for s in self.history_steps]
         }

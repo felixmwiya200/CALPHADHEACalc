@@ -71,4 +71,35 @@ def test_iterative_solver_run_to_completion():
     assert "thermo" in results
     assert "mechanical" in results
     assert "oxidation" in results
+    assert "history_yield_strength" in results
+    assert "history_hardness_hv" in results
+    assert solver.is_completed
+
+
+def test_iterative_solver_cooling_and_hardness():
+    solver = IterativeSolver(
+        database_name="High Entropy Alloys",
+        composition={"Co": 20.0, "Cr": 20.0, "Fe": 20.0, "Mn": 20.0, "Ni": 20.0},
+        basis="at%",
+        t_start=1500.0,
+        t_stop=1300.0,
+        t_step=100.0
+    )
+    # Step 1: T = 1500 K (in or near semi-solid regime)
+    s1 = solver.step_forward()
+    assert s1["step_index"] == 1
+    assert s1["temperature"] == 1500.0
+    assert "hardness_hrc" in s1
+    assert "hardness_hrb" in s1
+    assert "rockwell_hardness" in s1
+
+    # Step 2: T = 1400 K
+    s2 = solver.step_forward()
+    assert s2["step_index"] == 2
+    assert s2["temperature"] == 1400.0
+
+    # Step 3: T = 1300 K (target boundary reached)
+    s3 = solver.step_forward()
+    assert s3["step_index"] == 3
+    assert s3["temperature"] == 1300.0
     assert solver.is_completed
