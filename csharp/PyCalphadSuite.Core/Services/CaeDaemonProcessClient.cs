@@ -794,6 +794,34 @@ namespace PyCalphadSuite.Core.Services
             return SendRequestAsync<RedlichKisterInversionResultDto>("invert_redlich_kister_binary", p, timeout: TimeSpan.FromSeconds(25), ct: ct);
         }
 
+        public Task<EspeiStatisticsDto> GetEspeiStatisticsAsync(CancellationToken ct = default)
+        {
+            return SendRequestAsync<EspeiStatisticsDto>("get_espei_statistics", new { }, timeout: TimeSpan.FromSeconds(10), ct: ct);
+        }
+
+        public async Task<List<EspeiSystemSummaryDto>> GetEspeiSystemsAsync(CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<EspeiSystemsContainerDto>("get_espei_systems", new { }, timeout: TimeSpan.FromSeconds(10), ct: ct);
+            return res?.Systems ?? new List<EspeiSystemSummaryDto>();
+        }
+
+        public async Task<List<EspeiZpfPointDto>> GetEspeiZpfBoundariesAsync(string system, CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<EspeiZpfContainerDto>("get_espei_zpf_boundaries", new { system }, timeout: TimeSpan.FromSeconds(15), ct: ct);
+            return res?.Points ?? new List<EspeiZpfPointDto>();
+        }
+
+        public async Task<List<EspeiThermochemicalPointDto>> GetEspeiThermochemicalDataAsync(string system, string? property = null, CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<EspeiThermochemicalContainerDto>(
+                "get_espei_thermochemical_data",
+                new { system, output_property = property },
+                timeout: TimeSpan.FromSeconds(15),
+                ct: ct
+            );
+            return res?.Points ?? new List<EspeiThermochemicalPointDto>();
+        }
+
         #endregion
 
         #endregion

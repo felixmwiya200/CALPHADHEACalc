@@ -3018,6 +3018,160 @@ namespace PyCalphadSuite.Core.Models
         public RedlichKisterSolvusOverlayDto? SolvusOverlay { get; set; }
     }
 
+    #region ESPEI Datasets Models
+
+    public class EspeiStatisticsDto
+    {
+        [JsonPropertyName("total_datasets")]
+        public int TotalDatasets { get; set; }
+
+        [JsonPropertyName("total_systems")]
+        public int TotalSystems { get; set; }
+
+        [JsonPropertyName("binary_systems_count")]
+        public int BinarySystemsCount { get; set; }
+
+        [JsonPropertyName("ternary_systems_count")]
+        public int TernarySystemsCount { get; set; }
+
+        [JsonPropertyName("total_references")]
+        public int TotalReferences { get; set; }
+
+        [JsonPropertyName("zpf_dataset_count")]
+        public int ZpfDatasetCount { get; set; }
+
+        [JsonPropertyName("thermochemical_dataset_count")]
+        public int ThermochemicalDatasetCount { get; set; }
+
+        [JsonPropertyName("unique_phases_count")]
+        public int UniquePhasesCount { get; set; }
+
+        [JsonPropertyName("systems")]
+        public List<string> Systems { get; set; } = new();
+    }
+
+    public class EspeiSystemSummaryDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("elements")]
+        public List<string> Elements { get; set; } = new();
+
+        [JsonPropertyName("tier")]
+        public string Tier { get; set; } = string.Empty;
+
+        [JsonPropertyName("dataset_count")]
+        public int DatasetCount { get; set; }
+
+        [JsonPropertyName("zpf_dataset_count")]
+        public int ZpfDatasetCount { get; set; }
+
+        [JsonPropertyName("thermochemical_dataset_count")]
+        public int ThermochemicalDatasetCount { get; set; }
+
+        [JsonPropertyName("outputs")]
+        public List<string> Outputs { get; set; } = new();
+
+        [JsonPropertyName("phases")]
+        public List<string> Phases { get; set; } = new();
+
+        [JsonPropertyName("references")]
+        public List<string> References { get; set; } = new();
+    }
+
+    public class EspeiSystemsContainerDto
+    {
+        [JsonPropertyName("systems")]
+        public List<EspeiSystemSummaryDto> Systems { get; set; } = new();
+
+        [JsonPropertyName("total")]
+        public int Total { get; set; }
+    }
+
+    public class EspeiZpfPointDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("temperature_k")]
+        public double TemperatureK { get; set; }
+
+        [JsonPropertyName("temperature_c")]
+        public double TemperatureC { get; set; }
+
+        [JsonPropertyName("phase")]
+        public string Phase { get; set; } = string.Empty;
+
+        [JsonPropertyName("element")]
+        public string Element { get; set; } = string.Empty;
+
+        [JsonPropertyName("composition")]
+        public double Composition { get; set; }
+
+        [JsonPropertyName("reference")]
+        public string Reference { get; set; } = string.Empty;
+
+        [JsonPropertyName("source_file")]
+        public string SourceFile { get; set; } = string.Empty;
+    }
+
+    public class EspeiZpfContainerDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("points")]
+        public List<EspeiZpfPointDto> Points { get; set; } = new();
+
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+    }
+
+    public class EspeiThermochemicalPointDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("property")]
+        public string Property { get; set; } = string.Empty;
+
+        [JsonPropertyName("temperature_k")]
+        public double TemperatureK { get; set; }
+
+        [JsonPropertyName("phase")]
+        public string Phase { get; set; } = string.Empty;
+
+        [JsonPropertyName("value_si")]
+        public double ValueSi { get; set; }
+
+        [JsonPropertyName("unit")]
+        public string Unit { get; set; } = string.Empty;
+
+        [JsonPropertyName("reference")]
+        public string Reference { get; set; } = string.Empty;
+
+        [JsonPropertyName("source_file")]
+        public string SourceFile { get; set; } = string.Empty;
+    }
+
+    public class EspeiThermochemicalContainerDto
+    {
+        [JsonPropertyName("system")]
+        public string System { get; set; } = string.Empty;
+
+        [JsonPropertyName("property")]
+        public string? Property { get; set; }
+
+        [JsonPropertyName("points")]
+        public List<EspeiThermochemicalPointDto> Points { get; set; } = new();
+
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+    }
+
+    #endregion
+
     #endregion
 
     #endregion

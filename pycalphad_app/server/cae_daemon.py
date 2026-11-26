@@ -2177,6 +2177,41 @@ class CAEDaemon:
         overlay = engine.generate_solvus_overlay(t_min_c=t_min_c, t_max_c=t_max_c, n_points=n_points)
         return _to_json_safe(overlay)
 
+    @classmethod
+    def handle_get_espei_statistics(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns aggregate repository statistics for ESPEI datasets."""
+        _ensure_modules()
+        from pycalphad_app.database.espei_dataset_registry import EspeiDatasetRegistry
+        stats = EspeiDatasetRegistry.get_statistics()
+        return _to_json_safe(stats)
+
+    @classmethod
+    def handle_get_espei_systems(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns catalog of available binary and ternary chemical systems in ESPEI datasets."""
+        _ensure_modules()
+        from pycalphad_app.database.espei_dataset_registry import EspeiDatasetRegistry
+        systems = EspeiDatasetRegistry.list_systems()
+        return _to_json_safe({"systems": systems, "total": len(systems)})
+
+    @classmethod
+    def handle_get_espei_zpf_boundaries(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns experimental zero-phase-fraction phase boundary tie-line coordinates."""
+        _ensure_modules()
+        from pycalphad_app.database.espei_dataset_registry import EspeiDatasetRegistry
+        system_str = req.get("system") or req.get("system_name") or "Al-Ni"
+        points = EspeiDatasetRegistry.get_zpf_phase_boundaries(system_str)
+        return _to_json_safe({"system": system_str, "points": points, "count": len(points)})
+
+    @classmethod
+    def handle_get_espei_thermochemical_data(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns measured thermochemical mixing or formation enthalpies/entropies/activities."""
+        _ensure_modules()
+        from pycalphad_app.database.espei_dataset_registry import EspeiDatasetRegistry
+        system_str = req.get("system") or req.get("system_name") or "Al-Co"
+        prop = req.get("output_property") or req.get("property")
+        points = EspeiDatasetRegistry.get_thermochemical_points(system_str, output_prop=prop)
+        return _to_json_safe({"system": system_str, "property": prop, "points": points, "count": len(points)})
+
 
 def run_daemon():
     """Main event loop reading newline-delimited JSON RPC from STDIN."""
@@ -2233,6 +2268,10 @@ def run_daemon():
         "calculate_unary_diagram": CAEDaemon.handle_calculate_unary_diagram,
         "invert_redlich_kister_binary": CAEDaemon.handle_invert_redlich_kister_binary,
         "calculate_redlich_kister_solvus": CAEDaemon.handle_calculate_redlich_kister_solvus,
+        "get_espei_statistics": CAEDaemon.handle_get_espei_statistics,
+        "get_espei_systems": CAEDaemon.handle_get_espei_systems,
+        "get_espei_zpf_boundaries": CAEDaemon.handle_get_espei_zpf_boundaries,
+        "get_espei_thermochemical_data": CAEDaemon.handle_get_espei_thermochemical_data,
     }
 
     sys.stderr.write(f"[CAEDaemon] Ready v{CAEDaemon.VERSION}. Listening on STDIN...\n")
