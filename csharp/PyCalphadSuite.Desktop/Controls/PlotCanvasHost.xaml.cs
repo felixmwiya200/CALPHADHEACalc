@@ -31,12 +31,14 @@ namespace PyCalphadSuite.Desktop.Controls
         private string _xAxisTitle = "X";
         private string _yAxisTitle = "Y";
         private readonly List<(string Name, double[] Xs, double[] Ys)> _exportSeries = new();
+        private readonly List<string> _metadataLines = new();
 
         public string ExportBaseName { get; set; } = "CALPHAD_Plot";
         public string PlotTitle => _plotTitle;
         public string XAxisTitle => _xAxisTitle;
         public string YAxisTitle => _yAxisTitle;
         public IReadOnlyList<(string Name, double[] Xs, double[] Ys)> ExportSeries => _exportSeries;
+        public IReadOnlyList<string> MetadataLines => _metadataLines;
 
         public string HeaderTitle
         {
@@ -67,6 +69,19 @@ namespace PyCalphadSuite.Desktop.Controls
             _exportSeries.Clear();
         }
 
+        public void AddMetadata(string line)
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                _metadataLines.Add(line);
+            }
+        }
+
+        public void ClearMetadata()
+        {
+            _metadataLines.Clear();
+        }
+
         public void AddExportSeries(string name, IEnumerable<double> xs, IEnumerable<double> ys)
         {
             _exportSeries.Add((name, xs.ToArray(), ys.ToArray()));
@@ -81,6 +96,7 @@ namespace PyCalphadSuite.Desktop.Controls
             var plot = WpfPlotControl.Plot;
             plot.Clear();
             ClearExportSeries();
+            ClearMetadata();
 
             if (darkTheme)
             {
@@ -305,7 +321,7 @@ namespace PyCalphadSuite.Desktop.Controls
         public bool HasExportSeries => _exportSeries.Count > 0;
 
         public string BuildCsvContent()
-            => PlotCsvFormatter.BuildCsvContent(_plotTitle, _xAxisTitle, _yAxisTitle, _exportSeries);
+            => PlotCsvFormatter.BuildCsvContent(_plotTitle, _xAxisTitle, _yAxisTitle, _exportSeries, _metadataLines);
 
         private void BtnExportCsv_Click(object sender, RoutedEventArgs e)
         {

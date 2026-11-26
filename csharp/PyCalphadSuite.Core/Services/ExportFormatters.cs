@@ -18,7 +18,8 @@ namespace PyCalphadSuite.Core.Services
             string plotTitle,
             string xAxisTitle,
             string yAxisTitle,
-            IReadOnlyList<(string Name, double[] Xs, double[] Ys)> series)
+            IReadOnlyList<(string Name, double[] Xs, double[] Ys)> series,
+            IReadOnlyList<string>? metadata = null)
         {
             if (series == null || series.Count == 0) return string.Empty;
 
@@ -29,39 +30,153 @@ namespace PyCalphadSuite.Core.Services
             sb.AppendLine($"# Plot Title: {plotTitle}");
             sb.AppendLine($"# X-Axis: {xTitle}");
             sb.AppendLine($"# Y-Axis: {yTitle}");
-            sb.AppendLine($"# Legends ({series.Count}): {string.Join(" | ", series.Select(s => s.Name))}");
+            sb.AppendLine($"# Series Count: {series.Count}");
+
+            if (metadata != null && metadata.Count > 0)
+            {
+                sb.AppendLine("# =========================================================================");
+                sb.AppendLine("# METADATA & CRITICAL THERMODYNAMIC PROPERTIES");
+                sb.AppendLine("# =========================================================================");
+                foreach (var line in metadata)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (line.StartsWith("#"))
+                    {
+                        sb.AppendLine(line);
+                    }
+                    else
+                    {
+                        sb.AppendLine($"# {line}");
+                    }
+                }
+                sb.AppendLine("# =========================================================================");
+            }
+
+            sb.AppendLine($"# Legends: {string.Join(" | ", series.Select(s => s.Name))}");
+
+            bool isTernary = (plotTitle != null && (plotTitle.Contains("Ternary", StringComparison.OrdinalIgnoreCase)
+                                                || plotTitle.Contains("Isothermal Section", StringComparison.OrdinalIgnoreCase)
+                                                || plotTitle.Contains("Gibbs", StringComparison.OrdinalIgnoreCase)))
+                             || (xAxisTitle != null && xAxisTitle.Contains("Barycentric", StringComparison.OrdinalIgnoreCase))
+                             || (yAxisTitle != null && yAxisTitle.Contains("Barycentric", StringComparison.OrdinalIgnoreCase));
 
             var headers = new List<string>();
             int maxRows = 0;
 
-            foreach (var s in series)
+            if (isTernary)
             {
-                headers.Add(EscapeCsv($"{s.Name} [{xTitle}]"));
-                headers.Add(EscapeCsv($"{s.Name} [{yTitle}]"));
-                maxRows = Math.Max(maxRows, Math.Min(s.Xs.Length, s.Ys.Length));
-            }
-            sb.AppendLine(string.Join(",", headers));
-
-            for (int r = 0; r < maxRows; r++)
-            {
-                var rowCells = new List<string>();
+                var (elemA, elemB, elemC) = ParseTernaryElements(plotTitle ?? "", metadata);
                 foreach (var s in series)
                 {
-                    if (r < s.Xs.Length && r < s.Ys.Length)
-                    {
-                        rowCells.Add(s.Xs[r].ToString("G7", CultureInfo.InvariantCulture));
-                        rowCells.Add(s.Ys[r].ToString("G7", CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        rowCells.Add("");
-                        rowCells.Add("");
-                    }
+                    headers.Add(EscapeCsv($"{s.Name} [Cartesian_X]"));
+                    headers.Add(EscapeCsv($"{s.Name} [Cartesian_Y]"));
+                    headers.Add(EscapeCsv($"{s.Name} [x({elemA})]"));
+                    headers.Add(EscapeCsv($"{s.Name} [x({elemB})]"));
+                    headers.Add(EscapeCsv($"{s.Name} [x({elemC})]"));
+                    maxRows = Math.Max(maxRows, Math.Min(s.Xs.Length, s.Ys.Length));
                 }
-                sb.AppendLine(string.Join(",", rowCells));
+                sb.AppendLine(string.Join(",", headers));
+
+                double h = Math.Sqrt(3.0) / 2.0;
+                for (int r = 0; r < maxRows; r++)
+                {
+                    var rowCells = new List<string>();
+                    foreach (var s in series)
+                    {
+                        if (r < s.Xs.Length && r < s.Ys.Length)
+                        {
+                            double x = s.Xs[r];
+                            double y = s.Ys[r];
+                            double cFrac = Math.Clamp(y / h, 0.0, 1.0);
+                            double bFrac = Math.Clamp(x - 0.5 * cFrac, 0.0, 1.0);
+                            double aFrac = Math.Clamp(1.0 - bFrac - cFrac, 0.0, 1.0);
+
+                            rowCells.Add(x.ToString("G7", CultureInfo.InvariantCulture));
+                            rowCells.Add(y.ToString("G7", CultureInfo.InvariantCulture));
+                            rowCells.Add(aFrac.ToString("G7", CultureInfo.InvariantCulture));
+                            rowCells.Add(bFrac.ToString("G7", CultureInfo.InvariantCulture));
+                            rowCells.Add(cFrac.ToString("G7", CultureInfo.InvariantCulture));
+                        }
+                        else
+                        {
+                            rowCells.Add("");
+                            rowCells.Add("");
+                            rowCells.Add("");
+                            rowCells.Add("");
+                            rowCells.Add("");
+                        }
+                    }
+                    sb.AppendLine(string.Join(",", rowCells));
+                }
+            }
+            else
+            {
+                foreach (var s in series)
+                {
+                    headers.Add(EscapeCsv($"{s.Name} [{xTitle}]"));
+                    headers.Add(EscapeCsv($"{s.Name} [{yTitle}]"));
+                    maxRows = Math.Max(maxRows, Math.Min(s.Xs.Length, s.Ys.Length));
+                }
+                sb.AppendLine(string.Join(",", headers));
+
+                for (int r = 0; r < maxRows; r++)
+                {
+                    var rowCells = new List<string>();
+                    foreach (var s in series)
+                    {
+                        if (r < s.Xs.Length && r < s.Ys.Length)
+                        {
+                            rowCells.Add(s.Xs[r].ToString("G7", CultureInfo.InvariantCulture));
+                            rowCells.Add(s.Ys[r].ToString("G7", CultureInfo.InvariantCulture));
+                        }
+                        else
+                        {
+                            rowCells.Add("");
+                            rowCells.Add("");
+                        }
+                    }
+                    sb.AppendLine(string.Join(",", rowCells));
+                }
             }
 
             return sb.ToString();
+        }
+
+        private static (string elemA, string elemB, string elemC) ParseTernaryElements(string plotTitle, IReadOnlyList<string>? metadata)
+        {
+            string systemCandidate = string.Empty;
+            if (metadata != null)
+            {
+                foreach (var line in metadata)
+                {
+                    if (line.StartsWith("System:", StringComparison.OrdinalIgnoreCase) || line.StartsWith("# System:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var parts = line.Split(':', 2);
+                        if (parts.Length > 1)
+                        {
+                            systemCandidate = parts[1].Trim();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(systemCandidate) && !string.IsNullOrEmpty(plotTitle))
+            {
+                int spaceIdx = plotTitle.IndexOf(' ');
+                systemCandidate = spaceIdx > 0 ? plotTitle.Substring(0, spaceIdx).Trim() : plotTitle.Trim();
+            }
+
+            if (!string.IsNullOrEmpty(systemCandidate))
+            {
+                var el = systemCandidate.Split(new[] { '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+                if (el.Length == 3)
+                {
+                    return (el[0].Trim(), el[1].Trim(), el[2].Trim());
+                }
+            }
+
+            return ("A", "B", "C");
         }
 
         public static string EscapeCsv(string field)
@@ -80,7 +195,8 @@ namespace PyCalphadSuite.Core.Services
         string PlotTitle,
         string XAxisTitle,
         string YAxisTitle,
-        IReadOnlyList<(string Name, double[] Xs, double[] Ys)> Series);
+        IReadOnlyList<(string Name, double[] Xs, double[] Ys)> Series,
+        IReadOnlyList<string>? Metadata = null);
 
     public static class DatReportBuilder
     {
@@ -242,7 +358,7 @@ namespace PyCalphadSuite.Core.Services
                     string normKey = NormalizeGraphKey(snap.Key);
                     emittedKeys.Add(normKey);
                     sb.AppendLine($"[GRAPH_DATA_{normKey}]");
-                    sb.Append(PlotCsvFormatter.BuildCsvContent(snap.PlotTitle, snap.XAxisTitle, snap.YAxisTitle, snap.Series));
+                    sb.Append(PlotCsvFormatter.BuildCsvContent(snap.PlotTitle, snap.XAxisTitle, snap.YAxisTitle, snap.Series, snap.Metadata));
                     sb.AppendLine();
                 }
             }

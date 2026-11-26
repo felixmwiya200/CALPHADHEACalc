@@ -341,6 +341,55 @@ namespace PyCalphadSuite.Tests
         }
 
         [Fact]
+        public void TestPlotCsvFormatterEnhancedMetadataAndTernaryBarycentric()
+        {
+            // Verify enhanced CSV metadata injection for binary invariants
+            string csvWithMeta = PlotCsvFormatter.BuildCsvContent(
+                "Ni-Al Binary Phase Diagram",
+                "Atomic Fraction of Al, x(Al)",
+                "Temperature (°C)",
+                new List<(string Name, double[] Xs, double[] Ys)>
+                {
+                    ("Liquidus", new[] { 0.0, 0.5 }, new[] { 1455.0, 1638.0 }),
+                    ("TieLine_Eutectic_1385°C", new[] { 0.12, 0.24 }, new[] { 1385.0, 1385.0 })
+                },
+                new List<string>
+                {
+                    "System: Ni-Al",
+                    "Invariant [Eutectic]: T = 1385.0 °C, x = 0.2400 (Range: 0.1200 - 0.2400) | Reaction: Liquid -> γ + γ'"
+                });
+            Assert.Contains("# METADATA & CRITICAL THERMODYNAMIC PROPERTIES", csvWithMeta);
+            Assert.Contains("# Invariant [Eutectic]: T = 1385.0 °C", csvWithMeta);
+            Assert.Contains("TieLine_Eutectic_1385°C [Atomic Fraction of Al, x(Al)]", csvWithMeta);
+
+            // Verify automatic ternary barycentric decomposition (Cartesian + xA, xB, xC)
+            double h = Math.Sqrt(3.0) / 2.0;
+            string ternaryCsv = PlotCsvFormatter.BuildCsvContent(
+                "Co-Cr-Ni Isothermal Section (800 °C)",
+                "Barycentric Projection X",
+                "Barycentric Projection Y",
+                new List<(string Name, double[] Xs, double[] Ys)>
+                {
+                    ("FCC Solvus", new[] { 0.0, 0.5 }, new[] { 0.0, h })
+                },
+                new List<string>
+                {
+                    "System: Co-Cr-Ni",
+                    "Gibbs Triangle Vertices: A = Co, B = Cr, C = Ni"
+                });
+            Assert.Contains("FCC Solvus [Cartesian_X]", ternaryCsv);
+            Assert.Contains("FCC Solvus [Cartesian_Y]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Co)]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Cr)]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Ni)]", ternaryCsv);
+            Assert.Contains("FCC Solvus [Cartesian_X]", ternaryCsv);
+            Assert.Contains("FCC Solvus [Cartesian_Y]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Co)]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Cr)]", ternaryCsv);
+            Assert.Contains("FCC Solvus [x(Ni)]", ternaryCsv);
+        }
+
+        [Fact]
         public async Task TestCrystalStructuresAndAtomicConfigurationRpc()
         {
             var resp = await _client.GetCrystalStructuresAsync(

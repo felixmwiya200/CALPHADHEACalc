@@ -1652,10 +1652,20 @@ namespace PyCalphadSuite.Desktop
                 }
 
                 HostEquilibrium.HeaderSummary = $"Solidus: {ConvTemp(tSolK):F1} {u}  |  Liquidus: {ConvTemp(tLiqK):F1} {u}  |  PBM Solvus: {dispKinT:F0} {u} (ΔT=-{kinPd.GibbsThomsonShiftC:F0}°C)";
+                HostEquilibrium.AddMetadata($"PBM Kinetic Solvus ({kinPd.PhaseName}): {dispKinT:F1} {u} (Capillary Shift ΔT: -{kinPd.GibbsThomsonShiftC:F1} °C)");
             }
             else
             {
                 HostEquilibrium.HeaderSummary = $"Solidus: {ConvTemp(tSolK):F1} {u}  |  Liquidus: {ConvTemp(tLiqK):F1} {u}";
+            }
+
+            HostEquilibrium.AddMetadata($"Alloy: {res.AlloyName}");
+            HostEquilibrium.AddMetadata($"Equilibrium Solidus Temperature (T_sol): {ConvTemp(tSolK):F1} {u}");
+            HostEquilibrium.AddMetadata($"Equilibrium Liquidus Temperature (T_liq): {ConvTemp(tLiqK):F1} {u}");
+            HostEquilibrium.AddMetadata($"Freezing Range (ΔT): {(ConvTemp(tLiqK) - ConvTemp(tSolK)):F1} {u}");
+            if (!string.IsNullOrWhiteSpace(benchCite))
+            {
+                HostEquilibrium.AddMetadata($"Experimental DSC Benchmark ({benchCite}): T_sol = {ConvTemp(benchSolK):F1} {u}, T_liq = {ConvTemp(benchLiqK):F1} {u}");
             }
 
             // Adaptive auto-focus temperature bounds:
@@ -1701,6 +1711,12 @@ namespace PyCalphadSuite.Desktop
                 dsc.Color = ScottPlot.Color.FromHex("#DC2626");
                 dsc.LegendText = "Liquidus / Equilibrium Solidus";
                 HostScheil.AddExportSeries("Liquidus / Equilibrium Solidus", ptX, ptY);
+
+                HostScheil.AddMetadata($"Alloy: {res.AlloyName}");
+                HostScheil.AddMetadata($"Equilibrium Liquidus Temperature: {tLiqDisp:F1} {u}");
+                HostScheil.AddMetadata($"Equilibrium Solidus Temperature: {tSolDisp:F1} {u}");
+                HostScheil.AddMetadata($"Scheil Final Solidification Temperature: {tSch.Last():F1} {u}");
+                HostScheil.AddMetadata($"Residual Eutectic Liquid: {res.Scheil.EutecticPct:F2}%");
 
                 double yMin = Math.Min(tEq.Min(), tSch.Min()) - 40.0;
                 double yMax = tLiqDisp + 40.0;
@@ -1919,6 +1935,7 @@ namespace PyCalphadSuite.Desktop
                     var tieLine = plot.Add.ScatterLine(tieXs, tieYs, ScottPlot.Color.FromHex("#DC2626"));
                     tieLine.LineWidth = 2.0f;
                     tieLine.LineStyle.Pattern = LinePattern.Solid;
+                    HostBinaryDiagram.AddExportSeries($"TieLine_{inv.Type}_{inv.Temp:F0}{u}", tieXs, tieYs);
                 }
 
                 // Node marker at invariant reaction coordinate
@@ -1926,6 +1943,7 @@ namespace PyCalphadSuite.Desktop
                 node.MarkerStyle.Shape = MarkerShape.FilledCircle;
                 node.MarkerStyle.Size = isNonTieLineReaction ? 5 : 7;
                 node.MarkerStyle.FillColor = ScottPlot.Color.FromHex("#DC2626");
+                HostBinaryDiagram.AddExportSeries($"Node_{inv.Type}_{inv.Temp:F0}{u}", new[] { inv.XReaction }, new[] { inv.Temp });
             }
 
             // 3. Phase region labels
@@ -1937,11 +1955,33 @@ namespace PyCalphadSuite.Desktop
                 txt.LabelBold = true;
             }
 
-            // 4. Axis limits
+            // 4. Axis limits and comprehensive metadata registration
             double xMin = diag.XMin;
             double xMax = diag.XMax;
             double yMin = diag.YMin;
             double yMax = diag.YMax > yMin ? diag.YMax : (diag.TempUnit == "°C" ? 1800.0 : 2000.0);
+
+            HostBinaryDiagram.AddMetadata($"System: {diag.System}");
+            HostBinaryDiagram.AddMetadata($"Temperature Range: {yMin:F1} to {yMax:F1} {u}");
+            HostBinaryDiagram.AddMetadata($"Composition Limits: {xMin:F3} to {xMax:F3}");
+            if (diag.Invariants != null && diag.Invariants.Count > 0)
+            {
+                HostBinaryDiagram.AddMetadata($"--- Invariant Equilibrium Reactions ({diag.Invariants.Count}) ---");
+                foreach (var inv in diag.Invariants)
+                {
+                    string eqStr = string.IsNullOrWhiteSpace(inv.Equation) ? "" : $" | Reaction: {inv.Equation}";
+                    HostBinaryDiagram.AddMetadata($"Invariant [{inv.Type}]: T = {inv.Temp:F1} {u}, x = {inv.XReaction:F4} (Range: {inv.XStart:F4} - {inv.XEnd:F4}){eqStr}");
+                }
+            }
+            if (diag.Regions != null && diag.Regions.Count > 0)
+            {
+                HostBinaryDiagram.AddMetadata($"--- Phase Regions ({diag.Regions.Count}) ---");
+                foreach (var reg in diag.Regions)
+                {
+                    HostBinaryDiagram.AddMetadata($"Phase Field: '{reg.Label}' at (x={reg.X:F3}, T={reg.Y:F1} {u})");
+                }
+            }
+
             HostBinaryDiagram.SetLimitsAndRemember(xMin, xMax, yMin, yMax);
             HostBinaryDiagram.HeaderSummary = $"{diag.System} | Invariants: {diag.Invariants?.Count ?? 0} | T: {yMin:F0}–{yMax:F0} {u}";
             HostBinaryDiagram.Refresh();
@@ -2115,6 +2155,8 @@ namespace PyCalphadSuite.Desktop
             if (HostTernaryDiagram == null || diag == null) return;
             var plot = HostTernaryDiagram.Plot;
             plot.Clear();
+            HostTernaryDiagram.ClearExportSeries();
+            HostTernaryDiagram.ClearMetadata();
 
             // Hide standard rectangular Cartesian axes, labels, and ticks
             plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
@@ -2135,6 +2177,19 @@ namespace PyCalphadSuite.Desktop
             plot.Axes.Title.Label.Text = $"{diag.System} Isothermal Section ({diag.Temperature:F0} {diag.TempUnit})";
             plot.Axes.Title.Label.Bold = true;
             plot.Axes.Title.Label.FontSize = 13.0f;
+
+            // Register comprehensive metadata for CSV and reporting export
+            HostTernaryDiagram.AddMetadata($"System: {diag.System}");
+            HostTernaryDiagram.AddMetadata($"Isothermal Section: {diag.Temperature:F1} {diag.TempUnit}");
+            if (!string.IsNullOrWhiteSpace(diag.LiteratureNotes))
+            {
+                HostTernaryDiagram.AddMetadata($"Literature / CALPHAD Model: {diag.LiteratureNotes}");
+            }
+            if (diag.ApexLabels != null && diag.ApexLabels.Count > 0)
+            {
+                var apexDetails = diag.ApexLabels.Select(kv => $"{kv.Key} = {kv.Value.Name}").ToList();
+                HostTernaryDiagram.AddMetadata($"Gibbs Triangle Vertices: {string.Join(", ", apexDetails)}");
+            }
 
             // 1. Triangular Grid Lines (10% Barycentric Increments)
             var gridColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#E2E8F0");
@@ -2164,93 +2219,118 @@ namespace PyCalphadSuite.Desktop
             }
 
             // 3. Three-Phase Tie-Triangles with Translucent Fill & Vertex Markers (PyCalphad Standard)
-            foreach (var tri in diag.TieTriangles)
+            if (diag.TieTriangles != null && diag.TieTriangles.Count > 0)
             {
-                if (tri.V1.Count >= 2 && tri.V2.Count >= 2 && tri.V3.Count >= 2)
+                HostTernaryDiagram.AddMetadata($"--- Three-Phase Equilibrium Tie-Triangles ({diag.TieTriangles.Count}) ---");
+                foreach (var tri in diag.TieTriangles)
                 {
-                    var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
-                    var fillColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.Color) ? "#3B82F6" : tri.Color);
-
-                    var polyCoords = new Coordinates[]
+                    if (tri.V1.Count >= 2 && tri.V2.Count >= 2 && tri.V3.Count >= 2)
                     {
-                        new(tri.V1[0], tri.V1[1]),
-                        new(tri.V2[0], tri.V2[1]),
-                        new(tri.V3[0], tri.V3[1]),
-                        new(tri.V1[0], tri.V1[1])
-                    };
-                    var poly = plot.Add.Polygon(polyCoords);
-                    poly.FillColor = fillColor.WithAlpha(0.20f);
-                    poly.LineColor = triColor;
-                    poly.LineWidth = 1.5f;
+                        var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
+                        var fillColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.Color) ? "#3B82F6" : tri.Color);
 
-                    // Vertex markers for the three coexisting phases
-                    var vx = new double[] { tri.V1[0], tri.V2[0], tri.V3[0] };
-                    var vy = new double[] { tri.V1[1], tri.V2[1], tri.V3[1] };
-                    var markers = plot.Add.Markers(vx, vy);
-                    markers.MarkerStyle.Shape = MarkerShape.FilledCircle;
-                    markers.MarkerStyle.Size = 6;
-                    markers.Color = triColor;
+                        var polyCoords = new Coordinates[]
+                        {
+                            new(tri.V1[0], tri.V1[1]),
+                            new(tri.V2[0], tri.V2[1]),
+                            new(tri.V3[0], tri.V3[1]),
+                            new(tri.V1[0], tri.V1[1])
+                        };
+                        var poly = plot.Add.Polygon(polyCoords);
+                        poly.FillColor = fillColor.WithAlpha(0.20f);
+                        poly.LineColor = triColor;
+                        poly.LineWidth = 1.5f;
+
+                        // Vertex markers for the three coexisting phases
+                        var vx = new double[] { tri.V1[0], tri.V2[0], tri.V3[0] };
+                        var vy = new double[] { tri.V1[1], tri.V2[1], tri.V3[1] };
+                        var markers = plot.Add.Markers(vx, vy);
+                        markers.MarkerStyle.Shape = MarkerShape.FilledCircle;
+                        markers.MarkerStyle.Size = 6;
+                        markers.Color = triColor;
+
+                        // Export series and metadata for three-phase tie-triangle
+                        string triName = string.IsNullOrWhiteSpace(tri.Name) ? "3Phase_TieTriangle" : $"TieTriangle_{tri.Name}";
+                        HostTernaryDiagram.AddExportSeries(triName, new[] { tri.V1[0], tri.V2[0], tri.V3[0], tri.V1[0] }, new[] { tri.V1[1], tri.V2[1], tri.V3[1], tri.V1[1] });
+                        HostTernaryDiagram.AddMetadata($"Tie-Triangle [{tri.Name}]: V1=({tri.V1[0]:F4}, {tri.V1[1]:F4}), V2=({tri.V2[0]:F4}, {tri.V2[1]:F4}), V3=({tri.V3[0]:F4}, {tri.V3[1]:F4})");
+                    }
                 }
             }
 
             // 4. Two-Phase Conjugate Tie-Lines
-            foreach (var tie in diag.TieLines)
+            if (diag.TieLines != null)
             {
-                if (tie.Xs.Count > 0 && tie.Ys.Count > 0)
+                int tieCounter = 1;
+                foreach (var tie in diag.TieLines)
                 {
-                    var tieColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tie.Color) ? "#64748B" : tie.Color);
-                    var tl = plot.Add.ScatterLine(tie.Xs.ToArray(), tie.Ys.ToArray(), tieColor);
-                    tl.LineWidth = 1.0f;
-                    tl.LineStyle.Pattern = LinePattern.Dashed;
+                    if (tie.Xs.Count > 0 && tie.Ys.Count > 0)
+                    {
+                        var tieColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tie.Color) ? "#64748B" : tie.Color);
+                        var tl = plot.Add.ScatterLine(tie.Xs.ToArray(), tie.Ys.ToArray(), tieColor);
+                        tl.LineWidth = 1.0f;
+                        tl.LineStyle.Pattern = LinePattern.Dashed;
+                        HostTernaryDiagram.AddExportSeries($"TieLine_{tieCounter++}", tie.Xs.ToArray(), tie.Ys.ToArray());
+                    }
                 }
             }
 
             // 5. Boundary & Monovariant Phase Curves
-            foreach (var curve in diag.Curves)
+            if (diag.Curves != null)
             {
-                if (curve.Xs.Count == 0 || curve.Ys.Count == 0) continue;
-                var xs = curve.Xs.ToArray();
-                var ys = curve.Ys.ToArray();
-                var col = ScottPlot.Color.FromHex(string.IsNullOrEmpty(curve.Color) ? "#000000" : curve.Color);
-                var sc = plot.Add.ScatterLine(xs, ys, col);
-                sc.LineWidth = (float)Math.Max(1.5, curve.LineWidth);
-                if (curve.LineStyle == "dash" || curve.LineStyle == "Dashed")
+                foreach (var curve in diag.Curves)
                 {
-                    sc.LineStyle.Pattern = LinePattern.Dashed;
+                    if (curve.Xs.Count == 0 || curve.Ys.Count == 0) continue;
+                    var xs = curve.Xs.ToArray();
+                    var ys = curve.Ys.ToArray();
+                    var col = ScottPlot.Color.FromHex(string.IsNullOrEmpty(curve.Color) ? "#000000" : curve.Color);
+                    var sc = plot.Add.ScatterLine(xs, ys, col);
+                    sc.LineWidth = (float)Math.Max(1.5, curve.LineWidth);
+                    if (curve.LineStyle == "dash" || curve.LineStyle == "Dashed")
+                    {
+                        sc.LineStyle.Pattern = LinePattern.Dashed;
+                    }
+                    else if (curve.LineStyle == "dot" || curve.LineStyle == "Dotted")
+                    {
+                        sc.LineStyle.Pattern = LinePattern.Dotted;
+                    }
+                    sc.LegendText = curve.Name;
+                    HostTernaryDiagram.AddExportSeries(curve.Name, xs, ys);
                 }
-                else if (curve.LineStyle == "dot" || curve.LineStyle == "Dotted")
-                {
-                    sc.LineStyle.Pattern = LinePattern.Dotted;
-                }
-                sc.LegendText = curve.Name;
-                HostTernaryDiagram.AddExportSeries(curve.Name, xs, ys);
             }
 
             // 6. Phase Region Labels
-            foreach (var lbl in diag.PhaseLabels)
+            if (diag.PhaseLabels != null && diag.PhaseLabels.Count > 0)
             {
-                var txt = plot.Add.Text(lbl.Text, lbl.X, lbl.Y);
-                txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex(string.IsNullOrEmpty(lbl.Color) ? "#0F172A" : lbl.Color);
-                txt.LabelFontSize = 10.0f;
-                txt.LabelBold = lbl.Bold;
-                txt.LabelAlignment = Alignment.MiddleCenter;
+                HostTernaryDiagram.AddMetadata($"--- Phase Region Identifiers ({diag.PhaseLabels.Count}) ---");
+                foreach (var lbl in diag.PhaseLabels)
+                {
+                    var txt = plot.Add.Text(lbl.Text, lbl.X, lbl.Y);
+                    txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex(string.IsNullOrEmpty(lbl.Color) ? "#0F172A" : lbl.Color);
+                    txt.LabelFontSize = 10.0f;
+                    txt.LabelBold = lbl.Bold;
+                    txt.LabelAlignment = Alignment.MiddleCenter;
+                    HostTernaryDiagram.AddMetadata($"Phase Label: '{lbl.Text}' at Cartesian ({lbl.X:F4}, {lbl.Y:F4})");
+                }
             }
 
             // 7. Vertex Apex Labels
-            foreach (var kvp in diag.ApexLabels)
+            if (diag.ApexLabels != null)
             {
-                var apex = kvp.Value;
-                var txt = plot.Add.Text(apex.Name, apex.X, apex.Y);
-                txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A");
-                txt.LabelFontSize = 12.0f;
-                txt.LabelBold = true;
-                txt.LabelAlignment = apex.Align switch
+                foreach (var kvp in diag.ApexLabels)
                 {
-                    "Top" => Alignment.LowerCenter,
-                    "Left" => Alignment.UpperLeft,
-                    "Right" => Alignment.UpperRight,
-                    _ => Alignment.MiddleCenter
-                };
+                    var apex = kvp.Value;
+                    var txt = plot.Add.Text(apex.Name, apex.X, apex.Y);
+                    txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A");
+                    txt.LabelFontSize = 12.0f;
+                    txt.LabelBold = true;
+                    txt.LabelAlignment = apex.Align switch
+                    {
+                        "Top" => Alignment.LowerCenter,
+                        "Left" => Alignment.UpperLeft,
+                        "Right" => Alignment.UpperRight,
+                        _ => Alignment.MiddleCenter
+                    };
+                }
             }
 
             // Fixed Bounds with Margin for Apex Text
@@ -3101,6 +3181,13 @@ namespace PyCalphadSuite.Desktop
                 var tt = res.Xrd.TwoTheta.ToArray();
                 var intens = res.Xrd.IntensityPct.ToArray();
 
+                HostXRD.AddMetadata($"Radiation: {rad}");
+                HostXRD.AddMetadata($"Diffraction Angle 2θ Range: {tt.Min():F2}° to {tt.Max():F2}°");
+                if (res.Xrd.Phases != null && res.Xrd.Phases.Count > 0)
+                {
+                    HostXRD.AddMetadata($"Coexisting Crystalline Phases: {string.Join(" + ", res.Xrd.Phases)}");
+                }
+
                 // OriginLab-grade subtle translucent shaded area beneath diffractogram profile
                 if (tt.Length > 0 && intens.Length == tt.Length)
                 {
@@ -3132,6 +3219,7 @@ namespace PyCalphadSuite.Desktop
                     string bLegend = $"Exp. Literature ({ShortCite(res.Xrd.BenchmarkCitation)})";
                     bLine.LegendText = bLegend;
                     HostXRD.AddExportSeries(bLegend, btt, bint);
+                    HostXRD.AddMetadata($"Experimental Literature Benchmark: {res.Xrd.BenchmarkCitation}");
                 }
 
                 // Annotate major Bragg reflections with vertical stems and collision-avoidant stagger
@@ -3154,6 +3242,20 @@ namespace PyCalphadSuite.Desktop
                     txt.LabelFontSize = 8.5f;
                     txt.LabelBold = true;
                     txt.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
+                }
+
+                if (res.Xrd.Peaks != null && res.Xrd.Peaks.Count > 0)
+                {
+                    HostXRD.AddMetadata($"--- Indexed Bragg Reflection Peaks ({res.Xrd.Peaks.Count}) ---");
+                    foreach (var pk in res.Xrd.Peaks)
+                    {
+                        double yPct = pk.Intensity <= 1.05 ? pk.Intensity * 100.0 : pk.Intensity;
+                        HostXRD.AddMetadata($"Bragg Peak: 2θ = {pk.TwoTheta:F2}°, Intensity = {yPct:F1}%, (hkl) = {pk.Hkl}, Phase = {pk.Phase}");
+                    }
+
+                    var allPeakThetas = res.Xrd.Peaks.Select(p => p.TwoTheta).ToArray();
+                    var allPeakIntens = res.Xrd.Peaks.Select(p => p.Intensity <= 1.05 ? p.Intensity * 100.0 : p.Intensity).ToArray();
+                    HostXRD.AddExportSeries("Indexed Bragg Reflections", allPeakThetas, allPeakIntens);
                 }
 
                 string phaseStr = res.Xrd.Phases.Count > 0 ? string.Join(" + ", res.Xrd.Phases) : "Crystalline Solid Solution";
@@ -5874,18 +5976,38 @@ namespace PyCalphadSuite.Desktop
 
         private void MenuExportCsv_Click(object sender, RoutedEventArgs e)
         {
-            if (_latestResult == null || _latestResult.ValidationTable.Count == 0) return;
-            var dlg = new SaveFileDialog { FileName = "CALPHAD_Validation_Parity.csv", Filter = "CSV Files (*.csv)|*.csv" };
-            if (dlg.ShowDialog() != true) return;
-
-            var sb = new StringBuilder();
-            sb.AppendLine("Property,Calculated,Experimental,Deviation,ErrorPercent,Reference,DOI");
-            foreach (var r in _latestResult.ValidationTable)
+            var host = GetActivePlotCanvasHost();
+            if (host != null && host.HasExportSeries)
             {
-                sb.AppendLine($"\"{r.Property}\",\"{r.Calculated}\",\"{r.Experimental}\",\"{r.Deviation}\",\"{r.ErrorPercent}\",\"{r.Reference}\",\"{r.Doi}\"");
+                var dlg = new SaveFileDialog
+                {
+                    FileName = $"{host.ExportBaseName}_RawData.csv",
+                    Filter = "OriginLab / Excel CSV (*.csv)|*.csv|All Files (*.*)|*.*"
+                };
+                if (dlg.ShowDialog() != true) return;
+
+                File.WriteAllText(dlg.FileName, host.BuildCsvContent(), Encoding.UTF8);
+                AppendLog($"[Export] Saved active plot CSV data ({host.ExportBaseName}): {dlg.FileName}");
+                return;
             }
-            File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
-            AppendLog($"[Export] Saved CSV validation parity table: {dlg.FileName}");
+
+            if (_latestResult != null && _latestResult.ValidationTable.Count > 0)
+            {
+                var dlg = new SaveFileDialog { FileName = "CALPHAD_Validation_Parity.csv", Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*" };
+                if (dlg.ShowDialog() != true) return;
+
+                var sb = new StringBuilder();
+                sb.AppendLine("Property,Calculated,Experimental,Deviation,ErrorPercent,Reference,DOI");
+                foreach (var r in _latestResult.ValidationTable)
+                {
+                    sb.AppendLine($"\"{r.Property}\",\"{r.Calculated}\",\"{r.Experimental}\",\"{r.Deviation}\",\"{r.ErrorPercent}\",\"{r.Reference}\",\"{r.Doi}\"");
+                }
+                File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                AppendLog($"[Export] Saved CSV validation parity table: {dlg.FileName}");
+                return;
+            }
+
+            MessageBox.Show("No active plot data or validation table available to export. Run a calculation first.", "Export CSV", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private PlotCanvasHost? GetActivePlotCanvasHost()

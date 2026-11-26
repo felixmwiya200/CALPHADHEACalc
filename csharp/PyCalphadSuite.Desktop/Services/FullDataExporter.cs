@@ -257,7 +257,7 @@ namespace PyCalphadSuite.Desktop.Services
             IReadOnlyList<(string Key, PlotCanvasHost Host)>? plotHosts = null)
         {
             var snapshots = plotHosts?
-                .Select(p => new RenderedPlotSnapshot(p.Key, p.Host.PlotTitle, p.Host.XAxisTitle, p.Host.YAxisTitle, p.Host.ExportSeries))
+                .Select(p => new RenderedPlotSnapshot(p.Key, p.Host.PlotTitle, p.Host.XAxisTitle, p.Host.YAxisTitle, p.Host.ExportSeries, p.Host.MetadataLines))
                 .ToList();
             return DatReportBuilder.BuildCompleteDatContent(res, profile, snapshots);
         }
