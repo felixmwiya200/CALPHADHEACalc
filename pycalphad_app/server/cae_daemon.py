@@ -776,9 +776,19 @@ class CAEDaemon:
                 val_table = BenchmarkDatabase.compare_metrics(at_comp, all_metrics, db_name=db_name).get("table", [])
 
         # -------------------------------------------------------------------
-        # 8. XRD Diffractogram & Industrial Suitability & Processability
+        # 8. Room-Temperature Phase Equilibrium & Multi-Phase XRD Diffractogram
         # -------------------------------------------------------------------
-        xrd_res = XRDEngine.calculate_xrd(at_comp, is_coating=is_coating, thermo_metrics=thermo_res)
+        rt_step = engine.compute_single_temperature_step(float(max(300.0, t_start)))
+        rt_phases = rt_step.get("Phases", {}) or {}
+        if not rt_phases and active_phase_series:
+            rt_phases = {p: float(vals[0]) for p, vals in active_phase_series.items() if vals and vals[0] > 0.004}
+
+        xrd_res = XRDEngine.calculate_xrd(
+            at_comp,
+            is_coating=is_coating,
+            thermo_metrics=thermo_res,
+            active_phases=rt_phases
+        )
         xrd_bench = MaterialDatabaseSelector.get_xrd_benchmark(db_name)
         if xrd_bench and not xrd_res.get("HasBenchmark"):
             xrd_res["HasBenchmark"] = True
@@ -885,10 +895,6 @@ class CAEDaemon:
         # -------------------------------------------------------------------
         # 10. Interactive 3D Crystal Structures & Atomic Configurations
         # -------------------------------------------------------------------
-        rt_step = engine.compute_single_temperature_step(float(max(300.0, t_start)))
-        rt_phases = rt_step.get("Phases", {}) or {}
-        if not rt_phases and active_phase_series:
-            rt_phases = {p: float(vals[0]) for p, vals in active_phase_series.items() if vals and vals[0] > 0.004}
         crystal_structures = CrystalStructureEngine.build_alloy_crystal_models(
             at_comp=at_comp,
             active_phases=rt_phases,
@@ -1592,7 +1598,12 @@ class CAEDaemon:
         step_res = engine.compute_single_temperature_step(temp_k)
         phases = step_res.get("Phases", {}) or {}
         thermo_res = engine.compute_thermodynamics()
-        xrd_res = XRDEngine.calculate_xrd(at_comp, is_coating=("Coating" in db_name), thermo_metrics=thermo_res)
+        xrd_res = XRDEngine.calculate_xrd(
+            at_comp,
+            is_coating=("Coating" in db_name),
+            thermo_metrics=thermo_res,
+            active_phases=phases
+        )
         models = CrystalStructureEngine.build_alloy_crystal_models(
             at_comp=at_comp,
             active_phases=phases,

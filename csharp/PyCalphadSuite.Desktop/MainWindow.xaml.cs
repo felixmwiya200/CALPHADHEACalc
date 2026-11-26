@@ -3398,7 +3398,18 @@ namespace PyCalphadSuite.Desktop
                 }
 
                 // Annotate major Bragg reflections with vertical stems and collision-avoidant stagger
-                var sortedPeaks = res.Xrd.Peaks.OrderByDescending(p => p.Intensity).Take(8).OrderBy(p => p.TwoTheta).ToList();
+                // Ensure distinct coexisting phases each get at least their prominent reflections annotated
+                var topPerPhase = res.Xrd.Peaks
+                    .GroupBy(p => string.IsNullOrWhiteSpace(p.Phase) ? "Matrix" : p.Phase)
+                    .SelectMany(g => g.OrderByDescending(p => p.Intensity).Take(2));
+
+                var topOverall = res.Xrd.Peaks.OrderByDescending(p => p.Intensity).Take(10);
+
+                var sortedPeaks = topPerPhase.Union(topOverall)
+                    .OrderByDescending(p => p.Intensity)
+                    .Take(14)
+                    .OrderBy(p => p.TwoTheta)
+                    .ToList();
                 double prevTheta = -999.0;
                 int tier = 0;
                 foreach (var pk in sortedPeaks)

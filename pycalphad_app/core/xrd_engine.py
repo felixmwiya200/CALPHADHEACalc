@@ -246,13 +246,21 @@ class XRDEngine:
         if n == 5 and all(el in comp_map for el in ["Al", "Co", "Cr", "Fe", "Ni"]):
             al_f = comp_map["Al"]
             if abs(al_f - 0.0698) <= 0.025:
-                return {"a_FCC": 3.590, "a_BCC": 2.882, "a_HCP": 2.507, "c_HCP": 4.069}
+                a_fcc_val, a_bcc_val = 3.590, 2.882
             elif abs(al_f - 0.149) <= 0.025:
-                return {"a_FCC": 3.592, "a_BCC": 2.882, "a_HCP": 2.507, "c_HCP": 4.069}
+                a_fcc_val, a_bcc_val = 3.592, 2.882
             elif abs(comp_map.get("Ni", 0.0) - (2.1 / 6.1)) <= 0.04:
-                return {"a_FCC": 3.588, "a_BCC": 2.884, "a_HCP": 2.507, "c_HCP": 4.069}
+                a_fcc_val, a_bcc_val = 3.588, 2.884
             elif 0.17 <= al_f <= 0.38:
-                return {"a_FCC": 3.610, "a_BCC": 2.885, "a_HCP": 2.507, "c_HCP": 4.069}
+                a_fcc_val, a_bcc_val = 3.610, 2.885
+            else:
+                a_fcc_val, a_bcc_val = 3.596, 2.885
+            return {
+                "a_FCC": a_fcc_val, "a_BCC": a_bcc_val, "a_B2": a_bcc_val, "a_L12": a_fcc_val,
+                "a_HCP": 2.507, "c_HCP": 4.069,
+                "a_Laves_C14": 4.837, "c_Laves_C14": 7.884, "a_Laves_C15": 6.991,
+                "a_Sigma": round(2.45 * a_fcc_val, 3), "c_Sigma": round(2.45 * a_fcc_val * 0.516, 3)
+            }
 
         # 2. Composition-Dependent Assessed Vegard & Zen Lattice Parameter Calculation
         # Weighted FCC lattice parameter
@@ -309,6 +317,8 @@ class XRDEngine:
         return {
             "a_FCC": a_fcc,
             "a_BCC": a_bcc,
+            "a_B2": a_bcc,
+            "a_L12": a_fcc,
             "a_HCP": a_hcp,
             "c_HCP": c_hcp,
             "a_Laves_C14": a_c14,
@@ -317,6 +327,49 @@ class XRDEngine:
             "a_Sigma": a_sigma,
             "c_Sigma": c_sigma
         }
+
+    @classmethod
+    def resolve_active_phases(cls, active_phases: Optional[Dict[str, float]],
+                             elements: List[str], x: np.ndarray,
+                             vec: float, delta_size: float = 1.5) -> Tuple[Dict[str, float], Dict[str, float]]:
+        """
+        Resolves coexisting solid phases and normalized fractions alongside lattice parameters.
+        Prioritizes CALPHAD equilibrium phase fractions over empirical VEC heuristics.
+        """
+        lattice_params = cls.calculate_lattice_parameters(elements, x, vec, delta_size)
+
+        solid_phases: Dict[str, float] = {}
+        if active_phases and isinstance(active_phases, dict):
+            for pname, frac in active_phases.items():
+                p_str = str(pname).strip()
+                if "LIQUID" not in p_str.upper() and float(frac) >= 0.005:
+                    solid_phases[p_str] = float(frac)
+
+        if not solid_phases:
+            # Fallback to empirical VEC rules if no CALPHAD phase dictionary provided
+            heuristic_phases, lattice_params = cls.determine_phases_and_lattice(elements, x, vec, delta_size)
+            equal_frac = 1.0 / max(1, len(heuristic_phases))
+            solid_phases = {p: equal_frac for p in heuristic_phases}
+        else:
+            # Also incorporate solid-state IMC / Laves and TCP (Sigma) secondary tendencies if not already covered
+            try:
+                from pycalphad_app.database.imc_laves_database import IMCLavesDatabase
+                comp_map = {elements[i].strip(): float(x[i]) for i in range(len(elements))}
+                imc_eval = IMCLavesDatabase.evaluate_formation_tendency(comp_map, vec, delta_size)
+                max_sigma = float(imc_eval.get("MaxSigmaFraction", 0.0))
+                if max_sigma >= 0.015 and not any("SIGMA" in p.upper() for p in solid_phases):
+                    solid_phases["Sigma"] = max_sigma
+                poly = imc_eval.get("LavesPolytype")
+                max_laves = float(imc_eval.get("MaxLavesFraction", imc_eval.get("LavesFraction", 0.0)))
+                if max_laves >= 0.05 and not any("LAVES" in p.upper() for p in solid_phases):
+                    tag = "Laves (C15)" if poly == "LAVES_C15" else "Laves (C14)"
+                    solid_phases[tag] = max_laves
+            except Exception:
+                pass
+
+        total = sum(solid_phases.values())
+        normalized = {p: (f / total) for p, f in solid_phases.items()} if total > 0 else solid_phases
+        return normalized, lattice_params
 
     @classmethod
     def determine_phases_and_lattice(cls, elements: List[str], x: np.ndarray,
@@ -400,12 +453,28 @@ class XRDEngine:
     @classmethod
     def generate_bragg_peaks(cls, phase_name: str, lattice_params: Dict[str, float],
                              elements: List[str], x: np.ndarray, wavelength: float,
-                             d_nm: float = 45.0, strain: float = 0.0035) -> List[Dict[str, Any]]:
-        is_fcc = "FCC" in phase_name or "L12" in phase_name
-        is_bcc = "BCC" in phase_name or "A2" in phase_name
-        is_b2  = "B2" in phase_name
-        is_hcp = "HCP" in phase_name
+                             d_nm: float = 45.0, strain: float = 0.0035,
+                             phase_fraction: float = 1.0) -> List[Dict[str, Any]]:
+        u_phase = phase_name.upper()
+        # Clean phase label for display on peak stems
+        clean_phase = phase_name
+        for prefix in ["FCC", "BCC", "B2", "L12", "SIGMA", "HCP", "C14", "C15", "C36", "AL2CU", "CU6SN5"]:
+            if prefix in u_phase:
+                clean_phase = prefix if prefix != "SIGMA" else "Sigma"
+                break
 
+        is_l12 = "L12" in u_phase or "L1_2" in u_phase or "CU3AU" in u_phase
+        is_fcc = ("FCC" in u_phase or "A1" in u_phase) and not is_l12
+        is_b2  = "B2" in u_phase
+        is_bcc = ("BCC" in u_phase or "A2" in u_phase) and not is_b2
+        is_hcp = "HCP" in u_phase or "A3" in u_phase
+        is_c15 = "C15" in u_phase
+        is_c14 = "C14" in u_phase or "C36" in u_phase
+        is_sigma = "SIGMA" in u_phase or "D8_B" in u_phase or "D8B" in u_phase
+        is_al2cu = "AL2CU" in u_phase
+        is_cu6sn5 = "CU6SN5" in u_phase
+
+        frac_scale = max(0.005, float(phase_fraction))
         peaks = []
         # Standard graphite monochromator polarization parameter for Cu-Ka
         k_mono = 0.799 if abs(wavelength - 1.54060) < 0.05 else 0.850
@@ -449,17 +518,17 @@ class XRDEngine:
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
 
                 # Physical peak height intensity (integrated intensity divided by FWHM scaling)
-                raw_int = (f2 * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((f2 * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
                     "hkl": f"({h}{k}{l})",
-                    "phase": phase_name,
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if is_bcc and not is_b2:
+        if is_bcc:
             a = lattice_params.get("a_BCC", 2.885)
             if a <= 0: a = 2.885
             bcc_refl = [
@@ -492,10 +561,10 @@ class XRDEngine:
                 beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
 
-                raw_int = (f2 * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((f2 * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
                     "hkl": f"({h}{k}{l})",
-                    "phase": phase_name,
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
@@ -503,7 +572,7 @@ class XRDEngine:
                 })
 
         if is_b2:
-            a = lattice_params.get("a_BCC", 2.885)
+            a = lattice_params.get("a_B2", lattice_params.get("a_BCC", 2.885))
             if a <= 0: a = 2.885
             b2_refl = [
                 (1, 0, 0, 6, True),   # Superlattice
@@ -528,10 +597,8 @@ class XRDEngine:
                 if is_super:
                     f_diff = 0.28 * f_bar
                     f2 = f_diff ** 2
-                    lbl = f"({h}{k}{l}) B2"
                 else:
                     f2 = 4.0 * (f_bar ** 2)
-                    lbl = f"({h}{k}{l})"
 
                 lp = (1.0 + k_mono * (math.cos(2.0 * theta)) ** 2) / ((math.sin(theta)) ** 2 * math.cos(theta))
                 dw = math.exp(-2.0 * b_eff * (s_val ** 2))
@@ -540,17 +607,116 @@ class XRDEngine:
                 beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
 
-                raw_int = (f2 * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((f2 * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
-                    "hkl": lbl,
-                    "phase": phase_name,
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if "Laves (C15)" in phase_name:
+        if is_l12:
+            a = lattice_params.get("a_L12", lattice_params.get("a_FCC", 3.596))
+            if a <= 0: a = 3.596
+            l12_refl = [
+                (1, 0, 0, 6, True),   # Superlattice
+                (1, 1, 0, 12, True),  # Superlattice
+                (1, 1, 1, 8, False),  # Fundamental
+                (2, 0, 0, 6, False),  # Fundamental
+                (2, 1, 0, 24, True),  # Superlattice
+                (2, 1, 1, 24, True),  # Superlattice
+                (2, 2, 0, 12, False), # Fundamental
+                (3, 0, 0, 6, True),   # Superlattice
+                (3, 1, 0, 24, True),  # Superlattice
+                (3, 1, 1, 24, False), # Fundamental
+                (2, 2, 2, 8, False),  # Fundamental
+                (3, 2, 0, 24, True),  # Superlattice
+                (3, 2, 1, 48, True),  # Superlattice
+                (4, 0, 0, 6, False),  # Fundamental
+                (3, 3, 1, 24, False), # Fundamental
+                (4, 2, 0, 24, False), # Fundamental
+                (4, 2, 2, 24, False)  # Fundamental
+            ]
+            for h, k, l, mult, is_super in l12_refl:
+                s2 = h**2 + k**2 + l**2
+                d = a / math.sqrt(s2)
+                sin_th = wavelength / (2.0 * d)
+                if sin_th >= 0.995: continue
+                theta = math.asin(sin_th)
+                two_theta = math.degrees(2.0 * theta)
+                if two_theta < 18.0 or two_theta > 110.0: continue
+
+                s_val = sin_th / wavelength
+                f_bar = cls.get_average_scattering_factor(elements, x, s_val)
+                if is_super:
+                    f_diff = 0.28 * f_bar
+                    f2 = f_diff ** 2
+                else:
+                    f2 = 16.0 * (f_bar ** 2)
+
+                lp = (1.0 + k_mono * (math.cos(2.0 * theta)) ** 2) / ((math.sin(theta)) ** 2 * math.cos(theta))
+                dw = math.exp(-2.0 * b_eff * (s_val ** 2))
+
+                beta_size = (0.94 * wavelength / (d_a * math.cos(theta))) * (180.0 / math.pi)
+                beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
+                gamma = max(0.12, beta_size + beta_strain + 0.12)
+
+                raw_int = ((f2 * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
+                peaks.append({
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
+                    "dSpacing": round(d, 4),
+                    "twoTheta": round(two_theta, 2),
+                    "intensity": raw_int,
+                    "multiplicity": mult
+                })
+
+        if is_hcp:
+            a = lattice_params.get("a_HCP", 2.950)
+            c = lattice_params.get("c_HCP", 4.700)
+            if a <= 0: a = 2.950
+            if c <= 0: c = 4.700
+            hcp_refl = [
+                (1, 0, 0, 6, 0.45),
+                (0, 0, 2, 2, 0.35),
+                (1, 0, 1, 12, 1.00),
+                (1, 0, 2, 12, 0.30),
+                (1, 1, 0, 6, 0.25),
+                (1, 0, 3, 12, 0.28),
+                (2, 0, 0, 6, 0.08),
+                (1, 1, 2, 12, 0.32),
+                (2, 0, 1, 12, 0.20),
+                (0, 0, 4, 2, 0.05),
+                (2, 0, 2, 12, 0.12)
+            ]
+            for h, k, l, mult, sf in hcp_refl:
+                inv_d2 = (4.0 / 3.0) * ((h * h + h * k + k * k) / (a * a)) + (l * l) / (c * c)
+                d = 1.0 / math.sqrt(inv_d2)
+                sin_th = wavelength / (2.0 * d)
+                if sin_th >= 0.995: continue
+                theta = math.asin(sin_th)
+                two_theta = math.degrees(2.0 * theta)
+                if two_theta < 18.0 or two_theta > 110.0: continue
+                s_val = sin_th / wavelength
+                f_bar = cls.get_average_scattering_factor(elements, x, s_val)
+                lp = (1.0 + k_mono * (math.cos(2.0 * theta)) ** 2) / ((math.sin(theta)) ** 2 * math.cos(theta))
+                dw = math.exp(-2.0 * b_eff * (s_val ** 2))
+                beta_size = (0.94 * wavelength / (d_a * math.cos(theta))) * (180.0 / math.pi)
+                beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
+                gamma = max(0.12, beta_size + beta_strain + 0.12)
+                raw_int = ((4.0 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
+                peaks.append({
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
+                    "dSpacing": round(d, 4),
+                    "twoTheta": round(two_theta, 2),
+                    "intensity": raw_int,
+                    "multiplicity": mult
+                })
+
+        if is_c15:
             a = lattice_params.get("a_Laves_C15", 6.991)
             c15_refl = [
                 (2, 2, 0, 12, 0.35), (3, 1, 1, 24, 0.55), (2, 2, 2, 8, 0.28),
@@ -573,20 +739,20 @@ class XRDEngine:
                 beta_size = (0.94 * wavelength / (d_a * math.cos(theta))) * (180.0 / math.pi)
                 beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
-                raw_int = (6.0 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((6.0 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
-                    "hkl": f"({h}{k}{l}) C15",
-                    "phase": phase_name,
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if "Laves (C14)" in phase_name or "Laves (C36)" in phase_name:
+        if is_c14:
             a = lattice_params.get("a_Laves_C14", 4.837)
             c = lattice_params.get("c_Laves_C14", 7.884)
-            if "C36" in phase_name:
+            if "C36" in u_phase:
                 c = c * 2.0
             c14_refl = [
                 (1, 0, 0, 6, 0.22), (0, 0, 2, 2, 0.18), (1, 0, 1, 12, 0.30),
@@ -610,17 +776,17 @@ class XRDEngine:
                 beta_size = (0.94 * wavelength / (d_a * math.cos(theta))) * (180.0 / math.pi)
                 beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
-                raw_int = (6.5 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((6.5 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
-                    "hkl": f"({h}{k}{l}) C14",
-                    "phase": phase_name,
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if "Sigma" in phase_name:
+        if is_sigma:
             a = lattice_params.get("a_Sigma", 8.800)
             c = lattice_params.get("c_Sigma", 4.545)
             sig_refl = [
@@ -643,17 +809,17 @@ class XRDEngine:
                 beta_size = (0.94 * wavelength / (d_a * math.cos(theta))) * (180.0 / math.pi)
                 beta_strain = 4.0 * max(0.0, strain) * math.tan(theta) * (180.0 / math.pi)
                 gamma = max(0.12, beta_size + beta_strain + 0.12)
-                raw_int = (4.5 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)
+                raw_int = ((4.5 * sf * (f_bar ** 2) * mult * lp * dw) / (gamma ** 0.65)) * frac_scale
                 peaks.append({
-                    "hkl": f"({h}{k}{l}) Sigma",
-                    "phase": phase_name,
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if "Al2Cu" in phase_name:
+        if is_al2cu:
             a, c = 6.066, 4.874
             for h, k, l, mult, sf in [(1, 1, 0, 4, 0.35), (2, 0, 0, 4, 0.28), (2, 1, 1, 16, 0.48), (3, 1, 0, 8, 0.32)]:
                 d = 1.0 / math.sqrt((h * h + k * k) / (a * a) + (l * l) / (c * c))
@@ -668,18 +834,18 @@ class XRDEngine:
                 f_bar = cls.get_average_scattering_factor(elements, x, s_val)
                 lp = (1.0 + k_mono * (math.cos(2.0 * theta)) ** 2) / ((math.sin(theta)) ** 2 * math.cos(theta))
                 dw = math.exp(-2.0 * b_eff * (s_val ** 2))
-                raw_int = 5.0 * sf * (f_bar ** 2) * mult * lp * dw
+                raw_int = 5.0 * sf * (f_bar ** 2) * mult * lp * dw * frac_scale
                 peaks.append({
-                    "hkl": f"({h}{k}{l}) Al2Cu",
-                    "phase": phase_name,
+                    "hkl": f"({h}{k}{l})",
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
                     "intensity": raw_int,
                     "multiplicity": mult
                 })
 
-        if "Cu6Sn5" in phase_name:
-            for d, hkl_lbl, sf in [(2.965, "(22-1) Cu6Sn5", 0.38), (2.094, "(024) Cu6Sn5", 0.45), (1.709, "(31-4) Cu6Sn5", 0.25)]:
+        if is_cu6sn5:
+            for d, hkl_lbl, sf in [(2.965, "(22-1)", 0.38), (2.094, "(024)", 0.45), (1.709, "(31-4)", 0.25)]:
                 sin_th = wavelength / (2.0 * d)
                 if sin_th >= 0.995:
                     continue
@@ -689,10 +855,10 @@ class XRDEngine:
                 f_bar = cls.get_average_scattering_factor(elements, x, s_val)
                 peaks.append({
                     "hkl": hkl_lbl,
-                    "phase": phase_name,
+                    "phase": clean_phase,
                     "dSpacing": round(d, 4),
                     "twoTheta": round(two_theta, 2),
-                    "intensity": 4.0 * sf * (f_bar ** 2),
+                    "intensity": 4.0 * sf * (f_bar ** 2) * frac_scale,
                     "multiplicity": 8
                 })
 
@@ -914,14 +1080,21 @@ class XRDEngine:
                                   xrd_opts: Optional[Dict[str, Any]] = None,
                                   radiation: str = "Cu",
                                   crystallite_nm: float = 35.0,
-                                  microstrain: float = 0.0035) -> Dict[str, Any]:
+                                  microstrain: float = 0.0035,
+                                  active_phases: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """
-        Main XRD simulation routine.
+        Main multi-phase kinematic XRD simulation routine weighting reflections
+        by calculated equilibrium phase fractions.
         """
         if thermo_metrics is None:
             thermo_metrics = {}
         if xrd_opts is None:
             xrd_opts = {}
+
+        if active_phases is None and thermo_metrics:
+            active_phases = thermo_metrics.get("active_phases", thermo_metrics.get("ActivePhases", thermo_metrics.get("Phases")))
+        if active_phases is None and xrd_opts:
+            active_phases = xrd_opts.get("active_phases", xrd_opts.get("ActivePhases"))
 
         rad = xrd_opts.get("Radiation", radiation)
         d_nm = float(xrd_opts.get("CrystalliteSize_nm", crystallite_nm))
@@ -939,22 +1112,31 @@ class XRDEngine:
         vec = float(thermo_metrics.get("VEC", 8.0))
         delta_size = float(thermo_metrics.get("DeltaSize_pct", thermo_metrics.get("DeltaSize", 1.5)))
 
-        phases, lattice_params = cls.determine_phases_and_lattice(elements, x, vec, delta_size)
+        phase_dict, lattice_params = cls.resolve_active_phases(active_phases, elements, x, vec, delta_size)
 
         all_peaks = []
-        for phase_name in phases:
-            pks = cls.generate_bragg_peaks(phase_name, lattice_params, elements, x, wavelength, d_nm=d_nm, strain=strain)
+        for phase_name, pfrac in phase_dict.items():
+            pks = cls.generate_bragg_peaks(
+                phase_name, lattice_params, elements, x, wavelength,
+                d_nm=d_nm, strain=strain, phase_fraction=pfrac
+            )
             all_peaks.extend(pks)
 
-        # Sort and deduplicate
+        # Sort and deduplicate / merge constructive reflections
         all_peaks.sort(key=lambda p: p["twoTheta"])
         dedup_peaks = []
         for pk in all_peaks:
             if not dedup_peaks:
                 dedup_peaks.append(pk)
             else:
-                if abs(dedup_peaks[-1]["twoTheta"] - pk["twoTheta"]) < 0.05:
-                    dedup_peaks[-1]["intensity"] = max(dedup_peaks[-1]["intensity"], pk["intensity"])
+                last_pk = dedup_peaks[-1]
+                if abs(last_pk["twoTheta"] - pk["twoTheta"]) < 0.08:
+                    if last_pk["phase"] == pk["phase"]:
+                        last_pk["intensity"] = max(last_pk["intensity"], pk["intensity"])
+                    else:
+                        last_pk["intensity"] += pk["intensity"]
+                        if pk["phase"] not in last_pk["phase"]:
+                            last_pk["phase"] = f"{last_pk['phase']}+{pk['phase']}"
                 else:
                     dedup_peaks.append(pk)
         all_peaks = dedup_peaks
@@ -980,12 +1162,17 @@ class XRDEngine:
         max_prof = np.max(continuous_profile)
         norm_prof = continuous_profile / max_prof if max_prof > 0 else continuous_profile
 
+        formatted_phases = [
+            f"{p} ({f * 100.0:.1f}%)" if not ("%" in p or "(" in p) else p
+            for p, f in sorted(phase_dict.items(), key=lambda kv: -kv[1])
+        ]
+
         res = {
             "TwoTheta_deg": two_theta_grid,
             "Intensity_norm": norm_prof,
             "Intensity_percent": continuous_profile,
             "Peaks": res_peaks,
-            "Phases": phases,
+            "Phases": formatted_phases,
             "LatticeParams": lattice_params,
             "Wavelength_A": wavelength,
             "RadiationTube": f"{rad_key}-Ka (λ = {wavelength:.4f} Å)",
@@ -1002,16 +1189,19 @@ class XRDEngine:
     @classmethod
     def simulate_pattern(cls, elements: List[str], at_fractions: List[float],
                          thermo_metrics: Dict[str, Any], radiation: str = "Cu",
-                         crystallite_nm: float = 35.0, microstrain: float = 0.0035) -> Dict[str, Any]:
+                         crystallite_nm: float = 35.0, microstrain: float = 0.0035,
+                         active_phases: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """Backwards compatibility method signature."""
         return cls.simulate_kinematic_pattern(elements, at_fractions, thermo_metrics,
                                              radiation=radiation, crystallite_nm=crystallite_nm,
-                                             microstrain=microstrain)
+                                             microstrain=microstrain,
+                                             active_phases=active_phases)
 
     @classmethod
     def calculate(cls, composition: Dict[str, float], thermo_metrics: Optional[Dict[str, Any]] = None,
                   radiation: str = "Cu", crystallite_nm: float = 35.0,
-                  microstrain: float = 0.0035) -> Dict[str, Any]:
+                  microstrain: float = 0.0035,
+                  active_phases: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
         """Convenience method matching app convention."""
         if thermo_metrics is None:
             thermo_metrics = {}
@@ -1019,13 +1209,15 @@ class XRDEngine:
         fracs = list(composition.values())
         return cls.simulate_kinematic_pattern(elems, fracs, thermo_metrics,
                                              radiation=radiation, crystallite_nm=crystallite_nm,
-                                             microstrain=microstrain)
+                                             microstrain=microstrain,
+                                             active_phases=active_phases)
 
     @classmethod
     def calculate_xrd(cls, composition: Dict[str, float], is_coating: bool = False,
                       radiation: str = "Cu", crystallite_nm: float = 35.0,
-                      microstrain: float = 0.0035, thermo_metrics: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Worker compatibility method supporting is_coating flag."""
+                      microstrain: float = 0.0035, thermo_metrics: Optional[Dict[str, Any]] = None,
+                      active_phases: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+        """Worker compatibility method supporting is_coating flag and active_phases."""
         from pycalphad_app.core.coating_engine import ThermalSprayCoatingEngine
         if is_coating:
             c_res = ThermalSprayCoatingEngine.compute_xrd_spectrum(radiation, crystallite_nm, microstrain)
@@ -1064,5 +1256,6 @@ class XRDEngine:
             }
         else:
             return cls.calculate(composition, thermo_metrics, radiation=radiation,
-                                 crystallite_nm=crystallite_nm, microstrain=microstrain)
+                                 crystallite_nm=crystallite_nm, microstrain=microstrain,
+                                 active_phases=active_phases)
 
