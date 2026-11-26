@@ -33,14 +33,24 @@ namespace PyCalphadSuite.Desktop.Controls
         public PeriodicTableControl()
         {
             InitializeComponent();
+            ApplyTheme("Grey");
         }
 
-        public void ApplyTheme(bool isDark)
+        public void ApplyTheme(string theme)
+        {
+            bool isDark = string.Equals(theme, "Dark", StringComparison.OrdinalIgnoreCase);
+            bool isGrey = string.Equals(theme, "Grey", StringComparison.OrdinalIgnoreCase);
+            ApplyTheme(isDark, isGrey);
+        }
+
+        public void ApplyTheme(bool isDark) => ApplyTheme(isDark, false);
+
+        public void ApplyTheme(bool isDark, bool isGrey)
         {
             _isDark = isDark;
-            var bgHex = isDark ? "#202225" : "#FFFFFF";
-            var barHex = isDark ? "#2B2D31" : "#F8FAFC";
-            var borderHex = isDark ? "#3F4248" : "#CBD5E1";
+            var bgHex = isDark ? "#202225" : (isGrey ? "#F1F5F9" : "#FFFFFF");
+            var barHex = isDark ? "#2B2D31" : (isGrey ? "#E2E8F0" : "#F8FAFC");
+            var borderHex = isDark ? "#3F4248" : (isGrey ? "#CBD5E1" : "#CBD5E1");
             var fgHex = isDark ? "#F2F3F5" : "#0F172A";
             var mutedHex = isDark ? "#949BA4" : "#475569";
             var labelHex = isDark ? "#E2E8F0" : "#1E293B";
@@ -70,14 +80,14 @@ namespace PyCalphadSuite.Desktop.Controls
 
             if (BtnClear != null)
             {
-                BtnClear.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#2B2D31" : "#FFFFFF"));
+                BtnClear.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#2B2D31" : (isGrey ? "#E2E8F0" : "#FFFFFF")));
                 BtnClear.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#F2F3F5" : "#334155"));
                 BtnClear.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#4E5058" : "#CBD5E1"));
             }
 
             if (BtnMergeApply != null)
             {
-                BtnMergeApply.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#2B2D31" : "#FFFFFF"));
+                BtnMergeApply.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#2B2D31" : (isGrey ? "#E2E8F0" : "#FFFFFF")));
                 BtnMergeApply.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#60A5FA" : "#1D4ED8"));
                 BtnMergeApply.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#4E5058" : "#93C5FD"));
             }
@@ -89,8 +99,8 @@ namespace PyCalphadSuite.Desktop.Controls
                 BtnApply.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isDark ? "#3B82F6" : "#1E40AF"));
             }
 
-            SyncRibbonCategoryButtons();
-            SyncQuickPresetButtons();
+            SyncRibbonCategoryButtons(isDark, isGrey);
+            SyncQuickPresetButtons(isDark, isGrey);
 
             if (_cachedElements != null && _cachedElements.Count > 0)
             {
@@ -689,9 +699,15 @@ namespace PyCalphadSuite.Desktop.Controls
             ApplyTileFilters();
         }
 
-        private void SyncRibbonCategoryButtons()
+        private void SyncRibbonCategoryButtons(bool? isDarkOverride = null, bool? isGreyOverride = null)
         {
             if (PanelCategoryFilters == null) return;
+            bool dark = isDarkOverride ?? _isDark;
+            bool grey = isGreyOverride ?? false;
+            string unselectedBg = dark ? "#2B2D31" : (grey ? "#E2E8F0" : "#FFFFFF");
+            string unselectedFg = dark ? "#F2F3F5" : "#0F172A";
+            string unselectedBorder = dark ? "#4E5058" : "#CBD5E1";
+
             foreach (var child in PanelCategoryFilters.Children)
             {
                 if (child is Button b)
@@ -699,29 +715,35 @@ namespace PyCalphadSuite.Desktop.Controls
                     bool active = string.Equals(b.Tag as string, _activeCategory, StringComparison.OrdinalIgnoreCase);
                     b.FontWeight = active ? FontWeights.Bold : FontWeights.Normal;
                     b.BorderBrush = active
-                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#60A5FA" : "#2563EB"))
-                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#4E5058" : "#CBD5E1"));
+                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#60A5FA" : "#2563EB"))
+                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(unselectedBorder));
                     b.Background = active
-                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#3F4248" : "#DBEAFE"))
-                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#2B2D31" : "#FFFFFF"));
+                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#3F4248" : "#DBEAFE"))
+                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(unselectedBg));
                     b.Foreground = active
-                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#FFFFFF" : "#1D4ED8"))
-                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#F2F3F5" : "#1E293B"));
+                        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#FFFFFF" : "#1D4ED8"))
+                        : new SolidColorBrush((Color)ColorConverter.ConvertFromString(unselectedFg));
                     b.BorderThickness = new Thickness(active ? 1.5 : 1.0);
                 }
             }
         }
 
-        private void SyncQuickPresetButtons()
+        private void SyncQuickPresetButtons(bool? isDarkOverride = null, bool? isGreyOverride = null)
         {
             if (PanelQuickPresets == null) return;
+            bool dark = isDarkOverride ?? _isDark;
+            bool grey = isGreyOverride ?? false;
+            string btnBg = dark ? "#2B2D31" : (grey ? "#E2E8F0" : "#FFFFFF");
+            string btnFg = dark ? "#F2F3F5" : "#0F172A";
+            string btnBorder = dark ? "#4E5058" : "#CBD5E1";
+
             foreach (var child in PanelQuickPresets.Children)
             {
                 if (child is Button b)
                 {
-                    b.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#2B2D31" : "#FFFFFF"));
-                    b.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#F2F3F5" : "#1E293B"));
-                    b.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_isDark ? "#4E5058" : "#CBD5E1"));
+                    b.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(btnBg));
+                    b.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(btnFg));
+                    b.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(btnBorder));
                     b.BorderThickness = new Thickness(1.0);
                     b.FontWeight = FontWeights.SemiBold;
                 }

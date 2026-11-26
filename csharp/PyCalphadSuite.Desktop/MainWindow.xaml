@@ -266,7 +266,7 @@
                                 </DockPanel>
                                 <Slider x:Name="SliderGrain" Minimum="1" Maximum="200" Value="25" ValueChanged="SliderGrain_ValueChanged" Height="24" Margin="0,2,0,8"/>
 
-                                <Button x:Name="BtnExperimentalOptions" Content="Experimental Options (Hatch &amp; Grain)..." Click="MenuExperimentalOptions_Click"
+                                <Button x:Name="BtnExperimentalOptions" Content="⚙ Experimental Options (Hatch &amp; Grain)..." Click="MenuExperimentalOptions_Click"
                                         Margin="0,0,0,10" Padding="8,5" Background="#FFFFFF" Foreground="#0F172A" FontWeight="SemiBold" FontSize="11" BorderBrush="#CBD5E1" BorderThickness="1"
                                         ToolTip="Configure Hatch Pitch, Grain Size, Laser AM parameters, and thermomechanical history for all alloy calculations (Ctrl+Shift+E)"/>
 
@@ -1088,6 +1088,88 @@
                         <!-- Tab 21: Interactive 3D Crystal Structures & Atomic Configurations -->
                         <TabItem Header="3D Crystal Viewer">
                             <ctrl:CrystalStructureControl x:Name="CrystalStructureView"/>
+                        </TabItem>
+                        <!-- Tab: DFT & d-Electron Theory (PHACOMP) -->
+                        <TabItem Header="DFT &amp; d-Electron Theory (PHACOMP)">
+                            <Grid Margin="12" Background="#FFFFFF">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Top Overview Cards -->
+                                <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,12">
+                                    <!-- Card 1: Bond Order & d-Orbital Energy -->
+                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Electronic Orbital State" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            <TextBlock x:Name="TxtDftBoMd" Text="Bo = --  |  Md = -- eV" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
+                                            <TextBlock x:Name="TxtDftRadius" Text="Mean Metallic Radius: -- pm" FontSize="11" Foreground="#475569"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Card 2: Sigma-Phase Instability Ratio -->
+                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
+                                        <StackPanel>
+                                            <TextBlock Text="σ-Phase Instability (PHACOMP)" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            <TextBlock x:Name="TxtDftSigmaRatio" Text="η_σ = -- (Md / Md_crit)" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
+                                            <TextBlock x:Name="TxtDftSigmaRisk" Text="Risk: --" FontSize="11" FontWeight="SemiBold" Foreground="#059669"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Card 3: SFE & Deformation Mode -->
+                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Stacking Fault Energy (SFE)" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            <TextBlock x:Name="TxtDftSfe" Text="-- mJ/m²" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
+                                            <TextBlock x:Name="TxtDftDeformMode" Text="Mode: --" FontSize="11" FontWeight="SemiBold" Foreground="#2563EB" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Card 4: DFT 0 K Ground State -->
+                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
+                                        <StackPanel>
+                                            <TextBlock Text="DFT 0 K Ground State" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            <TextBlock x:Name="TxtDftGroundState" Text="Phase: --" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
+                                            <TextBlock x:Name="TxtDftMatrixPred" Text="Prediction: --" FontSize="11" Foreground="#475569" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </Border>
+                                </UniformGrid>
+
+                                <!-- Bottom Grid: Left = Enthalpies Table, Right = Frank-Kasper Wyckoff Sublattices -->
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.1*"/>
+                                        <ColumnDefinition Width="12"/>
+                                        <ColumnDefinition Width="1.4*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Left: DFT Ground State Enthalpy Table -->
+                                    <GroupBox Grid.Column="0" Header="First-Principles DFT Ground-State Enthalpies (0 K)" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
+                                        <DataGrid x:Name="GridDftEnthalpies" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" GridLinesVisibility="Horizontal">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Phase Allotrope" Binding="{Binding Phase}" Width="140" FontWeight="SemiBold"/>
+                                                <DataGridTextColumn Header="Formation Enthalpy ΔH (kJ/mol)" Binding="{Binding EnthalpyKj}" Width="*"/>
+                                                <DataGridTextColumn Header="Relative Stability" Binding="{Binding StabilityNote}" Width="120"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+
+                                    <!-- Right: Frank-Kasper Sigma-Phase 5-Sublattice Occupancy -->
+                                    <GroupBox Grid.Column="2" Header="Frank-Kasper σ-Phase (tP30) 5-Sublattice Wyckoff Site Occupancy" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
+                                        <DataGrid x:Name="GridDftSublattices" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" GridLinesVisibility="Horizontal">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Wyckoff Site" Binding="{Binding Site}" Width="75" FontWeight="Bold"/>
+                                                <DataGridTextColumn Header="Mult." Binding="{Binding Multiplicity}" Width="45"/>
+                                                <DataGridTextColumn Header="Coord. (CN)" Binding="{Binding Coordination}" Width="75"/>
+                                                <DataGridTextColumn Header="Polyhedral Geometry" Binding="{Binding Geometry}" Width="150"/>
+                                                <DataGridTextColumn Header="Preferred Elements" Binding="{Binding PreferredElements}" Width="110"/>
+                                                <DataGridTextColumn Header="Fe/Cr Partitioning" Binding="{Binding FeCrRatio}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </Grid>
+                            </Grid>
                         </TabItem>
                         </TabControl>
                         </TabItem>

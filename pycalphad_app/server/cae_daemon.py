@@ -812,6 +812,17 @@ class CAEDaemon:
         }
 
         # -------------------------------------------------------------------
+        # 8b. Density Functional Theory (DFT) & Morinaga d-Electron Parameters
+        # -------------------------------------------------------------------
+        dft_res = {}
+        try:
+            from pycalphad_app.core.dft_electronic_engine import DFTElectronicEngine
+            dft_res = DFTElectronicEngine.calculate(at_comp, temp_k=sol_k)
+            emit_log(f"[DFT Engine] Evaluated d-electron ground state: Bo={dft_res.get('bo_avg', 0.0):.3f}, Md={dft_res.get('md_avg', 0.0):.3f} eV, SFE={dft_res.get('sfe_mj_m2', 0.0):.1f} mJ/m² ({dft_res.get('deformation_mode', '')[:4]}).")
+        except Exception as e:
+            emit_log(f"[DFT Engine] Warning: {e}")
+
+        # -------------------------------------------------------------------
         # 9. Piecewise COMSOL / FEA Functions (21 Properties)
         # -------------------------------------------------------------------
         alloy_label = "-".join([f"{el}{wt*100:.0f}" for el, wt in wt_comp.items() if wt > 0.01]) or db_name
@@ -1184,6 +1195,7 @@ class CAEDaemon:
             "crystal_structures": crystal_structures,
             "application_scores": app_scores,
             "processability": processability,
+            "dft_electronic": dft_res,
             "validation_table": val_table,
             "coating": coating_res,
             "piecewise": piecewise_list,

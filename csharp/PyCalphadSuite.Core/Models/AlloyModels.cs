@@ -504,6 +504,84 @@ namespace PyCalphadSuite.Core.Models
         public List<double> Scores { get; set; } = new();
     }
 
+    public class DftSublatticeDto
+    {
+        [JsonPropertyName("site")]
+        public string Site { get; set; } = string.Empty;
+
+        [JsonPropertyName("multiplicity")]
+        public int Multiplicity { get; set; }
+
+        [JsonPropertyName("coordination")]
+        public int Coordination { get; set; }
+
+        [JsonPropertyName("geometry")]
+        public string Geometry { get; set; } = string.Empty;
+
+        [JsonPropertyName("preferred_elements")]
+        public string PreferredElements { get; set; } = string.Empty;
+
+        [JsonPropertyName("fe_cr_ratio")]
+        public string FeCrRatio { get; set; } = string.Empty;
+    }
+
+    public class DftElectronicDto
+    {
+        [JsonPropertyName("bo_avg")]
+        public double BoAvg { get; set; }
+
+        [JsonPropertyName("md_avg")]
+        public double MdAvg { get; set; }
+
+        [JsonPropertyName("md_crit")]
+        public double MdCrit { get; set; }
+
+        [JsonPropertyName("radius_avg_pm")]
+        public double RadiusAvgPm { get; set; }
+
+        [JsonPropertyName("sigma_instability_ratio")]
+        public double SigmaInstabilityRatio { get; set; }
+
+        [JsonPropertyName("sigma_risk")]
+        public string SigmaRisk { get; set; } = string.Empty;
+
+        [JsonPropertyName("sigma_color")]
+        public string SigmaColor { get; set; } = string.Empty;
+
+        [JsonPropertyName("gamma_vector")]
+        public double GammaVector { get; set; }
+
+        [JsonPropertyName("matrix_prediction")]
+        public string MatrixPrediction { get; set; } = string.Empty;
+
+        [JsonPropertyName("sfe_mj_m2")]
+        public double SfeMjM2 { get; set; }
+
+        [JsonPropertyName("deformation_mode")]
+        public string DeformationMode { get; set; } = string.Empty;
+
+        [JsonPropertyName("dft_ground_state")]
+        public string DftGroundState { get; set; } = string.Empty;
+
+        [JsonPropertyName("enthalpy_bcc_kj")]
+        public double EnthalpyBccKj { get; set; }
+
+        [JsonPropertyName("enthalpy_fcc_kj")]
+        public double EnthalpyFccKj { get; set; }
+
+        [JsonPropertyName("enthalpy_hcp_kj")]
+        public double EnthalpyHcpKj { get; set; }
+
+        [JsonPropertyName("enthalpy_sigma_kj")]
+        public double EnthalpySigmaKj { get; set; }
+
+        [JsonPropertyName("sublattices")]
+        public List<DftSublatticeDto> Sublattices { get; set; } = new();
+
+        [JsonPropertyName("citation")]
+        public string Citation { get; set; } = string.Empty;
+    }
+
     public class ApplicationScoreDto
     {
         [JsonPropertyName("rank")]
@@ -763,6 +841,9 @@ namespace PyCalphadSuite.Core.Models
 
         [JsonPropertyName("processability")]
         public ProcessabilityDto? Processability { get; set; }
+
+        [JsonPropertyName("dft_electronic")]
+        public DftElectronicDto? DftElectronic { get; set; }
 
         [JsonPropertyName("application_scores")]
         public List<ApplicationScoreDto> ApplicationScores { get; set; } = new();

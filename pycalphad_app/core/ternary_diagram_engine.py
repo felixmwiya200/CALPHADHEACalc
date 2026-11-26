@@ -656,11 +656,172 @@ class TernaryDiagramEngine:
             "Extensive sigma phase stability spanning from Fe-Cr sigma to Co-Cr sigma across the high-temperature matrix.",
             [{"type": "Class II Invariant", "temp_c": 820.0, "equation": "FCC + BCC <-> Sigma + FCC", "composition": "Co30Cr45Fe25", "desc": "Sigma decomposition in Cantor base"}])
 
+    # =========================================================================
+    # Fe-Cr-Mn Reduced-Activation Fusion & Austenitic Steel Archetype
+    # Reference: Y. Murata, K. Koyama, Y. Matsumoto, M. Morinaga, N. Yukawa,
+    # "Equilibrium Phase Diagram of Fe-Cr-Mn Ternary System",
+    # ISIJ International, Vol. 30 (1990) No. 11, pp. 927-936.
+    # =========================================================================
     @classmethod
     def _compute_fe_cr_mn(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
-        return cls._compute_generic_assessed("Fe-Cr-Mn", "Fe", "Cr", "Mn", diag_type, t_c, is_k,
-            "Austenitic stainless matrix with sigma and Mn-phase equilibria below 800°C (Murata 1990).",
-            [{"type": "Sigma Solvus", "temp_c": 650.0, "equation": "gamma-FCC <-> gamma + Sigma", "composition": "Fe60Cr25Mn15", "desc": "Sigma boundary down to 6% Cr at 650°C"}])
+        el_a, el_b, el_c = "Fe", "Cr", "Mn"
+        invariants = [
+            {"type": "Class II Invariant", "temp_c": 1240.0, "equation": "Liquid + delta-BCC <-> gamma-FCC + Sigma", "composition": "Fe48Cr38Mn14", "desc": "Murata (1990) high-temperature peritectic-eutectic transition"},
+            {"type": "Monovariant Liquidus", "temp_c": 1420.0, "equation": "L + delta-BCC <-> gamma-FCC", "composition": "Fe65Cr18Mn17", "desc": "Continuous peritectic groove spanning Fe-Mn to Fe-Cr"},
+            {"type": "Sigma Solvus Invariant", "temp_c": 650.0, "equation": "gamma-FCC <-> gamma + Sigma", "composition": "Fe68Cr08Mn24", "desc": "Murata 1990 Fig. 7: Sigma boundary plunges to 8 at% Cr at 650°C"},
+            {"type": "Subsolidus Eutectoid", "temp_c": 720.0, "equation": "gamma-FCC <-> alpha-BCC + Sigma + beta-Mn", "composition": "Fe52Cr16Mn32", "desc": "Four-phase equilibrium node connecting gamma, alpha, sigma, and beta-Mn"}
+        ]
+
+        curves = []
+        tie_lines = []
+        tie_triangles = []
+        labels = []
+
+        # Temperature-dependent topology selection based on Murata et al. (1990)
+        # Isothermal sections studied: 923 K (650°C), 1073 K (800°C), 1273 K (1000°C)
+        if t_c <= 750.0:
+            # --- 923 K / 650°C Isothermal Section ---
+            # Ferrite alpha-BCC solvus: low Cr, Mn up to ~11 at%
+            alpha_solvus_knots = [
+                (0.92, 0.08, 0.00),
+                (0.85, 0.07, 0.08),
+                (0.80, 0.06, 0.14),
+                (0.72, 0.05, 0.23),
+            ]
+            xs_a, ys_a = _interpolate_ternary_curve(alpha_solvus_knots, n_pts=40)
+            curves.append({"name": "Ferrite α Boundary (650°C Solvus)", "xs": xs_a, "ys": ys_a, "color": "#059669", "line_style": "Solid", "line_width": 2.2})
+
+            # Austenite gamma-FCC boundary: extends from 12 at% Mn up to ~38 at% Mn, Cr up to ~14 at%
+            gamma_solvus_knots = [
+                (0.84, 0.00, 0.16),
+                (0.74, 0.06, 0.20),
+                (0.66, 0.10, 0.24),
+                (0.58, 0.14, 0.28),
+                (0.48, 0.12, 0.40),
+                (0.38, 0.04, 0.58),
+            ]
+            xs_g, ys_g = _interpolate_ternary_curve(gamma_solvus_knots, n_pts=50)
+            curves.append({"name": "Austenite γ Boundary (FCC Solvus)", "xs": xs_g, "ys": ys_g, "color": "#2563EB", "line_style": "Solid", "line_width": 2.4})
+
+            # Continuous Sigma-phase (tP30) band connecting Fe-Cr sigma and Cr-Mn sigma
+            # Plunges down to ~8 at% Cr at 20-25 at% Mn (Murata 1990 Fig. 7 & 8)
+            sigma_lower_knots = [
+                (0.54, 0.46, 0.00),
+                (0.50, 0.32, 0.18),
+                (0.48, 0.20, 0.32),
+                (0.44, 0.12, 0.44),
+                (0.36, 0.16, 0.48),
+                (0.20, 0.24, 0.56),
+                (0.00, 0.34, 0.66),
+            ]
+            xs_sl, ys_sl = _interpolate_ternary_curve(sigma_lower_knots, n_pts=60)
+            curves.append({"name": "σ Phase Lower Boundary (650°C)", "xs": xs_sl, "ys": ys_sl, "color": "#DC2626", "line_style": "Solid", "line_width": 2.5})
+
+            sigma_upper_knots = [
+                (0.46, 0.54, 0.00),
+                (0.38, 0.48, 0.14),
+                (0.28, 0.46, 0.26),
+                (0.18, 0.44, 0.38),
+                (0.08, 0.42, 0.50),
+                (0.00, 0.40, 0.60),
+            ]
+            xs_su, ys_su = _interpolate_ternary_curve(sigma_upper_knots, n_pts=50)
+            curves.append({"name": "σ Phase Upper Boundary (650°C)", "xs": xs_su, "ys": ys_su, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.0})
+
+            # Three-phase tie-triangle: alpha + gamma + sigma (Murata 1990 Fig. 8)
+            t1_a = (0.78, 0.08, 0.14)   # alpha ferrite apex
+            t1_g = (0.68, 0.10, 0.22)   # gamma austenite apex
+            t1_s = (0.52, 0.28, 0.20)   # sigma apex
+            p1_a = barycentric_to_cartesian(*t1_a)
+            p1_g = barycentric_to_cartesian(*t1_g)
+            p1_s = barycentric_to_cartesian(*t1_s)
+            tie_triangles.append({"v1": p1_a, "v2": p1_g, "v3": p1_s, "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Three-Phase Tie-Triangle (650°C)"})
+
+            # Conjugate tie-lines across gamma + sigma two-phase field
+            gamma_sigma_pairs = [
+                ((0.62, 0.13, 0.25), (0.46, 0.26, 0.28)),
+                ((0.54, 0.13, 0.33), (0.38, 0.26, 0.36)),
+                ((0.44, 0.10, 0.46), (0.28, 0.28, 0.44))
+            ]
+            for idx, (cg, cs) in enumerate(gamma_sigma_pairs, 1):
+                pg = barycentric_to_cartesian(*cg)
+                ps = barycentric_to_cartesian(*cs)
+                tie_lines.append({"xs": [pg[0], ps[0]], "ys": [pg[1], ps[1]], "color": "#94A3B8", "name": f"γ + σ Tie-Line #{idx}"})
+
+            # Phase labels
+            x_g, y_g = barycentric_to_cartesian(0.62, 0.05, 0.33)
+            labels.append({"text": "Austenite γ (FCC)", "x": x_g, "y": y_g, "color": "#1D4ED8", "bold": True})
+            x_a, y_a = barycentric_to_cartesian(0.88, 0.04, 0.08)
+            labels.append({"text": "Ferrite α (BCC)", "x": x_a, "y": y_a, "color": "#059669", "bold": True})
+            x_s, y_s = barycentric_to_cartesian(0.38, 0.34, 0.28)
+            labels.append({"text": "σ Phase (tP30)", "x": x_s, "y": y_s, "color": "#DC2626", "bold": True})
+            x_b, y_b = barycentric_to_cartesian(0.08, 0.06, 0.86)
+            labels.append({"text": "β-Mn", "x": x_b, "y": y_b, "color": "#7C3AED", "bold": True})
+
+            notes_str = "Murata et al. (ISIJ Int. 1990) 923 K (650°C) isothermal section. Demonstrates severe sigma-phase expansion: adding Mn extends sigma stability down to 8 at% Cr, establishing the critical PHACOMP threshold Md_crit = 0.880 eV."
+
+        else:
+            # --- 1073 K / 800°C Isothermal Section & High-Temperature Equilibria ---
+            # Expanded Austenite field; contracted Sigma field (Md_crit = 0.920 eV)
+            gamma_knots_800 = [
+                (0.88, 0.00, 0.12),
+                (0.72, 0.10, 0.18),
+                (0.58, 0.20, 0.22),
+                (0.44, 0.25, 0.31),
+                (0.32, 0.18, 0.50),
+                (0.20, 0.06, 0.74),
+            ]
+            xs_g8, ys_g8 = _interpolate_ternary_curve(gamma_knots_800, n_pts=50)
+            curves.append({"name": "Austenite γ Boundary (800°C Solvus)", "xs": xs_g8, "ys": ys_g8, "color": "#2563EB", "line_style": "Solid", "line_width": 2.4})
+
+            sigma_knots_800 = [
+                (0.50, 0.50, 0.00),
+                (0.42, 0.40, 0.18),
+                (0.32, 0.36, 0.32),
+                (0.18, 0.38, 0.44),
+                (0.00, 0.42, 0.58),
+            ]
+            xs_s8, ys_s8 = _interpolate_ternary_curve(sigma_knots_800, n_pts=50)
+            curves.append({"name": "σ Phase Boundary (800°C Solvus)", "xs": xs_s8, "ys": ys_s8, "color": "#DC2626", "line_style": "Solid", "line_width": 2.5})
+
+            # Three-phase tie-triangle at 800°C: alpha + gamma + sigma
+            t2_a = (0.72, 0.18, 0.10)
+            t2_g = (0.60, 0.18, 0.22)
+            t2_s = (0.45, 0.38, 0.17)
+            p2_a = barycentric_to_cartesian(*t2_a)
+            p2_g = barycentric_to_cartesian(*t2_g)
+            p2_s = barycentric_to_cartesian(*t2_s)
+            tie_triangles.append({"v1": p2_a, "v2": p2_g, "v3": p2_s, "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Tie-Triangle (800°C)"})
+
+            # Monovariant peritectic groove at high T (L + delta <-> gamma)
+            liq_knots = [
+                (0.88, 0.00, 0.12),
+                (0.72, 0.14, 0.14),
+                (0.54, 0.28, 0.18),
+                (0.35, 0.42, 0.23),
+                (0.10, 0.60, 0.30),
+            ]
+            xs_lq, ys_lq = _interpolate_ternary_curve(liq_knots, n_pts=50)
+            curves.append({"name": "Monovariant Peritectic Line (L + δ ↔ γ)", "xs": xs_lq, "ys": ys_lq, "color": "#0F172A", "line_style": "Dashed", "line_width": 2.0})
+
+            # Phase labels
+            x_g, y_g = barycentric_to_cartesian(0.55, 0.12, 0.33)
+            labels.append({"text": "Austenite γ (FCC)", "x": x_g, "y": y_g, "color": "#1D4ED8", "bold": True})
+            x_a, y_a = barycentric_to_cartesian(0.78, 0.12, 0.10)
+            labels.append({"text": "Ferrite α/δ (BCC)", "x": x_a, "y": y_a, "color": "#059669", "bold": True})
+            x_s, y_s = barycentric_to_cartesian(0.32, 0.44, 0.24)
+            labels.append({"text": "σ Phase", "x": x_s, "y": y_s, "color": "#DC2626", "bold": True})
+
+            notes_str = "Murata et al. (ISIJ Int. 1990) 1073 K (800°C) section. Displays expanded austenite field and sigma retreat toward higher Cr contents, shifting critical instability limit to Md_crit = 0.920 eV."
+
+        return cls._build_ternary_payload(
+            system="Fe-Cr-Mn",
+            el_a=el_a, el_b=el_b, el_c=el_c,
+            diag_type=diag_type, temp_c=t_c, is_k=is_k,
+            curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
+            labels=labels, invariants=invariants,
+            notes=notes_str
+        )
 
     @classmethod
     def _compute_mo_ta_w(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
