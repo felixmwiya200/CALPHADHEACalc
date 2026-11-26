@@ -90,7 +90,7 @@
                     <MenuItem x:Name="MenuTempC" Header="Celsius (°C)" IsCheckable="True" Click="MenuTempC_Click"/>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="Experimental Options (Hatch Pitch &amp; Grain Size)..." Click="MenuExperimentalOptions_Click" InputGestureText="Ctrl+Shift+E"/>
+                <MenuItem Header="Experimental Options..." Click="MenuExperimentalOptions_Click" InputGestureText="Ctrl+Shift+E"/>
                 <Separator/>
                 <MenuItem x:Name="MenuVerbose" Header="Run in verbose mode" IsCheckable="True" Click="MenuVerbose_Click"/>
                 <MenuItem x:Name="MenuRecordSession" Header="Record session" IsCheckable="True" Click="MenuRecordSession_Click"/>
@@ -266,7 +266,7 @@
                                 </DockPanel>
                                 <Slider x:Name="SliderGrain" Minimum="1" Maximum="200" Value="25" ValueChanged="SliderGrain_ValueChanged" Height="24" Margin="0,2,0,10"/>
 
-                                <Button x:Name="BtnExperimentalOptions" Content="⚙  Experimental Options (Hatch &amp; Grain)..." Click="MenuExperimentalOptions_Click"
+                                <Button x:Name="BtnExperimentalOptions" Content="Experimental Options" Click="MenuExperimentalOptions_Click"
                                         Margin="0,4,0,12" Padding="12,7" FontWeight="SemiBold" FontSize="11.5" Cursor="Hand"
                                         ToolTip="Configure Hatch Pitch, Grain Size, Laser AM parameters, and thermomechanical history for all alloy calculations (Ctrl+Shift+E)">
                                     <Button.Resources>
