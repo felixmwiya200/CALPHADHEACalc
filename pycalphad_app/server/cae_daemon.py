@@ -304,7 +304,43 @@ class CAEDaemon:
             or ("B" in wt_comp and "Si" in wt_comp and wt_comp.get("Ni", 0) > 0.5)
         )
 
+        # -------------------------------------------------------------------
+        # First-Principles DFT & Electronic Structure Input Anchor
+        # -------------------------------------------------------------------
+        dft_input_req = req.get("dft_input") or {}
+        dft_enabled = bool(dft_input_req.get("enabled", True))
+        dft_override = bool(dft_input_req.get("custom_override", False))
+
+        dft_res: Dict[str, Any] = {}
+        try:
+            from pycalphad_app.core.dft_electronic_engine import DFTElectronicEngine
+            dft_base = DFTElectronicEngine.calculate(at_comp, temp_k=1073.15)
+            dft_res = dict(dft_base)
+
+            if dft_override:
+                for k in ["enthalpy_bcc_kj", "enthalpy_fcc_kj", "enthalpy_hcp_kj", "enthalpy_sigma_kj", "bo_avg", "md_avg", "sfe_mj_m2", "ground_state"]:
+                    if k in dft_input_req and dft_input_req[k] is not None:
+                        dft_res[k] = dft_input_req[k]
+                dft_res["citation"] = str(dft_input_req.get("source", "Custom DFT Input / VASP"))
+
+            dft_res["enabled"] = dft_enabled
+            gs_name = dft_res.get("ground_state") or dft_res.get("dft_ground_state", "FCC_A1")
+            bo_val = float(dft_res.get("bo_avg", 0.857))
+            md_val = float(dft_res.get("md_avg", 0.858))
+            sfe_val = float(dft_res.get("sfe_mj_m2", 28.0))
+            h_ref = float(dft_res.get("enthalpy_bcc_kj" if "BCC" in gs_name else "enthalpy_fcc_kj", -8.5))
+
+            if dft_enabled:
+                emit_log(f"[CALPHAD Core] Initializing Gibbs minimization with First-Principles DFT inputs: Ground State={gs_name}, ΔH_0={h_ref:.2f} kJ/mol, Bo={bo_val:.3f}, Md={md_val:.3f} eV, SFE={sfe_val:.1f} mJ/m².")
+        except Exception as e:
+            emit_log(f"[CALPHAD Core] Note: DFT input processing: {e}")
+
         engine = MaterialDatabaseSelector.get_engine(db_name, wt_comp, grain_size, process_type)
+        if hasattr(engine, "set_dft_input"):
+            engine.set_dft_input(dft_res)
+        elif hasattr(engine, "dft_input"):
+            engine.dft_input = dft_res
+
         trans_res = engine.compute_phase_transformations()
         thermo_res = engine.compute_thermodynamics()
 
@@ -828,15 +864,10 @@ class CAEDaemon:
         }
 
         # -------------------------------------------------------------------
-        # 8b. Density Functional Theory (DFT) & Morinaga d-Electron Parameters
+        # 8b. First-Principles DFT & Electronic Structure Coupling Verification
         # -------------------------------------------------------------------
-        dft_res = {}
-        try:
-            from pycalphad_app.core.dft_electronic_engine import DFTElectronicEngine
-            dft_res = DFTElectronicEngine.calculate(at_comp, temp_k=sol_k)
-            emit_log(f"[DFT Engine] Evaluated d-electron ground state: Bo={dft_res.get('bo_avg', 0.0):.3f}, Md={dft_res.get('md_avg', 0.0):.3f} eV, SFE={dft_res.get('sfe_mj_m2', 0.0):.1f} mJ/m² ({dft_res.get('deformation_mode', '')[:4]}).")
-        except Exception as e:
-            emit_log(f"[DFT Engine] Warning: {e}")
+        if dft_res:
+            emit_log(f"[DFT Core] First-Principles DFT inputs coupled: Bo={dft_res.get('bo_avg', 0.0):.3f}, Md={dft_res.get('md_avg', 0.0):.3f} eV, SFE={dft_res.get('sfe_mj_m2', 0.0):.1f} mJ/m² ({dft_res.get('deformation_mode', '')[:4]}).")
 
         # -------------------------------------------------------------------
         # 9. Piecewise COMSOL / FEA Functions (21 Properties)

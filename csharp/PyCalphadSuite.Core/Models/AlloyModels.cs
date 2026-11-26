@@ -226,6 +226,9 @@ namespace PyCalphadSuite.Core.Models
 
         [JsonPropertyName("t_step")]
         public double TStep { get; set; } = 25.0;
+
+        [JsonPropertyName("dft_input")]
+        public DftInputDto DftInput { get; set; } = new();
     }
 
     public class PhaseCurvesDto
@@ -523,6 +526,45 @@ namespace PyCalphadSuite.Core.Models
 
         [JsonPropertyName("fe_cr_ratio")]
         public string FeCrRatio { get; set; } = string.Empty;
+    }
+
+    public class DftInputDto
+    {
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; } = true;
+
+        [JsonPropertyName("enthalpy_bcc_kj")]
+        public double EnthalpyBccKj { get; set; } = -8.50;
+
+        [JsonPropertyName("enthalpy_fcc_kj")]
+        public double EnthalpyFccKj { get; set; } = -8.28;
+
+        [JsonPropertyName("enthalpy_hcp_kj")]
+        public double EnthalpyHcpKj { get; set; } = -8.18;
+
+        [JsonPropertyName("enthalpy_sigma_kj")]
+        public double EnthalpySigmaKj { get; set; } = 7.20;
+
+        [JsonPropertyName("bo_avg")]
+        public double BoAvg { get; set; } = 0.857;
+
+        [JsonPropertyName("md_avg")]
+        public double MdAvg { get; set; } = 0.858;
+
+        [JsonPropertyName("radius_avg_pm")]
+        public double RadiusAvgPm { get; set; } = 126.0;
+
+        [JsonPropertyName("sfe_mj_m2")]
+        public double SfeMjM2 { get; set; } = 28.0;
+
+        [JsonPropertyName("ground_state")]
+        public string GroundState { get; set; } = "BCC_A2";
+
+        [JsonPropertyName("source")]
+        public string Source { get; set; } = "First-Principles DFT (0 K) / Morinaga Orbital Theory";
+
+        [JsonPropertyName("custom_override")]
+        public bool CustomOverride { get; set; } = false;
     }
 
     public class DftElectronicDto

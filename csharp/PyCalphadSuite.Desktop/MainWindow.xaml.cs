@@ -66,6 +66,7 @@ namespace PyCalphadSuite.Desktop
         private bool _elementsLoaded = false;
         private readonly string? _startupCompositionPath;
         private readonly ExperimentalProcessOptions _expOptions = new();
+        private readonly DftInputDto _dftInput = new();
 
         private readonly Dictionary<string, double> _atomicMasses = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -122,6 +123,7 @@ namespace PyCalphadSuite.Desktop
             {
                 _ = LoadBinarySystemsAsync();
                 _ = LoadTernarySystemsAsync();
+                UpdateLiveDftInputsFromComposition();
             };
 
             WireChildControlEvents();
@@ -221,6 +223,7 @@ namespace PyCalphadSuite.Desktop
                 InitializeRheaTab();
                 _ = LoadBinarySystemsAsync();
                 _ = LoadTernarySystemsAsync();
+                UpdateLiveDftInputsFromComposition();
 
                 if (!string.IsNullOrEmpty(_startupCompositionPath) && File.Exists(_startupCompositionPath))
                 {
@@ -1072,6 +1075,148 @@ namespace PyCalphadSuite.Desktop
             }
         }
 
+        private void ChkAnchorDft_Changed(object sender, RoutedEventArgs e)
+        {
+            _dftInput.Enabled = ChkAnchorDft?.IsChecked == true;
+        }
+
+        private void BtnConfigureDft_Click(object sender, RoutedEventArgs e)
+        {
+            var comp = _compositionRows
+                .Where(r => !string.IsNullOrWhiteSpace(r.Element) && r.Fraction > 0)
+                .GroupBy(r => r.Element.Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.Sum(r => r.Fraction), StringComparer.OrdinalIgnoreCase);
+
+            var dlg = new Dialogs.DftInputDialog(_dftInput, comp)
+            {
+                Owner = this
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                _dftInput.Enabled = dlg.DftInput.Enabled;
+                _dftInput.EnthalpyBccKj = dlg.DftInput.EnthalpyBccKj;
+                _dftInput.EnthalpyFccKj = dlg.DftInput.EnthalpyFccKj;
+                _dftInput.EnthalpyHcpKj = dlg.DftInput.EnthalpyHcpKj;
+                _dftInput.EnthalpySigmaKj = dlg.DftInput.EnthalpySigmaKj;
+                _dftInput.BoAvg = dlg.DftInput.BoAvg;
+                _dftInput.MdAvg = dlg.DftInput.MdAvg;
+                _dftInput.RadiusAvgPm = dlg.DftInput.RadiusAvgPm;
+                _dftInput.SfeMjM2 = dlg.DftInput.SfeMjM2;
+                _dftInput.GroundState = dlg.DftInput.GroundState;
+                _dftInput.Source = dlg.DftInput.Source;
+                _dftInput.CustomOverride = dlg.DftInput.CustomOverride;
+
+                if (ChkAnchorDft != null) ChkAnchorDft.IsChecked = _dftInput.Enabled;
+                if (TxtDftFormationH != null)
+                {
+                    double primaryH = _dftInput.GroundState == "BCC_A2" ? _dftInput.EnthalpyBccKj : _dftInput.EnthalpyFccKj;
+                    TxtDftFormationH.Text = $"{primaryH:F2} kJ/mol";
+                }
+                if (TxtDftOrbitalMd != null)
+                {
+                    TxtDftOrbitalMd.Text = $"{_dftInput.MdAvg:F3} eV";
+                }
+                if (TxtDftInputSummary != null)
+                {
+                    TxtDftInputSummary.Text = $"DFT Input: Ground State {_dftInput.GroundState} | Bo={_dftInput.BoAvg:F3} | SFE={_dftInput.SfeMjM2:F0} mJ/m²";
+                }
+
+                StatusLabel.Text = $"Configured First-Principles DFT inputs: Ground State={_dftInput.GroundState}, Bo={_dftInput.BoAvg:F3}, Md={_dftInput.MdAvg:F3} eV.";
+                AppendLog($"[DFT Inputs] Updated calculation anchor: Ground State {_dftInput.GroundState}, Bo={_dftInput.BoAvg:F3}, Md={_dftInput.MdAvg:F3} eV, SFE={_dftInput.SfeMjM2:F1} mJ/m².");
+            }
+        }
+
+        private void UpdateLiveDftInputsFromComposition()
+        {
+            if (_dftInput.CustomOverride) return;
+
+            var comp = _compositionRows
+                .Where(r => !string.IsNullOrWhiteSpace(r.Element) && r.Fraction > 0)
+                .GroupBy(r => r.Element.Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.Sum(r => r.Fraction), StringComparer.OrdinalIgnoreCase);
+
+            if (comp.Count == 0) return;
+
+            var refTable = new Dictionary<string, (double Md, double Bo, double Radius, double H_Bcc, double H_Fcc, double H_Hcp)>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Fe"] = (0.858, 0.857, 126.0, -8.31, -8.28, -8.18),
+                ["Cr"] = (1.142, 1.278, 128.0, -9.51, -9.05, -9.10),
+                ["Mn"] = (0.957, 1.001, 127.0, -8.90, -8.96, -8.88),
+                ["Ni"] = (0.717, 0.531, 124.0, -4.38, -4.45, -4.41),
+                ["Co"] = (0.777, 0.697, 125.0, -7.03, -7.09, -7.11),
+                ["Mo"] = (1.550, 1.626, 139.0, -10.94, -10.52, -10.60),
+                ["W"]  = (1.655, 1.670, 139.0, -12.98, -12.42, -12.50),
+                ["V"]  = (1.340, 1.350, 134.0, -9.00,  -8.70,  -8.75),
+                ["Nb"] = (2.110, 1.700, 146.0, -10.22, -9.85,  -9.92),
+                ["Ta"] = (2.220, 1.730, 146.0, -11.85, -11.45, -11.52),
+                ["Ti"] = (2.271, 1.098, 147.0, -7.69,  -7.63,  -7.75),
+                ["Al"] = (1.900, 0.520, 143.0, -3.25,  -3.36,  -3.34),
+                ["Cu"] = (0.615, 0.350, 128.0, -3.42,  -3.49,  -3.47)
+            };
+
+            double total = comp.Values.Sum();
+            if (total <= 0) total = 1.0;
+
+            double boAvg = 0.0, mdAvg = 0.0, radAvg = 0.0;
+            double hBcc = 0.0, hFcc = 0.0, hHcp = 0.0;
+
+            foreach (var kvp in comp)
+            {
+                double frac = kvp.Value / total;
+                if (refTable.TryGetValue(kvp.Key, out var p))
+                {
+                    boAvg += frac * p.Bo;
+                    mdAvg += frac * p.Md;
+                    radAvg += frac * p.Radius;
+                    hBcc += frac * p.H_Bcc;
+                    hFcc += frac * p.H_Fcc;
+                    hHcp += frac * p.H_Hcp;
+                }
+                else
+                {
+                    boAvg += frac * 1.0;
+                    mdAvg += frac * 1.0;
+                    radAvg += frac * 130.0;
+                    hBcc += frac * -7.0;
+                    hFcc += frac * -7.0;
+                    hHcp += frac * -7.0;
+                }
+            }
+
+            double sfe = Math.Max(12.0, Math.Min(95.0, 22.0 + 35.0 * (mdAvg - 0.70)));
+            double hSigma = 7.20 + 15.0 * Math.Max(0.0, mdAvg - 0.90);
+
+            _dftInput.BoAvg = boAvg;
+            _dftInput.MdAvg = mdAvg;
+            _dftInput.RadiusAvgPm = radAvg;
+            _dftInput.EnthalpyBccKj = hBcc;
+            _dftInput.EnthalpyFccKj = hFcc;
+            _dftInput.EnthalpyHcpKj = hHcp;
+            _dftInput.EnthalpySigmaKj = hSigma;
+            _dftInput.SfeMjM2 = sfe;
+
+            string gs = (hBcc < hFcc - 0.15) ? "BCC_A2" : (hHcp < hFcc - 0.15 && hHcp < hBcc - 0.15 ? "HCP_A3" : "FCC_A1");
+            _dftInput.GroundState = gs;
+
+            Dispatcher.Invoke(() =>
+            {
+                if (TxtDftFormationH != null)
+                {
+                    double primaryH = gs == "BCC_A2" ? hBcc : hFcc;
+                    TxtDftFormationH.Text = $"{primaryH:F2} kJ/mol";
+                }
+                if (TxtDftOrbitalMd != null)
+                {
+                    TxtDftOrbitalMd.Text = $"{mdAvg:F3} eV";
+                }
+                if (TxtDftInputSummary != null)
+                {
+                    TxtDftInputSummary.Text = $"DFT Input: Ground State {gs} | Bo={boAvg:F3} | SFE={sfe:F0} mJ/m²";
+                }
+            });
+        }
+
         #endregion
 
         #region Primary Solver Execution, Stepping, & Graceful Halt
@@ -1131,7 +1276,22 @@ namespace PyCalphadSuite.Desktop
                     CalcMode = calcMode,
                     TStart = tStart > 0 ? tStart : 300.0,
                     TStop = tStop > tStart ? tStop : (tStart > 0 ? tStart + 1500.0 : 1800.0),
-                    TStep = Math.Max(0.00001, tStep > 0 ? tStep : 25.0)
+                    TStep = Math.Max(0.00001, tStep > 0 ? tStep : 25.0),
+                    DftInput = new DftInputDto
+                    {
+                        Enabled = ChkAnchorDft?.IsChecked == true,
+                        EnthalpyBccKj = _dftInput.EnthalpyBccKj,
+                        EnthalpyFccKj = _dftInput.EnthalpyFccKj,
+                        EnthalpyHcpKj = _dftInput.EnthalpyHcpKj,
+                        EnthalpySigmaKj = _dftInput.EnthalpySigmaKj,
+                        BoAvg = _dftInput.BoAvg,
+                        MdAvg = _dftInput.MdAvg,
+                        RadiusAvgPm = _dftInput.RadiusAvgPm,
+                        SfeMjM2 = _dftInput.SfeMjM2,
+                        GroundState = _dftInput.GroundState,
+                        Source = _dftInput.Source,
+                        CustomOverride = _dftInput.CustomOverride
+                    }
                 };
 
                 AppendLog($"[Solver] Starting {calcMode.ToUpperInvariant()} CALPHAD evaluation for {dbName} ({req.TStart:F1}–{req.TStop:F1} K)...");
@@ -1811,12 +1971,21 @@ namespace PyCalphadSuite.Desktop
                     if (CmbBinarySystem != null)
                     {
                         var cur = CmbBinarySystem.SelectedItem as string;
-                        CmbBinarySystem.ItemsSource = systems;
-                        if (!string.IsNullOrEmpty(cur) && systems.Contains(cur))
+                        var cleanSystems = (systems ?? new List<string>())
+                            .Select(s =>
+                            {
+                                int paren = s.IndexOf('(');
+                                return (paren > 0 ? s.Substring(0, paren) : s).Trim();
+                            })
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Distinct()
+                            .ToList();
+                        CmbBinarySystem.ItemsSource = cleanSystems;
+                        if (!string.IsNullOrEmpty(cur) && cleanSystems.Contains(cur))
                         {
                             CmbBinarySystem.SelectedItem = cur;
                         }
-                        else if (systems.Count > 0)
+                        else if (cleanSystems.Count > 0)
                         {
                             CmbBinarySystem.SelectedIndex = 0;
                         }
@@ -2055,7 +2224,13 @@ namespace PyCalphadSuite.Desktop
                     {
                         var cur = CmbTernarySystem.SelectedItem as string;
                         var displayItems = _availableTernarySystems
-                            .Select(s => !string.IsNullOrEmpty(s.Id) ? s.Id : (s.Elements != null && s.Elements.Count > 0 ? string.Join("-", s.Elements) : s.Name))
+                            .Select(s =>
+                            {
+                                string raw = !string.IsNullOrEmpty(s.Id) ? s.Id : (s.Elements != null && s.Elements.Count > 0 ? string.Join("-", s.Elements) : s.Name);
+                                int paren = raw.IndexOf('(');
+                                return (paren > 0 ? raw.Substring(0, paren) : raw).Trim();
+                            })
+                            .Where(name => !string.IsNullOrWhiteSpace(name))
                             .Distinct()
                             .ToList();
                         CmbTernarySystem.ItemsSource = displayItems;
@@ -4010,34 +4185,37 @@ namespace PyCalphadSuite.Desktop
                 GridApplicationScores.ItemsSource = res.ApplicationScores;
             }
 
-            // Populate DFT & d-Electron Theory (PHACOMP) Tab
+            // Update First-Principles DFT Calculation Input and Summary Status
             if (res.DftElectronic != null)
             {
                 var dft = res.DftElectronic;
-                TxtDftBoMd.Text = $"Bo = {dft.BoAvg:F3}  |  Md = {dft.MdAvg:F3} eV";
-                TxtDftRadius.Text = $"Mean Metallic Radius: {dft.RadiusAvgPm:F1} pm";
-                TxtDftSigmaRatio.Text = $"η_σ = {dft.SigmaInstabilityRatio:F3} (Md_crit = {dft.MdCrit:F3} eV)";
-                TxtDftSigmaRisk.Text = $"Risk: {dft.SigmaRisk}";
-                try
+                if (!_dftInput.CustomOverride)
                 {
-                    TxtDftSigmaRisk.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(string.IsNullOrEmpty(dft.SigmaColor) ? "#059669" : dft.SigmaColor));
+                    _dftInput.EnthalpyBccKj = dft.EnthalpyBccKj;
+                    _dftInput.EnthalpyFccKj = dft.EnthalpyFccKj;
+                    _dftInput.EnthalpyHcpKj = dft.EnthalpyHcpKj;
+                    _dftInput.EnthalpySigmaKj = dft.EnthalpySigmaKj;
+                    _dftInput.BoAvg = dft.BoAvg;
+                    _dftInput.MdAvg = dft.MdAvg;
+                    _dftInput.RadiusAvgPm = dft.RadiusAvgPm;
+                    _dftInput.SfeMjM2 = dft.SfeMjM2;
+                    _dftInput.GroundState = dft.DftGroundState;
+                    _dftInput.Source = dft.Citation;
                 }
-                catch { }
 
-                TxtDftSfe.Text = $"{dft.SfeMjM2:F1} mJ/m²";
-                TxtDftDeformMode.Text = $"Mode: {dft.DeformationMode}";
-                TxtDftGroundState.Text = $"Phase: {dft.DftGroundState}";
-                TxtDftMatrixPred.Text = $"Prediction: {dft.MatrixPrediction}";
-
-                var enthList = new List<object>
+                if (TxtDftFormationH != null)
                 {
-                    new { Phase = "BCC_A2 (Ferrite)", EnthalpyKj = $"{dft.EnthalpyBccKj:F2}", StabilityNote = dft.DftGroundState == "BCC_A2" ? "Ground State (0 K)" : "Excited State" },
-                    new { Phase = "FCC_A1 (Austenite)", EnthalpyKj = $"{dft.EnthalpyFccKj:F2}", StabilityNote = dft.DftGroundState == "FCC_A1" ? "Ground State (0 K)" : "Excited State" },
-                    new { Phase = "HCP_A3 (ε-Phase)", EnthalpyKj = $"{dft.EnthalpyHcpKj:F2}", StabilityNote = dft.DftGroundState == "HCP_A3" ? "Ground State (0 K)" : "Excited State" },
-                    new { Phase = "Sigma (tP30)", EnthalpyKj = $"{dft.EnthalpySigmaKj:F2}", StabilityNote = dft.DftGroundState.Contains("Sigma") ? "Ground State (0 K)" : (dft.SigmaInstabilityRatio >= 0.98 ? "Metastable / Susceptible" : "Thermodynamically Unfavourable") }
-                };
-                GridDftEnthalpies.ItemsSource = enthList;
-                GridDftSublattices.ItemsSource = dft.Sublattices;
+                    double primaryH = dft.DftGroundState == "BCC_A2" ? dft.EnthalpyBccKj : dft.EnthalpyFccKj;
+                    TxtDftFormationH.Text = $"{primaryH:F2} kJ/mol";
+                }
+                if (TxtDftOrbitalMd != null)
+                {
+                    TxtDftOrbitalMd.Text = $"{dft.MdAvg:F3} eV";
+                }
+                if (TxtDftInputSummary != null)
+                {
+                    TxtDftInputSummary.Text = $"DFT Input: Ground State {dft.DftGroundState} | Bo={dft.BoAvg:F3} | SFE={dft.SfeMjM2:F0} mJ/m²";
+                }
 
                 LblQuickPhase.Text = $"Phase: {phase}  |  DFT: Bo={dft.BoAvg:F3}, Md={dft.MdAvg:F3} eV, SFE={dft.SfeMjM2:F0} mJ/m²";
             }

@@ -128,6 +128,11 @@ class BaseAlloyEngine(ABC):
         self.comp_at = self._convert_to_atomic(self.comp_wt)
         self.base_element = self._resolve_base_element()
         self.cooling_rate_k_s = self.COOLING_RATES.get(process_type, 2.5)
+        self.dft_input: Optional[Dict[str, Any]] = None
+
+    def set_dft_input(self, dft_data: Optional[Dict[str, Any]]) -> None:
+        """Sets first-principles DFT input data to anchor CALPHAD Gibbs energy calculations."""
+        self.dft_input = dft_data
 
     def _normalize(self, comp: Dict[str, float]) -> Dict[str, float]:
         """Normalizes weight composition such that sum(w_i) == 1.0."""

@@ -302,6 +302,31 @@
                                     </StackPanel>
                                 </Grid>
 
+                                <!-- First-Principles DFT Calculation Input Section -->
+                                <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,6" Margin="0,2,0,8">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,4">
+                                            <CheckBox x:Name="ChkAnchorDft" Content="Anchor with DFT Input" IsChecked="True" FontWeight="SemiBold" FontSize="10.5" Foreground="#0F172A" VerticalAlignment="Center" Checked="ChkAnchorDft_Changed" Unchecked="ChkAnchorDft_Changed" ToolTip="Anchor CALPHAD Gibbs energy minimization and phase stabilities with First-Principles DFT ground-state formation enthalpies and d-electron parameters"/>
+                                            <Button x:Name="BtnConfigureDft" Content="Configure DFT..." DockPanel.Dock="Right" Padding="6,1" FontSize="10" FontWeight="SemiBold" Background="#FFFFFF" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Click="BtnConfigureDft_Click" ToolTip="View, calibrate, and override First-Principles DFT ground-state formation enthalpies and d-orbital parameters"/>
+                                        </DockPanel>
+                                        <Grid Margin="0,2,0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,3,0">
+                                                <TextBlock Text="DFT Ground State ΔH:" FontSize="9.5" Foreground="#64748B"/>
+                                                <TextBox x:Name="TxtDftFormationH" Text="-8.50 kJ/mol" FontSize="10.5" Padding="3,2" Background="#FFFFFF" Foreground="#0F172A" BorderBrush="#CBD5E1" ToolTip="DFT 0 K Ground-State Formation Enthalpy input for CALPHAD reference"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="3,0,0,0">
+                                                <TextBlock Text="d-Orbital Energy Md:" FontSize="9.5" Foreground="#64748B"/>
+                                                <TextBox x:Name="TxtDftOrbitalMd" Text="0.880 eV" FontSize="10.5" Padding="3,2" Background="#FFFFFF" Foreground="#0F172A" BorderBrush="#CBD5E1" ToolTip="Morinaga d-orbital energy level Md input for sigma-phase instability evaluation"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock x:Name="TxtDftInputSummary" Text="DFT Input: Ground State BCC_A2 | Bo=0.857 | SFE=28 mJ/m²" FontSize="9.5" Foreground="#334155" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </Border>
+
                                 <Button x:Name="BtnCalculate" Content="Calculate Properties" Click="BtnCalculate_Click" Height="36" Background="#FFFFFF" Foreground="#000000" FontWeight="Bold" FontSize="13" BorderBrush="#CBD5E1" BorderThickness="1"/>
 
                                 <UniformGrid Columns="3" Margin="0,6,0,0">
@@ -1094,88 +1119,6 @@
                         <!-- Tab 21: Interactive 3D Crystal Structures & Atomic Configurations -->
                         <TabItem Header="3D Crystal Viewer">
                             <ctrl:CrystalStructureControl x:Name="CrystalStructureView"/>
-                        </TabItem>
-                        <!-- Tab: DFT & d-Electron Theory (PHACOMP) -->
-                        <TabItem Header="DFT &amp; d-Electron Theory (PHACOMP)">
-                            <Grid Margin="12" Background="#FFFFFF">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Top Overview Cards -->
-                                <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,12">
-                                    <!-- Card 1: Bond Order & d-Orbital Energy -->
-                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Electronic Orbital State" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
-                                            <TextBlock x:Name="TxtDftBoMd" Text="Bo = --  |  Md = -- eV" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
-                                            <TextBlock x:Name="TxtDftRadius" Text="Mean Metallic Radius: -- pm" FontSize="11" Foreground="#475569"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Card 2: Sigma-Phase Instability Ratio -->
-                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
-                                        <StackPanel>
-                                            <TextBlock Text="σ-Phase Instability (PHACOMP)" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
-                                            <TextBlock x:Name="TxtDftSigmaRatio" Text="η_σ = -- (Md / Md_crit)" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
-                                            <TextBlock x:Name="TxtDftSigmaRisk" Text="Risk: --" FontSize="11" FontWeight="SemiBold" Foreground="#059669"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Card 3: SFE & Deformation Mode -->
-                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Stacking Fault Energy (SFE)" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
-                                            <TextBlock x:Name="TxtDftSfe" Text="-- mJ/m²" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
-                                            <TextBlock x:Name="TxtDftDeformMode" Text="Mode: --" FontSize="11" FontWeight="SemiBold" Foreground="#2563EB" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Card 4: DFT 0 K Ground State -->
-                                    <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="4">
-                                        <StackPanel>
-                                            <TextBlock Text="DFT 0 K Ground State" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
-                                            <TextBlock x:Name="TxtDftGroundState" Text="Phase: --" FontSize="15" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,2"/>
-                                            <TextBlock x:Name="TxtDftMatrixPred" Text="Prediction: --" FontSize="11" Foreground="#475569" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-
-                                <!-- Bottom Grid: Left = Enthalpies Table, Right = Frank-Kasper Wyckoff Sublattices -->
-                                <Grid Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1.1*"/>
-                                        <ColumnDefinition Width="12"/>
-                                        <ColumnDefinition Width="1.4*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Left: DFT Ground State Enthalpy Table -->
-                                    <GroupBox Grid.Column="0" Header="First-Principles DFT Ground-State Enthalpies (0 K)" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
-                                        <DataGrid x:Name="GridDftEnthalpies" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" GridLinesVisibility="Horizontal">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Phase Allotrope" Binding="{Binding Phase}" Width="140" FontWeight="SemiBold"/>
-                                                <DataGridTextColumn Header="Formation Enthalpy ΔH (kJ/mol)" Binding="{Binding EnthalpyKj}" Width="*"/>
-                                                <DataGridTextColumn Header="Relative Stability" Binding="{Binding StabilityNote}" Width="120"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </GroupBox>
-
-                                    <!-- Right: Frank-Kasper Sigma-Phase 5-Sublattice Occupancy -->
-                                    <GroupBox Grid.Column="2" Header="Frank-Kasper σ-Phase (tP30) 5-Sublattice Wyckoff Site Occupancy" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="8">
-                                        <DataGrid x:Name="GridDftSublattices" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" GridLinesVisibility="Horizontal">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Wyckoff Site" Binding="{Binding Site}" Width="75" FontWeight="Bold"/>
-                                                <DataGridTextColumn Header="Mult." Binding="{Binding Multiplicity}" Width="45"/>
-                                                <DataGridTextColumn Header="Coord. (CN)" Binding="{Binding Coordination}" Width="75"/>
-                                                <DataGridTextColumn Header="Polyhedral Geometry" Binding="{Binding Geometry}" Width="150"/>
-                                                <DataGridTextColumn Header="Preferred Elements" Binding="{Binding PreferredElements}" Width="110"/>
-                                                <DataGridTextColumn Header="Fe/Cr Partitioning" Binding="{Binding FeCrRatio}" Width="*"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </GroupBox>
-                                </Grid>
-                            </Grid>
                         </TabItem>
                         </TabControl>
                         </TabItem>

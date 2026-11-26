@@ -1,0 +1,151 @@
+<Window x:Class="PyCalphadSuite.Desktop.Dialogs.DftInputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CALPHAD XOC - First-Principles DFT Calculation Inputs"
+        Width="680" Height="580" MinWidth="600" MinHeight="480"
+        WindowStartupLocation="CenterOwner"
+        Background="#F1F5F9" Foreground="#0F172A">
+    <Grid Margin="14" Background="#F1F5F9">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Banner -->
+        <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="First-Principles DFT &amp; Electronic Ground-State Inputs" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Define 0 K ground-state formation enthalpies and Morinaga d-electron orbital parameters that anchor CALPHAD Gibbs energy minimization."
+                               FontSize="11" Foreground="#475569" Margin="0,2,0,0"/>
+                </StackPanel>
+                <CheckBox x:Name="ChkEnableDft" Content="Anchor CALPHAD with DFT" IsChecked="True" FontWeight="SemiBold" FontSize="11.5"
+                          Foreground="#0284C7" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Scrollable Inputs Form -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+            <StackPanel>
+                <!-- Group 1: 0 K Ground-State Formation Enthalpies -->
+                <GroupBox Header="Ground-State 0 K Formation Enthalpies ΔH (kJ/mol)" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="12,8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Enthalpy references anchor the low-temperature sublattice stability hierarchy in the CALPHAD model." FontSize="10.5" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,8">
+                                <TextBlock Text="BCC_A2 (Ferrite) Formation Enthalpy:" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtBccH" Text="-8.50" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,8">
+                                <TextBlock Text="FCC_A1 (Austenite) Formation Enthalpy:" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtFccH" Text="-8.28" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="HCP_A3 (ε-Phase) Formation Enthalpy:" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtHcpH" Text="-8.18" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,0">
+                                <TextBlock Text="Frank-Kasper σ-Phase (tP30) Formation Enthalpy:" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtSigmaH" Text="7.20" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Group 2: Morinaga d-Electron Orbital Parameters -->
+                <GroupBox Header="Morinaga d-Electron Orbital Parameters (New PHACOMP)" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="12,8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Calculates electronic bond order Bo and d-orbital energy Md in transition-metal and HEA matrices." FontSize="10.5" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                <TextBlock Text="Average Bond Order (Bo):" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtBo" Text="0.857" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="3,0,3,0">
+                                <TextBlock Text="d-Orbital Energy (Md, eV):" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtMd" Text="0.858" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Margin="6,0,0,0">
+                                <TextBlock Text="Mean Metallic Radius (pm):" FontSize="10.5" Foreground="#334155"/>
+                                <TextBox x:Name="TxtRadius" Text="126.0" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Group 3: Stacking Fault Energy & Ground-State Configuration -->
+                <GroupBox Header="Defect Energetics &amp; Ground-State Phase Selection" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="12,8" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Stacking Fault Energy (SFE, mJ/m²):" FontSize="10.5" Foreground="#334155"/>
+                            <TextBox x:Name="TxtSfe" Text="28.0" FontSize="12" Padding="6,3" Margin="0,2,0,0" BorderBrush="#CBD5E1"/>
+                            <TextBlock Text="Dictates TRIP (&lt;20), TWIP (20–45), or Dislocation Slip (&gt;45)." FontSize="9.5" Foreground="#64748B" Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="Nominal 0 K DFT Ground State:" FontSize="10.5" Foreground="#334155"/>
+                            <ComboBox x:Name="CmbGroundState" Height="28" Margin="0,2,0,0" FontSize="11.5">
+                                <ComboBoxItem Content="BCC_A2 (Ferrite / Refractory Matrix)"/>
+                                <ComboBoxItem Content="FCC_A1 (Austenite / Cantor Matrix)"/>
+                                <ComboBoxItem Content="HCP_A3 (Close-Packed Hexagonal)"/>
+                                <ComboBoxItem Content="Frank-Kasper Sigma (tP30 Intermetallic)"/>
+                                <ComboBoxItem Content="Ordered B2 (CsCl Superlattice)"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Group 4: Data Origin & Custom Override Status -->
+                <GroupBox Header="Input Provenance &amp; Verification" FontWeight="SemiBold" Background="#FFFFFF" BorderBrush="#CBD5E1" Padding="12,8">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Left">
+                            <TextBlock Text="DFT Data Provenance:" FontSize="10.5" Foreground="#334155"/>
+                            <TextBox x:Name="TxtProvenance" Text="First-Principles DFT (0 K VASP / Materials Project) &amp; Morinaga Model" FontSize="11" Padding="6,3" Margin="0,2,0,0" Width="360" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                            <CheckBox x:Name="ChkCustomOverride" Content="Lock Custom Values as Input" IsChecked="True" FontSize="11" Foreground="#334155"/>
+                        </StackPanel>
+                    </DockPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Action Bar -->
+        <Border Grid.Row="2" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,10,0,0">
+            <DockPanel>
+                <Button Content="Auto-Calculate from Chemistry" Click="BtnAutoCalculate_Click" Padding="10,5" FontWeight="SemiBold" FontSize="11" Background="#F1F5F9" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Margin="0,0,6,0"/>
+                <Button Content="Import DFT JSON..." Click="BtnImportJson_Click" Padding="10,5" FontWeight="SemiBold" FontSize="11" Background="#F1F5F9" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Margin="0,0,6,0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel" Click="BtnCancel_Click" Padding="14,5" FontWeight="SemiBold" FontSize="11.5" Background="#FFFFFF" Foreground="#475569" BorderBrush="#CBD5E1" BorderThickness="1" Margin="0,0,8,0"/>
+                    <Button Content="Apply to CALPHAD Calculation" Click="BtnApply_Click" Padding="16,5" FontWeight="Bold" FontSize="11.5" Background="#0284C7" Foreground="#FFFFFF" BorderThickness="0"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

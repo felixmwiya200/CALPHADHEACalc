@@ -598,8 +598,17 @@ class HEAEngine(BaseAlloyEngine):
             f_mu = (imc_eval["MaxMuFraction"] * tcp_kin) if (imc_eval["MaxMuFraction"] >= 0.05 or rate <= 0.1) else 0.0
             f_chi = (imc_eval["MaxChiFraction"] * tcp_kin) if (imc_eval["MaxChiFraction"] >= 0.05 or rate <= 0.1) else 0.0
 
+        # Couple First-Principles DFT sigma formation input if provided
+        if self.dft_input and self.dft_input.get("enabled", True):
+            sig_ratio = float(self.dft_input.get("sigma_instability_ratio", 0.0))
+            h_sig = float(self.dft_input.get("enthalpy_sigma_kj", 7.2))
+            if sig_ratio >= 1.0 or h_sig < 0.0:
+                f_sigma = max(f_sigma, min(0.35, 0.12 * max(1.0, sig_ratio)))
+
         # TRIP epsilon-HCP martensite formation when SFE < 18 mJ/m^2 in FCC-matrix HEAs (e.g., Fe50Mn30Co10Cr10)
         sfe_mj = float(trans.get("StackingFaultEnergy_mJ_m2", 30.0))
+        if self.dft_input and "sfe_mj_m2" in self.dft_input and self.dft_input.get("enabled", True):
+            sfe_mj = float(self.dft_input["sfe_mj_m2"])
         f_hcp_trip = 0.0
         if "Single Phase FCC" in trans["PhasePrediction_Guo"] and sfe_mj < 18.0:
             f_hcp_trip = min(0.24, max(0.04, 0.018 * (18.0 - sfe_mj)))
