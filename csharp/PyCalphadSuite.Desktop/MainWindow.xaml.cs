@@ -2143,17 +2143,33 @@ namespace PyCalphadSuite.Desktop
                 borderLine.LineWidth = 2.4f;
             }
 
-            // 3. Three-Phase Tie-Triangles
+            // 3. Three-Phase Tie-Triangles with Translucent Fill & Vertex Markers (PyCalphad Standard)
             foreach (var tri in diag.TieTriangles)
             {
                 if (tri.V1.Count >= 2 && tri.V2.Count >= 2 && tri.V3.Count >= 2)
                 {
-                    var triXs = new double[] { tri.V1[0], tri.V2[0], tri.V3[0], tri.V1[0] };
-                    var triYs = new double[] { tri.V1[1], tri.V2[1], tri.V3[1], tri.V1[1] };
                     var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
-                    var triLine = plot.Add.ScatterLine(triXs, triYs, triColor);
-                    triLine.LineWidth = 1.4f;
-                    triLine.LineStyle.Pattern = LinePattern.Solid;
+                    var fillColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.Color) ? "#3B82F6" : tri.Color);
+
+                    var polyCoords = new Coordinates[]
+                    {
+                        new(tri.V1[0], tri.V1[1]),
+                        new(tri.V2[0], tri.V2[1]),
+                        new(tri.V3[0], tri.V3[1]),
+                        new(tri.V1[0], tri.V1[1])
+                    };
+                    var poly = plot.Add.Polygon(polyCoords);
+                    poly.FillColor = fillColor.WithAlpha(0.20f);
+                    poly.LineColor = triColor;
+                    poly.LineWidth = 1.5f;
+
+                    // Vertex markers for the three coexisting phases
+                    var vx = new double[] { tri.V1[0], tri.V2[0], tri.V3[0] };
+                    var vy = new double[] { tri.V1[1], tri.V2[1], tri.V3[1] };
+                    var markers = plot.Add.Markers(vx, vy);
+                    markers.MarkerStyle.Shape = MarkerShape.FilledCircle;
+                    markers.MarkerStyle.Size = 6;
+                    markers.Color = triColor;
                 }
             }
 

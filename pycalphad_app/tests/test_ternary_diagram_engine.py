@@ -46,6 +46,9 @@ def test_assessed_systems_list():
     assert "Ti-Zr-Nb" in ids
     assert "Ni-Al-Ti" in ids
     assert "Cd-Pb-Sn" in ids
+    assert "Cr-Fe-Nb" in ids
+    assert "Al-Cu-Y" in ids
+    assert "Fe-Sb-O" in ids
 
 
 @pytest.mark.parametrize("sys_id", [
@@ -58,6 +61,9 @@ def test_assessed_systems_list():
     "Mo-V-W",
     "Al-Cu-Mg",
     "Fe-Cr-C",
+    "Cr-Fe-Nb",
+    "Al-Cu-Y",
+    "Fe-Sb-O",
 ])
 def test_compute_assessed_ternary(sys_id):
     res = TernaryDiagramEngine.compute_ternary_diagram(sys_id, diagram_type="isothermal", temperature_c=800.0)
@@ -70,6 +76,19 @@ def test_compute_assessed_ternary(sys_id):
     assert res["apex_labels"]["A"]["name"] != ""
     assert res["apex_labels"]["B"]["name"] != ""
     assert res["apex_labels"]["C"]["name"] != ""
+
+
+def test_compute_molar_ratio_ray():
+    ray = TernaryDiagramEngine.calculate_molar_ratio_ray(ratio_ab=1.0, n_points=25)
+    assert ray["ratio_ab"] == 1.0
+    assert len(ray["cart_xs"]) == 25
+    assert len(ray["cart_ys"]) == 25
+    # When X(C) = 0, X(A) = 0.5, X(B) = 0.5 -> Cartesian X = 0.5, Y = 0.0
+    assert math.isclose(ray["cart_xs"][0], 0.5, abs_tol=1e-3)
+    assert math.isclose(ray["cart_ys"][0], 0.0, abs_tol=1e-3)
+    # When X(C) = 1, X(A) = 0, X(B) = 0 -> Apex C: Cartesian X = 0.5, Y = sqrt(3)/2
+    assert math.isclose(ray["cart_xs"][-1], 0.5, abs_tol=1e-3)
+    assert math.isclose(ray["cart_ys"][-1], math.sqrt(3) / 2.0, abs_tol=1e-3)
 
 
 def test_compute_arbitrary_ternary():
