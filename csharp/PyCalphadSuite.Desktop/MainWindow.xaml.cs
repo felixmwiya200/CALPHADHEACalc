@@ -194,7 +194,7 @@ namespace PyCalphadSuite.Desktop
 
             try
             {
-                StatusLabel.Text = "Connecting to PyCALPHAD calculation core...";
+                StatusLabel.Text = "Connecting to CALPHAD XOC calculation core...";
                 _client = new CaeDaemonProcessClient("python");
                 _client.LogReceived += OnDaemonLog;
                 _client.ErrorReceived += OnDaemonError;
@@ -236,12 +236,12 @@ namespace PyCalphadSuite.Desktop
                     }
                 }
 
-                StatusLabel.Text = "PyCALPHAD CAE Core connected (on-demand). Select alloy parameters and click Calculate Equilibrium.";
+                StatusLabel.Text = "CALPHAD XOC Core connected (on-demand). Select alloy parameters and click Calculate Equilibrium.";
             }
             catch (Exception ex)
             {
                 AppendLog($"[Engine Error] {ex.Message}");
-                MessageBox.Show($"Failed to connect to PyCALPHAD calculation core:\n{ex.Message}", "Engine Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to connect to CALPHAD XOC calculation core:\n{ex.Message}", "Engine Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusLabel.Text = "Error connecting to calculation engine.";
             }
         }
@@ -4236,7 +4236,7 @@ namespace PyCalphadSuite.Desktop
             // Populate Thermodynamic State Inspector
             var sb = new StringBuilder();
             sb.AppendLine("====================================================================================");
-            sb.AppendLine($"  PYCALPHAD MATERIALS CAE COMPLETE METALLURGICAL REPORT >> {res.AlloyName}");
+            sb.AppendLine($"  CALPHAD XOC COMPLETE METALLURGICAL REPORT >> {res.AlloyName}");
             sb.AppendLine("====================================================================================");
             sb.AppendLine($"Database:        {res.DatabaseName}");
             sb.AppendLine($"Basis:           {res.Basis}  |  Grain Size: {res.GrainSizeUm:F1} μm  |  Hatch Pitch: {res.HatchPitchUm:F1} μm  |  Process: {res.ProcessType}");
@@ -6253,7 +6253,7 @@ namespace PyCalphadSuite.Desktop
         private void Authorship_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
-                "PyCALPHAD Materials Engineering Suite\n\n" +
+                "CALPHAD XOC Materials Engineering Suite\n\n" +
                 "Lead Developers:\n" +
                 "  • Felix Mwiya\n" +
                 "  • Prof. (Dr.) Sheela Singh\n\n" +

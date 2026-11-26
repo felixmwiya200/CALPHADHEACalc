@@ -1,5 +1,5 @@
 """
-main.py - Entry Point for PyCALPHAD Materials Engineering Suite
+main.py - Entry Point for CALPHAD XOC Materials Engineering Suite
 Launches the native C/C++ desktop suite (cpp/bin/PyCALPHAD_Suite.exe) or provides
 headless CAE daemon execution if requested.
 """

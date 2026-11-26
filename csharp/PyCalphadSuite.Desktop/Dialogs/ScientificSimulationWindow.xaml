@@ -18,7 +18,7 @@
             <DockPanel>
                 <StackPanel>
                     <TextBlock x:Name="TxtDialogTitle" Text="Physical Metallurgy Simulation Analyzer" Foreground="#000000" FontWeight="Bold" FontSize="15"/>
-                    <TextBlock x:Name="TxtDialogSubtitle" Text="Real-time computation via PyCALPHAD CAE Core" Foreground="#000000" FontSize="11.5" Margin="0,2,0,0"/>
+                    <TextBlock x:Name="TxtDialogSubtitle" Text="Real-time computation via CALPHAD XOC Core" Foreground="#000000" FontSize="11.5" Margin="0,2,0,0"/>
                 </StackPanel>
                 <Button x:Name="BtnRunModule" Content="Run / Refresh" DockPanel.Dock="Right" Click="BtnRunModule_Click" Padding="14,6" Background="#FFFFFF" Foreground="#000000" FontWeight="Bold" BorderBrush="#CBD5E1" BorderThickness="1"/>
             </DockPanel>

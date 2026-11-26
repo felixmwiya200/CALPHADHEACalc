@@ -98,7 +98,7 @@ namespace PyCalphadSuite.Core.Services
             if (ext == ".csv")
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($"# PyCALPHAD Saved Alloy Composition: {profile.Name}");
+                sb.AppendLine($"# CALPHAD XOC Saved Alloy Composition: {profile.Name}");
                 sb.AppendLine($"# Database: {profile.DatabaseName}");
                 sb.AppendLine($"# Basis: {profile.Basis}");
                 sb.AppendLine($"# GrainSize_um: {profile.GrainSizeUm.ToString(CultureInfo.InvariantCulture)}");

@@ -990,7 +990,7 @@ namespace PyCalphadSuite.Desktop.Controls
 
             var win = new Window
             {
-                Title = "PyCALPHAD CAE >> Expanded 3D Crystal Structures Viewer",
+                Title = "CALPHAD XOC >> Expanded 3D Crystal Structures Viewer",
                 Width = 1180,
                 Height = 760,
                 MinWidth = 760,
