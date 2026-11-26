@@ -76,7 +76,10 @@ def _interpolate_ternary_curve(
     bary_pts: List[Tuple[float, float, float]], n_pts: int = 40
 ) -> Tuple[List[float], List[float]]:
     """
-    Interpolates a sequence of ternary barycentric knots and maps to Cartesian (X, Y).
+    Interpolates a sequence of ternary barycentric knots directly in barycentric coordinate
+    space (a, b, c), enforcing non-negativity and unit sum normalization (a + b + c = 1)
+    before mapping to Cartesian (X, Y). This guarantees mathematically that all generated
+    curve coordinates lie strictly within or on the perimeter of the Gibbs equilateral triangle.
     """
     if len(bary_pts) < 2:
         if bary_pts:
@@ -84,24 +87,57 @@ def _interpolate_ternary_curve(
             return [x], [y]
         return [], []
 
-    cart_pts = [barycentric_to_cartesian(*p) for p in bary_pts]
-    xs = np.array([p[0] for p in cart_pts], dtype=float)
-    ys = np.array([p[1] for p in cart_pts], dtype=float)
+    bary_arr = np.array(bary_pts, dtype=float)
+    # Ensure raw knots have positive unit sum
+    sums = np.sum(bary_arr, axis=1, keepdims=True)
+    sums[np.abs(sums) < 1e-12] = 1.0
+    bary_arr = np.maximum(0.0, bary_arr) / sums
 
     if len(bary_pts) == 2:
-        return np.linspace(xs[0], xs[1], n_pts).tolist(), np.linspace(ys[0], ys[1], n_pts).tolist()
+        a_interp = np.linspace(bary_arr[0, 0], bary_arr[1, 0], n_pts)
+        b_interp = np.linspace(bary_arr[0, 1], bary_arr[1, 1], n_pts)
+        c_interp = np.linspace(bary_arr[0, 2], bary_arr[1, 2], n_pts)
+    else:
+        diffs = np.diff(bary_arr, axis=0)
+        dists = np.sqrt(np.sum(diffs**2, axis=1))
+        total_dist = float(np.sum(dists))
+        if total_dist < 1e-12:
+            a_interp = np.full(n_pts, bary_arr[0, 0])
+            b_interp = np.full(n_pts, bary_arr[0, 1])
+            c_interp = np.full(n_pts, bary_arr[0, 2])
+        else:
+            t_knots = np.insert(np.cumsum(dists), 0, 0.0) / total_dist
+            # Enforce strict monotonicity for PCHIP
+            for i in range(1, len(t_knots)):
+                if t_knots[i] <= t_knots[i - 1]:
+                    t_knots[i] = t_knots[i - 1] + 1e-6
+            t_knots = t_knots / t_knots[-1]
+            pa = PchipInterpolator(t_knots, bary_arr[:, 0])
+            pb = PchipInterpolator(t_knots, bary_arr[:, 1])
+            pc = PchipInterpolator(t_knots, bary_arr[:, 2])
 
-    dists = np.hypot(np.diff(xs), np.diff(ys))
-    total_dist = float(np.sum(dists))
-    if total_dist < 1e-12:
-        return xs.tolist(), ys.tolist()
+            t_eval = np.linspace(0.0, 1.0, n_pts)
+            a_raw = pa(t_eval)
+            b_raw = pb(t_eval)
+            c_raw = pc(t_eval)
 
-    t_knots = np.insert(np.cumsum(dists), 0, 0.0) / total_dist
-    px = PchipInterpolator(t_knots, xs)
-    py = PchipInterpolator(t_knots, ys)
+            # Non-negative clamping and barycentric normalization
+            a_clamped = np.maximum(0.0, a_raw)
+            b_clamped = np.maximum(0.0, b_raw)
+            c_clamped = np.maximum(0.0, c_raw)
+            tot = a_clamped + b_clamped + c_clamped
+            tot[tot < 1e-12] = 1.0
+            a_interp = a_clamped / tot
+            b_interp = b_clamped / tot
+            c_interp = c_clamped / tot
 
-    t_eval = np.linspace(0.0, 1.0, n_pts)
-    return px(t_eval).tolist(), py(t_eval).tolist()
+    xs: List[float] = []
+    ys: List[float] = []
+    for a_val, b_val, c_val in zip(a_interp, b_interp, c_interp):
+        x, y = barycentric_to_cartesian(float(a_val), float(b_val), float(c_val))
+        xs.append(x)
+        ys.append(y)
+    return xs, ys
 
 
 class TernaryDiagramEngine:
@@ -275,9 +311,9 @@ class TernaryDiagramEngine:
     def _compute_co_cr_ni(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
         el_a, el_b, el_c = "Co", "Cr", "Ni"
         invariants = [
-            {"type": "Peritectic", "temp_c": 1400.0, "equation": "L + BCC(Cr) <-> FCC(Co,Ni) + Sigma", "composition": "Co20Cr55Ni25", "desc": "Solidification transition in high-Cr field"},
-            {"type": "Eutectic", "temp_c": 1345.0, "equation": "L <-> FCC(Ni,Co) + BCC(Cr)", "composition": "Co15Cr45Ni40", "desc": "Extension of binary Cr-Ni eutectic into ternary"},
-            {"type": "Solid-State", "temp_c": 800.0, "equation": "FCC <-> FCC + Sigma (CoCr-rich)", "composition": "Co33Cr34Ni33", "desc": "Intermediate-temperature sigma phase precipitation"},
+            {"type": "Peritectic", "temp_c": 1400.0, "equation": "L + BCC(Cr) ⇌ FCC(Co,Ni) + Sigma", "composition": "Co20Cr55Ni25", "desc": "Solidification transition in high-Cr field"},
+            {"type": "Eutectic", "temp_c": 1345.0, "equation": "L ⇌ FCC(Ni,Co) + BCC(Cr)", "composition": "Co15Cr45Ni40", "desc": "Extension of binary Cr-Ni eutectic into ternary"},
+            {"type": "Solid-State", "temp_c": 800.0, "equation": "FCC ⇌ FCC + Sigma (CoCr-rich)", "composition": "Co33Cr34Ni33", "desc": "Intermediate-temperature sigma phase precipitation"},
         ]
 
         curves = []
@@ -285,48 +321,123 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        # Isothermal section at t_c (default 800-1000 C)
-        # Boundaries of FCC (gamma), BCC (alpha), and Sigma
-        # FCC boundary curve extending from Co corner to Ni corner and up to ~40 at% Cr
-        cr_sol = max(0.20, min(0.48, 0.45 - (1100.0 - t_c) * 0.0003))
+        # Isothermal section at t_c (default 800-1000 °C)
+        # 1. FCC Solvus boundary: connects Co-Cr binary edge (~41 at% Cr) across ternary to Ni-Cr binary edge (~47 at% Cr)
+        cr_sol_co = max(0.35, min(0.48, 0.41 + (t_c - 1000.0) * 0.00012))
+        cr_sol_ni = max(0.40, min(0.52, 0.47 + (t_c - 1000.0) * 0.00010))
         fcc_knots = [
-            (1.0 - 0.02, 0.02, 0.00),
-            (0.70, 0.28, 0.02),
-            (0.40, cr_sol, 0.20),
-            (0.15, cr_sol - 0.05, 0.45),
-            (0.00, 0.38, 0.62),
-            (0.00, 0.00, 1.00),
+            (1.0 - cr_sol_co, cr_sol_co, 0.00),
+            (0.45, cr_sol_co + 0.02, 0.12),
+            (0.30, cr_sol_co + 0.04, 0.25),
+            (0.15, cr_sol_ni - 0.01, 0.39),
+            (0.00, cr_sol_ni, 1.0 - cr_sol_ni),
         ]
         xs_fcc, ys_fcc = _interpolate_ternary_curve(fcc_knots, n_pts=50)
-        curves.append({"name": "FCC Solvus Boundary", "xs": xs_fcc, "ys": ys_fcc, "color": "#1D4ED8", "line_style": "Solid", "line_width": 2.0})
+        curves.append({
+            "name": "FCC Solvus Boundary",
+            "xs": xs_fcc,
+            "ys": ys_fcc,
+            "color": "#1D4ED8",
+            "line_style": "Solid",
+            "line_width": 2.2
+        })
 
-        # Sigma phase field in Cr-rich region
-        sigma_knots = [
-            (0.40, 0.58, 0.02),
-            (0.25, 0.60, 0.15),
-            (0.15, 0.55, 0.30),
-            (0.20, 0.48, 0.32),
-            (0.35, 0.50, 0.15),
-            (0.40, 0.58, 0.02),
+        # 2. BCC Solvus boundary near pure Cr corner
+        bcc_knots = [
+            (0.15, 0.85, 0.00),
+            (0.07, 0.86, 0.07),
+            (0.00, 0.88, 0.12),
         ]
-        xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=40)
-        curves.append({"name": "Sigma (σ) Phase Field", "xs": xs_sig, "ys": ys_sig, "color": "#DC2626", "line_style": "Solid", "line_width": 2.0})
+        xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_knots, n_pts=30)
+        curves.append({
+            "name": "BCC (α-Cr) Solvus Boundary",
+            "xs": xs_bcc,
+            "ys": ys_bcc,
+            "color": "#059669",
+            "line_style": "Solid",
+            "line_width": 2.0
+        })
 
-        # Tie-lines between FCC and Sigma
-        for t_frac in [0.15, 0.30, 0.45]:
-            p1_bary = (0.50 - t_frac, 0.35 + t_frac * 0.5, 0.15 + t_frac * 0.5)
-            p2_bary = (0.35 - t_frac * 0.8, 0.55 + t_frac * 0.2, 0.10 + t_frac * 0.6)
-            x1, y1 = barycentric_to_cartesian(*p1_bary)
-            x2, y2 = barycentric_to_cartesian(*p2_bary)
+        # 3. Sigma phase field in high-Cr region extending from Co-Cr binary edge
+        sigma_knots = [
+            (0.43, 0.57, 0.00),
+            (0.34, 0.56, 0.10),
+            (0.24, 0.58, 0.18),
+            (0.20, 0.64, 0.16),
+            (0.28, 0.64, 0.08),
+            (0.37, 0.63, 0.00),
+        ]
+        xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=45)
+        curves.append({
+            "name": "Sigma (σ) Phase Field",
+            "xs": xs_sig,
+            "ys": ys_sig,
+            "color": "#DC2626",
+            "line_style": "Solid",
+            "line_width": 2.0
+        })
+
+        # 4. Three-Phase Tie-Triangle (FCC + BCC + Sigma)
+        v1_fcc = barycentric_to_cartesian(0.28, 0.45, 0.27)
+        v2_sig = barycentric_to_cartesian(0.20, 0.64, 0.16)
+        v3_bcc = barycentric_to_cartesian(0.07, 0.86, 0.07)
+        tie_triangles.append({
+            "name": "FCC + BCC + σ Three-Phase Equilibrium",
+            "v1": [v1_fcc[0], v1_fcc[1]],
+            "v2": [v2_sig[0], v2_sig[1]],
+            "v3": [v3_bcc[0], v3_bcc[1]],
+            "color": "#3B82F6",
+            "border_color": "#1D4ED8"
+        })
+
+        # 5. Conjugate two-phase tie-lines strictly within their respective fields
+        # (a) FCC + Sigma tie-lines
+        fcc_sigma_pairs = [
+            ((0.51, 0.42, 0.07), (0.39, 0.56, 0.05)),
+            ((0.38, 0.44, 0.18), (0.27, 0.58, 0.15)),
+        ]
+        for p1, p2 in fcc_sigma_pairs:
+            x1, y1 = barycentric_to_cartesian(*p1)
+            x2, y2 = barycentric_to_cartesian(*p2)
             tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
 
-        # Labels
-        x_fcc, y_fcc = barycentric_to_cartesian(0.35, 0.15, 0.50)
+        # (b) FCC + BCC tie-lines
+        fcc_bcc_pairs = [
+            ((0.18, 0.46, 0.36), (0.04, 0.87, 0.09)),
+            ((0.08, 0.47, 0.45), (0.01, 0.88, 0.11)),
+        ]
+        for p1, p2 in fcc_bcc_pairs:
+            x1, y1 = barycentric_to_cartesian(*p1)
+            x2, y2 = barycentric_to_cartesian(*p2)
+            tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
+
+        # (c) Sigma + BCC tie-line
+        sig_bcc_pairs = [
+            ((0.32, 0.64, 0.04), (0.11, 0.85, 0.04)),
+        ]
+        for p1, p2 in sig_bcc_pairs:
+            x1, y1 = barycentric_to_cartesian(*p1)
+            x2, y2 = barycentric_to_cartesian(*p2)
+            tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
+
+        # 6. Phase region labels
+        x_fcc, y_fcc = barycentric_to_cartesian(0.45, 0.15, 0.40)
         labels.append({"text": "FCC (γ) Solid Solution", "x": x_fcc, "y": y_fcc, "color": "#1D4ED8", "bold": True})
-        x_sig_lbl, y_sig_lbl = barycentric_to_cartesian(0.25, 0.55, 0.20)
+
+        x_sig_lbl, y_sig_lbl = barycentric_to_cartesian(0.30, 0.60, 0.10)
         labels.append({"text": "Sigma (σ)", "x": x_sig_lbl, "y": y_sig_lbl, "color": "#DC2626", "bold": True})
-        x_bcc_lbl, y_bcc_lbl = barycentric_to_cartesian(0.05, 0.85, 0.10)
+
+        x_bcc_lbl, y_bcc_lbl = barycentric_to_cartesian(0.04, 0.93, 0.03)
         labels.append({"text": "BCC (α-Cr)", "x": x_bcc_lbl, "y": y_bcc_lbl, "color": "#059669", "bold": True})
+
+        x_fcc_sig, y_fcc_sig = barycentric_to_cartesian(0.42, 0.48, 0.10)
+        labels.append({"text": "FCC + σ", "x": x_fcc_sig, "y": y_fcc_sig, "color": "#475569", "bold": False})
+
+        x_fcc_bcc, y_fcc_bcc = barycentric_to_cartesian(0.10, 0.65, 0.25)
+        labels.append({"text": "FCC + BCC", "x": x_fcc_bcc, "y": y_fcc_bcc, "color": "#475569", "bold": False})
+
+        x_tri, y_tri = barycentric_to_cartesian(0.18, 0.65, 0.17)
+        labels.append({"text": "FCC + BCC + σ", "x": x_tri, "y": y_tri, "color": "#1E3A8A", "bold": True})
 
         return cls._build_ternary_payload(
             system="Co-Cr-Ni",

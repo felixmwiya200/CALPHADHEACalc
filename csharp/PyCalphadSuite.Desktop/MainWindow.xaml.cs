@@ -1323,7 +1323,7 @@ namespace PyCalphadSuite.Desktop
             HostScheil.ApplyOtisLiuStyle("Scheil-Gulliver Non-Equilibrium Solidification Trajectory", "Solid Fraction (f_s)", $"Temperature ({u})", _isDarkTheme);
             HostIsopleth.ApplyOtisLiuStyle("Pseudo-Binary Isopleth Section (Otis & Liu 2016 Fig. 5)", "Solute Mole Fraction x(B)", $"Temperature ({u})", _isDarkTheme);
             HostBinaryDiagram?.ApplyOtisLiuStyle("Binary Phase Diagram", "Atomic Fraction X_B", $"Temperature ({u})", _isDarkTheme);
-            HostTernaryDiagram?.ApplyOtisLiuStyle("Ternary Phase Diagram (Gibbs Equilateral Triangle)", "Barycentric Projection X", "Barycentric Projection Y", _isDarkTheme);
+            HostTernaryDiagram?.ApplyOtisLiuStyle("Ternary Phase Diagram (Gibbs Equilateral Triangle)", "", "", _isDarkTheme);
             HostDensity.ApplyOtisLiuStyle("Apparent & Theoretical Density ρ(T)", $"Temperature ({u})", "Density (g/cm³)", _isDarkTheme);
             HostCTE.ApplyOtisLiuStyle("Linear Thermal Expansion Coefficient α(T)", $"Temperature ({u})", "Linear CTE (10⁻⁶ / K)", _isDarkTheme);
             HostThermalCond.ApplyOtisLiuStyle("Thermal Conductivity k(T) (Electronic + Phonon)", $"Temperature ({u})", "Thermal Conductivity (W/(m·K))", _isDarkTheme);
@@ -1904,7 +1904,15 @@ namespace PyCalphadSuite.Desktop
             // 2. Invariant 3-phase horizontal tie-lines
             foreach (var inv in diag.Invariants)
             {
-                if (Math.Abs(inv.XEnd - inv.XStart) > 1e-4)
+                bool isNonTieLineReaction = inv.Type.Contains("Summit", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Congruent", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Critical", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Consolute", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Minimum", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Maximum", StringComparison.OrdinalIgnoreCase)
+                    || inv.Type.Contains("Transus", StringComparison.OrdinalIgnoreCase);
+
+                if (!isNonTieLineReaction && Math.Abs(inv.XEnd - inv.XStart) > 1e-4)
                 {
                     double[] tieXs = new[] { inv.XStart, inv.XEnd };
                     double[] tieYs = new[] { inv.Temp, inv.Temp };
@@ -1916,7 +1924,7 @@ namespace PyCalphadSuite.Desktop
                 // Node marker at invariant reaction coordinate
                 var node = plot.Add.Markers(new[] { inv.XReaction }, new[] { inv.Temp });
                 node.MarkerStyle.Shape = MarkerShape.FilledCircle;
-                node.MarkerStyle.Size = 8;
+                node.MarkerStyle.Size = isNonTieLineReaction ? 5 : 7;
                 node.MarkerStyle.FillColor = ScottPlot.Color.FromHex("#DC2626");
             }
 
@@ -2108,7 +2116,7 @@ namespace PyCalphadSuite.Desktop
             var plot = HostTernaryDiagram.Plot;
             plot.Clear();
 
-            // Hide standard rectangular Cartesian axes and ticks
+            // Hide standard rectangular Cartesian axes, labels, and ticks
             plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
             plot.Axes.Left.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
             plot.Axes.Right.TickGenerator = new ScottPlot.TickGenerators.EmptyTickGenerator();
@@ -2117,7 +2125,16 @@ namespace PyCalphadSuite.Desktop
             plot.Axes.Left.FrameLineStyle.Width = 0;
             plot.Axes.Right.FrameLineStyle.Width = 0;
             plot.Axes.Top.FrameLineStyle.Width = 0;
+            plot.Axes.Bottom.Label.Text = "";
+            plot.Axes.Left.Label.Text = "";
+            plot.Axes.Right.Label.Text = "";
+            plot.Axes.Top.Label.Text = "";
             plot.Grid.IsVisible = false;
+
+            // Set clean scientific title
+            plot.Axes.Title.Label.Text = $"{diag.System} Isothermal Section ({diag.Temperature:F0} {diag.TempUnit})";
+            plot.Axes.Title.Label.Bold = true;
+            plot.Axes.Title.Label.FontSize = 13.0f;
 
             // 1. Triangular Grid Lines (10% Barycentric Increments)
             var gridColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#E2E8F0");

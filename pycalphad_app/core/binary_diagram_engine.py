@@ -475,13 +475,13 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent", "temp": conv(1638.0), "x_reaction": 0.425, "x_start": 0.420, "x_end": 0.430, "equation": "L ⇌ β-NiAl (B2 Ordered BCC)"},
-            {"type": "Peritectic", "temp": conv(1395.0), "x_reaction": 0.248, "x_start": 0.248, "x_end": 0.370, "equation": "L (24.8 at% Al) + β-NiAl (37.0 at% Al) ⇌ γ'-Ni₃Al (27.5 at% Al)"},
-            {"type": "Eutectic", "temp": conv(1385.0), "x_reaction": 0.245, "x_start": 0.212, "x_end": 0.248, "equation": "L (24.5 at% Al) ⇌ γ-(Ni) (21.2 at% Al) + γ'-Ni₃Al (24.8 at% Al)"},
-            {"type": "Peritectic", "temp": conv(1133.0), "x_reaction": 0.625, "x_start": 0.595, "x_end": 0.625, "equation": "L (62.5 at% Al) + β-NiAl (59.5 at% Al) ⇌ Ni₂Al₃ (60.5 at% Al)"},
-            {"type": "Peritectic", "temp": conv(854.0), "x_reaction": 0.850, "x_start": 0.635, "x_end": 0.850, "equation": "L (85.0 at% Al) + Ni₂Al₃ (63.5 at% Al) ⇌ NiAl₃ (75.0 at% Al)"},
-            {"type": "Eutectic", "temp": conv(640.0), "x_reaction": 0.973, "x_start": 0.750, "x_end": 0.9998, "equation": "L (97.3 at% Al) ⇌ NiAl₃ (75.0 at% Al) + (Al) (99.98 at% Al)"},
-            {"type": "Peritectoid", "temp": conv(700.0), "x_reaction": 0.365, "x_start": 0.285, "x_end": 0.380, "equation": "γ'-Ni₃Al (28.5 at% Al) + β-NiAl (38.0 at% Al) ⇌ Ni₅Al₃ (36.5 at% Al)"}
+            {"type": "Congruent", "temp": conv(1638.0), "x_reaction": 0.425, "x_start": 0.425, "x_end": 0.425, "equation": "L ⇌ β-NiAl (B2 Ordered BCC)"},
+            {"type": "Peritectic", "temp": conv(1395.0), "x_reaction": 0.248, "x_start": 0.425, "x_end": 0.425, "equation": "L (24.8 at% Al) + β-NiAl (37.0 at% Al) ⇌ γ'-Ni₃Al (27.5 at% Al)"},
+            {"type": "Eutectic", "temp": conv(1385.0), "x_reaction": 0.245, "x_start": 0.425, "x_end": 0.425, "equation": "L (24.5 at% Al) ⇌ γ-(Ni) (21.2 at% Al) + γ'-Ni₃Al (24.8 at% Al)"},
+            {"type": "Peritectic", "temp": conv(1133.0), "x_reaction": 0.625, "x_start": 0.425, "x_end": 0.425, "equation": "L (62.5 at% Al) + β-NiAl (59.5 at% Al) ⇌ Ni₂Al₃ (60.5 at% Al)"},
+            {"type": "Peritectic", "temp": conv(854.0), "x_reaction": 0.850, "x_start": 0.425, "x_end": 0.425, "equation": "L (85.0 at% Al) + Ni₂Al₃ (63.5 at% Al) ⇌ NiAl₃ (75.0 at% Al)"},
+            {"type": "Eutectic", "temp": conv(640.0), "x_reaction": 0.973, "x_start": 0.425, "x_end": 0.425, "equation": "L (97.3 at% Al) ⇌ NiAl₃ (75.0 at% Al) + (Al) (99.98 at% Al)"},
+            {"type": "Peritectoid", "temp": conv(700.0), "x_reaction": 0.365, "x_start": 0.425, "x_end": 0.425, "equation": "γ'-Ni₃Al (28.5 at% Al) + β-NiAl (38.0 at% Al) ⇌ Ni₅Al₃ (36.5 at% Al)"}
         ]
 
         regions = [
@@ -502,7 +502,7 @@ class BinaryDiagramEngine:
             "system": "Ni-Al",
             "element_a": "Ni",
             "element_b": "Al",
-            "x_axis_label": "Atomic Fraction of Aluminium X(Al) [at%]",
+            "x_axis_label": "Atomic Fraction of Aluminium, x(Al)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -587,9 +587,9 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Minimum", "temp": conv(1305.0), "x_reaction": 0.215, "x_start": 0.210, "x_end": 0.220, "equation": "L ⇌ BCC solid solution (Azeotropic minimum at 1305 °C, 21.5 at% Cr)"},
-            {"type": "Peritectoid / Ordering Peak", "temp": conv(830.0), "x_reaction": 0.475, "x_start": 0.180, "x_end": 0.780, "equation": "BCC (α) ⇌ σ Phase (Tetragonal D8_b Frank-Kasper apex)"},
-            {"type": "Consolute Miscibility Gap", "temp": conv(575.0), "x_reaction": 0.480, "x_start": 0.130, "x_end": 0.860, "equation": "BCC α ⇌ Fe-rich α + Cr-rich α' (475 °C Embrittlement Consolute Point)"}
+            {"type": "Congruent Minimum", "temp": conv(1305.0), "x_reaction": 0.215, "x_start": 0.215, "x_end": 0.215, "equation": "L ⇌ BCC solid solution (Azeotropic minimum at 1305 °C, 21.5 at% Cr)"},
+            {"type": "Peritectoid / Ordering Peak", "temp": conv(830.0), "x_reaction": 0.475, "x_start": 0.215, "x_end": 0.215, "equation": "BCC (α) ⇌ σ Phase (Tetragonal D8_b Frank-Kasper apex)"},
+            {"type": "Consolute Miscibility Gap", "temp": conv(575.0), "x_reaction": 0.480, "x_start": 0.480, "x_end": 0.480, "equation": "BCC α ⇌ Fe-rich α + Cr-rich α' (475 °C Embrittlement Consolute Point)"}
         ]
 
         regions = [
@@ -607,7 +607,7 @@ class BinaryDiagramEngine:
             "system": "Fe-Cr",
             "element_a": "Fe",
             "element_b": "Cr",
-            "x_axis_label": "Atomic Fraction of Chromium X(Cr) [at%]",
+            "x_axis_label": "Atomic Fraction of Chromium, x(Cr)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -703,7 +703,7 @@ class BinaryDiagramEngine:
             "system": "Ti-Al",
             "element_a": "Ti",
             "element_b": "Al",
-            "x_axis_label": "Atomic Fraction of Aluminium X(Al) [at%]",
+            "x_axis_label": "Atomic Fraction of Aluminium, x(Al)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -760,7 +760,7 @@ class BinaryDiagramEngine:
 
         invariants = [
             {"type": "Isomorphous Melting Lens", "temp": conv(1084.62), "x_reaction": 0.000, "x_start": 0.0, "x_end": 1.0, "equation": "Complete mutual solubility in liquid and FCC solid phases (Hume-Rothery archetype)"},
-            {"type": "Critical Consolute Point", "temp": conv(354.5), "x_reaction": 0.680, "x_start": 0.150, "x_end": 0.970, "equation": "Sub-ambient FCC clustering: α ⇌ Cu-rich α₁ + Ni-rich α₂ (354.5 °C, 68 at% Ni)"}
+            {"type": "Critical Consolute Point", "temp": conv(354.5), "x_reaction": 0.680, "x_start": 0.680, "x_end": 0.680, "equation": "Sub-ambient FCC clustering: α ⇌ Cu-rich α₁ + Ni-rich α₂ (354.5 °C, 68 at% Ni)"}
         ]
 
         regions = [
@@ -775,7 +775,7 @@ class BinaryDiagramEngine:
             "system": "Cu-Ni",
             "element_a": "Cu",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Nickel X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Nickel, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -943,7 +943,7 @@ class BinaryDiagramEngine:
             "system": "Co-Cr",
             "element_a": "Co",
             "element_b": "Cr",
-            "x_axis_label": "Atomic Fraction of Chromium X(Cr) [at%]",
+            "x_axis_label": "Atomic Fraction of Chromium, x(Cr)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1009,7 +1009,7 @@ class BinaryDiagramEngine:
         invariants = [
             {"type": "Eutectic", "temp": conv(548.2), "x_reaction": 33.20, "x_start": 5.65, "x_end": 52.50, "equation": "L (33.2 wt% Cu) ⇌ (Al) (5.65 wt% Cu) + θ-Al₂Cu (52.5 wt% Cu)"},
             {"type": "Peritectic", "temp": conv(591.0), "x_reaction": 34.00, "x_start": 34.00, "x_end": 56.00, "equation": "L (34.0 wt% Cu) + η₂ (56.0 wt% Cu) ⇌ θ-Al₂Cu (53.5 wt% Cu)"},
-            {"type": "Congruent", "temp": conv(1025.0), "x_reaction": 68.00, "x_start": 67.50, "x_end": 68.50, "equation": "L ⇌ γ₁-Cu₉Al₄ (Congruent summit at 1025 °C)"},
+            {"type": "Congruent", "temp": conv(1025.0), "x_reaction": 68.00, "x_start": 68.00, "x_end": 68.00, "equation": "L ⇌ γ₁-Cu₉Al₄ (Congruent summit at 1025 °C)"},
             {"type": "Eutectic", "temp": conv(1005.0), "x_reaction": 72.00, "x_start": 70.50, "x_end": 73.50, "equation": "L (72.0 wt% Cu) ⇌ β-Phase (70.5 wt% Cu) + γ₁ (73.5 wt% Cu)"},
             {"type": "Peritectic", "temp": conv(1032.0), "x_reaction": 82.00, "x_start": 82.00, "x_end": 89.00, "equation": "L (82.0 wt% Cu) + (Cu) (89.0 wt% Cu) ⇌ β-Phase (84.5 wt% Cu)"}
         ]
@@ -1239,7 +1239,7 @@ class BinaryDiagramEngine:
             "system": "Al-Co",
             "element_a": "Al",
             "element_b": "Co",
-            "x_axis_label": "Atomic Fraction of Cobalt X(Co) [at%]",
+            "x_axis_label": "Atomic Fraction of Cobalt, x(Co)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1285,10 +1285,10 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Melting", "temp": conv(1010.0), "x_reaction": 0.250, "x_start": 0.245, "x_end": 0.255, "equation": "L ⇌ Na₃AlF₆ (Cryolite congruent melting)"},
-            {"type": "Eutectic", "temp": conv(888.0), "x_reaction": 0.139, "x_start": 0.000, "x_end": 0.250, "equation": "L (13.9 mol% AlF₃) ⇌ NaF + β-Na₃AlF₆ (Cryolite)"},
-            {"type": "Peritectic", "temp": conv(734.0), "x_reaction": 0.300, "x_start": 0.250, "x_end": 0.375, "equation": "L (30.0 mol% AlF₃) + β-Na₃AlF₆ ⇌ Na₅Al₃F₁₄ (Chiolite)"},
-            {"type": "Eutectic", "temp": conv(695.0), "x_reaction": 0.373, "x_start": 0.373, "x_end": 0.500, "equation": "L (37.3 mol% AlF₃) ⇌ Na₅Al₃F₁₄ (Chiolite) + AlF₃"}
+            {"type": "Congruent Melting", "temp": conv(1010.0), "x_reaction": 0.250, "x_start": 0.250, "x_end": 0.250, "equation": "L ⇌ Na₃AlF₆ (Cryolite congruent melting)"},
+            {"type": "Eutectic", "temp": conv(888.0), "x_reaction": 0.139, "x_start": 0.250, "x_end": 0.250, "equation": "L (13.9 mol% AlF₃) ⇌ NaF + β-Na₃AlF₆ (Cryolite)"},
+            {"type": "Peritectic", "temp": conv(734.0), "x_reaction": 0.300, "x_start": 0.250, "x_end": 0.250, "equation": "L (30.0 mol% AlF₃) + β-Na₃AlF₆ ⇌ Na₅Al₃F₁₄ (Chiolite)"},
+            {"type": "Eutectic", "temp": conv(695.0), "x_reaction": 0.373, "x_start": 0.250, "x_end": 0.250, "equation": "L (37.3 mol% AlF₃) ⇌ Na₅Al₃F₁₄ (Chiolite) + AlF₃"}
         ]
 
         regions = [
@@ -1369,38 +1369,74 @@ class BinaryDiagramEngine:
         ]
         xs_sol, ys_sol = _interpolate_curve(sol_knots, n_pts=n_pts, clip_x_min=0.0, clip_x_max=1.0)
 
-        # L1_0 MnNi ordered tetragonal phase boundary (CuAu-I type, congruent summit at 50 at% Ni, 910 C)
-        l10_knots = [
-            (0.41, 300.0),
-            (0.43, 600.0),
-            (0.46, 800.0),
+        # L1_0-MnNi Ordered Phase Boundaries (CuAu-I type tetragonal, congruent summit at 50 at% Ni, 910 °C)
+        # Outer disordered gamma solvus boundary (left & right branches)
+        l10_outer_knots = [
+            (0.36, 200.0),
+            (0.40, 500.0),
+            (0.45, 750.0),
             (0.50, 910.0),
-            (0.54, 800.0),
-            (0.57, 600.0),
-            (0.59, 300.0)
+            (0.55, 750.0),
+            (0.60, 500.0),
+            (0.63, 200.0)
         ]
-        xs_l10, ys_l10 = _interpolate_curve(l10_knots, n_pts=60, clip_x_min=0.40, clip_x_max=0.60)
+        xs_l10_out, ys_l10_out = _interpolate_curve(l10_outer_knots, n_pts=60, clip_x_min=0.35, clip_x_max=0.65)
 
-        # L1_2 Ni3Mn ordered FCC phase boundary (Cu3Au type, congruent summit at 75 at% Ni, 510 C)
-        l12_knots = [
-            (0.68, 200.0),
-            (0.70, 350.0),
+        # Inner ordered L1_0 phase field boundary
+        l10_inner_knots = [
+            (0.44, 200.0),
+            (0.46, 500.0),
+            (0.48, 750.0),
+            (0.50, 910.0),
+            (0.52, 750.0),
+            (0.54, 500.0),
+            (0.56, 200.0)
+        ]
+        xs_l10_in, ys_l10_in = _interpolate_curve(l10_inner_knots, n_pts=50, clip_x_min=0.43, clip_x_max=0.57)
+
+        # L1_2-Ni3Mn Ordered Phase Boundaries (Cu3Au type FCC, congruent summit at 75 at% Ni, 510 °C)
+        # Outer disordered gamma solvus boundary (left & right branches)
+        l12_outer_knots = [
+            (0.66, 150.0),
+            (0.69, 300.0),
             (0.72, 450.0),
             (0.75, 510.0),
             (0.78, 450.0),
-            (0.81, 350.0),
-            (0.83, 200.0)
+            (0.81, 300.0),
+            (0.84, 150.0)
         ]
-        xs_l12, ys_l12 = _interpolate_curve(l12_knots, n_pts=50, clip_x_min=0.65, clip_x_max=0.85)
+        xs_l12_out, ys_l12_out = _interpolate_curve(l12_outer_knots, n_pts=50, clip_x_min=0.65, clip_x_max=0.85)
 
-        # delta-Mn / gamma-Mn transition near pure Mn
+        # Inner ordered L1_2 phase field boundary
+        l12_inner_knots = [
+            (0.71, 150.0),
+            (0.725, 300.0),
+            (0.74, 450.0),
+            (0.75, 510.0),
+            (0.76, 450.0),
+            (0.775, 300.0),
+            (0.79, 150.0)
+        ]
+        xs_l12_in, ys_l12_in = _interpolate_curve(l12_inner_knots, n_pts=40, clip_x_min=0.70, clip_x_max=0.80)
+
+        # Pure Mn allotropic boundaries
+        # delta-Mn (BCC) field near pure Mn (1138 to 1246 °C)
         delta_knots = [
             (0.00, 1138.0),
-            (0.02, 1145.0),
-            (0.04, 1138.0)
+            (0.015, 1145.0),
+            (0.035, 1138.0)
         ]
         xs_delta, ys_delta = _interpolate_curve(delta_knots, n_pts=20, clip_x_min=0.0, clip_x_max=0.05)
 
+        # gamma-Mn -> beta-Mn transus boundary (1100 °C to 710 °C eutectoid)
+        beta_knots = [
+            (0.00, 1100.0),
+            (0.018, 950.0),
+            (0.035, 710.0)
+        ]
+        xs_beta, ys_beta = _interpolate_curve(beta_knots, n_pts=25, clip_x_min=0.0, clip_x_max=0.04)
+
+        # Invariant and critical reactions
         invariants = [
             {
                 "type": "Congruent Minimum",
@@ -1414,35 +1450,48 @@ class BinaryDiagramEngine:
                 "type": "Order-Disorder Summit",
                 "temp": conv(910.0),
                 "x_reaction": 0.500,
-                "x_start": 0.450,
-                "x_end": 0.550,
+                "x_start": 0.500,
+                "x_end": 0.500,
                 "equation": "γ-(Mn,Ni) ⇌ L1₀-MnNi (Ordered Tetragonal Summit at 910 °C)"
             },
             {
                 "type": "Order-Disorder Summit",
                 "temp": conv(510.0),
                 "x_reaction": 0.750,
-                "x_start": 0.710,
-                "x_end": 0.790,
+                "x_start": 0.750,
+                "x_end": 0.750,
                 "equation": "γ-(Mn,Ni) ⇌ L1₂-Ni₃Mn (Ordered FCC Summit at 510 °C)"
+            },
+            {
+                "type": "Eutectoid",
+                "temp": conv(710.0),
+                "x_reaction": 0.120,
+                "x_start": 0.035,
+                "x_end": 0.400,
+                "equation": "γ-(Mn,Ni) ⇌ β-Mn + L1₀-MnNi (Eutectoid Decomposition at 710 °C)"
             }
         ]
 
         curves = [
             {"name": "Liquidus", "xs": xs_liq, "ys": [conv(t) for t in ys_liq], "color": "#000000", "width": 2.2, "dash": "solid"},
             {"name": "Solidus", "xs": xs_sol, "ys": [conv(t) for t in ys_sol], "color": "#2563EB", "width": 2.0, "dash": "solid"},
-            {"name": "L1₀-MnNi Solvus", "xs": xs_l10, "ys": [conv(t) for t in ys_l10], "color": "#7C3AED", "width": 1.8, "dash": "solid"},
-            {"name": "L1₂-Ni₃Mn Solvus", "xs": xs_l12, "ys": [conv(t) for t in ys_l12], "color": "#059669", "width": 1.8, "dash": "solid"},
+            {"name": "γ / (γ + L1₀) Solvus", "xs": xs_l10_out, "ys": [conv(t) for t in ys_l10_out], "color": "#7C3AED", "width": 1.8, "dash": "solid"},
+            {"name": "L1₀-MnNi Ordered Boundary", "xs": xs_l10_in, "ys": [conv(t) for t in ys_l10_in], "color": "#7C3AED", "width": 1.4, "dash": "dash"},
+            {"name": "γ / (γ + L1₂) Solvus", "xs": xs_l12_out, "ys": [conv(t) for t in ys_l12_out], "color": "#059669", "width": 1.8, "dash": "solid"},
+            {"name": "L1₂-Ni₃Mn Ordered Boundary", "xs": xs_l12_in, "ys": [conv(t) for t in ys_l12_in], "color": "#059669", "width": 1.4, "dash": "dash"},
             {"name": "δ-Mn Boundary", "xs": xs_delta, "ys": [conv(t) for t in ys_delta], "color": "#DC2626", "width": 1.5, "dash": "dash"},
-            {"name": "Congruent Minimum Marker", "xs": [0.380, 0.380], "ys": [conv(980.0), conv(1018.0)], "color": "#DC2626", "width": 1.5, "dash": "dot"}
+            {"name": "β-Mn Boundary", "xs": xs_beta, "ys": [conv(t) for t in ys_beta], "color": "#DC2626", "width": 1.5, "dash": "dash"},
         ]
 
         regions = [
             {"label": "Liquid Solution (L)", "x": 0.50, "y": conv(1250.0), "font_size": 13, "color": "#0F172A"},
             {"label": "γ-(Mn,Ni) FCC Matrix", "x": 0.22, "y": conv(850.0), "font_size": 11, "color": "#1E3A8A"},
-            {"label": "γ-(Mn,Ni) Disordered FCC", "x": 0.88, "y": conv(850.0), "font_size": 11, "color": "#1E3A8A"},
-            {"label": "L1₀-MnNi (Ordered)", "x": 0.50, "y": conv(600.0), "font_size": 11, "color": "#581C87"},
-            {"label": "L1₂-Ni₃Mn (Ordered)", "x": 0.75, "y": conv(380.0), "font_size": 11, "color": "#065F46"},
+            {"label": "γ-(Mn,Ni) Disordered FCC", "x": 0.90, "y": conv(850.0), "font_size": 11, "color": "#1E3A8A"},
+            {"label": "L1₀-MnNi (Ordered)", "x": 0.50, "y": conv(500.0), "font_size": 11, "color": "#581C87"},
+            {"label": "γ + L1₀", "x": 0.40, "y": conv(350.0), "font_size": 9.5, "color": "#6B21A8"},
+            {"label": "L1₀ + γ", "x": 0.59, "y": conv(350.0), "font_size": 9.5, "color": "#6B21A8"},
+            {"label": "L1₂-Ni₃Mn (Ordered)", "x": 0.75, "y": conv(300.0), "font_size": 11, "color": "#065F46"},
+            {"label": "γ + L1₂", "x": 0.81, "y": conv(230.0), "font_size": 9.5, "color": "#047857"},
             {"label": "(α,β-Mn)", "x": 0.05, "y": conv(500.0), "font_size": 11, "color": "#991B1B"}
         ]
 
@@ -1450,7 +1499,7 @@ class BinaryDiagramEngine:
             "system": "Mn-Ni",
             "element_a": "Mn",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Ni X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Ni, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1582,7 +1631,7 @@ class BinaryDiagramEngine:
             "system": "Fe-Ni",
             "element_a": "Fe",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Ni X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Ni, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1655,7 +1704,7 @@ class BinaryDiagramEngine:
             "system": "Cr-Ni",
             "element_a": "Cr",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Ni X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Ni, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1784,7 +1833,7 @@ class BinaryDiagramEngine:
             "system": "Co-Ni",
             "element_a": "Co",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Ni X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Ni, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1829,8 +1878,8 @@ class BinaryDiagramEngine:
                 "type": "Order-Disorder Summit",
                 "temp": conv(730.0),
                 "x_reaction": 0.500,
-                "x_start": 0.420,
-                "x_end": 0.580,
+                "x_start": 0.500,
+                "x_end": 0.500,
                 "equation": "α-BCC ⇌ B2-FeCo (Ordered Permendur Summit at 730 °C)"
             }
         ]
@@ -1853,7 +1902,7 @@ class BinaryDiagramEngine:
             "system": "Co-Fe",
             "element_a": "Co",
             "element_b": "Fe",
-            "x_axis_label": "Atomic Fraction of Fe X(Fe) [at%]",
+            "x_axis_label": "Atomic Fraction of Fe, x(Fe)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -1985,7 +2034,7 @@ class BinaryDiagramEngine:
             "system": "Fe-Mn",
             "element_a": "Fe",
             "element_b": "Mn",
-            "x_axis_label": "Atomic Fraction of Mn X(Mn) [at%]",
+            "x_axis_label": "Atomic Fraction of Mn, x(Mn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -2444,7 +2493,7 @@ class BinaryDiagramEngine:
             "system": "Ti-V",
             "element_a": "Ti",
             "element_b": "V",
-            "x_axis_label": "Atomic Fraction of V X(V) [at%]",
+            "x_axis_label": "Atomic Fraction of V, x(V)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -2565,7 +2614,7 @@ class BinaryDiagramEngine:
             "system": "Al-Mg",
             "element_a": "Al",
             "element_b": "Mg",
-            "x_axis_label": "Atomic Fraction of Mg X(Mg) [at%]",
+            "x_axis_label": "Atomic Fraction of Mg, x(Mg)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -2640,7 +2689,7 @@ class BinaryDiagramEngine:
             "system": "Al-Si",
             "element_a": "Al",
             "element_b": "Si",
-            "x_axis_label": "Atomic Fraction of Si X(Si) [at%]",
+            "x_axis_label": "Atomic Fraction of Si, x(Si)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -2741,8 +2790,8 @@ class BinaryDiagramEngine:
                 "type": "Congruent Summit",
                 "temp": conv(1310.0),
                 "x_reaction": 0.50,
-                "x_start": 0.48,
-                "x_end": 0.54,
+                "x_start": 0.50,
+                "x_end": 0.50,
                 "equation": "L (50 at% Ni) ⇌ B2-NiTi (Shape Memory Nitinol)"
             },
             {
@@ -2784,7 +2833,7 @@ class BinaryDiagramEngine:
             "system": "Ni-Ti",
             "element_a": "Ti",
             "element_b": "Ni",
-            "x_axis_label": "Atomic Fraction of Ni X(Ni) [at%]",
+            "x_axis_label": "Atomic Fraction of Ni, x(Ni)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -2920,7 +2969,7 @@ class BinaryDiagramEngine:
             "system": "Cu-Zn",
             "element_a": "Cu",
             "element_b": "Zn",
-            "x_axis_label": "Atomic Fraction of Zn X(Zn) [at%]",
+            "x_axis_label": "Atomic Fraction of Zn, x(Zn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3064,7 +3113,7 @@ class BinaryDiagramEngine:
             "system": "Cu-Sn",
             "element_a": "Cu",
             "element_b": "Sn",
-            "x_axis_label": "Atomic Fraction of Sn X(Sn) [at%]",
+            "x_axis_label": "Atomic Fraction of Sn, x(Sn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3133,7 +3182,7 @@ class BinaryDiagramEngine:
              "equation": "L (88.7 at% Zn) ⇌ (Al) (67.0 at% Zn) + (Zn) (97.2 at% Zn)"},
             {"type": "Eutectoid", "temp": conv(277.0), "x_reaction": 0.590, "x_start": 0.165, "x_end": 0.985,
              "equation": "α'-(Al) (59.0 at% Zn) ⇌ α-(Al) (16.5 at% Zn) + (Zn) (98.5 at% Zn)"},
-            {"type": "Critical Point", "temp": conv(351.5), "x_reaction": 0.395, "x_start": 0.390, "x_end": 0.400,
+            {"type": "Critical Point", "temp": conv(351.5), "x_reaction": 0.395, "x_start": 0.395, "x_end": 0.395,
              "equation": "(Al) Solid Solution ⇌ α-(Al) + α'-(Al) (Miscibility Gap Summit)"}
         ]
 
@@ -3149,7 +3198,7 @@ class BinaryDiagramEngine:
             "system": "Al-Zn",
             "element_a": "Al",
             "element_b": "Zn",
-            "x_axis_label": "Atomic Fraction of Zn X(Zn) [at%]",
+            "x_axis_label": "Atomic Fraction of Zn, x(Zn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3214,9 +3263,9 @@ class BinaryDiagramEngine:
              "equation": "L (1.8 at% Fe) ⇌ (Al) (0.03 at% Fe) + Al₁₃Fe₄ (23.5 at% Fe)"},
             {"type": "Peritectic", "temp": conv(1157.0), "x_reaction": 0.235, "x_start": 0.235, "x_end": 0.280,
              "equation": "L (2.5 at% Fe) + Al₅Fe₂ (28.0 at% Fe) ⇌ Al₁₃Fe₄ (23.5 at% Fe)"},
-            {"type": "Congruent", "temp": conv(1169.0), "x_reaction": 0.285, "x_start": 0.280, "x_end": 0.290,
+            {"type": "Congruent", "temp": conv(1169.0), "x_reaction": 0.285, "x_start": 0.285, "x_end": 0.285,
              "equation": "L ⇌ Al₅Fe₂ (Congruent Summit)"},
-            {"type": "Congruent", "temp": conv(1310.0), "x_reaction": 0.480, "x_start": 0.470, "x_end": 0.490,
+            {"type": "Congruent", "temp": conv(1310.0), "x_reaction": 0.480, "x_start": 0.480, "x_end": 0.480,
              "equation": "L ⇌ β-AlFe (B2 Ordered BCC Congruent)"},
             {"type": "Peritectic", "temp": conv(1449.0), "x_reaction": 0.650, "x_start": 0.650, "x_end": 0.780,
              "equation": "L (65.0 at% Fe) + (δ-Fe) (78.0 at% Fe) ⇌ β-AlFe (68.0 at% Fe)"}
@@ -3235,7 +3284,7 @@ class BinaryDiagramEngine:
             "system": "Al-Fe",
             "element_a": "Al",
             "element_b": "Fe",
-            "x_axis_label": "Atomic Fraction of Fe X(Fe) [at%]",
+            "x_axis_label": "Atomic Fraction of Fe, x(Fe)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3291,7 +3340,7 @@ class BinaryDiagramEngine:
              "equation": "L (12.0 at% Mn) + Al₁₁Mn₄ (26.7 at% Mn) ⇌ Al₄Mn (20.0 at% Mn)"},
             {"type": "Peritectic", "temp": conv(998.0), "x_reaction": 0.267, "x_start": 0.220, "x_end": 0.360,
              "equation": "L (22.0 at% Mn) + Al₈Mn₅ (38.5 at% Mn) ⇌ Al₁₁Mn₄ (26.7 at% Mn)"},
-            {"type": "Congruent", "temp": conv(1190.0), "x_reaction": 0.385, "x_start": 0.380, "x_end": 0.390,
+            {"type": "Congruent", "temp": conv(1190.0), "x_reaction": 0.385, "x_start": 0.385, "x_end": 0.385,
              "equation": "L ⇌ Al₈Mn₅ (γ-phase Congruent Summit)"}
         ]
 
@@ -3309,7 +3358,7 @@ class BinaryDiagramEngine:
             "system": "Al-Mn",
             "element_a": "Al",
             "element_b": "Mn",
-            "x_axis_label": "Atomic Fraction of Mn X(Mn) [at%] ",
+            "x_axis_label": "Atomic Fraction of Mn, x(Mn) ",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3363,7 +3412,7 @@ class BinaryDiagramEngine:
         invariants = [
             {"type": "Eutectic", "temp": conv(340.0), "x_reaction": 0.283, "x_start": 0.024, "x_end": 0.300,
              "equation": "L (28.3 at% Zn) ⇌ (Mg) (2.4 at% Zn) + Mg₇Zn₃ (30.0 at% Zn)"},
-            {"type": "Congruent", "temp": conv(590.0), "x_reaction": 0.667, "x_start": 0.660, "x_end": 0.675,
+            {"type": "Congruent", "temp": conv(590.0), "x_reaction": 0.667, "x_start": 0.667, "x_end": 0.667,
              "equation": "L ⇌ MgZn₂ (C14 Laves Phase Congruent Summit)"},
             {"type": "Peritectic", "temp": conv(381.0), "x_reaction": 0.846, "x_start": 0.846, "x_end": 0.680,
              "equation": "L (84.6 at% Zn) + MgZn₂ (66.7 at% Zn) ⇌ Mg₂Zn₁₁ (84.6 at% Zn)"},
@@ -3384,7 +3433,7 @@ class BinaryDiagramEngine:
             "system": "Mg-Zn",
             "element_a": "Mg",
             "element_b": "Zn",
-            "x_axis_label": "Atomic Fraction of Zn X(Zn) [at%]",
+            "x_axis_label": "Atomic Fraction of Zn, x(Zn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3433,7 +3482,7 @@ class BinaryDiagramEngine:
         invariants = [
             {"type": "Eutectic", "temp": conv(1212.0), "x_reaction": 0.345, "x_start": 0.250, "x_end": 0.490,
              "equation": "L (34.5 at% Si) ⇌ Fe₃Si (25.0 at% Si) + FeSi (50.0 at% Si)"},
-            {"type": "Congruent", "temp": conv(1410.0), "x_reaction": 0.500, "x_start": 0.495, "x_end": 0.505,
+            {"type": "Congruent", "temp": conv(1410.0), "x_reaction": 0.500, "x_start": 0.500, "x_end": 0.500,
              "equation": "L ⇌ FeSi (B20 Cubic Congruent Summit)"},
             {"type": "Peritectic", "temp": conv(1220.0), "x_reaction": 0.667, "x_start": 0.500, "x_end": 0.720,
              "equation": "L (72.0 at% Si) + FeSi (50.0 at% Si) ⇌ α-FeSi₂ (66.7 at% Si)"},
@@ -3454,7 +3503,7 @@ class BinaryDiagramEngine:
             "system": "Fe-Si",
             "element_a": "Fe",
             "element_b": "Si",
-            "x_axis_label": "Atomic Fraction of Si X(Si) [at%]",
+            "x_axis_label": "Atomic Fraction of Si, x(Si)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3521,7 +3570,7 @@ class BinaryDiagramEngine:
             "system": "Fe-Mo",
             "element_a": "Fe",
             "element_b": "Mo",
-            "x_axis_label": "Atomic Fraction of Mo X(Mo) [at%]",
+            "x_axis_label": "Atomic Fraction of Mo, x(Mo)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3573,9 +3622,9 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Minimum", "temp": conv(1468.0), "x_reaction": 0.310, "x_start": 0.300, "x_end": 0.320,
+            {"type": "Congruent Minimum", "temp": conv(1468.0), "x_reaction": 0.310, "x_start": 0.310, "x_end": 0.310,
              "equation": "L ⇌ (α-Fe, V) BCC Continuous Solid Solution Minimum"},
-            {"type": "Congruent Order", "temp": conv(1252.0), "x_reaction": 0.500, "x_start": 0.490, "x_end": 0.510,
+            {"type": "Congruent Order", "temp": conv(1252.0), "x_reaction": 0.500, "x_start": 0.500, "x_end": 0.500,
              "equation": "(α-Fe, V) BCC ⇌ σ-FeV (Tetragonal Ordered Phase Summit)"}
         ]
 
@@ -3590,7 +3639,7 @@ class BinaryDiagramEngine:
             "system": "Fe-V",
             "element_a": "Fe",
             "element_b": "V",
-            "x_axis_label": "Atomic Fraction of V X(V) [at%]",
+            "x_axis_label": "Atomic Fraction of V, x(V)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3642,9 +3691,9 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Minimum", "temp": conv(1860.0), "x_reaction": 0.200, "x_start": 0.190, "x_end": 0.210,
+            {"type": "Congruent Minimum", "temp": conv(1860.0), "x_reaction": 0.200, "x_start": 0.200, "x_end": 0.200,
              "equation": "L ⇌ (Cr, Mo) BCC Continuous Solid Solution Minimum"},
-            {"type": "Critical Point", "temp": conv(880.0), "x_reaction": 0.400, "x_start": 0.390, "x_end": 0.410,
+            {"type": "Critical Point", "temp": conv(880.0), "x_reaction": 0.400, "x_start": 0.400, "x_end": 0.400,
              "equation": "(Cr, Mo) BCC ⇌ α₁-(Cr) + α₂-(Mo) Miscibility Gap Summit"}
         ]
 
@@ -3658,7 +3707,7 @@ class BinaryDiagramEngine:
             "system": "Cr-Mo",
             "element_a": "Cr",
             "element_b": "Mo",
-            "x_axis_label": "Atomic Fraction of Mo X(Mo) [at%]",
+            "x_axis_label": "Atomic Fraction of Mo, x(Mo)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3731,7 +3780,7 @@ class BinaryDiagramEngine:
             "system": "Sn-Ag",
             "element_a": "Sn",
             "element_b": "Ag",
-            "x_axis_label": "Atomic Fraction of Ag X(Ag) [at%]",
+            "x_axis_label": "Atomic Fraction of Ag, x(Ag)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3793,7 +3842,7 @@ class BinaryDiagramEngine:
             "system": "Sn-Pb",
             "element_a": "Sn",
             "element_b": "Pb",
-            "x_axis_label": "Atomic Fraction of Pb X(Pb) [at%]",
+            "x_axis_label": "Atomic Fraction of Pb, x(Pb)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3852,7 +3901,7 @@ class BinaryDiagramEngine:
             "system": "Sn-Bi",
             "element_a": "Sn",
             "element_b": "Bi",
-            "x_axis_label": "Atomic Fraction of Bi X(Bi) [at%]",
+            "x_axis_label": "Atomic Fraction of Bi, x(Bi)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3917,7 +3966,7 @@ class BinaryDiagramEngine:
             "system": "Ti-Mo",
             "element_a": "Ti",
             "element_b": "Mo",
-            "x_axis_label": "Atomic Fraction of Mo X(Mo) [at%]",
+            "x_axis_label": "Atomic Fraction of Mo, x(Mo)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -3956,9 +4005,9 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Minimum", "temp": conv(1540.0), "x_reaction": 0.500, "x_start": 0.490, "x_end": 0.510,
+            {"type": "Congruent Minimum", "temp": conv(1540.0), "x_reaction": 0.500, "x_start": 0.500, "x_end": 0.500,
              "equation": "L ⇌ β-(Ti,Zr) BCC Continuous Solid Solution Minimum"},
-            {"type": "Transus Minimum", "temp": conv(605.0), "x_reaction": 0.500, "x_start": 0.490, "x_end": 0.510,
+            {"type": "Transus Minimum", "temp": conv(605.0), "x_reaction": 0.500, "x_start": 0.500, "x_end": 0.500,
              "equation": "β-(Ti,Zr) ⇌ α-(Ti,Zr) HCP Solid Solution Minimum"}
         ]
 
@@ -3972,7 +4021,7 @@ class BinaryDiagramEngine:
             "system": "Ti-Zr",
             "element_a": "Ti",
             "element_b": "Zr",
-            "x_axis_label": "Atomic Fraction of Zr X(Zr) [at%]",
+            "x_axis_label": "Atomic Fraction of Zr, x(Zr)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4025,9 +4074,9 @@ class BinaryDiagramEngine:
         ]
 
         invariants = [
-            {"type": "Congruent Minimum", "temp": conv(1740.0), "x_reaction": 0.220, "x_start": 0.210, "x_end": 0.230,
+            {"type": "Congruent Minimum", "temp": conv(1740.0), "x_reaction": 0.220, "x_start": 0.220, "x_end": 0.220,
              "equation": "L ⇌ β-(Zr,Nb) BCC Solid Solution Minimum"},
-            {"type": "Critical Point", "temp": conv(980.0), "x_reaction": 0.450, "x_start": 0.440, "x_end": 0.460,
+            {"type": "Critical Point", "temp": conv(980.0), "x_reaction": 0.450, "x_start": 0.450, "x_end": 0.450,
              "equation": "β-(Zr,Nb) ⇌ β₁-(Zr) + β₂-(Nb) Miscibility Gap Summit"},
             {"type": "Monotectoid", "temp": conv(610.0), "x_reaction": 0.185, "x_start": 0.006, "x_end": 0.860,
              "equation": "β-Zr (18.5 at% Nb) ⇌ α-Zr (0.6 at% Nb) + β-Nb (86.0 at% Nb)"}
@@ -4045,7 +4094,7 @@ class BinaryDiagramEngine:
             "system": "Zr-Nb",
             "element_a": "Zr",
             "element_b": "Nb",
-            "x_axis_label": "Atomic Fraction of Nb X(Nb) [at%]",
+            "x_axis_label": "Atomic Fraction of Nb, x(Nb)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4096,7 +4145,7 @@ class BinaryDiagramEngine:
         invariants = [
             {"type": "Peritectic", "temp": conv(1765.0), "x_reaction": 0.240, "x_start": 0.160, "x_end": 0.365,
              "equation": "L (24.0 at% Sn) + Zr₅Sn₃ (37.5 at% Sn) ⇌ β-Zr (16.0 at% Sn)"},
-            {"type": "Congruent", "temp": conv(1985.0), "x_reaction": 0.375, "x_start": 0.370, "x_end": 0.380,
+            {"type": "Congruent", "temp": conv(1985.0), "x_reaction": 0.375, "x_start": 0.375, "x_end": 0.375,
              "equation": "L ⇌ Zr₅Sn₃ (Hexagonal Congruent Summit)"},
             {"type": "Peritectic", "temp": conv(1140.0), "x_reaction": 0.667, "x_start": 0.385, "x_end": 0.850,
              "equation": "L (85.0 at% Sn) + Zr₅Sn₃ ⇌ ZrSn₂ (66.7 at% Sn)"},
@@ -4116,7 +4165,7 @@ class BinaryDiagramEngine:
             "system": "Zr-Sn",
             "element_a": "Zr",
             "element_b": "Sn",
-            "x_axis_label": "Atomic Fraction of Sn X(Sn) [at%]",
+            "x_axis_label": "Atomic Fraction of Sn, x(Sn)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4182,7 +4231,7 @@ class BinaryDiagramEngine:
             "system": "Co-W",
             "element_a": "Co",
             "element_b": "W",
-            "x_axis_label": "Atomic Fraction of W X(W) [at%]",
+            "x_axis_label": "Atomic Fraction of W, x(W)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4231,7 +4280,7 @@ class BinaryDiagramEngine:
             "system": "Mo-W",
             "element_a": "Mo",
             "element_b": "W",
-            "x_axis_label": "Atomic Fraction of W X(W) [at%]",
+            "x_axis_label": "Atomic Fraction of W, x(W)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4280,7 +4329,7 @@ class BinaryDiagramEngine:
             "system": "Nb-Mo",
             "element_a": "Nb",
             "element_b": "Mo",
-            "x_axis_label": "Atomic Fraction of Mo X(Mo) [at%]",
+            "x_axis_label": "Atomic Fraction of Mo, x(Mo)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4334,11 +4383,11 @@ class BinaryDiagramEngine:
         invariants = [
             {"type": "Eutectic", "temp": conv(660.6), "x_reaction": 0.0004, "x_start": 0.0, "x_end": 0.25,
              "equation": "L (0.04 at% Zr) ⇌ (Al) + Al₃Zr at 661 °C"},
-            {"type": "Congruent / Peritectic", "temp": conv(1583.1), "x_reaction": 0.250, "x_start": 0.250, "x_end": 0.333,
+            {"type": "Congruent / Peritectic", "temp": conv(1583.1), "x_reaction": 0.250, "x_start": 0.250, "x_end": 0.250,
              "equation": "L + Al₂Zr ⇌ Al₃Zr at 1583 °C"},
             {"type": "Peritectic", "temp": conv(1592.4), "x_reaction": 0.333, "x_start": 0.333, "x_end": 0.400,
              "equation": "L + Al₃Zr₂ ⇌ Al₂Zr at 1592 °C"},
-            {"type": "Congruent Peak", "temp": conv(1550.0), "x_reaction": 0.556, "x_start": 0.500, "x_end": 0.600,
+            {"type": "Congruent Peak", "temp": conv(1550.0), "x_reaction": 0.556, "x_start": 0.556, "x_end": 0.556,
              "equation": "L ⇌ Al₄Zr₅ (Congruent summit at ~1550 °C)"},
             {"type": "Eutectic", "temp": conv(1347.8), "x_reaction": 0.705, "x_start": 0.625, "x_end": 0.751,
              "equation": "L (70.5 at% Zr) ⇌ Al₃Zr₅ + β-(Zr) at 1348 °C"},
@@ -4388,7 +4437,7 @@ class BinaryDiagramEngine:
             "system": "Al-Zr",
             "element_a": "Al",
             "element_b": "Zr",
-            "x_axis_label": "Atomic Fraction of Zr X(Zr) [at%]",
+            "x_axis_label": "Atomic Fraction of Zr, x(Zr)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4439,13 +4488,13 @@ class BinaryDiagramEngine:
              "equation": "L (3.0 at% Y) ⇌ (Al) + αAl₃Y at 644 °C"},
             {"type": "Peritectic", "temp": conv(980.0), "x_reaction": 0.126, "x_start": 0.126, "x_end": 0.333,
              "equation": "L (12.6 at% Y) + Al₂Y ⇌ βAl₃Y at 980 °C"},
-            {"type": "Congruent Peak", "temp": conv(1490.0), "x_reaction": 0.333, "x_start": 0.30, "x_end": 0.36,
+            {"type": "Congruent Peak", "temp": conv(1490.0), "x_reaction": 0.333, "x_start": 0.333, "x_end": 0.333,
              "equation": "L ⇌ Al₂Y (Laves C15 Congruent Summit at 1490 °C)"},
             {"type": "Peritectic", "temp": conv(1137.0), "x_reaction": 0.511, "x_start": 0.333, "x_end": 0.500,
              "equation": "L (51.1 at% Y) + Al₂Y ⇌ AlY at 1137 °C"},
             {"type": "Peritectic", "temp": conv(1083.0), "x_reaction": 0.562, "x_start": 0.500, "x_end": 0.600,
              "equation": "L (56.2 at% Y) + AlY ⇌ Al₂Y₃ at 1083 °C"},
-            {"type": "Congruent Peak", "temp": conv(1104.0), "x_reaction": 0.667, "x_start": 0.62, "x_end": 0.70,
+            {"type": "Congruent Peak", "temp": conv(1104.0), "x_reaction": 0.667, "x_start": 0.667, "x_end": 0.667,
              "equation": "L ⇌ AlY₂ (Congruent Melting at 1104 °C)"},
             {"type": "Eutectic", "temp": conv(978.0), "x_reaction": 0.708, "x_start": 0.667, "x_end": 0.999,
              "equation": "L (70.8 at% Y) ⇌ AlY₂ + (αY) at 978 °C"},
@@ -4485,7 +4534,7 @@ class BinaryDiagramEngine:
             "system": "Al-Y",
             "element_a": "Al",
             "element_b": "Y",
-            "x_axis_label": "Atomic Fraction of Y X(Y) [at%]",
+            "x_axis_label": "Atomic Fraction of Y, x(Y)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4541,7 +4590,7 @@ class BinaryDiagramEngine:
              "equation": "L + Co₂₃Zr₆ ⇌ Co₁₁Zr₂ at 1272 °C"},
             {"type": "Peritectic", "temp": conv(1331.0), "x_reaction": 0.207, "x_start": 0.207, "x_end": 0.333,
              "equation": "L + Co₂Zr ⇌ Co₂₃Zr₆ at 1331 °C"},
-            {"type": "Congruent Peak", "temp": conv(1544.0), "x_reaction": 0.333, "x_start": 0.30, "x_end": 0.36,
+            {"type": "Congruent Peak", "temp": conv(1544.0), "x_reaction": 0.333, "x_start": 0.333, "x_end": 0.333,
              "equation": "L ⇌ Co₂Zr (Laves C15 Congruent Summit at 1544 °C)"},
             {"type": "Eutectic", "temp": conv(1315.0), "x_reaction": 0.380, "x_start": 0.333, "x_end": 0.500,
              "equation": "L (38.0 at% Zr) ⇌ Co₂Zr + CoZr at 1315 °C"},
@@ -4591,7 +4640,7 @@ class BinaryDiagramEngine:
             "system": "Co-Zr",
             "element_a": "Co",
             "element_b": "Zr",
-            "x_axis_label": "Atomic Fraction of Zr X(Zr) [at%]",
+            "x_axis_label": "Atomic Fraction of Zr, x(Zr)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4683,7 +4732,7 @@ class BinaryDiagramEngine:
             "system": "Co-Y",
             "element_a": "Co",
             "element_b": "Y",
-            "x_axis_label": "Atomic Fraction of Y X(Y) [at%]",
+            "x_axis_label": "Atomic Fraction of Y, x(Y)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4762,7 +4811,7 @@ class BinaryDiagramEngine:
             "system": "Cr-Y",
             "element_a": "Cr",
             "element_b": "Y",
-            "x_axis_label": "Atomic Fraction of Y X(Y) [at%]",
+            "x_axis_label": "Atomic Fraction of Y, x(Y)",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
@@ -4939,7 +4988,7 @@ class BinaryDiagramEngine:
             "system": f"{el_a}-{el_b}",
             "element_a": el_a,
             "element_b": el_b,
-            "x_axis_label": f"Atomic Fraction of {el_b} X({el_b}) [at%]",
+            "x_axis_label": f"Atomic Fraction of {el_b}, x({el_b})",
             "y_axis_label": f"Temperature [{u}]",
             "temp_unit": u,
             "x_min": 0.0,
