@@ -53,7 +53,7 @@
         <Border x:Name="HeaderBorder" Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="14,8">
             <DockPanel>
                 <TextBlock x:Name="TxtHeaderTitle" Text="Scientific Property Visualization" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                <Border x:Name="BadgeSummary" DockPanel.Dock="Right" Background="#E0F2FE" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="4" Padding="8,2">
+                <Border x:Name="BadgeSummary" DockPanel.Dock="Right" Background="#E0F2FE" BorderBrush="#BAE6FD" BorderThickness="1" CornerRadius="4" Padding="8,2" Visibility="Collapsed">
                     <TextBlock x:Name="TxtHeaderSummary" Text="Awaiting calculation..." FontWeight="SemiBold" FontSize="11.5" Foreground="#0284C7"/>
                 </Border>
             </DockPanel>

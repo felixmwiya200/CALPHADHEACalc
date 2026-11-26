@@ -762,6 +762,7 @@ namespace PyCalphadSuite.Desktop
                 if (LblTStart != null) LblTStart.Text = toCelsius ? "T Start (°C):" : "T Start (K):";
                 if (LblTStop != null) LblTStop.Text = toCelsius ? "T Stop (°C):" : "T Stop (K):";
                 if (LblTStep != null) LblTStep.Text = toCelsius ? "Step (°C / K):" : "Step (K):";
+                if (LblTernaryTemp != null) LblTernaryTemp.Text = toCelsius ? "T (°C):" : "T (K):";
 
                 if (changed && TxtTStart != null && TxtTStop != null)
                 {
@@ -774,6 +775,11 @@ namespace PyCalphadSuite.Desktop
                     {
                         double convertedStop = toCelsius ? (te - 273.15) : (te + 273.15);
                         TxtTStop.Text = Math.Round(convertedStop, 2).ToString(CultureInfo.InvariantCulture);
+                    }
+                    if (TxtTernaryTemp != null && double.TryParse(TxtTernaryTemp.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out var tt))
+                    {
+                        double convertedTern = toCelsius ? (tt - 273.15) : (tt + 273.15);
+                        TxtTernaryTemp.Text = Math.Round(convertedTern, 2).ToString(CultureInfo.InvariantCulture);
                     }
                 }
             }
@@ -2348,14 +2354,19 @@ namespace PyCalphadSuite.Desktop
             plot.Axes.Top.Label.Text = "";
             plot.Grid.IsVisible = false;
 
-            // Set clean scientific title
-            plot.Axes.Title.Label.Text = $"{diag.System} Isothermal Section ({diag.Temperature:F0} {diag.TempUnit})";
+            // Set clean scientific title distinguishing isothermal sections vs liquidus projections
+            bool isLiquidus = string.Equals(diag.DiagramType, "liquidus", StringComparison.OrdinalIgnoreCase);
+            plot.Axes.Title.Label.Text = isLiquidus
+                ? $"{diag.System} Liquidus Surface Projection"
+                : $"{diag.System} Isothermal Section ({diag.Temperature:F0} {diag.TempUnit})";
             plot.Axes.Title.Label.Bold = true;
             plot.Axes.Title.Label.FontSize = 13.0f;
 
             // Register comprehensive metadata for CSV and reporting export
             HostTernaryDiagram.AddMetadata($"System: {diag.System}");
-            HostTernaryDiagram.AddMetadata($"Isothermal Section: {diag.Temperature:F1} {diag.TempUnit}");
+            HostTernaryDiagram.AddMetadata(isLiquidus
+                ? "Diagram Type: Liquidus Surface Projection"
+                : $"Isothermal Section: {diag.Temperature:F1} {diag.TempUnit}");
             if (!string.IsNullOrWhiteSpace(diag.LiteratureNotes))
             {
                 HostTernaryDiagram.AddMetadata($"Literature / CALPHAD Model: {diag.LiteratureNotes}");
@@ -2379,6 +2390,7 @@ namespace PyCalphadSuite.Desktop
             }
 
             // 2. Gibbs Equilateral Triangle Outer Perimeter Border
+            double hTri = Math.Sqrt(3.0) / 2.0;
             if (diag.TriangleBorderX.Count > 0 && diag.TriangleBorderY.Count > 0)
             {
                 var borderLine = plot.Add.ScatterLine(diag.TriangleBorderX.ToArray(), diag.TriangleBorderY.ToArray(), _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A"));
@@ -2386,11 +2398,43 @@ namespace PyCalphadSuite.Desktop
             }
             else
             {
-                double h = Math.Sqrt(3.0) / 2.0;
                 var borderXs = new double[] { 0.0, 1.0, 0.5, 0.0 };
-                var borderYs = new double[] { 0.0, 0.0, h, 0.0 };
+                var borderYs = new double[] { 0.0, 0.0, hTri, 0.0 };
                 var borderLine = plot.Add.ScatterLine(borderXs, borderYs, _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Color.FromHex("#0F172A"));
                 borderLine.LineWidth = 2.4f;
+            }
+
+            // 2b. Barycentric Perimeter Edge Tick Marks & Composition Labels (0.2..0.8)
+            var tickCol = _isDarkTheme ? ScottPlot.Color.FromHex("#94A3B8") : ScottPlot.Color.FromHex("#475569");
+            foreach (double f in new[] { 0.2, 0.4, 0.6, 0.8 })
+            {
+                // Bottom edge A -> B (fraction of B)
+                var tkb = plot.Add.ScatterLine(new[] { f, f }, new[] { 0.0, -0.012 }, tickCol);
+                tkb.LineWidth = 1.0f;
+                var lb = plot.Add.Text($"{f:0.0}", f, -0.018);
+                lb.LabelAlignment = Alignment.UpperCenter;
+                lb.LabelFontSize = 9.0f;
+                lb.LabelFontColor = tickCol;
+
+                // Right edge B -> C (fraction of C)
+                double rx = 1.0 - 0.5 * f;
+                double ry = f * hTri;
+                var tkr = plot.Add.ScatterLine(new[] { rx, rx + 0.011 * 0.8660254 }, new[] { ry, ry + 0.011 * 0.5 }, tickCol);
+                tkr.LineWidth = 1.0f;
+                var lr = plot.Add.Text($"{f:0.0}", rx + 0.022 * 0.8660254, ry + 0.022 * 0.5);
+                lr.LabelAlignment = Alignment.MiddleLeft;
+                lr.LabelFontSize = 9.0f;
+                lr.LabelFontColor = tickCol;
+
+                // Left edge C -> A (fraction of A)
+                double lx = 0.5 * (1.0 - f);
+                double ly = (1.0 - f) * hTri;
+                var tkl = plot.Add.ScatterLine(new[] { lx, lx - 0.011 * 0.8660254 }, new[] { ly, ly + 0.011 * 0.5 }, tickCol);
+                tkl.LineWidth = 1.0f;
+                var ll = plot.Add.Text($"{f:0.0}", lx - 0.022 * 0.8660254, ly + 0.022 * 0.5);
+                ll.LabelAlignment = Alignment.MiddleRight;
+                ll.LabelFontSize = 9.0f;
+                ll.LabelFontColor = tickCol;
             }
 
             // 3. Three-Phase Tie-Triangles with Translucent Fill & Vertex Markers (PyCalphad Standard)
@@ -2449,7 +2493,8 @@ namespace PyCalphadSuite.Desktop
                 }
             }
 
-            // 5. Boundary & Monovariant Phase Curves
+            // 5. Boundary & Monovariant Phase Curves + Invariant Point Markers
+            bool hasLegendEntries = false;
             if (diag.Curves != null)
             {
                 foreach (var curve in diag.Curves)
@@ -2458,17 +2503,38 @@ namespace PyCalphadSuite.Desktop
                     var xs = curve.Xs.ToArray();
                     var ys = curve.Ys.ToArray();
                     var col = ScottPlot.Color.FromHex(string.IsNullOrEmpty(curve.Color) ? "#000000" : curve.Color);
-                    var sc = plot.Add.ScatterLine(xs, ys, col);
-                    sc.LineWidth = (float)Math.Max(1.5, curve.LineWidth);
-                    if (curve.LineStyle == "dash" || curve.LineStyle == "Dashed")
+
+                    bool isPoint = string.Equals(curve.LineStyle, "Point", StringComparison.OrdinalIgnoreCase) || xs.Length == 1;
+                    if (isPoint)
                     {
-                        sc.LineStyle.Pattern = LinePattern.Dashed;
+                        var mk = plot.Add.Markers(xs, ys);
+                        mk.Color = col;
+                        mk.MarkerStyle.Shape = MarkerShape.FilledDiamond;
+                        mk.MarkerStyle.Size = (float)Math.Max(7.0, curve.LineWidth);
+                        if (!string.IsNullOrWhiteSpace(curve.Name))
+                        {
+                            mk.LegendText = curve.Name;
+                            hasLegendEntries = true;
+                        }
                     }
-                    else if (curve.LineStyle == "dot" || curve.LineStyle == "Dotted")
+                    else
                     {
-                        sc.LineStyle.Pattern = LinePattern.Dotted;
+                        var sc = plot.Add.ScatterLine(xs, ys, col);
+                        sc.LineWidth = (float)Math.Max(1.5, curve.LineWidth);
+                        if (curve.LineStyle == "dash" || curve.LineStyle == "Dashed")
+                        {
+                            sc.LineStyle.Pattern = LinePattern.Dashed;
+                        }
+                        else if (curve.LineStyle == "dot" || curve.LineStyle == "Dotted")
+                        {
+                            sc.LineStyle.Pattern = LinePattern.Dotted;
+                        }
+                        if (!string.IsNullOrWhiteSpace(curve.Name))
+                        {
+                            sc.LegendText = curve.Name;
+                            hasLegendEntries = true;
+                        }
                     }
-                    sc.LegendText = curve.Name;
                     HostTernaryDiagram.AddExportSeries(curve.Name, xs, ys);
                 }
             }
@@ -2508,8 +2574,28 @@ namespace PyCalphadSuite.Desktop
                 }
             }
 
-            // Fixed Bounds with Margin for Apex Text
-            HostTernaryDiagram.SetLimitsAndRemember(-0.15, 1.15, -0.10, 0.98);
+            // Configure Legend cleanly: hide completely when single-phase or legend-empty
+            foreach (var panel in plot.Axes.GetPanels().OfType<ScottPlot.Panels.LegendPanel>().ToList())
+            {
+                plot.Axes.Remove(panel);
+            }
+            bool hasCurvesOrTies = (diag.Curves != null && diag.Curves.Count > 0) || (diag.TieLines != null && diag.TieLines.Count > 0);
+            if (!hasCurvesOrTies || !hasLegendEntries)
+            {
+                plot.Legend.IsVisible = false;
+            }
+            else
+            {
+                plot.Legend.IsVisible = true;
+                plot.ShowLegend(Edge.Right);
+                plot.Legend.FontSize = 10.0f;
+                plot.Legend.BackgroundColor = _isDarkTheme ? ScottPlot.Color.FromHex("#161B22").WithAlpha(0.92) : ScottPlot.Colors.White.WithAlpha(0.94);
+                plot.Legend.OutlineColor = _isDarkTheme ? ScottPlot.Color.FromHex("#30363D") : ScottPlot.Color.FromHex("#CBD5E1");
+                plot.Legend.FontColor = _isDarkTheme ? ScottPlot.Color.FromHex("#F0F6FC") : ScottPlot.Color.FromHex("#0F172A");
+            }
+
+            // Fixed Bounds with Margin for Apex Text and Perimeter Ticks
+            HostTernaryDiagram.SetLimitsAndRemember(-0.16, 1.16, -0.11, 0.99);
             HostTernaryDiagram.HeaderSummary = $"{diag.System} ({diag.DiagramType}) | T={diag.Temperature:F0} {diag.TempUnit} | {diag.LiteratureNotes}";
             HostTernaryDiagram.Refresh();
         }

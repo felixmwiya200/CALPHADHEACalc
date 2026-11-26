@@ -482,8 +482,8 @@
                                             <ComboBoxItem Content="Liquidus Projection"/>
                                         </ComboBox>
 
-                                        <TextBlock Text="T (°C):" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#0F172A"/>
-                                        <TextBox x:Name="TxtTernaryTemp" Text="800" Width="55" Height="24" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,12,0"/>
+                                        <TextBlock x:Name="LblTernaryTemp" Text="T (K):" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#0F172A"/>
+                                        <TextBox x:Name="TxtTernaryTemp" Text="1073" Width="55" Height="24" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,12,0"/>
 
                                         <Button x:Name="BtnComputeTernary" Content="Calculate Diagram" Click="BtnComputeTernary_Click" FontWeight="Bold" Background="#0284C7" Foreground="White" Padding="12,4" Margin="0,0,14,0" ToolTip="Compute CALPHAD ternary phase equilibrium diagram on Gibbs triangle"/>
                                     </WrapPanel>
