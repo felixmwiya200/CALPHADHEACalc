@@ -105,13 +105,13 @@
                                         <ComboBoxItem Content="Radii: Space-Fill" Tag="cpk"/>
                                     </ComboBox>
 
-                                    <Button x:Name="BtnRotate180" Content="↻ 180°" Click="BtnRotate180_Click" ToolTip="Rotate 3D view by 180°" Padding="8,3" Margin="0,0,4,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
-                                    <Button x:Name="BtnSpin360" Content="↺ 360°" Click="BtnSpin360_Click" ToolTip="Perform a smooth 360° orbital sweep" Padding="8,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
+                                    <Button x:Name="BtnRotate180" Content="Rotate 180°" Click="BtnRotate180_Click" ToolTip="Rotate 3D view by 180°" Padding="8,3" Margin="0,0,4,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
+                                    <Button x:Name="BtnSpin360" Content="Spin 360°" Click="BtnSpin360_Click" ToolTip="Perform a smooth 360° orbital sweep" Padding="8,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
                                     <Button x:Name="BtnResetCamera" Content="Reset Camera" Click="BtnResetCamera_Click" Padding="8,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1"/>
                                     <Button x:Name="BtnExportPng" Content="Export PNG..." Click="BtnExportPng_Click" ToolTip="Export high-resolution PNG of the 3D crystal viewport and labels" Padding="9,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#059669" BorderThickness="1.2"/>
-                                    <Button x:Name="BtnExpand3D" Content="⛶ Expand 3D" Click="BtnExpand3D_Click" ToolTip="Expand 3D crystal viewport across the full window (click again to restore)"
+                                    <Button x:Name="BtnExpand3D" Content="Expand 3D" Click="BtnExpand3D_Click" ToolTip="Expand 3D crystal viewport across the full window (click again to restore)"
                                             Padding="9,3" Margin="0,0,6,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#1D4ED8" BorderThickness="1.2"/>
-                                    <Button x:Name="BtnPopOut3D" Content="↗ Pop Out Window" Click="BtnPopOut3D_Click" ToolTip="Open interactive 3D crystal structure in a separate resizable window"
+                                    <Button x:Name="BtnPopOut3D" Content="Pop Out Window" Click="BtnPopOut3D_Click" ToolTip="Open interactive 3D crystal structure in a separate resizable window"
                                             Padding="9,3" Margin="0,0,0,4" Background="#FFFFFF" Foreground="#000000" FontWeight="SemiBold" BorderBrush="#CBD5E1"/>
                                 </WrapPanel>
 

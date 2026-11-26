@@ -90,7 +90,7 @@
                     <MenuItem x:Name="MenuTempC" Header="Celsius (°C)" IsCheckable="True" Click="MenuTempC_Click"/>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="Experimental Options..." Click="MenuExperimentalOptions_Click" InputGestureText="Ctrl+Shift+E"/>
+                <MenuItem Header="Experimental Options" Click="MenuExperimentalOptions_Click" InputGestureText="Ctrl+Shift+E"/>
                 <Separator/>
                 <MenuItem x:Name="MenuVerbose" Header="Run in verbose mode" IsCheckable="True" Click="MenuVerbose_Click"/>
                 <MenuItem x:Name="MenuRecordSession" Header="Record session" IsCheckable="True" Click="MenuRecordSession_Click"/>
@@ -1035,7 +1035,7 @@
                                                 <TextBlock Grid.Column="2" Text="Ion Activity:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12" Margin="0,0,6,0"/>
                                                 <TextBox x:Name="TxtPourbaixActivity" Grid.Column="3" Text="1e-6" Width="60" VerticalAlignment="Center" Padding="3,2" Margin="0,0,14,0" ToolTip="Aqueous ion activity threshold for dissolution/passivation (mol/L)"/>
 
-                                                <Button x:Name="BtnRecalcPourbaix" Grid.Column="4" Content="⚡ Recalculate Pourbaix" Background="#1D4ED8" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnRecalcPourbaix_Click" Cursor="Hand" Margin="0,0,14,0"/>
+                                                <Button x:Name="BtnRecalcPourbaix" Grid.Column="4" Content="Recalculate Pourbaix" Background="#1D4ED8" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnRecalcPourbaix_Click" Cursor="Hand" Margin="0,0,14,0"/>
 
                                                 <Border Grid.Column="5" Background="#E2E8F0" CornerRadius="3" Padding="8,3" HorizontalAlignment="Right">
                                                     <TextBlock x:Name="TxtPourbaixMetricsBadge" Text="Dominant Passive Oxide: Eskolaite (Cr2O3) | Passivity Window ΔE = 1.76 V | Hydrothermal Stability: High" FontSize="11.5" Foreground="#1E293B" VerticalAlignment="Center" FontWeight="Medium"/>
@@ -1079,7 +1079,7 @@
                                                     <ComboBoxItem Content="FeOH_minteq.sdat (MINTEQA2 Extended)"/>
                                                 </ComboBox>
 
-                                                <Button x:Name="BtnRecalcSpeciation" Grid.Column="2" Content="⚡ Recompute Surface Speciation" Background="#0D9488" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnRecalcSpeciation_Click" Cursor="Hand" Margin="0,0,14,0"/>
+                                                <Button x:Name="BtnRecalcSpeciation" Grid.Column="2" Content="Recompute Surface Speciation" Background="#0D9488" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnRecalcSpeciation_Click" Cursor="Hand" Margin="0,0,14,0"/>
 
                                                 <Border Grid.Column="3" Background="#E2E8F0" CornerRadius="3" Padding="8,3" HorizontalAlignment="Right">
                                                     <TextBlock x:Name="TxtSdatPzcBadge" Text="Point of Zero Charge: pH_pzc = 8.11 | Acidic: Positively Charged | Alkaline: Negatively Charged" FontSize="11.5" Foreground="#1E293B" VerticalAlignment="Center" FontWeight="Medium"/>
@@ -1424,11 +1424,11 @@
                                             <TextBlock Grid.Column="0" Text="Search Literature:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
                                             <TextBox x:Name="TxtHeaSearch" Grid.Column="1" Text="" VerticalAlignment="Center" Padding="4,3" KeyDown="TxtHeaSearch_KeyDown" Margin="0,0,10,0"/>
 
-                                            <Button x:Name="BtnSearchHea" Grid.Column="2" Content="🔍 Search" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchHea_Click" Cursor="Hand" Margin="0,0,8,0"/>
-                                            <Button x:Name="BtnResetHea" Grid.Column="3" Content="↺ Reset" Background="#64748B" Foreground="White" FontWeight="SemiBold" Padding="10,4" Click="BtnResetHea_Click" Cursor="Hand" Margin="0,0,16,0"/>
+                                            <Button x:Name="BtnSearchHea" Grid.Column="2" Content="Search" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchHea_Click" Cursor="Hand" Margin="0,0,8,0"/>
+                                            <Button x:Name="BtnResetHea" Grid.Column="3" Content="Reset" Background="#64748B" Foreground="White" FontWeight="SemiBold" Padding="10,4" Click="BtnResetHea_Click" Cursor="Hand" Margin="0,0,16,0"/>
 
-                                            <Button x:Name="BtnFindNearestHea" Grid.Column="4" Content="🎯 Find Nearest to Current Alloy" Background="#0D9488" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnFindNearestHea_Click" Cursor="Hand" Margin="0,0,8,0" ToolTip="Computes Euclidean distance across 12,427 peer-reviewed HEAs to find closest literature analogues"/>
-                                            <Button x:Name="BtnLoadSelectedHea" Grid.Column="5" Content="📥 Load Selected Composition" Background="#16A34A" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnLoadSelectedHea_Click" Cursor="Hand" Margin="0,0,8,0" ToolTip="Applies selected literature alloy formula to the active simulation inputs"/>
+                                            <Button x:Name="BtnFindNearestHea" Grid.Column="4" Content="Find Nearest to Current Alloy" Background="#0D9488" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnFindNearestHea_Click" Cursor="Hand" Margin="0,0,8,0" ToolTip="Computes Euclidean distance across 12,427 peer-reviewed HEAs to find closest literature analogues"/>
+                                            <Button x:Name="BtnLoadSelectedHea" Grid.Column="5" Content="Load Selected Composition" Background="#16A34A" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnLoadSelectedHea_Click" Cursor="Hand" Margin="0,0,8,0" ToolTip="Applies selected literature alloy formula to the active simulation inputs"/>
                                         </Grid>
 
                                         <!-- Sub-row 2: Filters for Phase, Solution Type, and Study Type -->
@@ -1572,7 +1572,7 @@
                                                 <TextBlock Grid.Column="2" Text="Search Species:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
                                                 <TextBox x:Name="TxtTdatSearch" Grid.Column="3" Text="" VerticalAlignment="Center" Padding="4,3" KeyDown="TxtTdatSearch_KeyDown" Margin="0,0,10,0"/>
 
-                                                <Button x:Name="BtnSearchTdat" Grid.Column="4" Content="🔍 Search" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchTdat_Click" Cursor="Hand"/>
+                                                <Button x:Name="BtnSearchTdat" Grid.Column="4" Content="Search" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchTdat_Click" Cursor="Hand"/>
                                             </Grid>
                                         </Border>
 
@@ -1638,7 +1638,7 @@
                                                 <TextBlock Grid.Column="2" Text="Search Species:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
                                                 <TextBox x:Name="TxtSdatSearch" Grid.Column="3" Text="" VerticalAlignment="Center" Padding="4,3" KeyDown="TxtSdatSearch_KeyDown" Margin="0,0,10,0"/>
 
-                                                <Button x:Name="BtnSearchSdat" Grid.Column="4" Content="🔍 Filter" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchSdat_Click" Cursor="Hand" Margin="0,0,8,0"/>
+                                                <Button x:Name="BtnSearchSdat" Grid.Column="4" Content="Filter" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnSearchSdat_Click" Cursor="Hand" Margin="0,0,8,0"/>
                                             </Grid>
                                         </Border>
 
@@ -1707,7 +1707,7 @@
                                                 <TextBlock Grid.Column="0" Text="Industrial Electrolyte Stream:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
                                                 <ComboBox x:Name="CmbOadStream" Grid.Column="1" VerticalAlignment="Center" Padding="4,3" SelectionChanged="CmbOadStream_SelectionChanged" Margin="0,0,16,0"/>
 
-                                                <Button x:Name="BtnApplyStreamToCorrosion" Grid.Column="2" Content="⚡ Apply Stream to Pourbaix Solver" Background="#1D4ED8" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnApplyStreamToCorrosion_Click" Cursor="Hand"/>
+                                                <Button x:Name="BtnApplyStreamToCorrosion" Grid.Column="2" Content="Apply Stream to Pourbaix Solver" Background="#1D4ED8" Foreground="White" FontWeight="SemiBold" Padding="12,4" Click="BtnApplyStreamToCorrosion_Click" Cursor="Hand"/>
                                             </Grid>
                                         </Border>
 
