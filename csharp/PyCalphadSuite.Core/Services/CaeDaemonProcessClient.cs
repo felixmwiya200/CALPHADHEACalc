@@ -777,6 +777,23 @@ namespace PyCalphadSuite.Core.Services
             return res?.Presets ?? new Dictionary<string, KaufmanMallikPresetDto>();
         }
 
+        public Task<RedlichKisterInversionResultDto> InvertRedlichKisterBinaryAsync(
+            object? experimentalData = null,
+            int numTerms = 2,
+            int annealingSteps = 400,
+            double initialTemperature = 80.0,
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                experimental_data = experimentalData,
+                num_terms = numTerms,
+                annealing_steps = annealingSteps,
+                initial_temperature = initialTemperature
+            };
+            return SendRequestAsync<RedlichKisterInversionResultDto>("invert_redlich_kister_binary", p, timeout: TimeSpan.FromSeconds(25), ct: ct);
+        }
+
         #endregion
 
         #endregion

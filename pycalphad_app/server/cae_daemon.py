@@ -2133,6 +2133,50 @@ class CAEDaemon:
             "evaluated_phase": point_phase,
         })
 
+    @classmethod
+    def handle_invert_redlich_kister_binary(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Inverts Redlich-Kister excess Gibbs energy parameters from experimental solvus data using Metropolis simulated annealing."""
+        _ensure_modules()
+        from pycalphad_app.core.redlich_kister_inversion_engine import RedlichKisterInversionEngine
+        exp_data = req.get("experimental_data")
+        if not exp_data:
+            bench = RedlichKisterInversionEngine.get_beck_benchmark_dataset()
+            exp_data = bench["datapoints"]
+
+        num_terms = int(req.get("num_terms", 2))
+        annealing_steps = int(req.get("annealing_steps", 400))
+        init_temp = float(req.get("initial_temperature", 80.0))
+
+        engine = RedlichKisterInversionEngine()
+        inversion_res = engine.invert_parameters_metropolis(
+            experimental_data=exp_data,
+            num_terms=num_terms,
+            initial_temperature=init_temp,
+            annealing_steps=annealing_steps
+        )
+
+        t_min_c = float(req.get("t_min_c", 15.0))
+        t_max_c = float(req.get("t_max_c", 85.0))
+        overlay = engine.generate_solvus_overlay(t_min_c=t_min_c, t_max_c=t_max_c, n_points=40)
+
+        inversion_res["solvus_overlay"] = overlay
+        inversion_res["experimental_points"] = exp_data
+        return _to_json_safe(inversion_res)
+
+    @classmethod
+    def handle_calculate_redlich_kister_solvus(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates binary binodal solvus boundaries from explicit Redlich-Kister parameters."""
+        _ensure_modules()
+        from pycalphad_app.core.redlich_kister_inversion_engine import RedlichKisterInversionEngine
+        params = req.get("parameters") or [{"a": 15000.0, "b": 0.0, "c": 0.0, "d": 0.0}]
+        engine = RedlichKisterInversionEngine(parameters=params)
+
+        t_min_c = float(req.get("t_min_c", 0.0))
+        t_max_c = float(req.get("t_max_c", 200.0))
+        n_points = int(req.get("n_points", 50))
+        overlay = engine.generate_solvus_overlay(t_min_c=t_min_c, t_max_c=t_max_c, n_points=n_points)
+        return _to_json_safe(overlay)
+
 
 def run_daemon():
     """Main event loop reading newline-delimited JSON RPC from STDIN."""
@@ -2187,6 +2231,8 @@ def run_daemon():
         "get_kaufman_mallik_presets": CAEDaemon.handle_get_kaufman_mallik_presets,
         "calculate_spinodal_decomposition": CAEDaemon.handle_calculate_spinodal_decomposition,
         "calculate_unary_diagram": CAEDaemon.handle_calculate_unary_diagram,
+        "invert_redlich_kister_binary": CAEDaemon.handle_invert_redlich_kister_binary,
+        "calculate_redlich_kister_solvus": CAEDaemon.handle_calculate_redlich_kister_solvus,
     }
 
     sys.stderr.write(f"[CAEDaemon] Ready v{CAEDaemon.VERSION}. Listening on STDIN...\n")

@@ -2953,6 +2953,73 @@ namespace PyCalphadSuite.Core.Models
 
     #endregion
 
+    #region Redlich-Kister Parameter Inversion Formalism Models
+
+    public class RedlichKisterParameterDto
+    {
+        [JsonPropertyName("term_order")]
+        public int TermOrder { get; set; }
+
+        [JsonPropertyName("L_k_expression")]
+        public string Expression { get; set; } = string.Empty;
+
+        [JsonPropertyName("a_enthalpy_J_mol")]
+        public double AEnthalpyJMol { get; set; }
+
+        [JsonPropertyName("b_entropy_J_mol_K")]
+        public double BEntropyJMolK { get; set; }
+    }
+
+    public class RedlichKisterInversionStatisticsDto
+    {
+        [JsonPropertyName("chi2_metric")]
+        public double Chi2Metric { get; set; }
+
+        [JsonPropertyName("rmse_chemical_potential_J_mol")]
+        public double RmseChemicalPotentialJMol { get; set; }
+
+        [JsonPropertyName("mae_chemical_potential_J_mol")]
+        public double MaeChemicalPotentialJMol { get; set; }
+
+        [JsonPropertyName("data_points_fitted")]
+        public int DataPointsFitted { get; set; }
+
+        [JsonPropertyName("annealing_steps_executed")]
+        public int AnnealingStepsExecuted { get; set; }
+    }
+
+    public class RedlichKisterSolvusOverlayDto
+    {
+        [JsonPropertyName("temperature_C")]
+        public List<double> TemperatureC { get; set; } = new();
+
+        [JsonPropertyName("x_alpha_solvus")]
+        public List<double> XAlphaSolvus { get; set; } = new();
+
+        [JsonPropertyName("x_beta_solvus")]
+        public List<double> XBetaSolvus { get; set; } = new();
+
+        [JsonPropertyName("has_miscibility_gap")]
+        public bool HasMiscibilityGap { get; set; }
+    }
+
+    public class RedlichKisterInversionResultDto
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("fitted_parameters")]
+        public List<RedlichKisterParameterDto> FittedParameters { get; set; } = new();
+
+        [JsonPropertyName("statistics")]
+        public RedlichKisterInversionStatisticsDto? Statistics { get; set; }
+
+        [JsonPropertyName("solvus_overlay")]
+        public RedlichKisterSolvusOverlayDto? SolvusOverlay { get; set; }
+    }
+
+    #endregion
+
     #endregion
 
     #endregion
