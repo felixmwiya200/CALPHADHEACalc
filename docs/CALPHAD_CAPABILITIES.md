@@ -3,8 +3,8 @@
 **Application**: CALPHAD XOC (2026 Edition)  
 **Binary Executable**: `PyCalphadSuite.Desktop.exe`  
 **Desktop Shortcut**: [CALPHAD XOC.lnk](file:///C:/Users/Dell/Desktop/CALPHAD XOC.lnk)  
-**Last Capabilities Audit**: 2026-11-22 14:16:14 (IST)  
-**Trigger Classification**: `ManualForce`  
+**Last Capabilities Audit**: 2026-11-26 14:00:07 (IST)  
+**Trigger Classification**: `MissedScheduleCatchUp`  
 **Supervisory Principal**: Felix Mwiya (Department of Mechanical Engineering, SRM University-AP)  
 
 ---
@@ -145,11 +145,13 @@ CALPHAD XOC generates native, ready-to-run material cards and decks for:
 
 ---
 
-## 7. Verification & Synchronization Protocol
+## 7. Automated Synchronization & Missed-Run Catch-Up Protocol
 
-This document and the associated capability matrix are governed by scheduled verification and regression checks:
-- **Scheduled Verification**: Weekly regression runs and model synchronization across binary benchmarks.
-- **System-Level Task**: Automated background execution validates database integrity and checks for numerical convergence drift.
+This document and the associated capability matrix are governed by an automated, unattended synchronization service:
+- **Scheduled Interval**: Every Thursday at 14:00:00 IST (2:00 PM).
+- **Antigravity Standing Daemon**: Registered background schedule task (`task-58`) with cron expression `0 14 * * 4`.
+- **System-Level Catch-Up (Windows Task Scheduler)**: Task `CALPHAD_XOC_Weekly_Capabilities_Sync` triggers at user logon and on Thursdays at 14:00 IST with `StartWhenAvailable = true`.
+- **Missed-Run Detection**: If the computer was powered off during the scheduled Thursday 14:00 IST window, `automate_calphad_capabilities.ps1` detects that the last completed run precedes the most recent Thursday 14:00 IST, activates immediate research execution, and logs the catch-up in `calphad_schedule_state.json`.
 
 ---
-*CALPHADHEACalc Suite | Materials CAE & Computational Metallurgy Workstation.*
+*CALPHADHEACalc Suite | Author: Felix Mwiya | Materials CAE & Computational Metallurgy Workstation.*

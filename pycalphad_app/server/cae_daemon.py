@@ -2212,6 +2212,49 @@ class CAEDaemon:
         points = EspeiDatasetRegistry.get_thermochemical_points(system_str, output_prop=prop)
         return _to_json_safe({"system": system_str, "property": prop, "points": points, "count": len(points)})
 
+    @classmethod
+    def handle_get_hea_master_statistics(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns aggregate metrics across all 25,800+ extracted HEA experimental and phase datasets."""
+        _ensure_modules()
+        from pycalphad_app.database.hea_master_dataset_registry import HeaMasterDatasetRegistry
+        stats = HeaMasterDatasetRegistry.get_statistics()
+        return _to_json_safe(stats)
+
+    @classmethod
+    def handle_search_hea_master_datasets(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Search across the 25,800+ HEA records by chemical formula, elements, and property filter."""
+        _ensure_modules()
+        from pycalphad_app.database.hea_master_dataset_registry import HeaMasterDatasetRegistry
+        query = req.get("query", "")
+        elements = req.get("elements")
+        prop_filter = req.get("property_filter")
+        max_res = int(req.get("max_results", 50))
+        results = HeaMasterDatasetRegistry.search_alloys(
+            query=query,
+            elements=elements,
+            property_filter=prop_filter,
+            max_results=max_res
+        )
+        return _to_json_safe({"results": results, "count": len(results)})
+
+    @classmethod
+    def handle_get_hea_mechanical_benchmarks(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Retrieves measured yield strength, UTS, hardness, elongation, and modulus for an HEA."""
+        _ensure_modules()
+        from pycalphad_app.database.hea_master_dataset_registry import HeaMasterDatasetRegistry
+        target = req.get("formula") or req.get("elements") or "AlCoCrFeNi"
+        benchmarks = HeaMasterDatasetRegistry.get_mechanical_benchmarks(target)
+        return _to_json_safe({"target": target, "benchmarks": benchmarks, "count": len(benchmarks)})
+
+    @classmethod
+    def handle_get_hea_temperature_yield_curve(cls, req: Dict[str, Any]) -> Dict[str, Any]:
+        """Retrieves elevated-temperature yield strength curve data points (25 °C up to 1200 °C)."""
+        _ensure_modules()
+        from pycalphad_app.database.hea_master_dataset_registry import HeaMasterDatasetRegistry
+        formula = req.get("formula", "Al0.25NbTaTiZr")
+        curve = HeaMasterDatasetRegistry.get_temperature_yield_curve(formula)
+        return _to_json_safe(curve)
+
 
 def run_daemon():
     """Main event loop reading newline-delimited JSON RPC from STDIN."""
@@ -2272,6 +2315,10 @@ def run_daemon():
         "get_espei_systems": CAEDaemon.handle_get_espei_systems,
         "get_espei_zpf_boundaries": CAEDaemon.handle_get_espei_zpf_boundaries,
         "get_espei_thermochemical_data": CAEDaemon.handle_get_espei_thermochemical_data,
+        "get_hea_master_statistics": CAEDaemon.handle_get_hea_master_statistics,
+        "search_hea_master_datasets": CAEDaemon.handle_search_hea_master_datasets,
+        "get_hea_mechanical_benchmarks": CAEDaemon.handle_get_hea_mechanical_benchmarks,
+        "get_hea_temperature_yield_curve": CAEDaemon.handle_get_hea_temperature_yield_curve,
     }
 
     sys.stderr.write(f"[CAEDaemon] Ready v{CAEDaemon.VERSION}. Listening on STDIN...\n")

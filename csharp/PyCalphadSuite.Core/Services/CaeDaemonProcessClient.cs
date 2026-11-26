@@ -822,6 +822,40 @@ namespace PyCalphadSuite.Core.Services
             return res?.Points ?? new List<EspeiThermochemicalPointDto>();
         }
 
+        public Task<HeaMasterStatisticsDto> GetHeaMasterStatisticsAsync(CancellationToken ct = default)
+        {
+            return SendRequestAsync<HeaMasterStatisticsDto>("get_hea_master_statistics", new { }, timeout: TimeSpan.FromSeconds(15), ct: ct);
+        }
+
+        public async Task<List<HeaRecordDto>> SearchHeaMasterDatasetsAsync(
+            string query = "",
+            List<string>? elements = null,
+            string? propertyFilter = null,
+            int maxResults = 50,
+            CancellationToken ct = default)
+        {
+            var p = new
+            {
+                query,
+                elements,
+                property_filter = propertyFilter,
+                max_results = maxResults
+            };
+            var res = await SendRequestAsync<HeaSearchResultsContainerDto>("search_hea_master_datasets", p, timeout: TimeSpan.FromSeconds(20), ct: ct);
+            return res?.Results ?? new List<HeaRecordDto>();
+        }
+
+        public async Task<List<HeaRecordDto>> GetHeaMechanicalBenchmarksAsync(string formula, CancellationToken ct = default)
+        {
+            var res = await SendRequestAsync<HeaSearchResultsContainerDto>("get_hea_mechanical_benchmarks", new { formula }, timeout: TimeSpan.FromSeconds(20), ct: ct);
+            return res?.Results ?? new List<HeaRecordDto>();
+        }
+
+        public Task<HeaTemperatureYieldCurveDto> GetHeaTemperatureYieldCurveAsync(string formula, CancellationToken ct = default)
+        {
+            return SendRequestAsync<HeaTemperatureYieldCurveDto>("get_hea_temperature_yield_curve", new { formula }, timeout: TimeSpan.FromSeconds(15), ct: ct);
+        }
+
         #endregion
 
         #endregion

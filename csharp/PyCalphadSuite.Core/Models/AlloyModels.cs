@@ -3170,6 +3170,139 @@ namespace PyCalphadSuite.Core.Models
         public int Count { get; set; }
     }
 
+    #region HEA Master Datasets Models
+
+    public class HeaMasterStatisticsDto
+    {
+        [JsonPropertyName("total_mpea_experimental_records")]
+        public int TotalMpeaExperimentalRecords { get; set; }
+
+        [JsonPropertyName("total_phase_stability_records")]
+        public int TotalPhaseStabilityRecords { get; set; }
+
+        [JsonPropertyName("total_high_temperature_mechanical_records")]
+        public int TotalHighTemperatureMechanicalRecords { get; set; }
+
+        [JsonPropertyName("total_synthesis_process_records")]
+        public int TotalSynthesisProcessRecords { get; set; }
+
+        [JsonPropertyName("total_aggregate_records")]
+        public int TotalAggregateRecords { get; set; }
+
+        [JsonPropertyName("alloys_with_yield_strength")]
+        public int AlloysWithYieldStrength { get; set; }
+
+        [JsonPropertyName("alloys_with_hardness")]
+        public int AlloysWithHardness { get; set; }
+
+        [JsonPropertyName("alloys_with_uts")]
+        public int AlloysWithUts { get; set; }
+
+        [JsonPropertyName("alloys_with_youngs_modulus")]
+        public int AlloysWithYoungsModulus { get; set; }
+
+        [JsonPropertyName("element_coverage_count")]
+        public int ElementCoverageCount { get; set; }
+
+        [JsonPropertyName("unique_elements_modeled")]
+        public List<string> UniqueElementsModeled { get; set; } = new();
+    }
+
+    public class HeaRecordDto
+    {
+        [JsonPropertyName("source")]
+        public string Source { get; set; } = string.Empty;
+
+        [JsonPropertyName("formula")]
+        public string Formula { get; set; } = string.Empty;
+
+        [JsonPropertyName("elements")]
+        public List<string> Elements { get; set; } = new();
+
+        [JsonPropertyName("phase_structure")]
+        public string? PhaseStructure { get; set; }
+
+        [JsonPropertyName("microstructure")]
+        public string? Microstructure { get; set; }
+
+        [JsonPropertyName("processing_method")]
+        public string? ProcessingMethod { get; set; }
+
+        [JsonPropertyName("yield_strength_mpa")]
+        public double? YieldStrengthMpa { get; set; }
+
+        [JsonPropertyName("uts_mpa")]
+        public double? UtsMpa { get; set; }
+
+        [JsonPropertyName("hardness_hv")]
+        public double? HardnessHv { get; set; }
+
+        [JsonPropertyName("elongation_pct")]
+        public double? ElongationPct { get; set; }
+
+        [JsonPropertyName("youngs_modulus_gpa")]
+        public double? YoungsModulusGpa { get; set; }
+
+        [JsonPropertyName("density_exp_g_cm3")]
+        public double? DensityExpGCm3 { get; set; }
+
+        [JsonPropertyName("test_temperature_c")]
+        public double? TestTemperatureC { get; set; }
+
+        [JsonPropertyName("experimental_details")]
+        public string? ExperimentalDetails { get; set; }
+
+        [JsonPropertyName("reference_id")]
+        public string? ReferenceId { get; set; }
+
+        [JsonPropertyName("vec")]
+        public double? Vec { get; set; }
+
+        [JsonPropertyName("mixing_enthalpy_kj_mol")]
+        public double? MixingEnthalpyKjMol { get; set; }
+
+        [JsonPropertyName("mixing_entropy_j_mol_k")]
+        public double? MixingEntropyJMolK { get; set; }
+    }
+
+    public class HeaSearchResultsContainerDto
+    {
+        [JsonPropertyName("results")]
+        public List<HeaRecordDto> Results { get; set; } = new();
+
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+    }
+
+    public class HeaTemperatureYieldPointDto
+    {
+        [JsonPropertyName("temperature_c")]
+        public double TemperatureC { get; set; }
+
+        [JsonPropertyName("temperature_k")]
+        public double TemperatureK { get; set; }
+
+        [JsonPropertyName("yield_strength_mpa")]
+        public double YieldStrengthMpa { get; set; }
+
+        [JsonPropertyName("condition")]
+        public string Condition { get; set; } = string.Empty;
+    }
+
+    public class HeaTemperatureYieldCurveDto
+    {
+        [JsonPropertyName("formula")]
+        public string Formula { get; set; } = string.Empty;
+
+        [JsonPropertyName("data_points")]
+        public List<HeaTemperatureYieldPointDto> DataPoints { get; set; } = new();
+
+        [JsonPropertyName("count")]
+        public int Count { get; set; }
+    }
+
+    #endregion
+
     #endregion
 
     #endregion
