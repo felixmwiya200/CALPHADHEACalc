@@ -181,6 +181,150 @@ class ApplicationDatabase:
                 "veto_elements": ["Pb", "Bi", "Mg"],
                 "min_ductility_pct": 6.0,
                 "weights": {"toughness": 0.35, "hardness": 0.35, "corrosion": 0.30}
+            },
+            {
+                "id": "AERO_HYPERSONIC_LEADING_EDGE",
+                "name": "Hypersonic Leading Edges & Scramjet Combustors",
+                "sector": "Aerospace & Hypersonics",
+                "desc": "Aerodynamic frictional heating and extreme oxidation resistance above 2000 K.",
+                "benchmark": "Hf-Ta-Zr-Nb-Ti Refractory HEA / C/SiC Composite",
+                "git_ref": "Nature Materials 2024 / UHTC MPEA",
+                "veto_elements": ["Al", "Mg", "Zn", "Sn", "Pb", "Bi", "Cd"],
+                "min_solidus_k": 2100.0,
+                "min_ductility_pct": 1.0,
+                "weights": {"solidus": 0.45, "yield_strength": 0.35, "oxidation": 0.20}
+            },
+            {
+                "id": "NUCLEAR_FUSION_DIVERTOR",
+                "name": "Fusion Plasma-Facing Divertor Armor Tiles",
+                "sector": "Nuclear & Fusion Energy",
+                "desc": "Thermal erosion resistance under 10-20 MW/m² heat flux with low hydrogen isotope retention.",
+                "benchmark": "Tungsten Heavy Alloys / W-Ta-Cr-V Refractory HEA",
+                "git_ref": "ITER Divertor Materials Handb. / J. Nucl. Mater.",
+                "veto_elements": ["Co", "Ni", "Cu", "Al", "Mg", "Zn", "Pb", "Bi"],
+                "min_solidus_k": 2200.0,
+                "min_ductility_pct": 0.5,
+                "weights": {"solidus": 0.50, "neutrons": 0.30, "hardness": 0.20}
+            },
+            {
+                "id": "PETRO_SOUR_GAS_WELLHEAD",
+                "name": "Deepwater Sour Gas (H2S/CO2) Wellheads & Risers",
+                "sector": "Petrochemical & Offshore",
+                "desc": "Immunity to sulfide stress cracking (SSC) and chloride pitting under NACE MR0175.",
+                "benchmark": "Inconel 625 / Incoloy 925 / Hastelloy C-276",
+                "git_ref": "NACE MR0175 / ISO 15156 Petroleum Standard",
+                "veto_elements": ["Mg", "Ca", "Zn", "Bi", "Pb"],
+                "min_solidus_k": 1400.0,
+                "min_ductility_pct": 18.0,
+                "weights": {"corrosion": 0.45, "yield_strength": 0.30, "toughness": 0.25}
+            },
+            {
+                "id": "TOOLING_COLD_PUNCH",
+                "name": "High-Load Stamping & Blanking Punches",
+                "sector": "Manufacturing & Tooling",
+                "desc": "Extreme compressive yield strength and micro-chipping wear resistance for AHSS stamping.",
+                "benchmark": "AISI D2 / Vanadis 4 Extra Powder Tool Steel",
+                "git_ref": "Uddeholm Tooling / CIRP Annals 2025",
+                "veto_elements": ["Pb", "Bi", "Sn", "Zn"],
+                "min_solidus_k": 1350.0,
+                "min_ductility_pct": 1.5,
+                "weights": {"hardness": 0.45, "yield_strength": 0.40, "toughness": 0.15}
+            },
+            {
+                "id": "CRYO_SUPERCONDUCTING_MAGNET",
+                "name": "Superconducting Fusion & MRI Magnet Conduits",
+                "sector": "Energy & Cryogenics",
+                "desc": "Extreme 4.2 K liquid helium fracture toughness with low magnetic permeability (μ_r < 1.005).",
+                "benchmark": "JJ1 Nitrogen-Strengthened Austenitic / CrCoNi",
+                "git_ref": "Cryogenics Journal / CERN Superconducting Magnet Specs",
+                "veto_elements": ["W", "Mo", "Ta", "Nb", "V"],
+                "min_solidus_k": 1350.0,
+                "min_ductility_pct": 28.0,
+                "weights": {"toughness": 0.40, "ductility": 0.35, "yield_strength": 0.25}
+            },
+            {
+                "id": "CLEAN_PEM_BIPOLAR_PLATE",
+                "name": "PEM Electrolyzer & Fuel Cell Bipolar Plates",
+                "sector": "Clean Energy & Hydrogen",
+                "desc": "Low interfacial contact resistance and acidic corrosion resistance (pH 1-3) without noble metals.",
+                "benchmark": "Grade 2 Ti (Pt/Ir-coated) / 316L / Pt-free HEA",
+                "git_ref": "DOE Hydrogen Program / Int. J. Hydrogen Energy",
+                "veto_elements": ["Pb", "Cd", "Mg", "Al", "Fe"],
+                "min_solidus_k": 1300.0,
+                "min_ductility_pct": 8.0,
+                "weights": {"corrosion": 0.50, "yield_strength": 0.30, "density": 0.20}
+            },
+            {
+                "id": "DEFENSE_BALLISTIC_ARMOR",
+                "name": "High-Strain-Rate Ballistic Impact Strike Plates",
+                "sector": "Defense & Security",
+                "desc": "Dynamic Hugoniot elastic limit, adiabatic shear band resistance, and multi-hit spall suppression.",
+                "benchmark": "Armox 500T / Ultra-High Hardness Armor (UHA)",
+                "git_ref": "MIL-DTL-46100 / Int. J. Impact Engineering",
+                "veto_elements": ["Bi", "Pb", "Cd", "Sn"],
+                "min_solidus_k": 1400.0,
+                "min_ductility_pct": 10.0,
+                "weights": {"hardness": 0.35, "yield_strength": 0.35, "toughness": 0.30}
+            },
+            {
+                "id": "ELEC_DIFFUSION_BARRIER",
+                "name": "Semiconductor Thin-Film Diffusion Barriers",
+                "sector": "Electronics & Semiconductors",
+                "desc": "Boundary passivation preventing Cu/Si interdiffusion up to 800 °C in sub-3nm nodes.",
+                "benchmark": "TaN / TiN / (AlCrTaTiZr)N High-Entropy Barrier",
+                "git_ref": "IEEE Trans. Electron Devices / Applied Physics Letters",
+                "veto_elements": ["Cu", "Au", "Ag", "Na", "K"],
+                "min_solidus_k": 1500.0,
+                "min_ductility_pct": 0.1,
+                "weights": {"solidus": 0.50, "hardness": 0.30, "density": 0.20}
+            },
+            {
+                "id": "SPACE_RADIATION_SHIELD",
+                "name": "Deep-Space Cosmic Radiation Shielding & Lightweight Trusses",
+                "sector": "Space Exploration & Defense",
+                "desc": "High specific strength (E/rho), galactic cosmic ray/proton attenuation, and -150 C to +150 C thermal cycling stability.",
+                "benchmark": "Al-Li 2195 / Al-Sc / W-Ta-Ti-V Graded RHEA",
+                "git_ref": "NASA Technical Reports Server (NTRS) / Acta Astronautica",
+                "veto_elements": ["Pb", "Hg", "Cd", "As"],
+                "min_solidus_k": 900.0,
+                "min_ductility_pct": 5.0,
+                "weights": {"density": 0.40, "yield_strength": 0.35, "neutrons": 0.25}
+            },
+            {
+                "id": "AUTO_EXHAUST_VALVE",
+                "name": "Heavy-Duty Turbocharged Exhaust Valves & Manifolds",
+                "sector": "Automotive & Heavy Transport",
+                "desc": "Hot hardness (>250 HV at 800 C), cyclic thermal fatigue endurance, and resistance to fuel sulfur/lead combustion salt corrosion.",
+                "benchmark": "Nimonic 80A / Inconel 751 / 21-4N Nitronic Steel",
+                "git_ref": "SAE International Standards / ASTM F799",
+                "veto_elements": ["Mg", "Zn", "Pb", "Bi"],
+                "min_solidus_k": 1400.0,
+                "min_ductility_pct": 8.0,
+                "weights": {"solidus": 0.35, "yield_strength": 0.35, "oxidation": 0.30}
+            },
+            {
+                "id": "QUANTUM_SUPERCONDUCTING_CAVITY",
+                "name": "Superconducting RF Cavities & Qubit Interconnects",
+                "sector": "Quantum Information & Accelerators",
+                "desc": "Residual resistance ratio RRR > 300, Tc > 9.2 K, zero ferromagnetic hysteresis, and ultra-low microwave dielectric dissipation.",
+                "benchmark": "Ultra-High Purity Niobium (RRR > 300) / Nb-47Ti / Nb3Sn",
+                "git_ref": "CERN / Fermilab Superconducting RF Specifications",
+                "veto_elements": ["Fe", "Co", "Ni", "Mn", "Cr", "Gd", "Dy"],
+                "min_solidus_k": 1600.0,
+                "min_ductility_pct": 15.0,
+                "weights": {"solidus": 0.45, "ductility": 0.35, "toughness": 0.20}
+            },
+            {
+                "id": "CHEM_ACID_AUTOCLAVE",
+                "name": "High-Pressure Acid Digest Autoclaves & Exchangers",
+                "sector": "Chemical Process Engineering",
+                "desc": "Immunity to boiling concentrated mineral acids (HCl, H2SO4, HNO3) and transgranular chloride stress cracking under ASME Sec VIII.",
+                "benchmark": "Zirconium 702 / Hastelloy B-3 / Tantalum Ta-2.5W",
+                "git_ref": "ASME Boiler & Pressure Vessel Code Sec VIII / NACE",
+                "veto_elements": ["Al", "Mg", "Zn", "Ca", "Pb"],
+                "min_solidus_k": 1350.0,
+                "min_ductility_pct": 12.0,
+                "weights": {"corrosion": 0.55, "toughness": 0.25, "yield_strength": 0.20}
             }
         ]
 
@@ -329,6 +473,116 @@ class ApplicationScorer:
                         score = 0.50 * s_hv + 0.30 * min(100.0, ys / 6.0) + 0.20 * min(100.0, toughness * 0.4)
                         bottleneck = "Hardness below optimal hardfacing overlay threshold."
                         advice = "Employ NiCrBSi chemistry or increase interstitial boride/carbide content."
+
+                elif app_id == "AERO_HYPERSONIC_LEADING_EDGE":
+                    s_ts = min(100.0, max(10.0, (ts - 1900.0) / 7.0))
+                    s_ys = min(100.0, ys / 10.0)
+                    s_ox = 90.0 if any(reg in ox.get("Regime", "") for reg in ["Alumina", "Chromia", "Hafnia", "Zirconia"]) else 40.0
+                    score = 0.45 * s_ts + 0.35 * s_ys + 0.20 * s_ox
+                    if ts < 2100.0:
+                        bottleneck = f"Solidus temperature ({ts:.0f} K) insufficient for hypersonic stagnation point (>2100 K)."
+                        advice = "Incorporate ultra-refractory metals (Hf, Ta, Zr) or boride/carbide ceramic formers."
+
+                elif app_id == "NUCLEAR_FUSION_DIVERTOR":
+                    s_ts = min(100.0, max(10.0, (ts - 2000.0) / 8.0))
+                    s_neu = max(10.0, 100.0 - (sigma_barns / 5.0) * 80.0)
+                    s_hv = min(100.0, hv / 5.0)
+                    score = 0.50 * s_ts + 0.30 * s_neu + 0.20 * s_hv
+                    if ts < 2200.0:
+                        bottleneck = f"Melting point ({ts:.0f} K) below fusion divertor threshold (2200 K)."
+                        advice = "Utilize W-Ta-Cr-V refractory multi-principal element architectures."
+
+                elif app_id == "PETRO_SOUR_GAS_WELLHEAD":
+                    s_pren = min(100.0, pren * 2.2)
+                    s_ys = min(100.0, ys / 7.0)
+                    s_tou = min(100.0, toughness * 0.5)
+                    score = 0.45 * s_pren + 0.30 * s_ys + 0.25 * s_tou
+                    if pren < 38.0:
+                        bottleneck = f"PREN value ({pren:.1f}) below NACE MR0175 sour service standard (PREN >= 40)."
+                        advice = "Increase Cr >= 21 at% and Mo >= 4 at% for pitting and stress cracking immunity."
+
+                elif app_id == "TOOLING_COLD_PUNCH":
+                    s_hv = min(100.0, hv / 7.0)
+                    s_ys = min(100.0, ys / 9.0)
+                    s_tou = min(100.0, toughness * 0.4)
+                    score = 0.45 * s_hv + 0.40 * s_ys + 0.15 * s_tou
+                    if hv < 600.0:
+                        bottleneck = f"Hardness ({hv:.0f} HV) below cold-forming punch threshold (600+ HV)."
+                        advice = "Introduce interstitial C/N/B or increase hard second-phase precipitation."
+
+                elif app_id == "CRYO_SUPERCONDUCTING_MAGNET":
+                    s_tou = min(100.0, toughness * 0.6)
+                    s_duc = min(100.0, elong * 2.2)
+                    s_ys = min(100.0, ys / 6.0)
+                    score = 0.40 * s_tou + 0.35 * s_duc + 0.25 * s_ys
+                    if "BCC" in phase and not "FCC" in phase:
+                        score = min(score, 40.0)
+                        bottleneck = "BCC lattice subject to 4.2 K brittle cleavage."
+                        advice = "Ensure stable FCC matrix with high Ni/Cr/Co balance."
+
+                elif app_id == "CLEAN_PEM_BIPOLAR_PLATE":
+                    s_pren = min(100.0, pren * 2.4)
+                    s_den = max(20.0, 100.0 - (density - 4.5) * 12.0)
+                    score = 0.50 * s_pren + 0.30 * min(100.0, ys / 5.0) + 0.20 * s_den
+                    if pren < 30.0:
+                        bottleneck = f"Corrosion resistance in pH 1-3 sulfuric environment below threshold."
+                        advice = "Enrich passive scale with Ti, Nb, Ta, or noble metal doping."
+
+                elif app_id == "DEFENSE_BALLISTIC_ARMOR":
+                    s_ys = min(100.0, ys / 12.0)
+                    s_hv = min(100.0, hv / 6.0)
+                    s_tou = min(100.0, toughness * 0.6)
+                    score = 0.35 * s_ys + 0.35 * s_hv + 0.30 * s_tou
+                    if ys < 900.0:
+                        bottleneck = f"Dynamic yield strength below heavy ballistic projectile deformation limit."
+                        advice = "Enhance grain boundary Hall-Petch strengthening and interstitial hardening."
+
+                elif app_id == "ELEC_DIFFUSION_BARRIER":
+                    s_ts = min(100.0, max(20.0, (ts - 1400.0) / 6.0))
+                    s_hv = min(100.0, hv / 8.0)
+                    score = 0.50 * s_ts + 0.30 * s_hv + 0.20 * max(20.0, 100.0 - (density - 8.0) * 8.0)
+                    if ts < 1800.0:
+                        bottleneck = f"Thermal stability insufficient for sub-3nm annealing cycle."
+                        advice = "Incorporate refractory early transition metals (Ta, Nb, W, Ti)."
+
+                elif app_id == "SPACE_RADIATION_SHIELD":
+                    s_den = max(10.0, 100.0 - (density - 3.0) * 14.0)
+                    s_ys = min(100.0, ys / 6.0)
+                    s_neu = max(10.0, 100.0 - (sigma_barns / 10.0) * 80.0)
+                    score = 0.40 * s_den + 0.35 * s_ys + 0.25 * s_neu
+                    if density > 8.0:
+                        bottleneck = f"Excessive density ({density:.2f} g/cm³) penalizes launch payload capacity."
+                        advice = "Incorporate low-Z elements (Al, Ti, Sc, Li) to enhance specific strength."
+
+                elif app_id == "AUTO_EXHAUST_VALVE":
+                    s_ts = min(100.0, max(10.0, (ts - 1450.0) / 4.0))
+                    s_ys = min(100.0, ys / 7.0)
+                    s_ox = 95.0 if any(reg in ox.get("Regime", "") for reg in ["Alumina", "Chromia"]) else 45.0
+                    score = 0.35 * s_ts + 0.35 * s_ys + 0.30 * s_ox
+                    if s_ox < 60.0:
+                        bottleneck = "Hot corrosion resistance requires protective Cr or Al passivating scale."
+                        advice = "Ensure Cr >= 18 at% to resist combustion fuel contaminants."
+
+                elif app_id == "QUANTUM_SUPERCONDUCTING_CAVITY":
+                    ferro = sum(c_dict.get(el, 0.0) for el in ["Fe", "Co", "Ni", "Mn", "Cr"])
+                    if ferro > 0.001:
+                        score = 15.0
+                        tier = "Unsuitable (Vetoed)"
+                        bottleneck = f"Ferromagnetic atoms ({ferro*100:.1f} at%) destroy Cooper pair coherence."
+                        advice = "Purify alloy to eliminate all 3d transition ferromagnetic elements."
+                    else:
+                        s_ts = min(100.0, max(20.0, (ts - 1600.0) / 8.0))
+                        s_duc = min(100.0, elong * 2.5)
+                        score = 0.50 * s_ts + 0.35 * s_duc + 0.15 * min(100.0, toughness * 0.5)
+
+                elif app_id == "CHEM_ACID_AUTOCLAVE":
+                    s_pren = min(100.0, pren * 2.5)
+                    s_tou = min(100.0, toughness * 0.5)
+                    s_ys = min(100.0, ys / 5.0)
+                    score = 0.55 * s_pren + 0.25 * s_tou + 0.20 * s_ys
+                    if pren < 35.0:
+                        bottleneck = f"Pitting resistance equivalent (PREN = {pren:.1f}) insufficient for aggressive boiling acid service."
+                        advice = "Increase Cr and Mo content or transition to Ta/Zr refractory chemistries."
                 else:
                     score = min(95.0, max(30.0, 0.4 * (ys / 6.0) + 0.3 * (hv / 6.0) + 0.3 * (ts / 18.0)))
 

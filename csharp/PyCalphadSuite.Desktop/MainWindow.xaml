@@ -1120,11 +1120,47 @@
                                 <DataGrid x:Name="GridApplicationScores" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#FFFFFF" BorderBrush="#CBD5E1" Margin="4">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="50"/>
-                                        <DataGridTextColumn Header="Sector" Binding="{Binding Sector}" Width="140"/>
-                                        <DataGridTextColumn Header="Industrial Application" Binding="{Binding Name}" Width="240"/>
+                                        <DataGridTextColumn Header="Sector" Binding="{Binding Sector}" Width="165">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="ToolTip" Value="{Binding Sector}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Industrial Application" Binding="{Binding Name}" Width="280">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="ToolTip" Value="{Binding Name}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Score (%)" Binding="{Binding Score}" Width="75"/>
-                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="160"/>
-                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="*"/>
+                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="195">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="ToolTip" Value="{Binding Tier}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Benchmark Alloy" Binding="{Binding Benchmark}" Width="185">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="ToolTip" Value="{Binding Benchmark}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="ToolTip" Value="{Binding Bottleneck}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>

@@ -3128,7 +3128,7 @@ namespace PyCalphadSuite.Desktop
 
             if (res.ApplicationScores.Count > 0)
             {
-                var top = res.ApplicationScores.Take(12).ToList();
+                var top = res.ApplicationScores.Take(Math.Min(14, res.ApplicationScores.Count)).ToList();
                 int count = top.Count;
                 var yPositions = Enumerable.Range(0, count).Select(i => (double)(count - i)).ToArray();
                 var scores = top.Select(a => a.Score).ToArray();
@@ -3150,7 +3150,7 @@ namespace PyCalphadSuite.Desktop
                 plot.Axes.Left.TickLabelStyle.FontSize = 10.0f;
                 plot.Axes.Left.TickLabelStyle.Bold = true;
                 plot.Axes.Left.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
-                plot.Axes.Left.MinimumSize = 220f;
+                plot.Axes.Left.MinimumSize = 280f;
 
                 plot.Axes.Bottom.TickLabelStyle.FontSize = 10.5f;
                 plot.Axes.Bottom.TickLabelStyle.ForeColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
@@ -3169,7 +3169,7 @@ namespace PyCalphadSuite.Desktop
                 line75.LinePattern = LinePattern.Dashed;
                 line75.LineWidth = 1.0f;
 
-                HostSuitability.HeaderSummary = $"Top Sector: {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
+                HostSuitability.HeaderSummary = $"Top Match: {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
                 HostSuitability.SetLimitsAndRemember(0.0, 112.0, 0.4, count + 0.6);
             }
             HostSuitability.Refresh();

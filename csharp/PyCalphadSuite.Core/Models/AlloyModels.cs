@@ -521,6 +521,12 @@ namespace PyCalphadSuite.Core.Models
         [JsonPropertyName("tier")]
         public string Tier { get; set; } = string.Empty;
 
+        [JsonPropertyName("benchmark")]
+        public string Benchmark { get; set; } = string.Empty;
+
+        [JsonPropertyName("git_reference")]
+        public string GitReference { get; set; } = string.Empty;
+
         [JsonPropertyName("bottleneck")]
         public string Bottleneck { get; set; } = string.Empty;
 
