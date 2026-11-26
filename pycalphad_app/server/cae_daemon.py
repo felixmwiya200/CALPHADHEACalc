@@ -769,10 +769,23 @@ class CAEDaemon:
             b_tt_list = list(b_tt) if hasattr(b_tt, "__iter__") else []
             b_int_list = list(b_int) if hasattr(b_int, "__iter__") else []
 
+        norm_peaks = []
+        for p in xrd_res.get("Peaks", xrd_res.get("peaks", [])):
+            tt = p.get("TwoTheta", p.get("two_theta", 0.0))
+            inten = p.get("Intensity", p.get("intensity", 0.0))
+            if inten > 1.05:
+                inten = inten / 100.0
+            norm_peaks.append({
+                "TwoTheta": round(float(tt), 2),
+                "Intensity": round(float(inten), 4),
+                "HKL": str(p.get("HKL", p.get("hkl", ""))),
+                "Phase": str(p.get("Phase", p.get("phase", "")))
+            })
+
         xrd_clean = {
             "two_theta": tt_list,
             "intensity_pct": int_list,
-            "peaks": xrd_res.get("Peaks", xrd_res.get("peaks", [])),
+            "peaks": norm_peaks,
             "phases": xrd_res.get("Phases", []),
             "lattice_params": xrd_res.get("LatticeParams", {}),
             "radiation": xrd_res.get("RadiationTube", "Cu-Ka (1.5406 A)"),

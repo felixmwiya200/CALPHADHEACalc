@@ -25,6 +25,10 @@ namespace PyCalphadSuite.Core.Services
         private readonly StringBuilder _stderrHistory = new();
         private long _requestIdCounter = 0;
         private bool _isDisposed = false;
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public event Action<string>? LogReceived;
         public event Action<string>? ErrorReceived;
@@ -282,7 +286,7 @@ namespace PyCalphadSuite.Core.Services
             await _stdin.WriteLineAsync(json);
 
             var rawJson = await tcs.Task;
-            var response = JsonSerializer.Deserialize<CaeResponse<T>>(rawJson);
+            var response = JsonSerializer.Deserialize<CaeResponse<T>>(rawJson, _jsonOptions);
 
             if (response == null)
             {
