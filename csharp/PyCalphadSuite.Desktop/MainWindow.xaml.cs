@@ -589,6 +589,19 @@ namespace PyCalphadSuite.Desktop
                 BtnExperimentalOptions.BorderThickness = new Thickness(1.0);
             }
 
+            if (BtnThemeToggle != null)
+            {
+                var btnBg = isDark ? "#21262D" : (isGrey ? "#E2E8F0" : "#FFFFFF");
+                var btnFg = isDark ? "#F0F6FC" : "#0F172A";
+                var btnBorder = isDark ? "#30363D" : "#CBD5E1";
+
+                BtnThemeToggle.Content = $"Theme: {_currentTheme}";
+                BtnThemeToggle.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnBg));
+                BtnThemeToggle.Foreground = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnFg));
+                BtnThemeToggle.BorderBrush = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(btnBorder));
+                BtnThemeToggle.BorderThickness = new Thickness(1.0);
+            }
+
             CrystalStructureView?.ApplyTheme(isDark);
             PeriodicTableView?.ApplyTheme(isDark);
 
