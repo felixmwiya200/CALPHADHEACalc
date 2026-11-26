@@ -2006,7 +2006,10 @@ namespace PyCalphadSuite.Desktop
                     if (CmbTernarySystem != null)
                     {
                         var cur = CmbTernarySystem.SelectedItem as string;
-                        var displayItems = _availableTernarySystems.Select(s => $"{s.Name} ({s.Category})").ToList();
+                        var displayItems = _availableTernarySystems
+                            .Select(s => !string.IsNullOrEmpty(s.Id) ? s.Id : (s.Elements != null && s.Elements.Count > 0 ? string.Join("-", s.Elements) : s.Name))
+                            .Distinct()
+                            .ToList();
                         CmbTernarySystem.ItemsSource = displayItems;
                         if (!string.IsNullOrEmpty(cur) && displayItems.Contains(cur))
                         {
