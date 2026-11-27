@@ -1788,7 +1788,7 @@
         </Grid>
 
         <!-- 4. STATUS BAR -->
-        <StatusBar x:Name="MainStatusBar" Grid.Row="3" Background="#E2E8F0" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="0,1,0,0" Padding="6,2">
+        <StatusBar x:Name="MainStatusBar" Grid.Row="3" Visibility="Collapsed" Background="#E2E8F0" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="0,1,0,0" Padding="6,2">
             <StatusBarItem>
                 <TextBlock x:Name="StatusLabel" Text="Initializing Materials CAE Workbench..." FontWeight="SemiBold" Foreground="#000000"/>
             </StatusBarItem>
