@@ -167,9 +167,7 @@ class NickelSuperalloyEngine(BaseAlloyEngine):
         if trans["HasGammaDoublePrime"]:
             f_gdp = min(0.22, max(0.12, 0.035 * nb_wt))
             f_gp = min(0.08, max(0.02, 0.015 * (al_at + ti_at)))
-            f_matrix = 1.0 - (f_gdp + f_gp)
-            phases = {
-                "Gamma_Matrix": float(f_matrix),
+            sec_phases = {
                 "Gamma_Double_Prime": float(f_gdp),
                 "Gamma_Prime": float(f_gp),
                 "Carbides": 0.01
@@ -178,9 +176,7 @@ class NickelSuperalloyEngine(BaseAlloyEngine):
         else:
             # Single crystal / High gamma' alloy
             f_gp = min(0.72, max(0.15, 0.045 * (al_at + 1.2 * ti_at + 1.1 * ta_at)))
-            f_matrix = 1.0 - f_gp
-            phases = {
-                "Gamma_Matrix": float(f_matrix),
+            sec_phases = {
                 "Gamma_Prime": float(f_gp),
                 "Carbides": 0.005
             }
@@ -188,13 +184,24 @@ class NickelSuperalloyEngine(BaseAlloyEngine):
 
         if trans.get("New_PHACOMP_Md", 0.90) > 0.985:
             md_excess = min(0.12, (trans["New_PHACOMP_Md"] - 0.985) * 0.8)
-            phases["Sigma"] = float(round(md_excess * 0.65, 4))
-            phases["Mu_Phase"] = float(round(md_excess * 0.35, 4))
-            if "Gamma_Matrix" in phases:
-                phases["Gamma_Matrix"] = max(0.05, phases["Gamma_Matrix"] - md_excess)
+            sec_phases["Sigma"] = float(round(md_excess * 0.65, 4))
+            sec_phases["Mu_Phase"] = float(round(md_excess * 0.35, 4))
             dominant = f"{dominant} + TCP (Sigma/Mu)"
         elif nb_wt >= 4.0 and (self.comp_wt.get("Fe", 0.0) * 100.0) >= 10.0:
-            phases["Laves_C14"] = 0.025
+            sec_phases["Laves_C14"] = 0.025
+
+        sec_total = sum(sec_phases.values())
+        if sec_total > 0.95:
+            scale_sec = 0.95 / sec_total
+            sec_phases = {k: v * scale_sec for k, v in sec_phases.items()}
+            sec_total = 0.95
+
+        f_matrix = max(0.05, 1.0 - sec_total)
+        phases = {"Gamma_Matrix": float(f_matrix)}
+        phases.update(sec_phases)
+        tot_p = sum(phases.values())
+        if tot_p > 0:
+            phases = {k: float(v / tot_p) for k, v in phases.items()}
 
         return {
             "T_Liquidus": float(trans["T_Liquidus_K"]),
@@ -360,14 +367,23 @@ class NickelSuperalloyEngine(BaseAlloyEngine):
             f_diss = (t_gp_solvus_c - t_c) / max(1.0, (t_gp_solvus_c - 400.0))
             f_diss = max(0.0, min(1.0, f_diss))
             base_phases = thermo["Phases"]
-            phases = {}
+            sec_phases = {}
             for p, frac in base_phases.items():
+                if p == "Gamma_Matrix":
+                    continue
                 if p in ["Gamma_Prime", "Gamma_Double_Prime"]:
-                    phases[p] = float(frac * f_diss)
-                elif p == "Gamma_Matrix":
-                    phases[p] = float(1.0 - sum(v for k, v in phases.items() if k != "Gamma_Matrix"))
+                    sec_phases[p] = float(frac * f_diss)
                 else:
-                    phases[p] = float(frac)
+                    sec_phases[p] = float(frac)
+            sec_sum = sum(sec_phases.values())
+            if sec_sum > 1.0:
+                sec_phases = {k: v / sec_sum for k, v in sec_phases.items()}
+                sec_sum = 1.0
+            phases = {"Gamma_Matrix": float(max(0.0, 1.0 - sec_sum))}
+            phases.update(sec_phases)
+            tot_step = sum(phases.values())
+            if tot_step > 0:
+                phases = {k: float(v / tot_step) for k, v in phases.items()}
             dominant = thermo["DominantPhase"]
 
         return {

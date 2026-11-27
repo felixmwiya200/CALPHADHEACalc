@@ -215,10 +215,13 @@ class SteelEngine(BaseAlloyEngine):
             "Martensite (BCT)": float(martensite_frac[0]),
             "Carbides (Fe3C/M23C6)": float(carbide_frac[0])
         }
-        # Keep non-zero
+        # Keep non-zero and strictly normalize to 1.0
         rt_phases = {k: v for k, v in rt_phases.items() if v > 0.001}
         if not rt_phases:
             rt_phases = {"Austenite (FCC)": 1.0} if is_austenitic else {"Ferrite (BCC)": 1.0}
+        tot_rt = sum(rt_phases.values())
+        if tot_rt > 0:
+            rt_phases = {k: float(v / tot_rt) for k, v in rt_phases.items()}
 
         return {
             "Solidus_K": float(t_sol_k),

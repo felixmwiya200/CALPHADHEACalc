@@ -8,6 +8,7 @@ and slip-plane data for the crystal phases detected by the CALPHAD and alloy phy
 
 import hashlib
 import math
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from pycalphad_app.core.elements_data import get_element
@@ -1206,10 +1207,15 @@ class CrystalStructureEngine:
         # Incorporate distinct XRD phases not already covered by archetype
         existing_archetypes = {cls.map_phase_to_archetype(p) for p in merged_phases}
         for xp in xrd_data.get("phases", xrd_data.get("Phases", [])) or []:
-            xp_str = str(xp)
+            xp_raw = str(xp).strip()
+            pct_match = re.search(r"\s*\((\d+(?:\.\d+)?)%\)$", xp_raw)
+            xp_frac = float(pct_match.group(1)) / 100.0 if pct_match else 0.05
+            xp_str = re.sub(r"\s*\(\d+(?:\.\d+)?%\)$", "", xp_raw).strip()
+            if not xp_str:
+                continue
             xp_arch = cls.map_phase_to_archetype(xp_str)
-            if xp_arch not in existing_archetypes:
-                merged_phases[xp_str] = 0.05
+            if xp_arch not in existing_archetypes and xp_frac > 0.001:
+                merged_phases[xp_str] = xp_frac
                 existing_archetypes.add(xp_arch)
 
         # Fallback if no phases recorded (e.g. direct call)
@@ -1252,6 +1258,10 @@ class CrystalStructureEngine:
                     existing_archetypes.add("CHI_A12")
             except Exception:
                 pass
+
+        total_frac = sum(merged_phases.values())
+        if total_frac > 0.0:
+            merged_phases = {k: float(v / total_frac) for k, v in merged_phases.items()}
 
         ordered = sorted(merged_phases.items(), key=lambda kv: -kv[1])
         return [
