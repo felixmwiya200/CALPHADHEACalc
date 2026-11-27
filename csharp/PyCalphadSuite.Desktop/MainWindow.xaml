@@ -61,11 +61,11 @@
 
             <!-- VIEW MENU -->
             <MenuItem Header="_View">
-                <MenuItem Header="_Reset Default Layout (Ctrl+R)" Click="MenuResetLayout_Click"/>
-                <MenuItem Header="Toggle _System &amp; Composition Panel (Ctrl+1)" Click="MenuToggleLeftDock_Click"/>
-                <MenuItem Header="Toggle _Console &amp; Telemetry (Ctrl+2)" Click="MenuToggleConsole_Click"/>
+                <MenuItem Header="_Reset Default Layout" InputGestureText="Ctrl+R" Click="MenuResetLayout_Click"/>
+                <MenuItem Header="Toggle _System Panel" InputGestureText="Ctrl+1" Click="MenuToggleLeftDock_Click"/>
+                <MenuItem Header="Toggle _Console Panel" InputGestureText="Ctrl+2" Click="MenuToggleConsole_Click"/>
                 <Separator/>
-                <MenuItem Header="_Maximize / Restore Viewport (F11)" Click="MenuMaximizeCanvas_Click"/>
+                <MenuItem Header="_Maximize Viewport" InputGestureText="F11" Click="MenuMaximizeCanvas_Click"/>
             </MenuItem>
 
             <!-- MATERIAL TYPES MENU -->
@@ -120,24 +120,24 @@
 
             <!-- UTILITIES MENU -->
             <MenuItem Header="_Utilities">
-                <MenuItem Header="Austenite grain size estimation..." Click="MenuSimDialog_Click" Tag="austenite_grain"/>
+                <MenuItem Header="Austenite Grain Size..." Click="MenuSimDialog_Click" Tag="austenite_grain"/>
                 <MenuItem Header="Periodic Table..." Click="MenuPeriodicTable_Click"/>
-                <MenuItem Header="3D Crystal Structures &amp; Atomic Lattices..." Click="MenuCrystalStructures_Click"/>
+                <MenuItem Header="3D Crystal Structures..." Click="MenuCrystalStructures_Click"/>
                 <Separator/>
-                <MenuItem Header="Engineering Conversions (°C/K, MPa/ksi, Energy)..." Click="MenuSimDialog_Click" Tag="conversions"/>
-                <MenuItem Header="Martensite transition (Ms / Mf / HV)..." Click="MenuSimDialog_Click" Tag="martensite"/>
+                <MenuItem Header="Engineering Conversions..." Click="MenuSimDialog_Click" Tag="conversions"/>
+                <MenuItem Header="Martensite Transition..." Click="MenuSimDialog_Click" Tag="martensite"/>
                 <Separator/>
-                <MenuItem Header="Ellingham Oxide Thermochemistry Database..." Click="MenuSimDialog_Click" Tag="oxide_db"/>
-                <MenuItem Header="Laves Phases &amp; Intermetallic Compounds (IMCs)..." Click="MenuSimDialog_Click" Tag="imc_laves_db"/>
-                <MenuItem Header="Curated Literature HEA Repository..." Click="MenuSimDialog_Click" Tag="literature_heas"/>
+                <MenuItem Header="Ellingham Oxide Database..." Click="MenuSimDialog_Click" Tag="oxide_db"/>
+                <MenuItem Header="Laves &amp; IMCs..." Click="MenuSimDialog_Click" Tag="imc_laves_db"/>
+                <MenuItem Header="Literature HEA Repository..." Click="MenuSimDialog_Click" Tag="literature_heas"/>
             </MenuItem>
 
             <!-- HELP MENU -->
             <MenuItem Header="_Help">
                 <MenuItem Header="_About CALPHAD XOC..." Click="About_Click"/>
                 <MenuItem Header="_Quick Start Guide..." Click="QuickStart_Click"/>
-                <MenuItem Header="Academic Authorship &amp; Credits..." Click="Authorship_Click"/>
-                <MenuItem Header="Literature References &amp; DOIs..." Click="References_Click"/>
+                <MenuItem Header="Authorship &amp; Credits..." Click="Authorship_Click"/>
+                <MenuItem Header="Literature &amp; DOIs..." Click="References_Click"/>
             </MenuItem>
 
             <!-- UNIFIED ARCHITECTURE & ENGINES MENU -->
