@@ -328,6 +328,7 @@ namespace PyCalphadSuite.Desktop
             Dispatcher.Invoke(() =>
             {
                 string dom = phases.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "Equilibrium";
+                MainStatusBar.Visibility = Visibility.Visible;
                 StatusLabel.Text = $"Evaluating equilibrium: T = {ConvTemp(tempK):F2} {TempUnitStr()} | Dominant: {dom}";
             });
         }
@@ -1239,6 +1240,7 @@ namespace PyCalphadSuite.Desktop
             {
                 BtnCalculate.IsEnabled = false;
                 BtnCalculate.Content = "Calculating...";
+                MainStatusBar.Visibility = Visibility.Visible;
                 SolverProgress.Visibility = Visibility.Visible;
                 SolverProgress.IsIndeterminate = true;
                 StatusLabel.Text = "Executing Gibbs energy minimization & physics engines...";
@@ -1330,6 +1332,7 @@ namespace PyCalphadSuite.Desktop
             }
             finally
             {
+                MainStatusBar.Visibility = Visibility.Collapsed;
                 SolverProgress.Visibility = Visibility.Collapsed;
                 SolverProgress.IsIndeterminate = false;
                 BtnCalculate.IsEnabled = true;
@@ -6308,6 +6311,7 @@ namespace PyCalphadSuite.Desktop
             }
             finally
             {
+                MainStatusBar.Visibility = Visibility.Collapsed;
                 SolverProgress.Visibility = Visibility.Collapsed;
                 SolverProgress.IsIndeterminate = false;
             }
