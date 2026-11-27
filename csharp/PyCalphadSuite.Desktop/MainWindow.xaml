@@ -1144,59 +1144,71 @@
                         <TabItem Header="Industrial Suitability">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="2*"/>
-                                    <RowDefinition Height="1.1*"/>
+                                    <RowDefinition Height="1.85*"/>
+                                    <RowDefinition Height="1.3*" MinHeight="165"/>
                                 </Grid.RowDefinitions>
                                 <ctrl:PlotCanvasHost x:Name="HostSuitability" Grid.Row="0" HeaderTitle="Multi-Criteria Industrial Engineering Sector Matching Scores" ExportBaseName="Industrial_Suitability"/>
-                                <DataGrid x:Name="GridApplicationScores" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" Margin="4">
+                                <DataGrid x:Name="GridApplicationScores" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RowHeight="26" ColumnHeaderHeight="28" Background="#FFFFFF" Foreground="#000000" RowBackground="#FFFFFF" AlternatingRowBackground="#F8FAFC" BorderBrush="#CBD5E1" Margin="4">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="55"/>
-                                        <DataGridTextColumn Header="Sector" Binding="{Binding Sector}" Width="180" MinWidth="140">
+                                        <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="44"/>
+                                        <DataGridTextColumn Header="Sector" Binding="{Binding Sector}" Width="145" MinWidth="110">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding Sector}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Industrial Application" Binding="{Binding Name}" Width="320" MinWidth="240">
+                                        <DataGridTextColumn Header="Industrial Application" Binding="{Binding Name}" Width="220" MinWidth="170">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding Name}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Score (%)" Binding="{Binding Score, StringFormat={}{0:F1}}" Width="85"/>
-                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="200" MinWidth="160">
+                                        <DataGridTextColumn Header="Score (%)" Binding="{Binding Score, StringFormat={}{0:F1}}" Width="74"/>
+                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="155" MinWidth="120">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding Tier}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Benchmark Alloy" Binding="{Binding Benchmark}" Width="155" MinWidth="120">
+                                        <DataGridTextColumn Header="Benchmark Alloy" Binding="{Binding Benchmark}" Width="140" MinWidth="110">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding Benchmark}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Alloy Cost (USD/kg)" Binding="{Binding AlloyCostUsdKg, StringFormat=${0:F2}}" Width="118" MinWidth="100"/>
-                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="200" MinWidth="150">
+                                        <DataGridTextColumn Header="Alloy Cost ($/kg)" Binding="{Binding AlloyCostUsdKg, StringFormat=${0:F2}}" Width="115" MinWidth="105"/>
+                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="150" MinWidth="120">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding Bottleneck}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Cost Optimization Recommendation" Binding="{Binding CostRecommendation}" Width="*" MinWidth="240">
+                                        <DataGridTextColumn Header="Cost Recommendation" Binding="{Binding CostRecommendation}" Width="*" MinWidth="220">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="NoWrap"/>
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                                     <Setter Property="ToolTip" Value="{Binding CostRecommendation}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
