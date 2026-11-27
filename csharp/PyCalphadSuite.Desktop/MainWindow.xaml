@@ -1185,18 +1185,18 @@
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Alloy Cost (USD/kg)" Binding="{Binding AlloyCostUsdKg, StringFormat=${0:F2}}" Width="118" MinWidth="100"/>
-                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="240" MinWidth="180">
+                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="200" MinWidth="150">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                                     <Setter Property="ToolTip" Value="{Binding Bottleneck}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Cost Optimization Recommendation" Binding="{Binding CostRecommendation}" Width="*">
+                                        <DataGridTextColumn Header="Cost Optimization Recommendation" Binding="{Binding CostRecommendation}" Width="*" MinWidth="240">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                                     <Setter Property="ToolTip" Value="{Binding CostRecommendation}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
