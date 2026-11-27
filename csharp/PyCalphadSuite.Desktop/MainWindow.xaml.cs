@@ -1510,7 +1510,7 @@ namespace PyCalphadSuite.Desktop
             HostCorrosion.ApplyOtisLiuStyle("Potentiodynamic Polarization in 3.5 wt% NaCl (Tafel)", "Log Current Density log₁₀(i) (μA/cm²)", "Potential E (V vs. SCE)", _isDarkTheme);
             HostPourbaix.ApplyOtisLiuStyle("Pourbaix (E-pH) Aqueous Phase Stability Diagram (GWB .tdat Master Database)", "Solution pH (0 to 14)", "Potential E (V vs. SHE)", _isDarkTheme);
             HostXRD.ApplyOtisLiuStyle("Simulated Powder X-Ray Diffractometer Pattern (Cu-Kα)", "Diffraction Angle 2θ (°)", "Relative Intensity (%)", _isDarkTheme);
-            HostRadar.ApplyOtisLiuStyle("7-Axis Manufacturing Processability & Route Suitability Radar", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
+            HostRadar.ApplyOtisLiuStyle("Manufacturing Processability", "Normalized Suitability X", "Normalized Suitability Y", _isDarkTheme);
             HostSuitability.ApplyOtisLiuStyle("Multi-Criteria Industrial Engineering Sector Matching Scores", "Suitability Score (%)", "Industrial Application Sector", _isDarkTheme);
             HostValidation.ApplyOtisLiuStyle("Literature Validation: Calculated vs. Experimental Parity Plot", "Experimental Benchmark (Normalized %)", "CALPHAD Calculated (%)", _isDarkTheme);
             HostRomComparison.ApplyOtisLiuStyle("Rule of Mixtures (ROM) Comparison: CALPHAD vs. Pure Elemental Baselines", $"Temperature ({u})", "Yield Strength σ_y (MPa)", _isDarkTheme);
@@ -2105,12 +2105,19 @@ namespace PyCalphadSuite.Desktop
 
                 if (!isNonTieLineReaction && Math.Abs(inv.XEnd - inv.XStart) > 1e-4)
                 {
-                    double[] tieXs = new[] { inv.XStart, inv.XEnd };
-                    double[] tieYs = new[] { inv.Temp, inv.Temp };
-                    var tieLine = plot.Add.ScatterLine(tieXs, tieYs, ScottPlot.Color.FromHex("#DC2626"));
-                    tieLine.LineWidth = 2.0f;
-                    tieLine.LineStyle.Pattern = LinePattern.Solid;
-                    HostBinaryDiagram.AddExportSeries($"TieLine_{inv.Type}_{inv.Temp:F0}{u}", tieXs, tieYs);
+                    bool curveAlreadyDrawsTie = diag.Curves != null && diag.Curves.Any(c =>
+                        c.Xs.Count == 2 && c.Ys.Count == 2 &&
+                        Math.Abs(c.Ys[0] - c.Ys[1]) < 0.5 &&
+                        Math.Abs(c.Ys[0] - inv.Temp) < 1.5);
+                    if (!curveAlreadyDrawsTie)
+                    {
+                        double[] tieXs = new[] { inv.XStart, inv.XEnd };
+                        double[] tieYs = new[] { inv.Temp, inv.Temp };
+                        var tieLine = plot.Add.ScatterLine(tieXs, tieYs, ScottPlot.Color.FromHex("#DC2626"));
+                        tieLine.LineWidth = 1.8f;
+                        tieLine.LineStyle.Pattern = LinePattern.Dashed;
+                        HostBinaryDiagram.AddExportSeries($"TieLine_{inv.Type}_{inv.Temp:F0}{u}", tieXs, tieYs);
+                    }
                 }
 
                 // Node marker at invariant reaction coordinate
@@ -2437,15 +2444,42 @@ namespace PyCalphadSuite.Desktop
                 ll.LabelFontColor = tickCol;
             }
 
-            // 3. Three-Phase Tie-Triangles with Translucent Fill & Vertex Markers (PyCalphad Standard)
+            // Barycentric Axis Direction Titles along outer perimeter edges
+            if (!string.IsNullOrEmpty(diag.ElementB))
+            {
+                var axB = plot.Add.Text($"x({diag.ElementB}) →", 0.50, -0.068);
+                axB.LabelAlignment = Alignment.UpperCenter;
+                axB.LabelFontSize = 10.0f;
+                axB.LabelBold = true;
+                axB.LabelFontColor = tickCol;
+            }
+            if (!string.IsNullOrEmpty(diag.ElementA))
+            {
+                var axA = plot.Add.Text($"↙ x({diag.ElementA})", 0.16, 0.50 * hTri + 0.05);
+                axA.LabelAlignment = Alignment.MiddleRight;
+                axA.LabelFontSize = 10.0f;
+                axA.LabelBold = true;
+                axA.LabelFontColor = tickCol;
+            }
+            if (!string.IsNullOrEmpty(diag.ElementC))
+            {
+                var axC = plot.Add.Text($"↖ x({diag.ElementC})", 0.84, 0.50 * hTri + 0.05);
+                axC.LabelAlignment = Alignment.MiddleLeft;
+                axC.LabelFontSize = 10.0f;
+                axC.LabelBold = true;
+                axC.LabelFontColor = tickCol;
+            }
+
+            // 3. Three-Phase Tie-Triangles & Single-Phase Regions with Translucent Fill
+            bool hasTriangleLegend = false;
             if (diag.TieTriangles != null && diag.TieTriangles.Count > 0)
             {
-                HostTernaryDiagram.AddMetadata($"--- Three-Phase Equilibrium Tie-Triangles ({diag.TieTriangles.Count}) ---");
+                HostTernaryDiagram.AddMetadata($"--- Phase Region Polygons & Tie-Triangles ({diag.TieTriangles.Count}) ---");
                 foreach (var tri in diag.TieTriangles)
                 {
                     if (tri.V1.Count >= 2 && tri.V2.Count >= 2 && tri.V3.Count >= 2)
                     {
-                        var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
+                        bool isFillOnly = string.Equals(tri.BorderColor, "Transparent", StringComparison.OrdinalIgnoreCase);
                         var fillColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.Color) ? "#3B82F6" : tri.Color);
 
                         var polyCoords = new Coordinates[]
@@ -2456,22 +2490,35 @@ namespace PyCalphadSuite.Desktop
                             new(tri.V1[0], tri.V1[1])
                         };
                         var poly = plot.Add.Polygon(polyCoords);
-                        poly.FillColor = fillColor.WithAlpha(0.20f);
-                        poly.LineColor = triColor;
-                        poly.LineWidth = 1.5f;
+                        poly.FillColor = fillColor.WithAlpha(isFillOnly ? 0.28f : 0.20f);
+                        if (isFillOnly)
+                        {
+                            poly.LineWidth = 0f;
+                            if (!string.IsNullOrWhiteSpace(tri.Name))
+                            {
+                                poly.LegendText = tri.Name;
+                                hasTriangleLegend = true;
+                            }
+                        }
+                        else
+                        {
+                            var triColor = ScottPlot.Color.FromHex(string.IsNullOrEmpty(tri.BorderColor) ? "#2563EB" : tri.BorderColor);
+                            poly.LineColor = triColor;
+                            poly.LineWidth = 1.5f;
 
-                        // Vertex markers for the three coexisting phases
-                        var vx = new double[] { tri.V1[0], tri.V2[0], tri.V3[0] };
-                        var vy = new double[] { tri.V1[1], tri.V2[1], tri.V3[1] };
-                        var markers = plot.Add.Markers(vx, vy);
-                        markers.MarkerStyle.Shape = MarkerShape.FilledCircle;
-                        markers.MarkerStyle.Size = 6;
-                        markers.Color = triColor;
+                            // Vertex markers for the three coexisting phases
+                            var vx = new double[] { tri.V1[0], tri.V2[0], tri.V3[0] };
+                            var vy = new double[] { tri.V1[1], tri.V2[1], tri.V3[1] };
+                            var markers = plot.Add.Markers(vx, vy);
+                            markers.MarkerStyle.Shape = MarkerShape.FilledCircle;
+                            markers.MarkerStyle.Size = 6;
+                            markers.Color = triColor;
+                        }
 
-                        // Export series and metadata for three-phase tie-triangle
+                        // Export series and metadata
                         string triName = string.IsNullOrWhiteSpace(tri.Name) ? "3Phase_TieTriangle" : $"TieTriangle_{tri.Name}";
                         HostTernaryDiagram.AddExportSeries(triName, new[] { tri.V1[0], tri.V2[0], tri.V3[0], tri.V1[0] }, new[] { tri.V1[1], tri.V2[1], tri.V3[1], tri.V1[1] });
-                        HostTernaryDiagram.AddMetadata($"Tie-Triangle [{tri.Name}]: V1=({tri.V1[0]:F4}, {tri.V1[1]:F4}), V2=({tri.V2[0]:F4}, {tri.V2[1]:F4}), V3=({tri.V3[0]:F4}, {tri.V3[1]:F4})");
+                        HostTernaryDiagram.AddMetadata($"Region [{tri.Name}]: V1=({tri.V1[0]:F4}, {tri.V1[1]:F4}), V2=({tri.V2[0]:F4}, {tri.V2[1]:F4}), V3=({tri.V3[0]:F4}, {tri.V3[1]:F4})");
                     }
                 }
             }
@@ -2574,13 +2621,14 @@ namespace PyCalphadSuite.Desktop
                 }
             }
 
-            // Configure Legend cleanly: hide completely when single-phase or legend-empty
+            // Configure Legend cleanly: hide completely only when nothing has a legend name
             foreach (var panel in plot.Axes.GetPanels().OfType<ScottPlot.Panels.LegendPanel>().ToList())
             {
                 plot.Axes.Remove(panel);
             }
             bool hasCurvesOrTies = (diag.Curves != null && diag.Curves.Count > 0) || (diag.TieLines != null && diag.TieLines.Count > 0);
-            if (!hasCurvesOrTies || !hasLegendEntries)
+            bool hasAnyLegend = hasTriangleLegend || (hasCurvesOrTies && hasLegendEntries);
+            if (!hasAnyLegend)
             {
                 plot.Legend.IsVisible = false;
             }
@@ -2594,8 +2642,8 @@ namespace PyCalphadSuite.Desktop
                 plot.Legend.FontColor = _isDarkTheme ? ScottPlot.Color.FromHex("#F0F6FC") : ScottPlot.Color.FromHex("#0F172A");
             }
 
-            // Fixed Bounds with Margin for Apex Text and Perimeter Ticks
-            HostTernaryDiagram.SetLimitsAndRemember(-0.16, 1.16, -0.11, 0.99);
+            // Fixed Bounds with Margin for Apex Text, Perimeter Ticks, and Axis Titles
+            HostTernaryDiagram.SetLimitsAndRemember(-0.20, 1.20, -0.14, 0.99);
             HostTernaryDiagram.HeaderSummary = $"{diag.System} ({diag.DiagramType}) | T={diag.Temperature:F0} {diag.TempUnit} | {diag.LiteratureNotes}";
             HostTernaryDiagram.Refresh();
         }
@@ -3545,13 +3593,19 @@ namespace PyCalphadSuite.Desktop
             {
                 proc = new ProcessabilityDto
                 {
-                    Axes = new List<string> { "SLM Printability", "Arc Melting (VAR)", "Castability", "Hot Forging", "Weldability", "Cold Forming", "Machinability" },
-                    Scores = new List<double> { 91.0, 95.0, 87.0, 85.0, 90.0, 84.0, 78.0 }
+                    Axes = new List<string>
+                    {
+                        "SLM / LPBF", "EBM", "L-DED", "WAAM", "Binder Jet", "SPS / FAST",
+                        "Arc Melting", "VIM / VAR", "Casting", "Hot Forging", "Cold Forming", "Machining"
+                    },
+                    Scores = new List<double> { 91.0, 86.0, 88.0, 84.0, 79.0, 87.0, 94.0, 89.0, 86.0, 85.0, 82.0, 76.0 },
+                    RouteCostsUsdKg = new List<double> { 410.0, 340.0, 215.0, 95.0, 140.0, 260.0, 58.0, 48.0, 46.0, 34.0, 26.0, 92.0 },
+                    RawAlloyCostUsdKg = 17.0
                 };
             }
 
             int nAxes = proc.Axes.Count;
-            string radarTitle = $"{nAxes}-Axis Manufacturing Processability & Route Suitability Radar";
+            string radarTitle = "Manufacturing Processability";
             HostRadar.HeaderTitle = radarTitle;
             HostRadar.ApplyOtisLiuStyle(radarTitle, string.Empty, string.Empty, _isDarkTheme);
 
@@ -3569,7 +3623,8 @@ namespace PyCalphadSuite.Desktop
             plot.Grid.IsVisible = false;
 
             int n = proc.Axes.Count;
-            double[] angles = Enumerable.Range(0, n).Select(i => (Math.PI / 2.0) + (2.0 * Math.PI * i / n)).ToArray();
+            bool hasCosts = proc.RouteCostsUsdKg != null && proc.RouteCostsUsdKg.Count == n;
+            double[] angles = Enumerable.Range(0, n).Select(i => (Math.PI / 2.0) - (2.0 * Math.PI * i / n)).ToArray();
             var ringColor = _isDarkTheme ? ScottPlot.Color.FromHex("#334155") : ScottPlot.Color.FromHex("#CBD5E1");
 
             // Concentric percentage rings + numeric scale callouts
@@ -3591,15 +3646,25 @@ namespace PyCalphadSuite.Desktop
             // Central hub point
             plot.Add.Marker(0.0, 0.0, MarkerShape.FilledCircle, 4, ringColor);
 
-            // Spokes & axis labels
+            // Spokes & axis labels (Suitability % + Cost USD/kg)
             for (int i = 0; i < n; i++)
             {
-                var spoke = plot.Add.ScatterLine(new[] { 0.0, Math.Cos(angles[i]) }, new[] { 0.0, Math.Sin(angles[i]) }, ringColor);
+                double cosA = Math.Cos(angles[i]);
+                double sinA = Math.Sin(angles[i]);
+                var spoke = plot.Add.ScatterLine(new[] { 0.0, cosA }, new[] { 0.0, sinA }, ringColor);
                 spoke.LineWidth = 1.0f;
-                var lbl = plot.Add.Text($"{proc.Axes[i]}\n({proc.Scores[i]:F0}%)", 1.20 * Math.Cos(angles[i]), 1.16 * Math.Sin(angles[i]));
-                lbl.LabelFontSize = 9.5f;
+
+                string labelText = hasCosts
+                    ? $"{proc.Axes[i]}\n({proc.Scores[i]:F0}% | ${proc.RouteCostsUsdKg![i]:F0}/kg)"
+                    : $"{proc.Axes[i]}\n({proc.Scores[i]:F0}%)";
+                var lbl = plot.Add.Text(labelText, 1.12 * cosA, 1.10 * sinA);
+                lbl.LabelFontSize = n > 8 ? 8.6f : 9.5f;
                 lbl.LabelBold = true;
-                lbl.LabelAlignment = Alignment.MiddleCenter;
+                lbl.LabelAlignment = sinA > 0.88 ? Alignment.LowerCenter
+                                    : sinA < -0.88 ? Alignment.UpperCenter
+                                    : cosA > 0.20 ? Alignment.MiddleLeft
+                                    : cosA < -0.20 ? Alignment.MiddleRight
+                                    : Alignment.MiddleCenter;
                 lbl.LabelFontColor = _isDarkTheme ? ScottPlot.Colors.White : ScottPlot.Colors.Black;
             }
 
@@ -3618,11 +3683,24 @@ namespace PyCalphadSuite.Desktop
             pts.Color = ScottPlot.Color.FromHex("#1D4ED8");
             pts.LegendText = "Route Scores (%)";
 
+            HostRadar.ClearMetadata();
             HostRadar.AddExportSeries("Processability Envelope", polyX, polyY);
             HostRadar.AddExportSeries("Route Scores (%)", Enumerable.Range(0, n).Select(i => (double)(i + 1)), proc.Scores);
+            if (hasCosts)
+            {
+                HostRadar.AddExportSeries("Route Cost (USD/kg)", Enumerable.Range(0, n).Select(i => (double)(i + 1)), proc.RouteCostsUsdKg!);
+                HostRadar.AddMetadata($"Raw Elemental Melt Charge: ${proc.RawAlloyCostUsdKg:F2}/kg");
+                for (int i = 0; i < n; i++)
+                {
+                    HostRadar.AddMetadata($"{proc.Axes[i]}: Score={proc.Scores[i]:F1}% | Est. Cost=${proc.RouteCostsUsdKg![i]:F2}/kg");
+                }
+            }
             int bestIdx = proc.Scores.IndexOf(proc.Scores.Max());
-            HostRadar.HeaderSummary = $"Mean Score: {proc.Scores.Average():F1}%  |  Optimal Route: {proc.Axes[bestIdx]} ({proc.Scores[bestIdx]:F0}%)";
-            HostRadar.SetLimitsAndRemember(-1.48, 1.48, -1.42, 1.42);
+            string costNote = hasCosts
+                ? $"  |  Best Value: ${proc.RouteCostsUsdKg!.Min():F0}/kg ({proc.Axes[proc.RouteCostsUsdKg.IndexOf(proc.RouteCostsUsdKg.Min())]})"
+                : "";
+            HostRadar.HeaderSummary = $"Mean: {proc.Scores.Average():F1}%  |  Top Route: {proc.Axes[bestIdx]} ({proc.Scores[bestIdx]:F0}%){costNote}";
+            HostRadar.SetLimitsAndRemember(-1.78, 1.78, -1.48, 1.48);
             HostRadar.Refresh();
         }
 
@@ -3694,7 +3772,13 @@ namespace PyCalphadSuite.Desktop
                 line75.LinePattern = LinePattern.Dashed;
                 line75.LineWidth = 1.2f;
 
-                HostSuitability.HeaderSummary = $"Top Match: Rank 1 - {top[0].Name} ({top[0].Score:F1}% >> {top[0].Tier})";
+                if (top.Any(a => a.AlloyCostUsdKg > 0))
+                {
+                    HostSuitability.AddExportSeries("Alloy Mfg Cost (USD/kg)", top.Select(a => a.AlloyCostUsdKg), yPositions);
+                    HostSuitability.AddMetadata($"Estimated Active Alloy Mfg Cost: ${top[0].AlloyCostUsdKg:F2}/kg | Primary Cost-Cut Potential: ~{top[0].CostSavingsPct:F0}%");
+                    HostSuitability.AddMetadata($"Cost Optimization Strategy: {top[0].CostRecommendation}");
+                }
+                HostSuitability.HeaderSummary = $"Top Match: Rank 1 - {top[0].Name} ({top[0].Score:F1}% | Est. Cost: ${top[0].AlloyCostUsdKg:F2}/kg)";
                 HostSuitability.SetLimitsAndRemember(0.0, 116.0, 0.4, count + 0.6);
             }
             HostSuitability.Refresh();
@@ -4976,7 +5060,7 @@ namespace PyCalphadSuite.Desktop
             finally
             {
                 BtnFindNearestHea.IsEnabled = true;
-                BtnFindNearestHea.Content = "🎯 Find Nearest to Current Alloy";
+                BtnFindNearestHea.Content = "Find Nearest to Current Alloy";
             }
         }
 

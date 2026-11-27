@@ -201,7 +201,7 @@
                                 </DockPanel>
                                 <ComboBox x:Name="CmbDatabase" SelectionChanged="CmbDatabase_SelectionChanged" Height="28" Margin="0,2,0,0" Background="#FFFFFF" Foreground="#000000"/>
 
-                                <TextBlock Text="Preset Grade Archetype:" FontSize="11" FontWeight="Bold" Foreground="#000000" Margin="0,8,0,2"/>
+                                <TextBlock Text="Preset:" FontSize="11" FontWeight="Bold" Foreground="#000000" Margin="0,8,0,2"/>
                                 <ComboBox x:Name="CmbPresets" SelectionChanged="CmbPresets_SelectionChanged" Height="28" Background="#FFFFFF" Foreground="#000000"/>
 
                                 <TextBlock Text="Composition Basis:" FontSize="11" FontWeight="Bold" Foreground="#000000" Margin="0,8,0,4"/>
@@ -302,8 +302,8 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!-- First-Principles DFT Calculation Input Section -->
-                                <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,6" Margin="0,2,0,8">
+                                <!-- First-Principles DFT Calculation Input Section (Runs automatically in background) -->
+                                <Border x:Name="BorderDftSection" Visibility="Collapsed" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,6" Margin="0,2,0,8">
                                     <StackPanel>
                                         <DockPanel Margin="0,0,0,4">
                                             <CheckBox x:Name="ChkAnchorDft" Content="Anchor with DFT Input" IsChecked="True" FontWeight="SemiBold" FontSize="10.5" Foreground="#0F172A" VerticalAlignment="Center" Checked="ChkAnchorDft_Changed" Unchecked="ChkAnchorDft_Changed" ToolTip="Anchor CALPHAD Gibbs energy minimization and phase stabilities with First-Principles DFT ground-state formation enthalpies and d-electron parameters"/>
@@ -323,7 +323,7 @@
                                                 <TextBox x:Name="TxtDftOrbitalMd" Text="0.880 eV" FontSize="10.5" Padding="3,2" Background="#FFFFFF" Foreground="#0F172A" BorderBrush="#CBD5E1" ToolTip="Morinaga d-orbital energy level Md input for sigma-phase instability evaluation"/>
                                             </StackPanel>
                                         </Grid>
-                                        <TextBlock x:Name="TxtDftInputSummary" Text="DFT Input: Ground State BCC_A2 | Bo=0.857 | SFE=28 mJ/m²" FontSize="9.5" Foreground="#334155" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="TxtDftInputSummary" Text="DFT Input: Ground State BCC_A2 | Bo=0.857 | SFE=28 mJ/m²" FontSize="9.5" Foreground="#334155" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" Visibility="Collapsed"/>
                                     </StackPanel>
                                 </Border>
 
@@ -1138,7 +1138,7 @@
                             </TabControl.Resources>
                         <!-- Tab 15: Processability Radar -->
                         <TabItem Header="Processability Radar">
-                            <ctrl:PlotCanvasHost x:Name="HostRadar" HeaderTitle="7-Axis Manufacturing Processability &amp; Route Suitability Radar" ExportBaseName="Processability_Radar"/>
+                            <ctrl:PlotCanvasHost x:Name="HostRadar" HeaderTitle="Manufacturing Processability" ExportBaseName="Processability_Radar"/>
                         </TabItem>
                         <!-- Tab 16: Industrial Suitability -->
                         <TabItem Header="Industrial Suitability">
@@ -1176,7 +1176,7 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Benchmark Alloy" Binding="{Binding Benchmark}" Width="180" MinWidth="130">
+                                        <DataGridTextColumn Header="Benchmark Alloy" Binding="{Binding Benchmark}" Width="155" MinWidth="120">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
@@ -1184,11 +1184,20 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="*">
+                                        <DataGridTextColumn Header="Alloy Cost (USD/kg)" Binding="{Binding AlloyCostUsdKg, StringFormat=${0:F2}}" Width="118" MinWidth="100"/>
+                                        <DataGridTextColumn Header="Design Bottleneck" Binding="{Binding Bottleneck}" Width="240" MinWidth="180">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="TextWrapping" Value="Wrap"/>
                                                     <Setter Property="ToolTip" Value="{Binding Bottleneck}"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Cost Optimization Recommendation" Binding="{Binding CostRecommendation}" Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                                    <Setter Property="ToolTip" Value="{Binding CostRecommendation}"/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>

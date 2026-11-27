@@ -55,7 +55,9 @@ def _interpolate_curve(
         y_dense = np.linspace(ys[0], ys[1], n_pts)
         return x_dense.tolist(), y_dense.tolist()
 
-    dists = np.hypot(np.diff(xs), np.diff(ys))
+    xs_span = max(1e-9, float(np.max(xs) - np.min(xs)))
+    ys_span = max(1e-6, float(np.max(ys) - np.min(ys)))
+    dists = np.hypot(np.diff(xs) / xs_span, np.diff(ys) / ys_span)
     total_dist = float(np.sum(dists))
     if total_dist < 1e-12:
         return xs.tolist(), ys.tolist()
@@ -289,12 +291,129 @@ class BinaryDiagramEngine:
         return list(cls.ASSESSED_SYSTEMS)
 
     @classmethod
+    def _normalize_binary_payload(cls, payload: Dict[str, Any], is_k: bool) -> Dict[str, Any]:
+        """Standardizes schema keys, extends dangling subsolidus curves to y_min, and bounds liquidus >= solidus."""
+        u = payload.get("temp_unit") or ("K" if is_k else "°C")
+        x_min = float(payload.get("x_min", 0.0))
+        x_max = float(payload.get("x_max", 1.0))
+        payload["x_min"] = x_min
+        payload["x_max"] = x_max
+        payload.setdefault("temp_unit", u)
+        el_a = payload.get("element_a", "A")
+        el_b = payload.get("element_b", "B")
+        payload.setdefault("x_axis_label", f"Atomic Fraction of {el_b}, x({el_b})")
+        payload.setdefault("y_axis_label", f"Temperature [{u}]")
+        payload.setdefault("experimental_points", [])
+
+        # Normalize legacy region dictionaries (name -> label)
+        norm_regions = []
+        for reg in payload.get("regions", []):
+            r_copy = dict(reg)
+            if "label" not in r_copy and "name" in r_copy:
+                r_copy["label"] = r_copy["name"]
+            r_copy.setdefault("font_size", 11)
+            r_copy.setdefault("color", "#0F172A")
+            norm_regions.append(r_copy)
+        payload["regions"] = norm_regions
+
+        # Normalize legacy invariant dictionaries (temperature/composition/reaction -> temp/x_reaction/equation)
+        norm_invs = []
+        for inv in payload.get("invariants", []):
+            ic = dict(inv)
+            if "temp" not in ic and "temperature" in ic:
+                ic["temp"] = ic["temperature"]
+            if "x_reaction" not in ic and "composition" in ic:
+                ic["x_reaction"] = ic["composition"]
+            if "equation" not in ic and "reaction" in ic:
+                ic["equation"] = ic["reaction"]
+            xr = float(ic.get("x_reaction", 0.5))
+            ic.setdefault("x_start", xr)
+            ic.setdefault("x_end", xr)
+            norm_invs.append(ic)
+        payload["invariants"] = norm_invs
+
+        # Determine physical y bounds covering every plotted curve and invariant
+        curves = payload.get("curves", [])
+        all_y = [y for c in curves for y in c.get("ys", [])]
+        y_min_raw = payload.get("y_min")
+        y_max_raw = payload.get("y_max")
+        if not y_min_raw and "t_min" in payload:
+            y_min_raw = payload["t_min"]
+        if not y_max_raw and "t_max" in payload:
+            y_max_raw = payload["t_max"]
+
+        y_min = float(y_min_raw) if (y_min_raw is not None and (y_min_raw != 0 or y_max_raw != 0)) else (min(all_y) - 50.0 if all_y else 0.0)
+        y_max = float(y_max_raw) if (y_max_raw is not None and (y_min_raw != 0 or y_max_raw != 0)) else (max(all_y) + 80.0 if all_y else 2000.0)
+
+        if all_y:
+            y_min = min(y_min, min(all_y) - (10.0 if min(all_y) < y_min else 0.0))
+            y_max = max(y_max, max(all_y) + (20.0 if max(all_y) > y_max else 0.0))
+        payload["y_min"] = y_min
+        payload["y_max"] = y_max
+
+        # Enforce Liquidus >= Solidus anywhere overlapping branches exist
+        liq_curves = [c for c in curves if "Liquidus" in c.get("name", "") and len(c.get("xs", [])) > 4]
+        if liq_curves:
+            # Build composite upper liquidus envelope over monotonic x segments
+            lx_pts = []
+            ly_pts = []
+            for lc in liq_curves:
+                lx_pts.extend(lc["xs"])
+                ly_pts.extend(lc["ys"])
+            order = np.argsort(lx_pts)
+            lx_arr = np.array(lx_pts, dtype=float)[order]
+            ly_arr = np.array(ly_pts, dtype=float)[order]
+            for c in curves:
+                cname = c.get("name", "")
+                if "Solidus" in cname and len(c.get("xs", [])) > 1:
+                    cxs = np.array(c["xs"], dtype=float)
+                    cys = np.array(c["ys"], dtype=float)
+                    mask = (cxs >= lx_arr[0]) & (cxs <= lx_arr[-1])
+                    if np.any(mask):
+                        l_bound = np.interp(cxs[mask], lx_arr, ly_arr)
+                        cys[mask] = np.minimum(cys[mask], l_bound)
+                        c["ys"] = cys.tolist()
+
+        # Extend dangling subsolidus solvus / ordered ends cleanly to y_min
+        tol_hang = 180.0
+        for c in curves:
+            cname = c.get("name", "")
+            xs = c.get("xs", [])
+            ys = c.get("ys", [])
+            if len(xs) >= 2 and ("Solvus" in cname or "Ordered" in cname or "Corridor" in cname or "Boundary" in cname):
+                for end_idx, prev_idx in ((0, 1), (-1, -2)):
+                    ye = float(ys[end_idx])
+                    xe = float(xs[end_idx])
+                    if y_min + 2.0 < ye <= y_min + tol_hang and x_min + 0.005 < xe < x_max - 0.005:
+                        yp = float(ys[prev_idx])
+                        xp = float(xs[prev_idx])
+                        if yp > ye + 1.0:
+                            # Extrapolate slope down to y_min while staying strictly within [x_min, x_max]
+                            dx_ext = (xe - xp) * ((ye - y_min) / (yp - ye))
+                            x_new = float(np.clip(xe + dx_ext, x_min, x_max))
+                            if end_idx == 0:
+                                xs.insert(0, x_new)
+                                ys.insert(0, y_min)
+                            else:
+                                xs.append(x_new)
+                                ys.append(y_min)
+
+        return payload
+
+    @classmethod
     def compute_binary_diagram(cls, system_name: str, temp_unit: str = "C",
                                n_points: int = 200) -> Dict[str, Any]:
         """
         Main calculation dispatcher.
-        Returns a complete binary phase diagram payload for plotting and UI consumption.
+        Returns a complete normalized binary phase diagram payload for plotting and UI consumption.
         """
+        is_k = "kelvin" in temp_unit.lower() or temp_unit.strip().upper() == "K"
+        raw = cls._dispatch_binary_diagram(system_name, temp_unit, n_points)
+        return cls._normalize_binary_payload(raw, is_k)
+
+    @classmethod
+    def _dispatch_binary_diagram(cls, system_name: str, temp_unit: str = "C",
+                                 n_points: int = 200) -> Dict[str, Any]:
         sys_lower = system_name.lower()
         is_k = "kelvin" in temp_unit.lower() or temp_unit.strip().upper() == "K"
 
@@ -1522,53 +1641,55 @@ class BinaryDiagramEngine:
         conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
         u = "K" if is_k else "°C"
 
-        xs_dense = np.linspace(0.0, 1.0, n_pts)
-
         # Liquidus curve knots (Fe: 1538 C, peritectic at 1513 C / 5.2 at% Ni, congruent minimum at 1435 C / 68 at% Ni, Ni: 1455 C)
-        liq_knots = [
-            (0.00, 1538.0),
+        liq_delta_knots = [(0.00, 1538.0), (0.026, 1525.5), (0.052, 1513.0)]
+        liq_gamma_knots = [
             (0.052, 1513.0),
             (0.15, 1485.0),
             (0.30, 1460.0),
             (0.50, 1442.0),
             (0.68, 1435.0),
             (0.85, 1442.0),
-            (1.00, 1455.0)
+            (1.00, 1455.0),
         ]
-        xs_l_raw, ys_l_raw = _interpolate_curve(liq_knots, n_pts=n_pts, clip_x_min=0.0, clip_x_max=1.0)
-        ys_liq_dense = np.interp(xs_dense, xs_l_raw, ys_l_raw)
+        xs_ld, ys_ld = _interpolate_curve(liq_delta_knots, n_pts=max(12, n_pts // 6), clip_x_min=0.0, clip_x_max=0.052)
+        xs_lg, ys_lg = _interpolate_curve(liq_gamma_knots, n_pts=n_pts, clip_x_min=0.052, clip_x_max=1.0)
+        xs_liq = xs_ld + xs_lg[1:]
+        ys_liq = ys_ld + ys_lg[1:]
 
-        # Solidus curve knots (Delta solidus: 0 to 3.5 at% Ni at 1513 C; Gamma solidus: starts at 4.5 at% Ni at 1513 C down to 1435 C minimum)
-        sol_knots = [
-            (0.00, 1538.0),
-            (0.035, 1513.0),
+        # Solidus branches separated at peritectic horizontal (1513 C): delta (0 -> 0.035) and gamma (0.045 -> 1.0)
+        sol_delta_knots = [(0.00, 1538.0), (0.0175, 1526.0), (0.035, 1513.0)]
+        sol_gamma_knots = [
             (0.045, 1513.0),
             (0.15, 1465.0),
             (0.30, 1445.0),
             (0.50, 1438.0),
             (0.68, 1435.0),
             (0.85, 1440.0),
-            (1.00, 1455.0)
+            (1.00, 1455.0),
         ]
-        xs_s_raw, ys_s_raw = _interpolate_curve(sol_knots, n_pts=n_pts, clip_x_min=0.0, clip_x_max=1.0)
-        ys_sol_dense = np.interp(xs_dense, xs_s_raw, ys_s_raw)
+        xs_sd, ys_sd = _interpolate_curve(sol_delta_knots, n_pts=max(12, n_pts // 6), clip_x_min=0.0, clip_x_max=0.035)
+        xs_sg, ys_sg = _interpolate_curve(sol_gamma_knots, n_pts=n_pts, clip_x_min=0.045, clip_x_max=1.0)
 
-        # Enforce strict thermodynamic bound: T_sol <= T_liq everywhere
-        ys_sol_dense = np.minimum(ys_sol_dense, ys_liq_dense)
+        # Strictly guarantee gamma solidus <= gamma liquidus without sag below 1513
+        xs_g_grid = np.linspace(0.045, 1.0, n_pts)
+        ys_sg_interp = np.interp(xs_g_grid, xs_sg, ys_sg)
+        ys_lg_interp = np.interp(xs_g_grid, xs_liq, ys_liq)
+        ys_sg_interp = np.minimum(ys_sg_interp, ys_lg_interp)
+        xs_sol = xs_g_grid.tolist()
+        ys_sol = ys_sg_interp.tolist()
 
-        xs_liq = xs_dense.tolist()
-        ys_liq = ys_liq_dense.tolist()
-        xs_sol = xs_dense.tolist()
-        ys_sol = ys_sol_dense.tolist()
+        # Delta-to-gamma solid-state A4 boundary (1394 C at x=0 down cleanly? Above 1394 -> 1513 C)
+        xs_a4, ys_a4 = _interpolate_curve([(0.00, 1394.0), (0.022, 1455.0), (0.045, 1513.0)], n_pts=20, clip_x_min=0.0, clip_x_max=0.045)
 
-        # A3 / gamma-alpha solvus loop
+        # A3 / gamma-alpha solvus extending cleanly to chart bottom (y_min = 200 C)
         gamma_solvus_knots = [
             (0.00, 912.0),
             (0.05, 800.0),
             (0.10, 680.0),
             (0.15, 540.0),
             (0.22, 400.0),
-            (0.30, 250.0)
+            (0.34, 200.0),
         ]
         xs_gsol, ys_gsol = _interpolate_curve(gamma_solvus_knots, n_pts=50, clip_x_min=0.0, clip_x_max=0.35)
 
@@ -1577,18 +1698,18 @@ class BinaryDiagramEngine:
             (0.02, 800.0),
             (0.04, 680.0),
             (0.05, 540.0),
-            (0.055, 400.0),
-            (0.06, 250.0)
+            (0.056, 380.0),
+            (0.062, 200.0),
         ]
         xs_asol, ys_asol = _interpolate_curve(alpha_solvus_knots, n_pts=50, clip_x_min=0.0, clip_x_max=0.08)
 
-        # L1_2 FeNi3 ordering dome (summit at 75 at% Ni, 517 C)
+        # L1_2 FeNi3 ordering dome (summit at 75 at% Ni, 517 C) anchored cleanly at 200 C
         feni3_knots = [
             (0.66, 200.0),
             (0.69, 380.0),
             (0.75, 517.0),
             (0.80, 380.0),
-            (0.83, 200.0)
+            (0.83, 200.0),
         ]
         xs_feni3, ys_feni3 = _interpolate_curve(feni3_knots, n_pts=40, clip_x_min=0.65, clip_x_max=0.85)
 
@@ -1613,7 +1734,9 @@ class BinaryDiagramEngine:
 
         curves = [
             {"name": "Liquidus", "xs": xs_liq, "ys": [conv(t) for t in ys_liq], "color": "#000000", "width": 2.2, "dash": "solid"},
-            {"name": "Solidus", "xs": xs_sol, "ys": [conv(t) for t in ys_sol], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "δ-BCC Solidus", "xs": xs_sd, "ys": [conv(t) for t in ys_sd], "color": "#1D4ED8", "width": 1.9, "dash": "solid"},
+            {"name": "γ-FCC Solidus", "xs": xs_sol, "ys": [conv(t) for t in ys_sol], "color": "#2563EB", "width": 2.0, "dash": "solid"},
+            {"name": "δ / γ Solvus (A₄)", "xs": xs_a4, "ys": [conv(t) for t in ys_a4], "color": "#7C3AED", "width": 1.6, "dash": "solid"},
             {"name": "γ-Solvus (A₃)", "xs": xs_gsol, "ys": [conv(t) for t in ys_gsol], "color": "#DC2626", "width": 1.8, "dash": "solid"},
             {"name": "α-Solvus", "xs": xs_asol, "ys": [conv(t) for t in ys_asol], "color": "#1E3A8A", "width": 1.6, "dash": "dash"},
             {"name": "L1₂-FeNi₃ Solvus", "xs": xs_feni3, "ys": [conv(t) for t in ys_feni3], "color": "#059669", "width": 1.8, "dash": "solid"},
@@ -1623,7 +1746,7 @@ class BinaryDiagramEngine:
         regions = [
             {"label": "Liquid Solution (L)", "x": 0.50, "y": conv(1510.0), "font_size": 13, "color": "#0F172A"},
             {"label": "γ-(Fe,Ni) FCC Austenite (Invar Matrix)", "x": 0.50, "y": conv(1000.0), "font_size": 12, "color": "#1E3A8A"},
-            {"label": "α-BCC Ferrite", "x": 0.02, "y": conv(500.0), "font_size": 10, "color": "#991B1B"},
+            {"label": "α-BCC Ferrite", "x": 0.025, "y": conv(500.0), "font_size": 10, "color": "#991B1B"},
             {"label": "L1₂-FeNi₃ (Permalloy)", "x": 0.75, "y": conv(350.0), "font_size": 11, "color": "#065F46"}
         ]
 
@@ -4577,8 +4700,8 @@ class BinaryDiagramEngine:
         ]
         xs_liq, ys_liq = _interpolate_curve(liq_knots, n_pts=n_pts, clip_x_min=0.0, clip_x_max=1.0)
 
-        bz_sol_knots = [(0.745, 980.0), (0.85, 1350.0), (0.95, 1680.0), (1.00, 1855.0)]
-        xs_bzsol, ys_bzsol = _interpolate_curve(bz_sol_knots, n_pts=40, clip_x_min=0.745, clip_x_max=1.0)
+        bz_sol_knots = [(0.745, 980.0), (0.85, 1310.0), (0.95, 1640.0), (1.00, 1855.0)]
+        xs_bzsol, ys_bzsol = _interpolate_curve(bz_sol_knots, n_pts=n_pts, clip_x_min=0.745, clip_x_max=1.0)
 
         bz_solvus_knots = [(0.745, 980.0), (0.88, 860.0), (0.98, 829.0), (1.00, 863.0)]
         xs_bzsolvus, ys_bzsolvus = _interpolate_curve(bz_solvus_knots, n_pts=30, clip_x_min=0.745, clip_x_max=1.0)

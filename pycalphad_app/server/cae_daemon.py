@@ -846,32 +846,16 @@ class CAEDaemon:
 
         app_scores = ApplicationScorer.score_alloy(elements, fractions, thermo_res, mech_res, ox_res)
 
-        # 7-Axis Manufacturing Processability Radar
-        df = max(20.0, liq_k - sol_k)
-        slm_score = float(np.clip(94.0 - 0.18 * max(0.0, df - 40.0), 35.0, 96.0))
-        cast_score = float(np.clip(88.0 - 0.12 * abs(df - 60.0), 40.0, 95.0))
-        forge_score = float(np.clip(85.0 + 0.02 * (thermo_res.get("VEC", 8.0) - 7.0) * 10.0, 45.0, 96.0))
-        weld_score = float(np.clip(90.0 - 0.15 * max(0.0, sy0 - 500.0) / 10.0, 38.0, 94.0))
-        cold_score = float(np.clip(92.0 - 0.04 * sy0, 28.0, 94.0))
-        mach_score = float(np.clip(84.0 - 0.03 * sy0, 30.0, 90.0))
-
-        # Arc Melting (Vacuum Arc Remelting / Water-Cooled Copper Crucible Button Melting)
-        # Optimal primary consolidation for refractory and reactive high-melting alloys without crucible contamination;
-        # Sensitive to volatile elements (Zn, Mg, Cd, Li, Ca, Bi, Pb) that cause severe fuming and composition drift.
-        volatile_loss = sum(at_comp.get(el, 0.0) * 120.0 for el in ["Zn", "Mg", "Cd", "Li", "Ca", "Bi", "Pb"])
-        volatile_loss += sum(at_comp.get(el, 0.0) * 22.0 for el in ["Mn", "Al"])
-        elem_tms = [ELEMENTS_REGISTRY[el].tm_k for el in at_comp if ELEMENTS_REGISTRY and el in ELEMENTS_REGISTRY and ELEMENTS_REGISTRY[el].tm_k > 0]
-        tm_disp = (max(elem_tms) - min(elem_tms)) if len(elem_tms) > 1 else 0.0
-        disp_penalty = 0.005 * max(0.0, tm_disp - 1200.0)
-        refr_bonus = 4.0 if any(el in at_comp for el in ["Nb", "Mo", "Ta", "W", "Re", "Ti", "Zr", "Hf", "V"]) else 0.0
-        if liq_k > 1800.0:
-            refr_bonus += min(5.0, (liq_k - 1800.0) / 120.0)
-        arc_score = float(np.clip(93.0 + refr_bonus - volatile_loss - disp_penalty - 0.04 * max(0.0, df - 80.0), 25.0, 98.0))
-
-        processability = {
-            "axes": ["SLM Printability", "Arc Melting", "Castability", "Hot Forging", "Weldability", "Cold Forming", "Machinability"],
-            "scores": [slm_score, arc_score, cast_score, forge_score, weld_score, cold_score, mach_score]
-        }
+        # 12-Route Manufacturing Processability & Cost Model (USD/kg)
+        from pycalphad_app.core.alloy_economics import compute_processability_and_costs
+        processability = compute_processability_and_costs(
+            at_comp=at_comp,
+            wt_comp=wt_comp,
+            thermo_res=thermo_res,
+            mech_res=mech_res,
+            liq_k=liq_k,
+            sol_k=sol_k,
+        )
 
         # -------------------------------------------------------------------
         # 8b. First-Principles DFT & Electronic Structure Coupling Verification

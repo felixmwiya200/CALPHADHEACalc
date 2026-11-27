@@ -29,14 +29,15 @@
                         <ComboBoxItem Content="1650 K (1377 °C)" Tag="1650"/>
                     </ComboBox>
 
-                    <ToggleButton x:Name="BtnToggleAtomLabels" Content="Element Labels: ON" IsChecked="True"
-                                  Margin="10,0,0,0" Padding="10,4" Background="#EFF6FF" Foreground="#1E3A8A"
-                                  FontWeight="Bold" BorderBrush="#1D4ED8" BorderThickness="1.2"
+                    <ToggleButton x:Name="BtnToggleAtomLabels" Content="Labels: ON" IsChecked="True"
+                                  Margin="10,0,0,0" Padding="8,3" Background="#F8FAFC" Foreground="#0F172A"
+                                  FontWeight="SemiBold" BorderBrush="#CBD5E1" BorderThickness="1"
                                   Checked="BtnToggleAtomLabels_Changed" Unchecked="BtnToggleAtomLabels_Changed"
-                                  ToolTip="Toggle element-symbol atom labels (Fe, Cr, Ni, Co, Mn...) on or off inside the 3D crystal view"/>
+                                  ToolTip="Toggle element-symbol atom labels on or off inside the 3D crystal view"/>
 
-                    <Button x:Name="BtnRefreshStructures" Content="Rebuild 3D Cells" Click="BtnRefreshStructures_Click"
-                            Margin="8,0,0,0" Padding="10,4" Background="#FFFFFF" Foreground="#000000" FontWeight="Bold" BorderBrush="#1D4ED8" BorderThickness="1.2"/>
+                    <Button x:Name="BtnRefreshStructures" Content="Rebuild" Click="BtnRefreshStructures_Click"
+                            Margin="6,0,0,0" Padding="8,3" Background="#FFFFFF" Foreground="#0F172A" FontWeight="SemiBold" BorderBrush="#CBD5E1" BorderThickness="1"
+                            ToolTip="Rebuild 3D supercell models"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center">
@@ -93,6 +94,11 @@
                                     <CheckBox x:Name="ChkSlipPlane" Content="Slip Plane" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
                                     <CheckBox x:Name="ChkAxesTriad" Content="Axes (a,b,c)" IsChecked="True" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="VisualOption_Changed" Unchecked="VisualOption_Changed"/>
                                     <CheckBox x:Name="ChkAutoSpin" Content="Auto-Rotate" IsChecked="False" Foreground="#000000" VerticalAlignment="Center" Margin="0,0,10,4" Checked="ChkAutoSpin_Changed" Unchecked="ChkAutoSpin_Changed"/>
+
+                                    <ComboBox x:Name="CmbViewStyle" Width="155" Margin="0,0,8,4" Background="#FFFFFF" Foreground="#000000" SelectionChanged="VisualOption_ComboChanged" ToolTip="Switch between Crystal Lattice view and Ball &amp; Stick view">
+                                        <ComboBoxItem Content="View: Crystal Lattice" Tag="lattice" IsSelected="True"/>
+                                        <ComboBoxItem Content="View: Ball &amp; Stick" Tag="studio"/>
+                                    </ComboBox>
 
                                     <ComboBox x:Name="CmbColourMode" Width="155" Margin="0,0,8,4" Background="#FFFFFF" Foreground="#000000" SelectionChanged="VisualOption_ComboChanged">
                                         <ComboBoxItem Content="Colour: Element (CPK)" Tag="element" IsSelected="True"/>

@@ -455,123 +455,135 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        # Isothermal section at t_c (default 800-1000 °C)
-        # 1. FCC Solvus boundary: connects Co-Cr binary edge (~41 at% Cr) across ternary to Ni-Cr binary edge (~47 at% Cr)
-        cr_sol_co = max(0.35, min(0.48, 0.41 + (t_c - 1000.0) * 0.00012))
-        cr_sol_ni = max(0.40, min(0.52, 0.47 + (t_c - 1000.0) * 0.00010))
-        fcc_knots = [
-            (1.0 - cr_sol_co, cr_sol_co, 0.00),
-            (0.45, cr_sol_co + 0.02, 0.12),
-            (0.30, cr_sol_co + 0.04, 0.25),
-            (0.15, cr_sol_ni - 0.01, 0.39),
-            (0.00, cr_sol_ni, 1.0 - cr_sol_ni),
-        ]
-        xs_fcc, ys_fcc = _interpolate_ternary_curve(fcc_knots, n_pts=50)
-        curves.append({
-            "name": "FCC Solvus Boundary",
-            "xs": xs_fcc,
-            "ys": ys_fcc,
-            "color": "#1D4ED8",
-            "line_style": "Solid",
-            "line_width": 2.2
-        })
+        if diag_type == "liquidus":
+            def t_liq_ccn(a: float, b: float, c: float) -> float:
+                # Co (1495), Cr (1907), Ni (1455) with Cr-Ni eutectic (~1345°C at ~50Cr50Ni) and Co-Cr trough (~1395°C)
+                return 1495.0 * a + 1907.0 * b + 1455.0 * c - 1150.0 * b * c * (1.0 - 0.3 * c) - 1050.0 * a * b * (1.0 - 0.4 * a)
+            _append_isotherm_contours(
+                t_liq_ccn,
+                [(1390.0, "#38BDF8"), (1440.0, "#0284C7"), (1520.0, "#0369A1"), (1660.0, "#1D4ED8"), (1800.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            eut_v = [(0.58, 0.42, 0.00), (0.30, 0.46, 0.24), (0.00, 0.495, 0.505)]
+            vx, vy = _interpolate_ternary_curve(eut_v, n_pts=35)
+            curves.append({"name": "Eutectic / Peritectic Valley (L ⇄ FCC + BCC)", "xs": vx, "ys": vy, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.2})
+            labels.append({"text": "L -> FCC (Co,Ni)", "x": barycentric_to_cartesian(0.45, 0.12, 0.43)[0], "y": barycentric_to_cartesian(0.45, 0.12, 0.43)[1], "color": "#0284C7", "bold": True})
+            labels.append({"text": "L -> BCC (Cr)", "x": barycentric_to_cartesian(0.12, 0.76, 0.12)[0], "y": barycentric_to_cartesian(0.12, 0.76, 0.12)[1], "color": "#1E3A8A", "bold": True})
+        else:
+            # Isothermal section at t_c (default 800-1000 °C)
+            # 1. FCC Solvus boundary: connects Co-Cr binary edge (~41 at% Cr) across ternary to Ni-Cr binary edge (~47 at% Cr)
+            cr_sol_co = max(0.35, min(0.48, 0.41 + (t_c - 1000.0) * 0.00012))
+            cr_sol_ni = max(0.40, min(0.52, 0.47 + (t_c - 1000.0) * 0.00010))
+            fcc_knots = [
+                (1.0 - cr_sol_co, cr_sol_co, 0.00),
+                (0.45, cr_sol_co + 0.02, 0.12),
+                (0.30, cr_sol_co + 0.04, 0.25),
+                (0.15, cr_sol_ni - 0.01, 0.39),
+                (0.00, cr_sol_ni, 1.0 - cr_sol_ni),
+            ]
+            xs_fcc, ys_fcc = _interpolate_ternary_curve(fcc_knots, n_pts=50)
+            curves.append({
+                "name": "FCC Solvus Boundary",
+                "xs": xs_fcc,
+                "ys": ys_fcc,
+                "color": "#1D4ED8",
+                "line_style": "Solid",
+                "line_width": 2.2
+            })
 
-        # 2. BCC Solvus boundary near pure Cr corner
-        bcc_knots = [
-            (0.15, 0.85, 0.00),
-            (0.07, 0.86, 0.07),
-            (0.00, 0.88, 0.12),
-        ]
-        xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_knots, n_pts=30)
-        curves.append({
-            "name": "BCC (α-Cr) Solvus Boundary",
-            "xs": xs_bcc,
-            "ys": ys_bcc,
-            "color": "#059669",
-            "line_style": "Solid",
-            "line_width": 2.0
-        })
+            # 2. BCC Solvus boundary near pure Cr corner
+            bcc_knots = [
+                (0.15, 0.85, 0.00),
+                (0.07, 0.86, 0.07),
+                (0.00, 0.88, 0.12),
+            ]
+            xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_knots, n_pts=30)
+            curves.append({
+                "name": "BCC (α-Cr) Solvus Boundary",
+                "xs": xs_bcc,
+                "ys": ys_bcc,
+                "color": "#059669",
+                "line_style": "Solid",
+                "line_width": 2.0
+            })
 
-        # 3. Sigma phase field in high-Cr region extending from Co-Cr binary edge
-        sigma_knots = [
-            (0.43, 0.57, 0.00),
-            (0.34, 0.56, 0.10),
-            (0.24, 0.58, 0.18),
-            (0.20, 0.64, 0.16),
-            (0.28, 0.64, 0.08),
-            (0.37, 0.63, 0.00),
-        ]
-        xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=45)
-        curves.append({
-            "name": "Sigma (σ) Phase Field",
-            "xs": xs_sig,
-            "ys": ys_sig,
-            "color": "#DC2626",
-            "line_style": "Solid",
-            "line_width": 2.0
-        })
+            # 3. Sigma phase field in high-Cr region extending from Co-Cr binary edge
+            sigma_knots = [
+                (0.43, 0.57, 0.00),
+                (0.34, 0.56, 0.10),
+                (0.24, 0.58, 0.18),
+                (0.20, 0.64, 0.16),
+                (0.28, 0.64, 0.08),
+                (0.37, 0.63, 0.00),
+            ]
+            xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=45)
+            curves.append({
+                "name": "Sigma (σ) Phase Field",
+                "xs": xs_sig,
+                "ys": ys_sig,
+                "color": "#DC2626",
+                "line_style": "Solid",
+                "line_width": 2.0
+            })
 
-        # 4. Three-Phase Tie-Triangle (FCC + BCC + Sigma)
-        v1_fcc = barycentric_to_cartesian(0.28, 0.45, 0.27)
-        v2_sig = barycentric_to_cartesian(0.20, 0.64, 0.16)
-        v3_bcc = barycentric_to_cartesian(0.07, 0.86, 0.07)
-        tie_triangles.append({
-            "name": "FCC + BCC + σ Three-Phase Equilibrium",
-            "v1": [v1_fcc[0], v1_fcc[1]],
-            "v2": [v2_sig[0], v2_sig[1]],
-            "v3": [v3_bcc[0], v3_bcc[1]],
-            "color": "#3B82F6",
-            "border_color": "#1D4ED8"
-        })
+            # 4. Three-Phase Tie-Triangle (FCC + BCC + Sigma)
+            v1_fcc = barycentric_to_cartesian(0.28, 0.45, 0.27)
+            v2_sig = barycentric_to_cartesian(0.20, 0.64, 0.16)
+            v3_bcc = barycentric_to_cartesian(0.07, 0.86, 0.07)
+            tie_triangles.append({
+                "name": "FCC + BCC + σ Three-Phase Equilibrium",
+                "v1": [v1_fcc[0], v1_fcc[1]],
+                "v2": [v2_sig[0], v2_sig[1]],
+                "v3": [v3_bcc[0], v3_bcc[1]],
+                "color": "#3B82F6",
+                "border_color": "#1D4ED8"
+            })
 
-        # 5. Conjugate two-phase tie-lines strictly within their respective fields
-        # (a) FCC + Sigma tie-lines
-        fcc_sigma_pairs = [
-            ((0.51, 0.42, 0.07), (0.39, 0.56, 0.05)),
-            ((0.38, 0.44, 0.18), (0.27, 0.58, 0.15)),
-        ]
-        for p1, p2 in fcc_sigma_pairs:
-            x1, y1 = barycentric_to_cartesian(*p1)
-            x2, y2 = barycentric_to_cartesian(*p2)
-            tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
+            # 5. Conjugate two-phase tie-lines strictly within their respective fields
+            fcc_sigma_pairs = [
+                ((0.51, 0.42, 0.07), (0.39, 0.56, 0.05)),
+                ((0.38, 0.44, 0.18), (0.27, 0.58, 0.15)),
+            ]
+            for p1, p2 in fcc_sigma_pairs:
+                x1, y1 = barycentric_to_cartesian(*p1)
+                x2, y2 = barycentric_to_cartesian(*p2)
+                tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
 
-        # (b) FCC + BCC tie-lines
-        fcc_bcc_pairs = [
-            ((0.18, 0.46, 0.36), (0.04, 0.87, 0.09)),
-            ((0.08, 0.47, 0.45), (0.01, 0.88, 0.11)),
-        ]
-        for p1, p2 in fcc_bcc_pairs:
-            x1, y1 = barycentric_to_cartesian(*p1)
-            x2, y2 = barycentric_to_cartesian(*p2)
-            tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
+            fcc_bcc_pairs = [
+                ((0.18, 0.46, 0.36), (0.04, 0.87, 0.09)),
+                ((0.08, 0.47, 0.45), (0.01, 0.88, 0.11)),
+            ]
+            for p1, p2 in fcc_bcc_pairs:
+                x1, y1 = barycentric_to_cartesian(*p1)
+                x2, y2 = barycentric_to_cartesian(*p2)
+                tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
 
-        # (c) Sigma + BCC tie-line
-        sig_bcc_pairs = [
-            ((0.32, 0.64, 0.04), (0.11, 0.85, 0.04)),
-        ]
-        for p1, p2 in sig_bcc_pairs:
-            x1, y1 = barycentric_to_cartesian(*p1)
-            x2, y2 = barycentric_to_cartesian(*p2)
-            tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
+            sig_bcc_pairs = [
+                ((0.32, 0.64, 0.04), (0.11, 0.85, 0.04)),
+            ]
+            for p1, p2 in sig_bcc_pairs:
+                x1, y1 = barycentric_to_cartesian(*p1)
+                x2, y2 = barycentric_to_cartesian(*p2)
+                tie_lines.append({"xs": [x1, x2], "ys": [y1, y2], "color": "#64748B"})
 
-        # 6. Phase region labels
-        x_fcc, y_fcc = barycentric_to_cartesian(0.45, 0.15, 0.40)
-        labels.append({"text": "FCC (γ) Solid Solution", "x": x_fcc, "y": y_fcc, "color": "#1D4ED8", "bold": True})
+            # 6. Phase region labels
+            x_fcc, y_fcc = barycentric_to_cartesian(0.45, 0.15, 0.40)
+            labels.append({"text": "FCC (γ) Solid Solution", "x": x_fcc, "y": y_fcc, "color": "#1D4ED8", "bold": True})
 
-        x_sig_lbl, y_sig_lbl = barycentric_to_cartesian(0.30, 0.60, 0.10)
-        labels.append({"text": "Sigma (σ)", "x": x_sig_lbl, "y": y_sig_lbl, "color": "#DC2626", "bold": True})
+            x_sig_lbl, y_sig_lbl = barycentric_to_cartesian(0.30, 0.60, 0.10)
+            labels.append({"text": "Sigma (σ)", "x": x_sig_lbl, "y": y_sig_lbl, "color": "#DC2626", "bold": True})
 
-        x_bcc_lbl, y_bcc_lbl = barycentric_to_cartesian(0.04, 0.93, 0.03)
-        labels.append({"text": "BCC (α-Cr)", "x": x_bcc_lbl, "y": y_bcc_lbl, "color": "#059669", "bold": True})
+            x_bcc_lbl, y_bcc_lbl = barycentric_to_cartesian(0.04, 0.93, 0.03)
+            labels.append({"text": "BCC (α-Cr)", "x": x_bcc_lbl, "y": y_bcc_lbl, "color": "#059669", "bold": True})
 
-        x_fcc_sig, y_fcc_sig = barycentric_to_cartesian(0.42, 0.48, 0.10)
-        labels.append({"text": "FCC + σ", "x": x_fcc_sig, "y": y_fcc_sig, "color": "#475569", "bold": False})
+            x_fcc_sig, y_fcc_sig = barycentric_to_cartesian(0.42, 0.48, 0.10)
+            labels.append({"text": "FCC + σ", "x": x_fcc_sig, "y": y_fcc_sig, "color": "#475569", "bold": False})
 
-        x_fcc_bcc, y_fcc_bcc = barycentric_to_cartesian(0.10, 0.65, 0.25)
-        labels.append({"text": "FCC + BCC", "x": x_fcc_bcc, "y": y_fcc_bcc, "color": "#475569", "bold": False})
+            x_fcc_bcc, y_fcc_bcc = barycentric_to_cartesian(0.10, 0.65, 0.25)
+            labels.append({"text": "FCC + BCC", "x": x_fcc_bcc, "y": y_fcc_bcc, "color": "#475569", "bold": False})
 
-        x_tri, y_tri = barycentric_to_cartesian(0.18, 0.65, 0.17)
-        labels.append({"text": "FCC + BCC + σ", "x": x_tri, "y": y_tri, "color": "#1E3A8A", "bold": True})
+            x_tri, y_tri = barycentric_to_cartesian(0.18, 0.65, 0.17)
+            labels.append({"text": "FCC + BCC + σ", "x": x_tri, "y": y_tri, "color": "#1E3A8A", "bold": True})
 
         return cls._build_ternary_payload(
             system="Co-Cr-Ni",
@@ -600,44 +612,61 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        # Monovariant liquidus boundary connecting Fe-Ni peritectic (~1517 C) to Cr-Ni eutectic (~1345 C)
-        liq_valley_knots = [
-            (0.85, 0.05, 0.10),
-            (0.60, 0.18, 0.22),
-            (0.35, 0.32, 0.33),
-            (0.15, 0.45, 0.40),
-            (0.00, 0.495, 0.505),
-        ]
-        xs_val, ys_val = _interpolate_ternary_curve(liq_valley_knots, n_pts=60)
-        curves.append({"name": "Monovariant Liquidus Boundary (L + δ ↔ γ)", "xs": xs_val, "ys": ys_val, "color": "#0F172A", "line_style": "Solid", "line_width": 2.5})
+        if diag_type == "liquidus":
+            def t_liq_cfn(a: float, b: float, c: float) -> float:
+                # Fe (1538), Cr (1907), Ni (1455) with Cr-Ni eutectic (1345°C) & Fe-Cr minimum (1513°C)
+                return 1538.0 * a + 1907.0 * b + 1455.0 * c - 1340.0 * b * c - 460.0 * a * b - 90.0 * a * c
+            _append_isotherm_contours(
+                t_liq_cfn,
+                [(1390.0, "#38BDF8"), (1450.0, "#0284C7"), (1520.0, "#0369A1"), (1660.0, "#1D4ED8"), (1800.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            # Monovariant boundary anchored cleanly from Fe-Ni peritectic edge (c=0.05) to Cr-Ni eutectic edge (a=0)
+            liq_valley_knots = [
+                (0.95, 0.00, 0.05),
+                (0.65, 0.16, 0.19),
+                (0.35, 0.32, 0.33),
+                (0.15, 0.44, 0.41),
+                (0.00, 0.495, 0.505),
+            ]
+            xs_val, ys_val = _interpolate_ternary_curve(liq_valley_knots, n_pts=60)
+            curves.append({"name": "Monovariant Liquidus Valley (L+δ ⇄ γ)", "xs": xs_val, "ys": ys_val, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.3})
+            labels.append({"text": "L -> γ-FCC", "x": barycentric_to_cartesian(0.32, 0.12, 0.56)[0], "y": barycentric_to_cartesian(0.32, 0.12, 0.56)[1], "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "L -> α/δ-BCC", "x": barycentric_to_cartesian(0.42, 0.50, 0.08)[0], "y": barycentric_to_cartesian(0.42, 0.50, 0.08)[1], "color": "#059669", "bold": True})
+        else:
+            # Dual-phase duplex solvus anchored strictly on Fe-Cr edge (c=0) to Cr-Ni edge (a=0)
+            solvus_knots = [
+                (0.86, 0.14, 0.00),
+                (0.66, 0.24, 0.10),
+                (0.45, 0.34, 0.21),
+                (0.22, 0.44, 0.34),
+                (0.00, 0.52, 0.48),
+            ]
+            xs_solv, ys_solv = _interpolate_ternary_curve(solvus_knots, n_pts=50)
+            curves.append({"name": "Austenite γ Solvus Boundary", "xs": xs_solv, "ys": ys_solv, "color": "#2563EB", "line_style": "Solid", "line_width": 2.2})
 
-        # Dual-phase duplex boundary at service temperature (e.g. 900 C)
-        solvus_knots = [
-            (0.80, 0.15, 0.05),
-            (0.65, 0.24, 0.11),
-            (0.45, 0.35, 0.20),
-            (0.20, 0.45, 0.35),
-            (0.00, 0.52, 0.48),
-        ]
-        xs_solv, ys_solv = _interpolate_ternary_curve(solvus_knots, n_pts=50)
-        curves.append({"name": "Ferrite / Austenite Phase Boundary (α / γ)", "xs": xs_solv, "ys": ys_solv, "color": "#2563EB", "line_style": "Dashed", "line_width": 1.8})
+            bcc_knots = [
+                (0.80, 0.20, 0.00),
+                (0.55, 0.38, 0.07),
+                (0.20, 0.68, 0.12),
+                (0.00, 0.88, 0.12),
+            ]
+            xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_knots, n_pts=45)
+            curves.append({"name": "Ferrite α-BCC Solvus Boundary", "xs": xs_bcc, "ys": ys_bcc, "color": "#059669", "line_style": "Dashed", "line_width": 2.0})
 
-        # Three-phase tie-triangle (FCC + BCC + Sigma) at ~750°C
-        v1 = (0.50, 0.25, 0.25)  # FCC
-        v2 = (0.20, 0.70, 0.10)  # BCC
-        v3 = (0.42, 0.48, 0.10)  # Sigma
-        p1 = barycentric_to_cartesian(*v1)
-        p2 = barycentric_to_cartesian(*v2)
-        p3 = barycentric_to_cartesian(*v3)
-        tie_triangles.append({"v1": p1, "v2": p2, "v3": p3, "color": "#FEE2E2", "border_color": "#DC2626", "name": "FCC + BCC + Sigma Tie-Triangle"})
+            if t_c <= 880.0:
+                # Sigma phase anchored along Fe-Cr edge & meeting the FCC+BCC+Sigma triangle cleanly
+                v1 = (0.50, 0.28, 0.22)  # FCC
+                v2 = (0.20, 0.70, 0.10)  # BCC
+                v3 = (0.42, 0.48, 0.10)  # Sigma
+                sig_lo = [(0.56, 0.44, 0.00), (0.48, 0.46, 0.06), v3, (0.44, 0.56, 0.00)]
+                xsl, ysl = _interpolate_ternary_curve(sig_lo, n_pts=30)
+                curves.append({"name": "σ Phase Field", "xs": xsl, "ys": ysl, "color": "#DC2626", "line_style": "Solid", "line_width": 2.0})
+                tie_triangles.append({"v1": barycentric_to_cartesian(*v1), "v2": barycentric_to_cartesian(*v2), "v3": barycentric_to_cartesian(*v3), "color": "#FEE2E2", "border_color": "#DC2626", "name": "FCC + BCC + Sigma"})
+                labels.append({"text": "σ Phase", "x": barycentric_to_cartesian(0.49, 0.48, 0.03)[0], "y": barycentric_to_cartesian(0.49, 0.48, 0.03)[1], "color": "#DC2626", "bold": True})
 
-        # Labels
-        x_fcc, y_fcc = barycentric_to_cartesian(0.30, 0.10, 0.60)
-        labels.append({"text": "Austenite γ (FCC)", "x": x_fcc, "y": y_fcc, "color": "#1D4ED8", "bold": True})
-        x_bcc, y_bcc = barycentric_to_cartesian(0.70, 0.25, 0.05)
-        labels.append({"text": "Ferrite α/δ (BCC)", "x": x_bcc, "y": y_bcc, "color": "#059669", "bold": True})
-        x_sig, y_sig = barycentric_to_cartesian(0.35, 0.52, 0.13)
-        labels.append({"text": "σ Phase", "x": x_sig, "y": y_sig, "color": "#DC2626", "bold": True})
+            labels.append({"text": "Austenite γ (FCC)", "x": barycentric_to_cartesian(0.32, 0.12, 0.56)[0], "y": barycentric_to_cartesian(0.32, 0.12, 0.56)[1], "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "Ferrite α (BCC)", "x": barycentric_to_cartesian(0.16, 0.80, 0.04)[0], "y": barycentric_to_cartesian(0.16, 0.80, 0.04)[1], "color": "#059669", "bold": True})
 
         return cls._build_ternary_payload(
             system="Cr-Fe-Ni",
@@ -645,7 +674,7 @@ class TernaryDiagramEngine:
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="Assessed CALPHAD benchmark (B.-J. Lee 1993, Miettinen 1999). Classic Schaeffler-Delong metallurgical matrix. Liquidus exhibits single continuous monovariant boundary without ternary invariant points. Subsolidus features FCC+BCC+Sigma equilibrium."
+            notes="Assessed CALPHAD benchmark (B.-J. Lee 1993, Miettinen 1999). Classic Schaeffler-Delong matrix: austenite-ferrite solvus spans Fe-Cr to Cr-Ni, with σ phase equilibrium below 880°C."
         )
 
     # =========================================================================
@@ -874,55 +903,104 @@ class TernaryDiagramEngine:
     def _compute_ti_zr_nb(cls, diag_type: str, t_c: float, is_k: bool) -> Dict[str, Any]:
         el_a, el_b, el_c = "Ti", "Zr", "Nb"
         invariants = [
-            {"type": "Monotectoid Gap", "temp_c": 988.0, "equation": "BCC_high <-> BCC_1 + BCC_2", "composition": "Ti20Zr50Nb30", "desc": "Solid-state miscibility gap extending from Nb-Zr binary"},
-            {"type": "Three-Phase Equilibrium", "temp_c": 700.0, "equation": "BCC_1 + BCC_2 + HCP(alpha)", "composition": "Ti45Zr35Nb20", "desc": "Three-phase tie-triangle between two BCC phases and HCP"},
-            {"type": "Allotropic Transition", "temp_c": 882.0, "equation": "Pure Ti Beta-BCC <-> Alpha-HCP", "composition": "Ti100", "desc": "Unary Martensitic transus"},
+            {"type": "Monotectoid Gap", "temp_c": 988.0, "equation": "BCC_high <-> BCC_1 + BCC_2", "composition": "Ti15Zr50Nb35", "desc": "Solid-state monotectoid miscibility dome anchored on Zr-Nb binary"},
+            {"type": "Three-Phase Equilibrium", "temp_c": 700.0, "equation": "BCC_1 + BCC_2 + HCP(alpha)", "composition": "Ti45Zr35Nb20", "desc": "Three-phase tie-triangle between two BCC solutions and HCP"},
+            {"type": "Allotropic Transition", "temp_c": 882.0, "equation": "Pure Ti Beta-BCC <-> Alpha-HCP", "composition": "Ti100", "desc": "Unary alpha/beta transus"},
         ]
+        notes = "Assessed CALPHAD model (Marker 2018). Ductile biomedical RHEA base with continuous high-T BCC, Zr-Nb monotectoid BCC1+BCC2 miscibility dome below 988°C, and α-HCP+BCC fields."
 
-        curves = []
-        tie_lines = []
-        tie_triangles = []
-        labels = []
+        def t_liq_tz(a: float, b: float, c: float) -> float:
+            # Ti (1668), Zr (1855), Nb (2477) with Ti-Zr azeotropic minimum ~1560°C
+            return 1668.0 * a + 1855.0 * b + 2477.0 * c - 800.0 * a * b + 55.0 * b * c + 85.0 * c * a
 
-        # Monotectoid miscibility gap boundary at 700°C
-        gap_knots = [
-            (0.10, 0.85, 0.05),
-            (0.25, 0.60, 0.15),
-            (0.40, 0.40, 0.20),
-            (0.35, 0.25, 0.40),
-            (0.15, 0.15, 0.70),
-        ]
-        xs_gap, ys_gap = _interpolate_ternary_curve(gap_knots, n_pts=50)
-        curves.append({"name": "BCC1 + BCC2 Miscibility Gap Boundary", "xs": xs_gap, "ys": ys_gap, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.2})
+        def t_sol_tz(a: float, b: float, c: float) -> float:
+            lens = 0.18 * (a * b * 187.0 + b * c * 622.0 + c * a * 809.0)
+            return t_liq_tz(a, b, c) - lens
 
-        # HCP solvus in Ti-rich corner
-        hcp_knots = [
-            (0.95, 0.03, 0.02),
-            (0.80, 0.15, 0.05),
-            (0.65, 0.28, 0.07),
-            (0.50, 0.45, 0.05),
-        ]
-        xs_hcp, ys_hcp = _interpolate_ternary_curve(hcp_knots, n_pts=40)
-        curves.append({"name": "HCP (α) Solvus Boundary", "xs": xs_hcp, "ys": ys_hcp, "color": "#059669", "line_style": "Solid", "line_width": 2.0})
+        curves: List[Dict[str, Any]] = []
+        tie_lines: List[Dict[str, Any]] = []
+        tie_triangles: List[Dict[str, Any]] = []
+        labels: List[Dict[str, Any]] = []
 
-        # Three-phase tie-triangle at 700°C
-        p1 = barycentric_to_cartesian(0.70, 0.22, 0.08)  # HCP
-        p2 = barycentric_to_cartesian(0.20, 0.70, 0.10)  # BCC1 (Zr-rich)
-        p3 = barycentric_to_cartesian(0.25, 0.25, 0.50)  # BCC2 (Nb-rich)
-        tie_triangles.append({"v1": p1, "v2": p2, "v3": p3, "color": "#EDE9FE", "border_color": "#7C3AED", "name": "HCP + BCC1 + BCC2 Tie-Triangle (700°C)"})
-
-        x_bcc_hi, y_bcc_hi = barycentric_to_cartesian(0.30, 0.10, 0.60)
-        labels.append({"text": "Single-Phase β-BCC", "x": x_bcc_hi, "y": y_bcc_hi, "color": "#2563EB", "bold": True})
-        x_hcp_lbl, y_hcp_lbl = barycentric_to_cartesian(0.85, 0.10, 0.05)
-        labels.append({"text": "α-HCP", "x": x_hcp_lbl, "y": y_hcp_lbl, "color": "#059669", "bold": True})
+        if diag_type == "liquidus":
+            _append_isotherm_contours(
+                t_liq_tz,
+                [(1650.0, "#38BDF8"), (1800.0, "#0284C7"), (1980.0, "#0369A1"), (2180.0, "#1D4ED8"), (2350.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            xc, yc = barycentric_to_cartesian(0.35, 0.35, 0.30)
+            labels.append({"text": "Liquidus Projection (β-BCC Primary)", "x": xc, "y": yc, "color": "#0F172A", "bold": True})
+        else:
+            if t_c >= 2477.0:
+                labels.append({"text": "Single-Phase Liquid (L)", "x": barycentric_to_cartesian(0.333, 0.333, 0.334)[0], "y": barycentric_to_cartesian(0.333, 0.333, 0.334)[1], "color": "#1D4ED8", "bold": True})
+            elif t_c >= 1560.0:
+                liq_c = _trace_ternary_isocontours(t_liq_tz, t_c, n_grid=56)
+                sol_c = _trace_ternary_isocontours(t_sol_tz, t_c, n_grid=56)
+                for xs, ys in liq_c:
+                    curves.append({"name": "Liquidus Boundary (L / L+β)", "xs": xs, "ys": ys, "color": "#0284C7", "line_style": "Solid", "line_width": 2.1})
+                for xs, ys in sol_c:
+                    curves.append({"name": "Solidus Boundary (L+β / β)", "xs": xs, "ys": ys, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.0})
+                labels.append({"text": "L + β-BCC Mushy Field", "x": barycentric_to_cartesian(0.333, 0.333, 0.334)[0], "y": barycentric_to_cartesian(0.333, 0.333, 0.334)[1], "color": "#0F172A", "bold": True})
+            elif t_c >= 988.0:
+                labels.append({"text": "Single-Phase β-BCC Solid Solution", "x": barycentric_to_cartesian(0.333, 0.333, 0.334)[0], "y": barycentric_to_cartesian(0.333, 0.333, 0.334)[1], "color": "#0284C7", "bold": True})
+            elif t_c >= 740.0:
+                # BCC1 + BCC2 monotectoid dome strictly anchored on both ends at Zr-Nb edge (a = 0)
+                w = max(0.30, min(1.0, (988.0 - t_c) / 230.0))
+                ti_max = round(0.18 * w, 3)
+                gap_knots = [
+                    (0.00, 0.84, 0.16),
+                    (round(0.75 * ti_max, 4), 0.62, round(0.38 - 0.75 * ti_max, 4)),
+                    (ti_max, round(0.50 - 0.5 * ti_max, 4), round(0.50 - 0.5 * ti_max, 4)),
+                    (round(0.72 * ti_max, 4), 0.30, round(0.70 - 0.72 * ti_max, 4)),
+                    (0.00, 0.16, 0.84),
+                ]
+                xg, yg = _interpolate_ternary_curve(gap_knots, n_pts=45)
+                curves.append({"name": "BCC₁ + BCC₂ Miscibility Dome", "xs": xg, "ys": yg, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.2})
+                for ti_f in [0.03, 0.08, 0.12]:
+                    if ti_f < ti_max - 0.01:
+                        p_l = barycentric_to_cartesian(ti_f, 0.76 - 0.6 * ti_f, 0.24 - 0.4 * ti_f)
+                        p_r = barycentric_to_cartesian(ti_f, 0.22 - 0.4 * ti_f, 0.78 - 0.6 * ti_f)
+                        tie_lines.append({"xs": [p_l[0], p_r[0]], "ys": [p_l[1], p_r[1]], "color": "#94A3B8"})
+                if t_c < 882.0:
+                    ti_hcp = [(0.87, 0.13, 0.00), (0.91, 0.05, 0.04), (0.95, 0.00, 0.05)]
+                    xh, yh = _interpolate_ternary_curve(ti_hcp, n_pts=20)
+                    curves.append({"name": "α-HCP (Ti Corner) Solvus", "xs": xh, "ys": yh, "color": "#059669", "line_style": "Solid", "line_width": 2.0})
+                    labels.append({"text": "α-HCP", "x": barycentric_to_cartesian(0.94, 0.03, 0.03)[0], "y": barycentric_to_cartesian(0.94, 0.03, 0.03)[1], "color": "#059669", "bold": True})
+                if t_c < 863.0:
+                    zr_hcp = [(0.13, 0.87, 0.00), (0.05, 0.91, 0.04), (0.00, 0.94, 0.06)]
+                    xzh, yzh = _interpolate_ternary_curve(zr_hcp, n_pts=20)
+                    curves.append({"name": "α-HCP (Zr Corner) Solvus", "xs": xzh, "ys": yzh, "color": "#0D9488", "line_style": "Solid", "line_width": 2.0})
+                labels.append({"text": "Single-Phase β-BCC", "x": barycentric_to_cartesian(0.36, 0.24, 0.40)[0], "y": barycentric_to_cartesian(0.36, 0.24, 0.40)[1], "color": "#2563EB", "bold": True})
+                labels.append({"text": "BCC₁ + BCC₂", "x": barycentric_to_cartesian(0.06, 0.47, 0.47)[0], "y": barycentric_to_cartesian(0.06, 0.47, 0.47)[1], "color": "#7C3AED", "bold": True})
+            else:
+                # Sub-740°C equilibrium: α-HCP edge-to-edge solvus meeting non-overlapping α + BCC1 + BCC2 triangle
+                v_hcp = (0.72, 0.22, 0.06)
+                v_b1 = (0.20, 0.68, 0.12)
+                v_b2 = (0.24, 0.22, 0.54)
+                hcp_l = [(0.92, 0.00, 0.08), (0.82, 0.10, 0.08), v_hcp, (0.62, 0.34, 0.04), (0.48, 0.52, 0.00)]
+                xh, yh = _interpolate_ternary_curve(hcp_l, n_pts=40)
+                curves.append({"name": "α-HCP / β Solvus", "xs": xh, "ys": yh, "color": "#059669", "line_style": "Solid", "line_width": 2.1})
+                dome_k = [(0.00, 0.88, 0.12), (0.10, 0.78, 0.12), v_b1]
+                xd1, yd1 = _interpolate_ternary_curve(dome_k, n_pts=20)
+                curves.append({"name": "BCC₁ Solvus Boundary", "xs": xd1, "ys": yd1, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.1})
+                dome_r = [v_b2, (0.12, 0.14, 0.74), (0.00, 0.10, 0.90)]
+                xd2, yd2 = _interpolate_ternary_curve(dome_r, n_pts=20)
+                curves.append({"name": "BCC₂ Solvus Boundary", "xs": xd2, "ys": yd2, "color": "#6D28D9", "line_style": "Solid", "line_width": 2.1})
+                tie_triangles.append({
+                    "v1": barycentric_to_cartesian(*v_hcp),
+                    "v2": barycentric_to_cartesian(*v_b1),
+                    "v3": barycentric_to_cartesian(*v_b2),
+                    "color": "#EDE9FE", "border_color": "#7C3AED", "name": "α-HCP + BCC₁ + BCC₂",
+                })
+                labels.append({"text": "α-HCP", "x": barycentric_to_cartesian(0.78, 0.18, 0.04)[0], "y": barycentric_to_cartesian(0.78, 0.18, 0.04)[1], "color": "#059669", "bold": True})
+                labels.append({"text": "β-BCC", "x": barycentric_to_cartesian(0.32, 0.12, 0.56)[0], "y": barycentric_to_cartesian(0.32, 0.12, 0.56)[1], "color": "#2563EB", "bold": True})
+                labels.append({"text": "α+BCC₁+BCC₂", "x": barycentric_to_cartesian(0.39, 0.37, 0.24)[0], "y": barycentric_to_cartesian(0.39, 0.37, 0.24)[1], "color": "#7C3AED", "bold": True})
 
         return cls._build_ternary_payload(
-            system="Ti-Zr-Nb",
-            el_a=el_a, el_b=el_b, el_c=el_c,
+            system="Ti-Zr-Nb", el_a=el_a, el_b=el_b, el_c=el_c,
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
-            labels=labels, invariants=invariants,
-            notes="Assessed CALPHAD model (Marker 2018). Ductile biomedical RHEA base. Features solid-state BCC1+BCC2 miscibility gap closing near 988°C and three-phase HCP+BCC1+BCC2 equilibrium at 700°C."
+            labels=labels, invariants=invariants, notes=notes,
         )
 
     # =========================================================================
@@ -939,59 +1017,112 @@ class TernaryDiagramEngine:
             {"type": "U12 (Class II)", "temp_c": 645.0, "equation": "Liquid + theta(TiAl3) <-> (Al) + epsilon(NiAl3)", "composition": "Ni2Al97Ti1", "desc": "Terminal Al-rich quasi-peritectic"},
         ]
 
-        curves = []
-        tie_lines = []
-        tie_triangles = []
-        labels = []
+        curves: List[Dict[str, Any]] = []
+        tie_lines: List[Dict[str, Any]] = []
+        tie_triangles: List[Dict[str, Any]] = []
+        labels: List[Dict[str, Any]] = []
 
-        # Gamma-prime (Ni3Al) phase field extending into Ni-Ti
-        gp_knots = [
-            (0.75, 0.25, 0.00),
-            (0.74, 0.20, 0.06),
-            (0.72, 0.14, 0.14),
-            (0.70, 0.08, 0.22),
-            (0.75, 0.05, 0.20),
-            (0.76, 0.15, 0.09),
-            (0.75, 0.25, 0.00),
-        ]
-        xs_gp, ys_gp = _interpolate_ternary_curve(gp_knots, n_pts=45)
-        curves.append({"name": "γ'-Ni3(Al,Ti) Phase Boundary", "xs": xs_gp, "ys": ys_gp, "color": "#0284C7", "line_style": "Solid", "line_width": 2.2})
+        if diag_type == "liquidus":
+            def t_liq_nat(a: float, b: float, c: float) -> float:
+                # Ni (1455), Al (660), Ti (1668) with strong B2 NiAl congruent ridge (~1638°C at 50Ni-50Al)
+                base = 1455.0 * a + 660.3 * b + 1668.0 * c
+                nial_ridge = 960.0 * math.exp(-((a - 0.50) ** 2 / 0.045 + (b - 0.50) ** 2 / 0.055))
+                niti_bump = 240.0 * math.exp(-((a - 0.50) ** 2 / 0.04 + (c - 0.50) ** 2 / 0.04))
+                eut_trough = -420.0 * a * c * (1.0 - a) - 260.0 * b * c
+                return base + nial_ridge + niti_bump + eut_trough
 
-        # Heusler tau4 (TiNi2Al, cF16) phase field
-        tau4_knots = [
-            (0.52, 0.23, 0.25),
-            (0.50, 0.20, 0.30),
-            (0.48, 0.27, 0.25),
-            (0.50, 0.30, 0.20),
-            (0.52, 0.23, 0.25),
-        ]
-        xs_t4, ys_t4 = _interpolate_ternary_curve(tau4_knots, n_pts=35)
-        curves.append({"name": "Heusler τ4 (TiNi2Al) Field", "xs": xs_t4, "ys": ys_t4, "color": "#D97706", "line_style": "Solid", "line_width": 2.0})
+            _append_isotherm_contours(
+                t_liq_nat,
+                [(850.0, "#38BDF8"), (1100.0, "#0284C7"), (1280.0, "#0369A1"), (1420.0, "#1D4ED8"), (1560.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            e1_pt = (0.674, 0.112, 0.214)
+            u1_pt = (0.70, 0.10, 0.20)
+            # Monovariant grooves connecting binary eutectics (Ni-Al 1385°C and Ni-Ti 1304°C) to U1 / E1
+            g_niti = [(0.77, 0.00, 0.23), (0.73, 0.05, 0.22), u1_pt, e1_pt]
+            g_nial = [(0.755, 0.245, 0.00), (0.72, 0.18, 0.10), u1_pt]
+            g_b2 = [e1_pt, (0.58, 0.16, 0.26), (0.45, 0.45, 0.10), (0.28, 0.70, 0.02), (0.03, 0.97, 0.00)]
+            for name, kts, col in [
+                ("Monovariant Ni-Ti Eutectic -> E1", g_niti, "#DC2626"),
+                ("Monovariant Ni-Al Eutectic -> U1", g_nial, "#D97706"),
+                ("Monovariant β-B2 / τ4 Groove", g_b2, "#7C3AED"),
+            ]:
+                xs, ys = _interpolate_ternary_curve(kts, n_pts=30)
+                curves.append({"name": name, "xs": xs, "ys": ys, "color": col, "line_style": "Solid", "line_width": 2.1})
+            e1x, e1y = barycentric_to_cartesian(*e1_pt)
+            curves.append({"name": "E1 Ternary Eutectic (1277°C)", "xs": [e1x], "ys": [e1y], "color": "#DC2626", "line_style": "Point", "line_width": 7.5})
+            labels.append({"text": "E1 (1277°C)", "x": e1x + 0.03, "y": e1y, "color": "#DC2626", "bold": True})
+            labels.append({"text": "β-NiAl Primary Dome", "x": barycentric_to_cartesian(0.46, 0.40, 0.14)[0], "y": barycentric_to_cartesian(0.46, 0.40, 0.14)[1], "color": "#1E3A8A", "bold": True})
+        else:
+            # Assessed solid-state isothermal equilibria (Lee & Nash 1991, 800-900°C): non-overlapping boundaries & compatibility triangles
+            # 1. gamma-FCC matrix corner solvus (edge-to-edge on Ni-Al & Ni-Ti)
+            g_kts = [(0.87, 0.13, 0.00), (0.87, 0.07, 0.06), (0.91, 0.00, 0.09)]
+            xg, yg = _interpolate_ternary_curve(g_kts, n_pts=25)
+            curves.append({"name": "γ-FCC Matrix Solvus", "xs": xg, "ys": yg, "color": "#1D4ED8", "line_style": "Solid", "line_width": 2.1})
 
-        # Ternary Eutectic E1 Point: 67.4 Ni - 11.2 Al - 21.4 Ti
-        e1_x, e1_y = barycentric_to_cartesian(0.674, 0.112, 0.214)
-        curves.append({"name": "E1 Ternary Eutectic Point (1277°C)", "xs": [e1_x], "ys": [e1_y], "color": "#DC2626", "line_style": "Point", "line_width": 3.0})
+            # 2. gamma'-Ni3(Al,Ti) field anchored cleanly at both ends on the Ni-Al edge
+            gp_kts = [(0.765, 0.235, 0.00), (0.76, 0.15, 0.09), (0.74, 0.09, 0.17), (0.715, 0.135, 0.15), (0.73, 0.27, 0.00)]
+            xgp, ygp = _interpolate_ternary_curve(gp_kts, n_pts=35)
+            curves.append({"name": "γ'-Ni₃(Al,Ti) Phase Field", "xs": xgp, "ys": ygp, "color": "#0284C7", "line_style": "Solid", "line_width": 2.1})
 
-        # Tie-triangle for E1
-        p_gp = barycentric_to_cartesian(0.72, 0.14, 0.14)
-        p_eta = barycentric_to_cartesian(0.75, 0.02, 0.23)
-        p_t4 = barycentric_to_cartesian(0.50, 0.25, 0.25)
-        tie_triangles.append({"v1": p_gp, "v2": p_eta, "v3": p_t4, "color": "#FEF3C7", "border_color": "#D97706", "name": "γ' + η(TiNi3) + τ4 Tie-Triangle"})
+            # 3. Continuous B2 beta-(NiAl / TiNi) + Heusler tau4 band spanning Ni-Al edge to Ni-Ti edge
+            b2_hi = [(0.62, 0.38, 0.00), (0.55, 0.29, 0.16), (0.52, 0.16, 0.32), (0.51, 0.00, 0.49)]
+            b2_lo = [(0.45, 0.55, 0.00), (0.46, 0.32, 0.22), (0.47, 0.16, 0.37), (0.48, 0.00, 0.52)]
+            xh, yh = _interpolate_ternary_curve(b2_hi, n_pts=35)
+            xl, yl = _interpolate_ternary_curve(b2_lo, n_pts=35)
+            curves.append({"name": "β-B2 / τ₄ Upper Solvus", "xs": xh, "ys": yh, "color": "#D97706", "line_style": "Solid", "line_width": 2.0})
+            curves.append({"name": "β-B2 / τ₄ Lower Solvus", "xs": xl, "ys": yl, "color": "#D97706", "line_style": "Solid", "line_width": 2.0})
 
-        # Labels
-        x_g_lbl, y_g_lbl = barycentric_to_cartesian(0.85, 0.08, 0.07)
-        labels.append({"text": "Matrix γ (FCC-Ni)", "x": x_g_lbl, "y": y_g_lbl, "color": "#1D4ED8", "bold": True})
-        x_gp_lbl, y_gp_lbl = barycentric_to_cartesian(0.71, 0.16, 0.13)
-        labels.append({"text": "γ' Precipitates", "x": x_gp_lbl, "y": y_gp_lbl, "color": "#0284C7", "bold": True})
-        labels.append({"text": "E1 (1277°C)", "x": e1_x + 0.02, "y": e1_y, "color": "#DC2626", "bold": True})
+            # Stoichiometric binary & ternary equilibrium phase nodes connected strictly without overlaps
+            pt_g = (0.87, 0.08, 0.05)
+            pt_g_ti = (0.91, 0.00, 0.09)
+            pt_gp_al = (0.73, 0.27, 0.00)
+            pt_gp_tip = (0.74, 0.09, 0.17)
+            pt_gp_b2 = (0.72, 0.14, 0.14)
+            pt_eta = (0.75, 0.02, 0.23)
+            pt_b2_ni = (0.55, 0.35, 0.10)
+            pt_t4 = (0.50, 0.25, 0.25)
+            pt_tini = (0.50, 0.00, 0.50)
+            pt_ni2al3 = (0.40, 0.60, 0.00)
+            pt_nial3 = (0.25, 0.75, 0.00)
+            pt_tial3 = (0.00, 0.75, 0.25)
+            pt_tial = (0.00, 0.50, 0.50)
+            pt_ti3al = (0.00, 0.25, 0.75)
+            pt_niti2 = (0.333, 0.00, 0.667)
+            pt_ti = (0.04, 0.00, 0.96)
+            pt_al = (0.01, 0.98, 0.01)
+
+            for name, v1, v2, v3, bg, bd in [
+                ("γ + γ' + η", pt_g_ti, pt_gp_tip, pt_eta, "#EFF6FF", "#2563EB"),
+                ("γ' + η + τ₄", pt_gp_b2, pt_eta, pt_t4, "#FEF3C7", "#D97706"),
+                ("η + τ₄ + TiNi(B2)", pt_eta, pt_t4, pt_tini, "#FFEDD5", "#EA580C"),
+                ("γ' + β(NiAl) + τ₄", pt_gp_al, pt_b2_ni, pt_t4, "#E0F2FE", "#0284C7"),
+                ("Ni₂Al₃ + NiAl₃ + TiAl₃", pt_ni2al3, pt_nial3, pt_tial3, "#F3E8FF", "#7C3AED"),
+                ("β(NiAl) + Ni₂Al₃ + TiAl₃", (0.46, 0.50, 0.04), pt_ni2al3, pt_tial3, "#ECFDF5", "#059669"),
+                ("τ₄ + TiAl₃ + TiAl", pt_t4, pt_tial3, pt_tial, "#F0FDF4", "#15803D"),
+                ("TiNi(B2) + τ₄ + NiTi₂", pt_tini, pt_t4, pt_niti2, "#FEF2F2", "#DC2626"),
+                ("TiAl + Ti₃Al + NiTi₂", pt_tial, pt_ti3al, pt_niti2, "#FFF7ED", "#C2410C"),
+                ("(Ti) + Ti₃Al + NiTi₂", pt_ti, pt_ti3al, pt_niti2, "#F0FDFA", "#0D9488"),
+                ("(Al) + NiAl₃ + TiAl₃", pt_al, pt_nial3, pt_tial3, "#EFF6FF", "#1D4ED8"),
+            ]:
+                tie_triangles.append({
+                    "v1": barycentric_to_cartesian(*v1),
+                    "v2": barycentric_to_cartesian(*v2),
+                    "v3": barycentric_to_cartesian(*v3),
+                    "color": bg, "border_color": bd, "name": name,
+                })
+
+            labels.append({"text": "γ (FCC)", "x": barycentric_to_cartesian(*pt_g)[0], "y": barycentric_to_cartesian(*pt_g)[1] - 0.02, "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "γ'-Ni₃(Al,Ti)", "x": barycentric_to_cartesian(0.75, 0.16, 0.09)[0], "y": barycentric_to_cartesian(0.75, 0.16, 0.09)[1], "color": "#0284C7", "bold": True})
+            labels.append({"text": "β / τ₄ (TiNi₂Al)", "x": barycentric_to_cartesian(0.51, 0.25, 0.24)[0], "y": barycentric_to_cartesian(0.51, 0.25, 0.24)[1], "color": "#B45309", "bold": True})
+            labels.append({"text": "TiAl", "x": barycentric_to_cartesian(0.05, 0.48, 0.47)[0], "y": barycentric_to_cartesian(0.05, 0.48, 0.47)[1], "color": "#15803D", "bold": True})
 
         return cls._build_ternary_payload(
-            system="Ni-Al-Ti",
-            el_a=el_a, el_b=el_b, el_c=el_c,
+            system="Ni-Al-Ti", el_a=el_a, el_b=el_b, el_c=el_c,
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="Assessed CALPHAD superalloy benchmark (Lee & Nash 1991, MSIT). High solubility of Ti in gamma-prime (up to 70% substitution on Al sites). Verified Class I ternary eutectic E1 at 1277°C (67.4 Ni - 11.2 Al - 21.4 Ti at%)."
+            notes="Assessed CALPHAD superalloy benchmark (Lee & Nash 1991, MSIT). Isothermal section spans γ, γ', η, continuous β/τ4 Heusler B2, and Ti-aluminide equilibria; Liquidus projection resolves E1 (1277°C) and monovariant valleys."
         )
 
     # =========================================================================
@@ -1008,48 +1139,68 @@ class TernaryDiagramEngine:
             {"type": "Binary Eutectic", "temp_c": 248.0, "equation": "L -> (Cd) + (Pb)", "composition": "Cd28.0Pb72.0 at%", "desc": "Binary Cd-Pb benchmark"},
         ]
 
-        curves = []
-        tie_lines = []
-        labels = []
-
-        # Monovariant liquidus valleys converging from the 3 binary eutectics to E (145 C)
-        # Eutectic point at (0.219 Cd, 0.199 Pb, 0.582 Sn)
+        curves: List[Dict[str, Any]] = []
+        tie_triangles: List[Dict[str, Any]] = []
+        labels: List[Dict[str, Any]] = []
         e_pt = (0.219, 0.199, 0.582)
         ex, ey = barycentric_to_cartesian(*e_pt)
 
-        # Valley 1: from Cd-Pb eutectic (0.28 Cd, 0.72 Pb, 0.0 Sn) to E
-        v1_knots = [(0.28, 0.72, 0.00), (0.25, 0.45, 0.30), e_pt]
-        xs1, ys1 = _interpolate_ternary_curve(v1_knots, n_pts=30)
-        curves.append({"name": "Monovariant Valley: e(Cd-Pb) -> E", "xs": xs1, "ys": ys1, "color": "#0284C7", "line_style": "Solid", "line_width": 2.2})
+        if diag_type == "liquidus":
+            # Liquidus projection: Cd (321°C), Pb (327.5°C), Sn (231.9°C) falling toward 145°C ternary eutectic
+            def t_liq_cps(a: float, b: float, c: float) -> float:
+                base = 321.1 * a + 327.5 * b + 231.9 * c
+                trough = -420.0 * (a * b + b * c + c * a)
+                return base + trough
+            _append_isotherm_contours(
+                t_liq_cps,
+                [(180.0, "#38BDF8"), (215.0, "#0284C7"), (250.0, "#0369A1"), (285.0, "#1D4ED8"), (310.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            for name, kts, col in [
+                ("Monovariant Valley: e(Cd-Pb) -> E", [(0.28, 0.72, 0.00), (0.25, 0.45, 0.30), e_pt], "#0284C7"),
+                ("Monovariant Valley: e(Pb-Sn) -> E", [(0.00, 0.261, 0.739), (0.10, 0.23, 0.67), e_pt], "#059669"),
+                ("Monovariant Valley: e(Cd-Sn) -> E", [(0.335, 0.00, 0.665), (0.28, 0.10, 0.62), e_pt], "#7C3AED"),
+            ]:
+                xs, ys = _interpolate_ternary_curve(kts, n_pts=30)
+                curves.append({"name": name, "xs": xs, "ys": ys, "color": col, "line_style": "Solid", "line_width": 2.2})
 
-        # Valley 2: from Pb-Sn eutectic (0.0 Cd, 0.261 Pb, 0.739 Sn) to E
-        v2_knots = [(0.00, 0.261, 0.739), (0.10, 0.23, 0.67), e_pt]
-        xs2, ys2 = _interpolate_ternary_curve(v2_knots, n_pts=30)
-        curves.append({"name": "Monovariant Valley: e(Pb-Sn) -> E", "xs": xs2, "ys": ys2, "color": "#059669", "line_style": "Solid", "line_width": 2.2})
-
-        # Valley 3: from Cd-Sn eutectic (0.335 Cd, 0.0 Pb, 0.665 Sn) to E
-        v3_knots = [(0.335, 0.00, 0.665), (0.28, 0.10, 0.62), e_pt]
-        xs3, ys3 = _interpolate_ternary_curve(v3_knots, n_pts=30)
-        curves.append({"name": "Monovariant Valley: e(Cd-Sn) -> E", "xs": xs3, "ys": ys3, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.2})
-
-        # Invariant E point
-        curves.append({"name": "Ternary Eutectic E (145°C)", "xs": [ex], "ys": [ey], "color": "#DC2626", "line_style": "Point", "line_width": 3.5})
-
-        labels.append({"text": "Eutectic E (145°C / 418 K)", "x": ex + 0.02, "y": ey, "color": "#DC2626", "bold": True})
-        x_cd, y_cd = barycentric_to_cartesian(0.70, 0.15, 0.15)
-        labels.append({"text": "Primary (Cd) Field", "x": x_cd, "y": y_cd, "color": "#475569", "bold": True})
-        x_pb, y_pb = barycentric_to_cartesian(0.15, 0.70, 0.15)
-        labels.append({"text": "Primary (Pb) Field", "x": x_pb, "y": y_pb, "color": "#475569", "bold": True})
-        x_sn, y_sn = barycentric_to_cartesian(0.15, 0.15, 0.70)
-        labels.append({"text": "Primary (Sn) Field", "x": x_sn, "y": y_sn, "color": "#475569", "bold": True})
+            curves.append({"name": "Ternary Eutectic E (145°C)", "xs": [ex], "ys": [ey], "color": "#DC2626", "line_style": "Point", "line_width": 7.5})
+            labels.append({"text": "E (145°C / 418 K)", "x": ex + 0.025, "y": ey, "color": "#DC2626", "bold": True})
+            labels.append({"text": "Primary (Cd)", "x": barycentric_to_cartesian(0.70, 0.15, 0.15)[0], "y": barycentric_to_cartesian(0.70, 0.15, 0.15)[1], "color": "#475569", "bold": True})
+            labels.append({"text": "Primary (Pb)", "x": barycentric_to_cartesian(0.15, 0.70, 0.15)[0], "y": barycentric_to_cartesian(0.15, 0.70, 0.15)[1], "color": "#475569", "bold": True})
+            labels.append({"text": "Primary (Sn)", "x": barycentric_to_cartesian(0.15, 0.15, 0.70)[0], "y": barycentric_to_cartesian(0.15, 0.15, 0.70)[1], "color": "#475569", "bold": True})
+        else:
+            if t_c >= 327.5:
+                labels.append({"text": "Single-Phase Liquid Solution (L)", "x": barycentric_to_cartesian(0.333, 0.333, 0.334)[0], "y": barycentric_to_cartesian(0.333, 0.333, 0.334)[1], "color": "#1D4ED8", "bold": True})
+            elif t_c <= 145.0:
+                # Subsolidus isothermal compatibility: terminal solid-solution corners + (Cd)+(Pb)+(Sn) tie-triangle
+                v_cd = (0.95, 0.03, 0.02)
+                v_pb = (0.04, 0.88, 0.08)
+                v_sn = (0.02, 0.03, 0.95)
+                for lbl, kts, col in [
+                    ("(Cd) Solvus", [(0.94, 0.06, 0.00), v_cd, (0.96, 0.00, 0.04)], "#0284C7"),
+                    ("(Pb) Solvus", [(0.05, 0.95, 0.00), v_pb, (0.00, 0.88, 0.12)], "#059669"),
+                    ("(Sn) Solvus", [(0.04, 0.00, 0.96), v_sn, (0.00, 0.04, 0.96)], "#7C3AED"),
+                ]:
+                    xs, ys = _interpolate_ternary_curve(kts, n_pts=20)
+                    curves.append({"name": lbl, "xs": xs, "ys": ys, "color": col, "line_style": "Solid", "line_width": 2.0})
+                tie_triangles.append({"v1": barycentric_to_cartesian(*v_cd), "v2": barycentric_to_cartesian(*v_pb), "v3": barycentric_to_cartesian(*v_sn), "color": "#DBEAFE", "border_color": "#2563EB", "name": "(Cd) + (Pb) + (Sn)"})
+                labels.append({"text": "(Cd) + (Pb) + (Sn)", "x": barycentric_to_cartesian(0.33, 0.33, 0.34)[0], "y": barycentric_to_cartesian(0.33, 0.33, 0.34)[1], "color": "#1D4ED8", "bold": True})
+            else:
+                # Partial melting isothermal section between 145°C and 327.5°C
+                def t_liq_iso(a: float, b: float, c: float) -> float:
+                    return 321.1 * a + 327.5 * b + 231.9 * c - 420.0 * (a * b + b * c + c * a)
+                for xs, ys in _trace_ternary_isocontours(t_liq_iso, t_c, n_grid=54):
+                    curves.append({"name": "Liquidus Field Boundary", "xs": xs, "ys": ys, "color": "#0284C7", "line_style": "Solid", "line_width": 2.1})
+                labels.append({"text": "Liquid + Solid Fields", "x": barycentric_to_cartesian(0.33, 0.33, 0.34)[0], "y": barycentric_to_cartesian(0.33, 0.33, 0.34)[1], "color": "#0F172A", "bold": True})
 
         return cls._build_ternary_payload(
             system="Cd-Pb-Sn",
             el_a=el_a, el_b=el_b, el_c=el_c,
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
-            curves=curves, tie_lines=[], tie_triangles=[],
+            curves=curves, tie_lines=[], tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="Classic computational metallurgy benchmark from Mallik (1986). Three monovariant eutectic valleys converge into a single Class I ternary eutectic point at 145°C (418.2 K) with composition 51.2 wt% Sn - 30.6 wt% Pb - 18.2 wt% Cd."
+            notes="Classic computational metallurgy benchmark from Mallik (1986). Liquidus shows three monovariant valleys meeting at 145°C Class I eutectic E; isothermal mode resolves Liquid above 328°C, partial L+S fields at 145-327°C, and (Cd)+(Pb)+(Sn) below 145°C."
         )
 
     # =========================================================================
@@ -1267,99 +1418,67 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        # Temperature-dependent topology selection based on Murata et al. (1990)
-        # Isothermal sections studied: 923 K (650°C), 1073 K (800°C), 1273 K (1000°C)
-        if t_c <= 750.0:
-            # --- 923 K / 650°C Isothermal Section ---
-            # Ferrite alpha-BCC solvus: low Cr, Mn up to ~11 at%
-            alpha_solvus_knots = [
-                (0.92, 0.08, 0.00),
-                (0.85, 0.07, 0.08),
-                (0.80, 0.06, 0.14),
-                (0.72, 0.05, 0.23),
-            ]
+        if diag_type == "liquidus":
+            def t_liq_fcm(a: float, b: float, c: float) -> float:
+                # Fe (1538), Cr (1907), Mn (1246) with continuous liquidus downward toward Mn
+                return 1538.0 * a + 1907.0 * b + 1246.0 * c - 520.0 * a * b - 340.0 * b * c - 140.0 * a * c
+            _append_isotherm_contours(
+                t_liq_fcm,
+                [(1320.0, "#38BDF8"), (1400.0, "#0284C7"), (1500.0, "#0369A1"), (1640.0, "#1D4ED8"), (1780.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            peri = [(0.88, 0.00, 0.12), (0.68, 0.16, 0.16), (0.45, 0.34, 0.21), (0.18, 0.56, 0.26), (0.00, 0.72, 0.28)]
+            vx, vy = _interpolate_ternary_curve(peri, n_pts=45)
+            curves.append({"name": "Monovariant Peritectic Groove (L+δ ⇄ γ)", "xs": vx, "ys": vy, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.2})
+            labels.append({"text": "L -> γ-FCC", "x": barycentric_to_cartesian(0.45, 0.12, 0.43)[0], "y": barycentric_to_cartesian(0.45, 0.12, 0.43)[1], "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "L -> α/δ-BCC", "x": barycentric_to_cartesian(0.25, 0.65, 0.10)[0], "y": barycentric_to_cartesian(0.25, 0.65, 0.10)[1], "color": "#059669", "bold": True})
+            notes_str = "Murata et al. (1990) liquidus projection: peritectic valley (L+δ ⇄ γ) spans from Fe-Mn to Cr-Mn edge."
+        elif t_c <= 750.0:
+            # --- 923 K / 650°C Isothermal Section (every solvus anchored strictly on binary edges) ---
+            alpha_solvus_knots = [(0.92, 0.08, 0.00), (0.85, 0.07, 0.08), (0.80, 0.04, 0.16), (0.78, 0.00, 0.22)]
             xs_a, ys_a = _interpolate_ternary_curve(alpha_solvus_knots, n_pts=40)
             curves.append({"name": "Ferrite α Boundary (650°C Solvus)", "xs": xs_a, "ys": ys_a, "color": "#059669", "line_style": "Solid", "line_width": 2.2})
 
-            # Austenite gamma-FCC boundary: extends from 12 at% Mn up to ~38 at% Mn, Cr up to ~14 at%
             gamma_solvus_knots = [
                 (0.84, 0.00, 0.16),
                 (0.74, 0.06, 0.20),
-                (0.66, 0.10, 0.24),
-                (0.58, 0.14, 0.28),
-                (0.48, 0.12, 0.40),
-                (0.38, 0.04, 0.58),
+                (0.62, 0.11, 0.27),
+                (0.50, 0.13, 0.37),
+                (0.40, 0.06, 0.54),
+                (0.36, 0.00, 0.64),
             ]
             xs_g, ys_g = _interpolate_ternary_curve(gamma_solvus_knots, n_pts=50)
             curves.append({"name": "Austenite γ Boundary (FCC Solvus)", "xs": xs_g, "ys": ys_g, "color": "#2563EB", "line_style": "Solid", "line_width": 2.4})
 
-            # Continuous Sigma-phase (tP30) band connecting Fe-Cr sigma and Cr-Mn sigma
-            # Plunges down to ~8 at% Cr at 20-25 at% Mn (Murata 1990 Fig. 7 & 8)
-            sigma_lower_knots = [
-                (0.54, 0.46, 0.00),
-                (0.50, 0.32, 0.18),
-                (0.48, 0.20, 0.32),
-                (0.44, 0.12, 0.44),
-                (0.36, 0.16, 0.48),
-                (0.20, 0.24, 0.56),
-                (0.00, 0.34, 0.66),
-            ]
+            sigma_lower_knots = [(0.54, 0.46, 0.00), (0.50, 0.32, 0.18), (0.48, 0.20, 0.32), (0.44, 0.14, 0.42), (0.28, 0.20, 0.52), (0.00, 0.34, 0.66)]
             xs_sl, ys_sl = _interpolate_ternary_curve(sigma_lower_knots, n_pts=60)
-            curves.append({"name": "σ Phase Lower Boundary (650°C)", "xs": xs_sl, "ys": ys_sl, "color": "#DC2626", "line_style": "Solid", "line_width": 2.5})
+            curves.append({"name": "σ Phase Lower Boundary (650°C)", "xs": xs_sl, "ys": ys_sl, "color": "#DC2626", "line_style": "Solid", "line_width": 2.4})
 
-            sigma_upper_knots = [
-                (0.46, 0.54, 0.00),
-                (0.38, 0.48, 0.14),
-                (0.28, 0.46, 0.26),
-                (0.18, 0.44, 0.38),
-                (0.08, 0.42, 0.50),
-                (0.00, 0.40, 0.60),
-            ]
+            sigma_upper_knots = [(0.46, 0.54, 0.00), (0.36, 0.48, 0.16), (0.22, 0.45, 0.33), (0.08, 0.42, 0.50), (0.00, 0.40, 0.60)]
             xs_su, ys_su = _interpolate_ternary_curve(sigma_upper_knots, n_pts=50)
             curves.append({"name": "σ Phase Upper Boundary (650°C)", "xs": xs_su, "ys": ys_su, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.0})
 
-            # Three-phase tie-triangle: alpha + gamma + sigma (Murata 1990 Fig. 8)
-            t1_a = (0.78, 0.08, 0.14)   # alpha ferrite apex
-            t1_g = (0.68, 0.10, 0.22)   # gamma austenite apex
-            t1_s = (0.52, 0.28, 0.20)   # sigma apex
-            p1_a = barycentric_to_cartesian(*t1_a)
-            p1_g = barycentric_to_cartesian(*t1_g)
-            p1_s = barycentric_to_cartesian(*t1_s)
-            tie_triangles.append({"v1": p1_a, "v2": p1_g, "v3": p1_s, "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Three-Phase Tie-Triangle (650°C)"})
+            tie_triangles.append({"v1": barycentric_to_cartesian(0.83, 0.06, 0.11), "v2": barycentric_to_cartesian(0.68, 0.10, 0.22), "v3": barycentric_to_cartesian(0.50, 0.26, 0.24), "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Tie-Triangle (650°C)"})
 
-            # Conjugate tie-lines across gamma + sigma two-phase field
-            gamma_sigma_pairs = [
-                ((0.62, 0.13, 0.25), (0.46, 0.26, 0.28)),
-                ((0.54, 0.13, 0.33), (0.38, 0.26, 0.36)),
-                ((0.44, 0.10, 0.46), (0.28, 0.28, 0.44))
-            ]
-            for idx, (cg, cs) in enumerate(gamma_sigma_pairs, 1):
+            for cg, cs in [((0.62, 0.11, 0.27), (0.48, 0.22, 0.30)), ((0.52, 0.12, 0.36), (0.38, 0.18, 0.44)), ((0.42, 0.08, 0.50), (0.28, 0.22, 0.50))]:
                 pg = barycentric_to_cartesian(*cg)
                 ps = barycentric_to_cartesian(*cs)
-                tie_lines.append({"xs": [pg[0], ps[0]], "ys": [pg[1], ps[1]], "color": "#94A3B8", "name": f"γ + σ Tie-Line #{idx}"})
+                tie_lines.append({"xs": [pg[0], ps[0]], "ys": [pg[1], ps[1]], "color": "#94A3B8"})
 
-            # Phase labels
-            x_g, y_g = barycentric_to_cartesian(0.62, 0.05, 0.33)
-            labels.append({"text": "Austenite γ (FCC)", "x": x_g, "y": y_g, "color": "#1D4ED8", "bold": True})
-            x_a, y_a = barycentric_to_cartesian(0.88, 0.04, 0.08)
-            labels.append({"text": "Ferrite α (BCC)", "x": x_a, "y": y_a, "color": "#059669", "bold": True})
-            x_s, y_s = barycentric_to_cartesian(0.38, 0.34, 0.28)
-            labels.append({"text": "σ Phase (tP30)", "x": x_s, "y": y_s, "color": "#DC2626", "bold": True})
-            x_b, y_b = barycentric_to_cartesian(0.08, 0.06, 0.86)
-            labels.append({"text": "β-Mn", "x": x_b, "y": y_b, "color": "#7C3AED", "bold": True})
-
-            notes_str = "Murata et al. (ISIJ Int. 1990) 923 K (650°C) isothermal section. Demonstrates severe sigma-phase expansion: adding Mn extends sigma stability down to 8 at% Cr, establishing the critical PHACOMP threshold Md_crit = 0.880 eV."
-
+            labels.append({"text": "Austenite γ (FCC)", "x": barycentric_to_cartesian(0.62, 0.05, 0.33)[0], "y": barycentric_to_cartesian(0.62, 0.05, 0.33)[1], "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "Ferrite α (BCC)", "x": barycentric_to_cartesian(0.90, 0.03, 0.07)[0], "y": barycentric_to_cartesian(0.90, 0.03, 0.07)[1], "color": "#059669", "bold": True})
+            labels.append({"text": "σ Phase (tP30)", "x": barycentric_to_cartesian(0.32, 0.36, 0.32)[0], "y": barycentric_to_cartesian(0.32, 0.36, 0.32)[1], "color": "#DC2626", "bold": True})
+            labels.append({"text": "β-Mn", "x": barycentric_to_cartesian(0.08, 0.06, 0.86)[0], "y": barycentric_to_cartesian(0.08, 0.06, 0.86)[1], "color": "#7C3AED", "bold": True})
+            notes_str = "Murata et al. (ISIJ Int. 1990) 923 K (650°C) isothermal section. Mn extends σ stability down to ~8-11 at% Cr along the γ+σ corridor."
         else:
-            # --- 1073 K / 800°C Isothermal Section & High-Temperature Equilibria ---
-            # Expanded Austenite field; contracted Sigma field (Md_crit = 0.920 eV)
+            # --- 1073 K / 800°C Isothermal Section (every boundary anchored strictly on binary edges) ---
             gamma_knots_800 = [
                 (0.88, 0.00, 0.12),
-                (0.72, 0.10, 0.18),
+                (0.72, 0.12, 0.16),
                 (0.58, 0.20, 0.22),
-                (0.44, 0.25, 0.31),
-                (0.32, 0.18, 0.50),
-                (0.20, 0.06, 0.74),
+                (0.42, 0.22, 0.36),
+                (0.28, 0.14, 0.58),
+                (0.20, 0.00, 0.80),
             ]
             xs_g8, ys_g8 = _interpolate_ternary_curve(gamma_knots_800, n_pts=50)
             curves.append({"name": "Austenite γ Boundary (800°C Solvus)", "xs": xs_g8, "ys": ys_g8, "color": "#2563EB", "line_style": "Solid", "line_width": 2.4})
@@ -1367,42 +1486,23 @@ class TernaryDiagramEngine:
             sigma_knots_800 = [
                 (0.50, 0.50, 0.00),
                 (0.42, 0.40, 0.18),
-                (0.32, 0.36, 0.32),
-                (0.18, 0.38, 0.44),
+                (0.30, 0.36, 0.34),
+                (0.16, 0.39, 0.45),
                 (0.00, 0.42, 0.58),
             ]
             xs_s8, ys_s8 = _interpolate_ternary_curve(sigma_knots_800, n_pts=50)
             curves.append({"name": "σ Phase Boundary (800°C Solvus)", "xs": xs_s8, "ys": ys_s8, "color": "#DC2626", "line_style": "Solid", "line_width": 2.5})
 
-            # Three-phase tie-triangle at 800°C: alpha + gamma + sigma
-            t2_a = (0.72, 0.18, 0.10)
-            t2_g = (0.60, 0.18, 0.22)
-            t2_s = (0.45, 0.38, 0.17)
-            p2_a = barycentric_to_cartesian(*t2_a)
-            p2_g = barycentric_to_cartesian(*t2_g)
-            p2_s = barycentric_to_cartesian(*t2_s)
-            tie_triangles.append({"v1": p2_a, "v2": p2_g, "v3": p2_s, "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Tie-Triangle (800°C)"})
+            bcc_knots_800 = [(0.92, 0.08, 0.00), (0.72, 0.18, 0.10), (0.35, 0.50, 0.15), (0.00, 0.72, 0.28)]
+            xs_b8, ys_b8 = _interpolate_ternary_curve(bcc_knots_800, n_pts=45)
+            curves.append({"name": "Ferrite α-BCC Boundary (800°C)", "xs": xs_b8, "ys": ys_b8, "color": "#059669", "line_style": "Dashed", "line_width": 2.0})
 
-            # Monovariant peritectic groove at high T (L + delta <-> gamma)
-            liq_knots = [
-                (0.88, 0.00, 0.12),
-                (0.72, 0.14, 0.14),
-                (0.54, 0.28, 0.18),
-                (0.35, 0.42, 0.23),
-                (0.10, 0.60, 0.30),
-            ]
-            xs_lq, ys_lq = _interpolate_ternary_curve(liq_knots, n_pts=50)
-            curves.append({"name": "Monovariant Peritectic Line (L + δ ↔ γ)", "xs": xs_lq, "ys": ys_lq, "color": "#0F172A", "line_style": "Dashed", "line_width": 2.0})
+            tie_triangles.append({"v1": barycentric_to_cartesian(0.72, 0.18, 0.10), "v2": barycentric_to_cartesian(0.60, 0.18, 0.22), "v3": barycentric_to_cartesian(0.42, 0.40, 0.18), "color": "#FEE2E2", "border_color": "#DC2626", "name": "α + γ + σ Tie-Triangle (800°C)"})
 
-            # Phase labels
-            x_g, y_g = barycentric_to_cartesian(0.55, 0.12, 0.33)
-            labels.append({"text": "Austenite γ (FCC)", "x": x_g, "y": y_g, "color": "#1D4ED8", "bold": True})
-            x_a, y_a = barycentric_to_cartesian(0.78, 0.12, 0.10)
-            labels.append({"text": "Ferrite α/δ (BCC)", "x": x_a, "y": y_a, "color": "#059669", "bold": True})
-            x_s, y_s = barycentric_to_cartesian(0.32, 0.44, 0.24)
-            labels.append({"text": "σ Phase", "x": x_s, "y": y_s, "color": "#DC2626", "bold": True})
-
-            notes_str = "Murata et al. (ISIJ Int. 1990) 1073 K (800°C) section. Displays expanded austenite field and sigma retreat toward higher Cr contents, shifting critical instability limit to Md_crit = 0.920 eV."
+            labels.append({"text": "Austenite γ (FCC)", "x": barycentric_to_cartesian(0.55, 0.10, 0.35)[0], "y": barycentric_to_cartesian(0.55, 0.10, 0.35)[1], "color": "#1D4ED8", "bold": True})
+            labels.append({"text": "Ferrite α (BCC)", "x": barycentric_to_cartesian(0.24, 0.64, 0.12)[0], "y": barycentric_to_cartesian(0.24, 0.64, 0.12)[1], "color": "#059669", "bold": True})
+            labels.append({"text": "σ Phase", "x": barycentric_to_cartesian(0.28, 0.42, 0.30)[0], "y": barycentric_to_cartesian(0.28, 0.42, 0.30)[1], "color": "#DC2626", "bold": True})
+            notes_str = "Murata et al. (ISIJ Int. 1990) 1073 K (800°C) section. Expanded austenite γ field and σ phase anchored edge-to-edge along Cr-rich corridor (Md_crit = 0.920 eV)."
 
         return cls._build_ternary_payload(
             system="Fe-Cr-Mn",
@@ -1651,67 +1751,56 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        # 1. C14 Laves phase field boundary (continuous band at Nb ~ 0.33)
-        c14_top = [(0.62, 0.02, 0.36), (0.45, 0.19, 0.36), (0.25, 0.39, 0.36), (0.02, 0.62, 0.36)]
-        xs_c14_t, ys_c14_t = _interpolate_ternary_curve(c14_top, n_pts=45)
-        curves.append({"name": "C14 Laves Upper Solvus", "xs": xs_c14_t, "ys": ys_c14_t, "color": "#AA3377", "line_style": "Solid", "line_width": 2.2})
+        if diag_type == "liquidus":
+            def t_liq_cfnb(a: float, b: float, c: float) -> float:
+                # Cr (1907), Fe (1538), Nb (2477) with Fe-Nb eutectic (1360°C) & Cr-Nb eutectic (1620°C)
+                return 1907.0 * a + 1538.0 * b + 2477.0 * c - 460.0 * a * b - 1400.0 * b * c - 1350.0 * a * c
+            _append_isotherm_contours(
+                t_liq_cfnb,
+                [(1420.0, "#38BDF8"), (1560.0, "#0284C7"), (1720.0, "#0369A1"), (1920.0, "#1D4ED8"), (2200.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            eut_k = [(0.00, 0.85, 0.15), (0.35, 0.49, 0.16), (0.83, 0.00, 0.17)]
+            ex, ey = _interpolate_ternary_curve(eut_k, n_pts=40)
+            curves.append({"name": "Eutectic Valley (L ⇄ BCC + C14)", "xs": ex, "ys": ey, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.2})
+            labels.append({"text": "L -> C14 Laves", "x": barycentric_to_cartesian(0.32, 0.32, 0.36)[0], "y": barycentric_to_cartesian(0.32, 0.32, 0.36)[1], "color": "#AA3377", "bold": True})
+        else:
+            # 1. C14 Laves phase field boundaries (anchored cleanly on Cr-Nb b=0 and Fe-Nb a=0 edges)
+            c14_top = [(0.64, 0.00, 0.36), (0.45, 0.19, 0.36), (0.25, 0.39, 0.36), (0.00, 0.64, 0.36)]
+            xs_c14_t, ys_c14_t = _interpolate_ternary_curve(c14_top, n_pts=45)
+            curves.append({"name": "C14 Laves Upper Solvus", "xs": xs_c14_t, "ys": ys_c14_t, "color": "#AA3377", "line_style": "Solid", "line_width": 2.2})
 
-        c14_bot = [(0.68, 0.02, 0.30), (0.49, 0.21, 0.30), (0.27, 0.43, 0.30), (0.02, 0.68, 0.30)]
-        xs_c14_b, ys_c14_b = _interpolate_ternary_curve(c14_bot, n_pts=45)
-        curves.append({"name": "C14 Laves Lower Solvus", "xs": xs_c14_b, "ys": ys_c14_b, "color": "#AA3377", "line_style": "Solid", "line_width": 2.2})
+            c14_bot = [(0.70, 0.00, 0.30), (0.49, 0.21, 0.30), (0.27, 0.43, 0.30), (0.00, 0.70, 0.30)]
+            xs_c14_b, ys_c14_b = _interpolate_ternary_curve(c14_bot, n_pts=45)
+            curves.append({"name": "C14 Laves Lower Solvus", "xs": xs_c14_b, "ys": ys_c14_b, "color": "#AA3377", "line_style": "Solid", "line_width": 2.2})
 
-        # 2. BCC solid solution boundary (along Cr-Fe base with ~5% Nb solubility)
-        bcc_solvus = [(0.95, 0.01, 0.04), (0.75, 0.20, 0.05), (0.50, 0.44, 0.06), (0.20, 0.74, 0.06), (0.01, 0.95, 0.04)]
-        xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_solvus, n_pts=50)
-        curves.append({"name": "BCC Solvus Boundary", "xs": xs_bcc, "ys": ys_bcc, "color": "#E69F00", "line_style": "Dashed", "line_width": 2.0})
+            # 2. BCC solid solution boundary (anchored cleanly on Cr-Nb b=0 to Fe-Nb a=0)
+            bcc_solvus = [(0.96, 0.00, 0.04), (0.75, 0.20, 0.05), (0.50, 0.44, 0.06), (0.20, 0.74, 0.06), (0.00, 0.96, 0.04)]
+            xs_bcc, ys_bcc = _interpolate_ternary_curve(bcc_solvus, n_pts=50)
+            curves.append({"name": "BCC Solvus Boundary", "xs": xs_bcc, "ys": ys_bcc, "color": "#E69F00", "line_style": "Dashed", "line_width": 2.0})
 
-        # 3. Sigma phase region at intermediate Cr:Fe ratio
-        sigma_knots = [(0.48, 0.49, 0.03), (0.45, 0.45, 0.10), (0.40, 0.48, 0.12), (0.38, 0.52, 0.10), (0.40, 0.57, 0.03)]
-        xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=35)
-        curves.append({"name": "Sigma Phase Boundary", "xs": xs_sig, "ys": ys_sig, "color": "#882255", "line_style": "Solid", "line_width": 1.8})
+            # 3. Sigma phase region anchored on Cr-Fe edge (c=0) cleanly
+            sigma_knots = [(0.48, 0.52, 0.00), (0.45, 0.45, 0.10), (0.40, 0.48, 0.12), (0.38, 0.52, 0.10), (0.40, 0.60, 0.00)]
+            xs_sig, ys_sig = _interpolate_ternary_curve(sigma_knots, n_pts=35)
+            curves.append({"name": "Sigma Phase Boundary", "xs": xs_sig, "ys": ys_sig, "color": "#882255", "line_style": "Solid", "line_width": 1.8})
 
-        # 4. Three-Phase Tie-Triangles:
-        # Tri 1: BCC(Cr) + C14 + Sigma
-        v1 = (0.52, 0.42, 0.06)
-        v2 = (0.42, 0.46, 0.12)
-        v3 = (0.46, 0.24, 0.30)
-        tie_triangles.append({
-            "v1": barycentric_to_cartesian(*v1),
-            "v2": barycentric_to_cartesian(*v2),
-            "v3": barycentric_to_cartesian(*v3),
-            "color": "#FDF2F8", "border_color": "#882255", "name": "BCC(Cr) + C14 + Sigma"
-        })
+            # 4. Three-Phase Tie-Triangles
+            v1, v2, v3 = (0.52, 0.42, 0.06), (0.42, 0.46, 0.12), (0.46, 0.24, 0.30)
+            tie_triangles.append({"v1": barycentric_to_cartesian(*v1), "v2": barycentric_to_cartesian(*v2), "v3": barycentric_to_cartesian(*v3), "color": "#FDF2F8", "border_color": "#882255", "name": "BCC(Cr) + C14 + Sigma"})
 
-        # Tri 2: BCC(Fe) + C14 + Sigma
-        u1 = (0.36, 0.58, 0.06)
-        u2 = (0.38, 0.50, 0.12)
-        u3 = (0.24, 0.46, 0.30)
-        tie_triangles.append({
-            "v1": barycentric_to_cartesian(*u1),
-            "v2": barycentric_to_cartesian(*u2),
-            "v3": barycentric_to_cartesian(*u3),
-            "color": "#FEF3C7", "border_color": "#D97706", "name": "BCC(Fe) + C14 + Sigma"
-        })
+            u1, u2, u3 = (0.36, 0.58, 0.06), (0.38, 0.50, 0.12), (0.24, 0.46, 0.30)
+            tie_triangles.append({"v1": barycentric_to_cartesian(*u1), "v2": barycentric_to_cartesian(*u2), "v3": barycentric_to_cartesian(*u3), "color": "#FEF3C7", "border_color": "#D97706", "name": "BCC(Fe) + C14 + Sigma"})
 
-        # 5. Two-Phase Tie-Lines in BCC + C14 dual field
-        for frac in [0.15, 0.30, 0.70, 0.85]:
-            p_bcc = barycentric_to_cartesian(1.0 - frac - 0.05, frac, 0.05)
-            p_c14 = barycentric_to_cartesian(1.0 - frac - 0.32, frac, 0.32)
-            tie_lines.append({
-                "xs": [p_bcc[0], p_c14[0]],
-                "ys": [p_bcc[1], p_c14[1]],
-                "color": "#94A3B8"
-            })
+            # 5. Two-Phase Tie-Lines
+            for frac in [0.15, 0.30, 0.70, 0.85]:
+                p_bcc = barycentric_to_cartesian(1.0 - frac - 0.05, frac, 0.05)
+                p_c14 = barycentric_to_cartesian(1.0 - frac - 0.32, frac, 0.32)
+                tie_lines.append({"xs": [p_bcc[0], p_c14[0]], "ys": [p_bcc[1], p_c14[1]], "color": "#94A3B8"})
 
-        # Labels
-        x_bcc, y_bcc = barycentric_to_cartesian(0.50, 0.48, 0.02)
-        labels.append({"text": "BCC (Cr,Fe)", "x": x_bcc, "y": y_bcc, "color": "#D97706", "bold": True})
-        x_c14, y_c14 = barycentric_to_cartesian(0.33, 0.34, 0.33)
-        labels.append({"text": "C14 Laves (Fe,Cr)₂Nb", "x": x_c14, "y": y_c14, "color": "#AA3377", "bold": True})
-        x_sig, y_sig = barycentric_to_cartesian(0.43, 0.50, 0.07)
-        labels.append({"text": "σ Phase", "x": x_sig, "y": y_sig, "color": "#882255", "bold": True})
-        x_nb, y_nb = barycentric_to_cartesian(0.10, 0.10, 0.80)
-        labels.append({"text": "BCC(Nb)", "x": x_nb, "y": y_nb, "color": "#0284C7", "bold": True})
+            labels.append({"text": "BCC (Cr,Fe)", "x": barycentric_to_cartesian(0.50, 0.48, 0.02)[0], "y": barycentric_to_cartesian(0.50, 0.48, 0.02)[1], "color": "#D97706", "bold": True})
+            labels.append({"text": "C14 Laves (Fe,Cr)₂Nb", "x": barycentric_to_cartesian(0.33, 0.34, 0.33)[0], "y": barycentric_to_cartesian(0.33, 0.34, 0.33)[1], "color": "#AA3377", "bold": True})
+            labels.append({"text": "σ Phase", "x": barycentric_to_cartesian(0.43, 0.50, 0.07)[0], "y": barycentric_to_cartesian(0.43, 0.50, 0.07)[1], "color": "#882255", "bold": True})
+            labels.append({"text": "BCC(Nb)", "x": barycentric_to_cartesian(0.10, 0.10, 0.80)[0], "y": barycentric_to_cartesian(0.10, 0.10, 0.80)[1], "color": "#0284C7", "bold": True})
 
         return cls._build_ternary_payload(
             system="Cr-Fe-Nb",
@@ -1719,7 +1808,7 @@ class TernaryDiagramEngine:
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="PyCalphad official benchmark (Jacob et al. 2016). Evaluated at 1323 K. Features the extensive continuous C14 Laves phase field (Fe,Cr)2Nb, BCC solid solutions, and tetragonal Sigma phase."
+            notes="PyCalphad official benchmark (Jacob et al. 2016). Features C14 Laves band spanning Cr-Nb to Fe-Nb edges, BCC solid solutions, and tetragonal Sigma phase."
         )
 
     # =========================================================================
@@ -1740,32 +1829,47 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        al_knots = [(0.92, 0.07, 0.01), (0.78, 0.20, 0.02), (0.65, 0.30, 0.05), (0.50, 0.42, 0.08)]
-        xs_al, ys_al = _interpolate_ternary_curve(al_knots, n_pts=40)
-        curves.append({"name": "Al Solvus / Liquidus Eutectic", "xs": xs_al, "ys": ys_al, "color": "#0072B2", "line_style": "Solid", "line_width": 2.0})
+        if diag_type == "liquidus":
+            def t_liq_acy(a: float, b: float, c: float) -> float:
+                return 660.3 * a + 1084.6 * b + 1522.0 * c - 820.0 * a * b + 140.0 * b * c - 360.0 * a * c
+            _append_isotherm_contours(
+                t_liq_acy,
+                [(620.0, "#38BDF8"), (780.0, "#0284C7"), (980.0, "#0369A1"), (1200.0, "#1D4ED8"), (1400.0, "#1E3A8A")],
+                is_k, curves, labels, prefix="Liquidus", n_grid=54,
+            )
+            eut_v = [(0.827, 0.173, 0.00), (0.67, 0.30, 0.03), (0.50, 0.40, 0.10), (0.33, 0.42, 0.25), (0.00, 0.55, 0.45)]
+            ex, ey = _interpolate_ternary_curve(eut_v, n_pts=40)
+            curves.append({"name": "Eutectic / Peritectic Liquidus Groove", "xs": ex, "ys": ey, "color": "#DC2626", "line_style": "Dashed", "line_width": 2.2})
+            labels.append({"text": "(Al) Primary", "x": barycentric_to_cartesian(0.84, 0.10, 0.06)[0], "y": barycentric_to_cartesian(0.84, 0.10, 0.06)[1], "color": "#0072B2", "bold": True})
+        else:
+            # Clean edge-to-edge Al terminal solvus & Tau intermetallic compatibility triangles (Zhang 2011)
+            al_knots = [(0.97, 0.03, 0.00), (0.95, 0.03, 0.02), (0.98, 0.00, 0.02)]
+            xs_al, ys_al = _interpolate_ternary_curve(al_knots, n_pts=25)
+            curves.append({"name": "(Al) FCC Terminal Solvus", "xs": xs_al, "ys": ys_al, "color": "#0072B2", "line_style": "Solid", "line_width": 2.0})
 
-        tau_knots = [(0.50, 0.42, 0.08), (0.42, 0.40, 0.18), (0.33, 0.34, 0.33), (0.25, 0.45, 0.30)]
-        xs_tau, ys_tau = _interpolate_ternary_curve(tau_knots, n_pts=40)
-        curves.append({"name": "Ternary Intermetallic (Tau-phases) Boundary", "xs": xs_tau, "ys": ys_tau, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.0})
+            # Stoichiometric Tau band bridging between binary Al2Cu (0.667,0.333,0) and Cu-Y (0,0.667,0.333)
+            tau_band = [(0.667, 0.333, 0.00), (0.50, 0.40, 0.10), (0.33, 0.42, 0.25), (0.00, 0.667, 0.333)]
+            xs_tau, ys_tau = _interpolate_ternary_curve(tau_band, n_pts=35)
+            curves.append({"name": "Ternary Tau (τ₁-τ₆) Intermetallic Ridge", "xs": xs_tau, "ys": ys_tau, "color": "#7C3AED", "line_style": "Solid", "line_width": 2.1})
 
-        v1 = (0.94, 0.05, 0.01)
-        v2 = (0.66, 0.33, 0.01)
-        v3 = (0.74, 0.01, 0.25)
-        tie_triangles.append({
-            "v1": barycentric_to_cartesian(*v1),
-            "v2": barycentric_to_cartesian(*v2),
-            "v3": barycentric_to_cartesian(*v3),
-            "color": "#DBEAFE", "border_color": "#2563EB", "name": "(Al) + Al2Cu + Al3Y Tie-Triangle"
-        })
+            pt_al = (0.96, 0.02, 0.02)
+            pt_th = (0.667, 0.333, 0.00)
+            pt_al3y = (0.75, 0.00, 0.25)
+            pt_tau = (0.48, 0.40, 0.12)
+            pt_cu = (0.04, 0.94, 0.02)
+            pt_y = (0.04, 0.02, 0.94)
+            for name, v1, v2, v3, bg, bd in [
+                ("(Al) + Al2Cu + Al3Y", pt_al, pt_th, pt_al3y, "#DBEAFE", "#2563EB"),
+                ("Al2Cu + Tau + Al3Y", pt_th, pt_tau, pt_al3y, "#F3E8FF", "#7C3AED"),
+                ("(Cu) + Al2Cu + Tau", pt_cu, pt_th, pt_tau, "#FFEDD5", "#D97706"),
+                ("Al3Y + Tau + (Y)", pt_al3y, pt_tau, pt_y, "#ECFDF5", "#059669"),
+            ]:
+                tie_triangles.append({"v1": barycentric_to_cartesian(*v1), "v2": barycentric_to_cartesian(*v2), "v3": barycentric_to_cartesian(*v3), "color": bg, "border_color": bd, "name": name})
 
-        x_al, y_al = barycentric_to_cartesian(0.85, 0.10, 0.05)
-        labels.append({"text": "(Al) Solid Solution", "x": x_al, "y": y_al, "color": "#0072B2", "bold": True})
-        x_tau, y_tau = barycentric_to_cartesian(0.40, 0.40, 0.20)
-        labels.append({"text": "Heusler / Tau Phases (τ₁-τ₆)", "x": x_tau, "y": y_tau, "color": "#7C3AED", "bold": True})
-        x_cu, y_cu = barycentric_to_cartesian(0.10, 0.82, 0.08)
-        labels.append({"text": "(Cu) Solid Solution", "x": x_cu, "y": y_cu, "color": "#D55E00", "bold": True})
-        x_y, y_y = barycentric_to_cartesian(0.10, 0.10, 0.80)
-        labels.append({"text": "(Y) Rich Field", "x": x_y, "y": y_y, "color": "#009E73", "bold": True})
+            labels.append({"text": "(Al)", "x": barycentric_to_cartesian(0.92, 0.05, 0.03)[0], "y": barycentric_to_cartesian(0.92, 0.05, 0.03)[1], "color": "#0072B2", "bold": True})
+            labels.append({"text": "Tau (τ₁-τ₆)", "x": barycentric_to_cartesian(0.48, 0.40, 0.12)[0], "y": barycentric_to_cartesian(0.48, 0.40, 0.12)[1], "color": "#7C3AED", "bold": True})
+            labels.append({"text": "(Cu)", "x": barycentric_to_cartesian(0.08, 0.84, 0.08)[0], "y": barycentric_to_cartesian(0.08, 0.84, 0.08)[1], "color": "#D55E00", "bold": True})
+            labels.append({"text": "(Y)", "x": barycentric_to_cartesian(0.08, 0.08, 0.84)[0], "y": barycentric_to_cartesian(0.08, 0.08, 0.84)[1], "color": "#009E73", "bold": True})
 
         return cls._build_ternary_payload(
             system="Al-Cu-Y",
@@ -1773,7 +1877,7 @@ class TernaryDiagramEngine:
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="PyCalphad official benchmark (Zhang et al. 2011). Assessed isothermal sections at 830 K and 1770 K with complex Heusler and ternary intermetallic (Tau) equilibria."
+            notes="PyCalphad official benchmark (Zhang et al. 2011). Assessed isothermal sections and liquidus groove with Al2Cu, Al3Y, and ternary Tau equilibria."
         )
 
     # =========================================================================
@@ -1793,30 +1897,33 @@ class TernaryDiagramEngine:
         tie_triangles = []
         labels = []
 
-        slag_knots = [(0.45, 0.45, 0.10), (0.35, 0.35, 0.30), (0.25, 0.20, 0.55), (0.15, 0.40, 0.45)]
-        xs_slag, ys_slag = _interpolate_ternary_curve(slag_knots, n_pts=50)
-        curves.append({"name": "Homogeneous Slag Liquid Boundary (MQMQA)", "xs": xs_slag, "ys": ys_slag, "color": "#DC2626", "line_style": "Solid", "line_width": 2.2})
+        if diag_type == "liquidus":
+            # MQMQA slag liquidus isotherms (metallic Fe/Sb to high-melting oxide corner)
+            def t_liq_fso(a: float, b: float, c: float) -> float:
+                return 1538.0 * a + 630.6 * b + 1600.0 * c - 680.0 * b * c - 260.0 * a * c - 150.0 * a * b
+            _append_isotherm_contours(
+                t_liq_fso,
+                [(800.0, "#38BDF8"), (1050.0, "#0284C7"), (1250.0, "#0369A1"), (1420.0, "#1D4ED8")],
+                is_k, curves, labels, prefix="Slag Liquidus", n_grid=54,
+            )
+            labels.append({"text": "Slag Liquidus (MQMQA)", "x": barycentric_to_cartesian(0.32, 0.36, 0.32)[0], "y": barycentric_to_cartesian(0.32, 0.36, 0.32)[1], "color": "#DC2626", "bold": True})
+        else:
+            # Closed homogeneous Slag Liquid / Oxide boundary anchored on Sb-O and Fe-Sb edges + Spinel solvus
+            v_slag, v_spinel, v_fesb2o4 = (0.30, 0.35, 0.35), (0.428, 0.00, 0.572), (0.143, 0.286, 0.571)
+            slag_knots = [(0.50, 0.50, 0.00), (0.42, 0.36, 0.22), v_slag, (0.20, 0.38, 0.42), (0.00, 0.55, 0.45)]
+            xs_slag, ys_slag = _interpolate_ternary_curve(slag_knots, n_pts=50)
+            curves.append({"name": "Homogeneous Slag Liquid Boundary (MQMQA)", "xs": xs_slag, "ys": ys_slag, "color": "#DC2626", "line_style": "Solid", "line_width": 2.2})
 
-        spinel_knots = [(0.42, 0.01, 0.57), (0.35, 0.15, 0.50), (0.28, 0.30, 0.42)]
-        xs_sp, ys_sp = _interpolate_ternary_curve(spinel_knots, n_pts=35)
-        curves.append({"name": "Spinel (Fe₃O₄) / Hematite Boundary", "xs": xs_sp, "ys": ys_sp, "color": "#059669", "line_style": "Dashed", "line_width": 1.8})
+            spinel_knots = [v_spinel, (0.30, 0.14, 0.56), v_fesb2o4]
+            xs_sp, ys_sp = _interpolate_ternary_curve(spinel_knots, n_pts=35)
+            curves.append({"name": "Spinel (Fe₃O₄) - FeSb₂O₄ Compatibility Line", "xs": xs_sp, "ys": ys_sp, "color": "#059669", "line_style": "Dashed", "line_width": 1.9})
 
-        v1 = (0.30, 0.35, 0.35)
-        v2 = (0.42, 0.02, 0.56)
-        v3 = (0.14, 0.29, 0.57)
-        tie_triangles.append({
-            "v1": barycentric_to_cartesian(*v1),
-            "v2": barycentric_to_cartesian(*v2),
-            "v3": barycentric_to_cartesian(*v3),
-            "color": "#FEF2F2", "border_color": "#DC2626", "name": "Slag + Spinel + FeSb₂O₄ Tie-Triangle"
-        })
+            tie_triangles.append({"v1": barycentric_to_cartesian(*v_slag), "v2": barycentric_to_cartesian(*v_spinel), "v3": barycentric_to_cartesian(*v_fesb2o4), "color": "#FEF2F2", "border_color": "#DC2626", "name": "Slag + Spinel + FeSb₂O₄"})
+            tie_triangles.append({"v1": barycentric_to_cartesian(0.50, 0.50, 0.00), "v2": barycentric_to_cartesian(0.95, 0.05, 0.00), "v3": barycentric_to_cartesian(*v_spinel), "color": "#F8FAFC", "border_color": "#475569", "name": "Fe + Slag + Spinel"})
 
-        x_slag, y_slag = barycentric_to_cartesian(0.35, 0.40, 0.25)
-        labels.append({"text": "Slag Liquid (MQMQA)", "x": x_slag, "y": y_slag, "color": "#DC2626", "bold": True})
-        x_spinel, y_spinel = barycentric_to_cartesian(0.40, 0.05, 0.55)
-        labels.append({"text": "Spinel (Fe₃O₄)", "x": x_spinel, "y": y_spinel, "color": "#059669", "bold": True})
-        x_fe, y_fe = barycentric_to_cartesian(0.85, 0.10, 0.05)
-        labels.append({"text": "BCC_Fe + Oxide", "x": x_fe, "y": y_fe, "color": "#1E293B", "bold": True})
+            labels.append({"text": "Slag Liquid (MQMQA)", "x": barycentric_to_cartesian(0.30, 0.42, 0.28)[0], "y": barycentric_to_cartesian(0.30, 0.42, 0.28)[1], "color": "#DC2626", "bold": True})
+            labels.append({"text": "Spinel (Fe₃O₄)", "x": barycentric_to_cartesian(0.40, 0.04, 0.56)[0], "y": barycentric_to_cartesian(0.40, 0.04, 0.56)[1], "color": "#059669", "bold": True})
+            labels.append({"text": "BCC_Fe + Oxide", "x": barycentric_to_cartesian(0.75, 0.10, 0.15)[0], "y": barycentric_to_cartesian(0.75, 0.10, 0.15)[1], "color": "#1E293B", "bold": True})
 
         return cls._build_ternary_payload(
             system="Fe-Sb-O",
@@ -1824,7 +1931,7 @@ class TernaryDiagramEngine:
             diag_type=diag_type, temp_c=t_c, is_k=is_k,
             curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
             labels=labels, invariants=invariants,
-            notes="PyCalphad ChemSage database benchmark (Shishin et al. 2019). Modeled via Modified Quasichemical Model in Quadruplet Approximation (MQMQA) at 1500 K (1227°C)."
+            notes="PyCalphad ChemSage database benchmark (Shishin et al. 2019). MQMQA quadruplet slag model at 1500 K with edge-anchored slag liquidus and Spinel/FeSb2O4 tie-triangles."
         )
 
     @classmethod
@@ -2027,6 +2134,35 @@ class TernaryDiagramEngine:
         conv = (lambda c: c + 273.15) if is_k else (lambda c: c)
         u = "K" if is_k else "°C"
 
+        # Normalize labels (text vs name) and tie_triangles (name vs label)
+        norm_labels = []
+        for lb in labels:
+            l_copy = dict(lb)
+            if "text" not in l_copy and "name" in l_copy:
+                l_copy["text"] = l_copy["name"]
+            l_copy.setdefault("bold", True)
+            norm_labels.append(l_copy)
+
+        norm_tris = []
+        for tri in tie_triangles:
+            t_copy = dict(tri)
+            if "name" not in t_copy and "label" in t_copy:
+                t_copy["name"] = t_copy["label"]
+            norm_tris.append(t_copy)
+
+        # Shade full triangle softly on single-phase isothermal diagrams so plot & legend clearly show phase stability
+        if not curves and not norm_tris and not tie_lines and norm_labels:
+            sp_name = norm_labels[0].get("text", "Single-Phase Solution")
+            is_liq_sp = "Liquid" in sp_name
+            norm_tris.append({
+                "v1": barycentric_to_cartesian(1.0, 0.0, 0.0),
+                "v2": barycentric_to_cartesian(0.0, 1.0, 0.0),
+                "v3": barycentric_to_cartesian(0.0, 0.0, 1.0),
+                "color": "#FEF3C7" if is_liq_sp else "#DBEAFE",
+                "border_color": "Transparent",
+                "name": sp_name,
+            })
+
         # Format invariant temperatures
         inv_formatted = []
         for inv in invariants:
@@ -2058,8 +2194,8 @@ class TernaryDiagramEngine:
             },
             "curves": curves,
             "tie_lines": tie_lines,
-            "tie_triangles": tie_triangles,
-            "phase_labels": labels,
+            "tie_triangles": norm_tris,
+            "phase_labels": norm_labels,
             "invariants": inv_formatted,
             "literature_notes": notes,
         }
@@ -2222,39 +2358,17 @@ class TernaryDiagramEngine:
                 "border_color": border_hex
             })
 
-        # Liquidus projection boundary valleys converging at ternary eutectic E1 (1355 C)
-        pt_e1 = barycentric_to_cartesian(0.53, 0.17, 0.30)
-        pt_e2 = barycentric_to_cartesian(0.48, 0.28, 0.24)
-        pt_p = barycentric_to_cartesian(0.46, 0.12, 0.42)
-
-        curves.append({
-            "name": "Liquidus Boundary E₁ Valley",
-            "xs": [pt_e1[0], pt_e2[0]],
-            "ys": [pt_e1[1], pt_e2[1]],
-            "color": "#1E40AF",
-            "line_style": "Solid",
-            "line_width": 2.2
-        })
-        curves.append({
-            "name": "Liquidus Boundary Peritectic P-E₁",
-            "xs": [pt_p[0], pt_e1[0]],
-            "ys": [pt_p[1], pt_e1[1]],
-            "color": "#1E40AF",
-            "line_style": "Solid",
-            "line_width": 2.2
-        })
-
         # Phase compound labels
         labels = [
-            {"name": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7"},
-            {"name": "Periclase (MgO)", "x": pt_peri[0], "y": pt_peri[1] - 0.03, "color": "#7C3AED"},
-            {"name": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C"},
-            {"name": "Cordierite", "x": pt_cord[0], "y": pt_cord[1], "color": "#BE185D"},
-            {"name": "Mullite", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C"},
-            {"name": "Spinel", "x": pt_sp[0], "y": pt_sp[1] + 0.02, "color": "#6D28D9"},
-            {"name": "Forsterite", "x": pt_fo[0] - 0.02, "y": pt_fo[1], "color": "#15803D"},
-            {"name": "Enstatite", "x": pt_en[0] - 0.02, "y": pt_en[1], "color": "#0F766E"},
-            {"name": "Sapphirine", "x": pt_saph[0] + 0.02, "y": pt_saph[1], "color": "#C2410C"},
+            {"text": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7", "bold": True},
+            {"text": "Periclase (MgO)", "x": pt_peri[0], "y": pt_peri[1] - 0.03, "color": "#7C3AED", "bold": True},
+            {"text": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C", "bold": True},
+            {"text": "Cordierite", "x": pt_cord[0], "y": pt_cord[1], "color": "#BE185D", "bold": True},
+            {"text": "Mullite", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C", "bold": True},
+            {"text": "Spinel", "x": pt_sp[0], "y": pt_sp[1] + 0.02, "color": "#6D28D9", "bold": True},
+            {"text": "Forsterite", "x": pt_fo[0] - 0.02, "y": pt_fo[1], "color": "#15803D", "bold": True},
+            {"text": "Enstatite", "x": pt_en[0] - 0.02, "y": pt_en[1], "color": "#0F766E", "bold": True},
+            {"text": "Sapphirine", "x": pt_saph[0] + 0.02, "y": pt_saph[1], "color": "#C2410C", "bold": True},
         ]
 
         invariants = [
@@ -2263,30 +2377,27 @@ class TernaryDiagramEngine:
             {"type": "Peritectic", "temp_c": 1440.0, "equation": "L + Mullite ⇌ Cordierite + Tridymite", "composition": "SiO2:46.0 wt%, MgO:12.0 wt%, Al2O3:42.0 wt%", "desc": "P: Peritectic reaction consuming primary mullite"},
         ]
 
-        grid = cls.generate_gibbs_triangle_grid()
-        return {
-            "system": "MgO-Al2O3-SiO2",
-            "element_a": el_a,
-            "element_b": el_b,
-            "element_c": el_c,
-            "diagram_type": diag_type,
-            "temperature": conv(t_c),
-            "temp_unit": u,
-            "triangle_border_x": grid["border_x"],
-            "triangle_border_y": grid["border_y"],
-            "grid_lines": grid["grid_lines"],
-            "apex_labels": {
-                "A": {"name": el_a, "x": -0.04, "y": -0.03, "align": "Right"},
-                "B": {"name": el_b, "x": 1.04, "y": -0.03, "align": "Left"},
-                "C": {"name": el_c, "x": 0.50, "y": SQRT3_OVER_2 + 0.04, "align": "Center"},
-            },
-            "curves": curves,
-            "tie_lines": tie_lines,
-            "tie_triangles": tie_triangles,
-            "phase_labels": labels,
-            "invariants": invariants,
-            "literature_notes": "MgO-Al₂O₃-SiO₂ (MAS) ceramic system with 9 Alkemade compatibility triangles, exact stoichiometric compounds (Cordierite 2MgO·2Al₂O₃·5SiO₂, Mullite 3Al₂O₃·2SiO₂, Spinel MgAl₂O₄), and E₁ eutectic at 1355 °C.",
-        }
+        if diag_type == "liquidus":
+            # Edge-to-edge monovariant liquidus boundary valley from SiO2-Al2O3 eutectic -> P -> E1 -> E2 -> MgO-SiO2 eutectic
+            valley_kts = [(0.945, 0.0, 0.055), (0.46, 0.12, 0.42), (0.53, 0.17, 0.30), (0.48, 0.28, 0.24), (0.65, 0.35, 0.0)]
+            vx, vy = _interpolate_ternary_curve(valley_kts, n_pts=45)
+            curves.append({
+                "name": "Liquidus Monovariant Valley (P - E₁ - E₂)",
+                "xs": vx,
+                "ys": vy,
+                "color": "#1E40AF",
+                "line_style": "Solid",
+                "line_width": 2.3
+            })
+
+        return cls._build_ternary_payload(
+            system="MgO-Al2O3-SiO2",
+            el_a=el_a, el_b=el_b, el_c=el_c,
+            diag_type=diag_type, temp_c=t_c, is_k=is_k,
+            curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
+            labels=labels, invariants=invariants,
+            notes="MgO-Al₂O₃-SiO₂ (MAS) ceramic system with 9 Alkemade compatibility triangles, stoichiometric Cordierite/Mullite/Spinel, and edge-to-edge P-E₁-E₂ liquidus valley."
+        )
 
     # =========================================================================
     # Ceramic Ternary System 2: Al2O3-SiO2-ZrO2 (AZS Fused-Cast Refractories)
@@ -2351,26 +2462,13 @@ class TernaryDiagramEngine:
                 "border_color": border_hex
             })
 
-        # Liquidus projection valley boundary lines converging at ternary eutectic E (1705 C)
-        pt_e = barycentric_to_cartesian(0.40, 0.25, 0.35)
-        pt_p = barycentric_to_cartesian(0.20, 0.32, 0.48)
-
-        curves.append({
-            "name": "Liquidus Boundary E Valley",
-            "xs": [pt_e[0], pt_p[0]],
-            "ys": [pt_e[1], pt_p[1]],
-            "color": "#1E40AF",
-            "line_style": "Solid",
-            "line_width": 2.2
-        })
-
         # Phase compound labels
         labels = [
-            {"name": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7"},
-            {"name": "Zirconia (ZrO₂)", "x": pt_zirc[0], "y": pt_zirc[1] - 0.03, "color": "#D97706"},
-            {"name": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C"},
-            {"name": "Mullite (3Al₂O₃·2SiO₂)", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C"},
-            {"name": "Zircon (ZrSiO₄)", "x": pt_zircon[0] - 0.02, "y": pt_zircon[1], "color": "#4D7C0F"},
+            {"text": "Cristobalite (SiO₂)", "x": pt_crist[0], "y": pt_crist[1] - 0.03, "color": "#0284C7", "bold": True},
+            {"text": "Zirconia (ZrO₂)", "x": pt_zirc[0], "y": pt_zirc[1] - 0.03, "color": "#D97706", "bold": True},
+            {"text": "Corundum (Al₂O₃)", "x": pt_corun[0], "y": pt_corun[1] + 0.03, "color": "#BE123C", "bold": True},
+            {"text": "Mullite (3Al₂O₃·2SiO₂)", "x": pt_mul[0] + 0.02, "y": pt_mul[1], "color": "#B91C1C", "bold": True},
+            {"text": "Zircon (ZrSiO₄)", "x": pt_zircon[0] - 0.02, "y": pt_zircon[1], "color": "#4D7C0F", "bold": True},
         ]
 
         invariants = [
@@ -2378,27 +2476,24 @@ class TernaryDiagramEngine:
             {"type": "Peritectic", "temp_c": 1890.0, "equation": "L + Corundum ⇌ Mullite + Zirconia", "composition": "SiO2:20 wt%, ZrO2:32 wt%, Al2O3:48 wt%", "desc": "P: Peritectic reaction for reaction-sintered composites"},
         ]
 
-        grid = cls.generate_gibbs_triangle_grid()
-        return {
-            "system": "Al2O3-SiO2-ZrO2",
-            "element_a": el_a,
-            "element_b": el_b,
-            "element_c": el_c,
-            "diagram_type": diag_type,
-            "temperature": conv(t_c),
-            "temp_unit": u,
-            "triangle_border_x": grid["border_x"],
-            "triangle_border_y": grid["border_y"],
-            "grid_lines": grid["grid_lines"],
-            "apex_labels": {
-                "A": {"name": el_a, "x": -0.04, "y": -0.03, "align": "Right"},
-                "B": {"name": el_b, "x": 1.04, "y": -0.03, "align": "Left"},
-                "C": {"name": el_c, "x": 0.50, "y": SQRT3_OVER_2 + 0.04, "align": "Center"},
-            },
-            "curves": curves,
-            "tie_lines": tie_lines,
-            "tie_triangles": tie_triangles,
-            "phase_labels": labels,
-            "invariants": invariants,
-            "literature_notes": "Al₂O₃-SiO₂-ZrO₂ (AZS) fused-cast refractory system with 3 Alkemade compatibility triangles, stoichiometric Mullite and Zircon, and ternary eutectic at 1705 °C.",
-        }
+        if diag_type == "liquidus":
+            # Edge-to-edge monovariant liquidus valley spanning SiO2-Al2O3 eutectic -> E -> P -> ZrO2-Al2O3 eutectic
+            valley_azs = [(0.945, 0.0, 0.055), (0.40, 0.25, 0.35), (0.20, 0.32, 0.48), (0.0, 0.42, 0.58)]
+            vx, vy = _interpolate_ternary_curve(valley_azs, n_pts=40)
+            curves.append({
+                "name": "Liquidus Monovariant Valley (E - P)",
+                "xs": vx,
+                "ys": vy,
+                "color": "#1E40AF",
+                "line_style": "Solid",
+                "line_width": 2.3
+            })
+
+        return cls._build_ternary_payload(
+            system="Al2O3-SiO2-ZrO2",
+            el_a=el_a, el_b=el_b, el_c=el_c,
+            diag_type=diag_type, temp_c=t_c, is_k=is_k,
+            curves=curves, tie_lines=tie_lines, tie_triangles=tie_triangles,
+            labels=labels, invariants=invariants,
+            notes="Al₂O₃-SiO₂-ZrO₂ (AZS) fused-cast refractory system with 3 Alkemade compatibility triangles, stoichiometric Mullite and Zircon, and edge-to-edge E-P liquidus valley."
+        )

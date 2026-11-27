@@ -63,7 +63,7 @@
         <Border x:Name="ToolbarBorder" Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="8,5">
             <DockPanel LastChildFill="False">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
-                    <Button x:Name="BtnHome" Style="{StaticResource ModernToolbarButtonStyle}" Content="Home / Reset" ToolTip="Reset viewport to physical limits" Click="BtnHome_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
+                    <Button x:Name="BtnHome" Style="{StaticResource ModernToolbarButtonStyle}" Content="Reset" ToolTip="Reset viewport to physical limits" Click="BtnHome_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
                     <Button x:Name="BtnZoomIn" Style="{StaticResource ModernToolbarButtonStyle}" Content="+ Zoom In" ToolTip="Zoom in 20%" Click="BtnZoomIn_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
                     <Button x:Name="BtnZoomOut" Style="{StaticResource ModernToolbarButtonStyle}" Content="- Zoom Out" ToolTip="Zoom out 25%" Click="BtnZoomOut_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>
                     <Button x:Name="BtnGrid" Style="{StaticResource ModernToolbarButtonStyle}" Content="Grid: On" ToolTip="Toggle scientific gridlines" Click="BtnGrid_Click" Background="#F1F5F9" BorderBrush="#CBD5E1" Foreground="#0F172A"/>

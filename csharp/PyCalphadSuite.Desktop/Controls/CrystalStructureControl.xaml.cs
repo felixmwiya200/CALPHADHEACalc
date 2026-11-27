@@ -17,7 +17,9 @@ namespace PyCalphadSuite.Desktop.Controls
     public partial class CrystalStructureControl : UserControl
     {
         private readonly MeshGeometry3D _unitSphereMesh;
+        private readonly MeshGeometry3D _studioSphereMesh;
         private readonly MeshGeometry3D _unitCylinderMesh;
+        private readonly MeshGeometry3D _unitFrustumMesh;
         private readonly Dictionary<Model3D, CrystalAtomDto> _atomLookup = new();
         private readonly DispatcherTimer _spinTimer;
 
@@ -52,7 +54,9 @@ namespace PyCalphadSuite.Desktop.Controls
         {
             InitializeComponent();
             _unitSphereMesh = BuildUnitSphereMesh(latBands: 14, lonBands: 22);
+            _studioSphereMesh = BuildUnitSphereMesh(latBands: 24, lonBands: 36);
             _unitCylinderMesh = BuildUnitCylinderMesh(segments: 10);
+            _unitFrustumMesh = BuildUnitFrustumMesh(segments: 14, rBottom: 1.0, rTop: 0.62);
 
             _spinTimer = new DispatcherTimer
             {
@@ -169,7 +173,7 @@ namespace PyCalphadSuite.Desktop.Controls
                 ? summaryText
                 : _structures.Count > 0
                     ? $"Detected phases: {string.Join(" + ", _structures.Select(s => $"{s.PhaseName} ({s.PhaseFractionDisplay})"))}"
-                    : "No crystal phases loaded. Run Calculate Equilibrium or click Rebuild 3D Cells.";
+                    : "No crystal phases loaded. Run Calculate Equilibrium or click Rebuild.";
 
             RebuildPhaseTabs();
             GridPhaseCompare.ItemsSource = _structures;
@@ -522,11 +526,13 @@ namespace PyCalphadSuite.Desktop.Controls
             }
 
             var group = new Model3DGroup();
+            bool studioView = CmbViewStyle?.SelectedItem is ComboBoxItem vItem && (vItem.Tag?.ToString() == "studio");
             bool sublatticeColour = CmbColourMode.SelectedItem is ComboBoxItem cItem && (cItem.Tag?.ToString() == "sublattice");
             string scaleMode = (CmbScaleMode.SelectedItem is ComboBoxItem sItem ? sItem.Tag?.ToString() : null) ?? "metallic";
+            UpdateLightingForView(studioView);
 
-            // 1. Optional slip plane polygon
-            if (ChkSlipPlane.IsChecked == true && ph.SlipPlanePolygon.Count >= 3)
+            // 1. Optional slip plane polygon (Crystal Lattice view only)
+            if (!studioView && ChkSlipPlane.IsChecked == true && ph.SlipPlanePolygon.Count >= 3)
             {
                 var slipMesh = new MeshGeometry3D();
                 foreach (var pt in ph.SlipPlanePolygon)
@@ -544,8 +550,8 @@ namespace PyCalphadSuite.Desktop.Controls
                 group.Children.Add(slipModel);
             }
 
-            // 2. Unit-cell wireframe cage
-            if (ChkUnitCellBox.IsChecked == true && ph.UnitCellBox != null)
+            // 2. Unit-cell wireframe cage & axes triad (Crystal Lattice view only)
+            if (!studioView && ChkUnitCellBox.IsChecked == true && ph.UnitCellBox != null)
             {
                 var cageMat = new DiffuseMaterial(new SolidColorBrush(_isDarkTheme
                     ? Color.FromRgb(180, 195, 215)
@@ -570,45 +576,110 @@ namespace PyCalphadSuite.Desktop.Controls
                 }
             }
 
-            // 3. Nearest-neighbour cylindrical bonds
+            static double ComputeAtomRadius(CrystalAtomDto atom, string sMode, bool isStudio)
+            {
+                if (isStudio && sMode == "metallic")
+                {
+                    return Math.Max(0.30, atom.RadiusA * 0.36);
+                }
+                return sMode switch
+                {
+                    "ballstick" => Math.Max(0.24, atom.RadiusA * 0.28),
+                    "cpk" => Math.Max(0.42, atom.RadiusA * 0.72),
+                    _ => Math.Max(0.30, atom.RadiusA * 0.42)
+                };
+            }
+
+            // 3. Nearest-neighbour cylindrical bonds (or Studio physical kit sleeved connectors)
             if (ChkBonds.IsChecked == true && ph.Bonds.Count > 0)
             {
-                var bondMat = new DiffuseMaterial(new SolidColorBrush(_isDarkTheme
-                    ? Color.FromArgb(180, 148, 163, 184)
-                    : Color.FromArgb(175, 100, 116, 139)));
-                foreach (var b in ph.Bonds)
+                if (studioView)
                 {
-                    if (b.A < 0 || b.A >= ph.Atoms.Count || b.B < 0 || b.B >= ph.Atoms.Count) continue;
-                    var a1 = ph.Atoms[b.A];
-                    var a2 = ph.Atoms[b.B];
-                    var p1 = new Point3D(a1.X, a1.Y, a1.Z);
-                    var p2 = new Point3D(a2.X, a2.Y, a2.Z);
-                    var cyl = BuildCylinderModel(p1, p2, scaleMode == "cpk" ? 0.045 : 0.068, bondMat);
-                    if (cyl != null) group.Children.Add(cyl);
+                    var shaftMat = new MaterialGroup();
+                    shaftMat.Children.Add(new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(184, 193, 206))));
+                    shaftMat.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(120, 255, 255, 255)), 55.0));
+
+                    var socketMat = new MaterialGroup();
+                    socketMat.Children.Add(new DiffuseMaterial(new SolidColorBrush(Color.FromRgb(160, 170, 184))));
+                    socketMat.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(140, 255, 255, 255)), 65.0));
+
+                    foreach (var b in ph.Bonds)
+                    {
+                        if (b.A < 0 || b.A >= ph.Atoms.Count || b.B < 0 || b.B >= ph.Atoms.Count) continue;
+                        var a1 = ph.Atoms[b.A];
+                        var a2 = ph.Atoms[b.B];
+                        var p1 = new Point3D(a1.X, a1.Y, a1.Z);
+                        var p2 = new Point3D(a2.X, a2.Y, a2.Z);
+                        Vector3D dv = p2 - p1;
+                        double len = dv.Length;
+                        if (len < 1e-4) continue;
+                        dv.Normalize();
+
+                        double shaftRadius = scaleMode == "cpk" ? 0.052 : 0.084;
+                        var cyl = BuildCylinderModel(p1, p2, shaftRadius, shaftMat);
+                        if (cyl != null) group.Children.Add(cyl);
+
+                        double r1 = ComputeAtomRadius(a1, scaleMode, true);
+                        double r2 = ComputeAtomRadius(a2, scaleMode, true);
+                        double s1 = Math.Min(len * 0.45, Math.Max(0.05, r1 * 0.78));
+                        double e1 = Math.Min(len * 0.48, s1 + 0.24);
+                        double s2 = Math.Min(len * 0.45, Math.Max(0.05, r2 * 0.78));
+                        double e2 = Math.Min(len * 0.48, s2 + 0.24);
+
+                        if (e1 > s1 + 0.02)
+                        {
+                            var col1 = BuildOrientedMeshModel(p1 + dv * s1, p1 + dv * e1, shaftRadius * 1.65, _unitFrustumMesh, socketMat);
+                            if (col1 != null) group.Children.Add(col1);
+                        }
+                        if (e2 > s2 + 0.02)
+                        {
+                            var col2 = BuildOrientedMeshModel(p2 - dv * s2, p2 - dv * e2, shaftRadius * 1.65, _unitFrustumMesh, socketMat);
+                            if (col2 != null) group.Children.Add(col2);
+                        }
+                    }
+                }
+                else
+                {
+                    var bondMat = new DiffuseMaterial(new SolidColorBrush(_isDarkTheme
+                        ? Color.FromArgb(180, 148, 163, 184)
+                        : Color.FromArgb(175, 100, 116, 139)));
+                    foreach (var b in ph.Bonds)
+                    {
+                        if (b.A < 0 || b.A >= ph.Atoms.Count || b.B < 0 || b.B >= ph.Atoms.Count) continue;
+                        var a1 = ph.Atoms[b.A];
+                        var a2 = ph.Atoms[b.B];
+                        var p1 = new Point3D(a1.X, a1.Y, a1.Z);
+                        var p2 = new Point3D(a2.X, a2.Y, a2.Z);
+                        var cyl = BuildCylinderModel(p1, p2, scaleMode == "cpk" ? 0.045 : 0.068, bondMat);
+                        if (cyl != null) group.Children.Add(cyl);
+                    }
                 }
             }
 
-            // 4. Atom spheres (shared UV-sphere mesh per atom for specular shading + O(1) hit-testing)
+            // 4. Atom spheres (Crystal Satin vs Studio Glossy Enamel shading)
+            var activeSphereMesh = studioView ? _studioSphereMesh : _unitSphereMesh;
             foreach (var atom in ph.Atoms)
             {
                 string hex = sublatticeColour ? atom.SublatticeColour : atom.ColourHex;
                 var brush = SafeBrush(hex);
                 var matGroup = new MaterialGroup();
                 matGroup.Children.Add(new DiffuseMaterial(brush));
-                matGroup.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(140, 255, 255, 255)), 42.0));
-
-                double r = scaleMode switch
+                if (studioView)
                 {
-                    "ballstick" => Math.Max(0.24, atom.RadiusA * 0.28),
-                    "cpk" => Math.Max(0.42, atom.RadiusA * 0.72),
-                    _ => Math.Max(0.30, atom.RadiusA * 0.42)
-                };
+                    matGroup.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(240, 255, 255, 255)), 92.0));
+                }
+                else
+                {
+                    matGroup.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(140, 255, 255, 255)), 42.0));
+                }
+
+                double r = ComputeAtomRadius(atom, scaleMode, studioView);
 
                 var tx = new Transform3DGroup();
                 tx.Children.Add(new ScaleTransform3D(r, r, r));
                 tx.Children.Add(new TranslateTransform3D(atom.X, atom.Y, atom.Z));
 
-                var model = new GeometryModel3D(_unitSphereMesh, matGroup) { Transform = tx };
+                var model = new GeometryModel3D(activeSphereMesh, matGroup) { Transform = tx };
                 group.Children.Add(model);
                 _atomLookup[model] = atom;
             }
@@ -644,7 +715,30 @@ namespace PyCalphadSuite.Desktop.Controls
             if (cyl != null) group.Children.Add(cyl);
         }
 
+        private void UpdateLightingForView(bool studioView)
+        {
+            if (LightsVisual == null) return;
+            var lights = new Model3DGroup();
+            if (studioView)
+            {
+                lights.Children.Add(new AmbientLight((Color)ColorConverter.ConvertFromString("#727272")));
+                lights.Children.Add(new DirectionalLight((Color)ColorConverter.ConvertFromString("#F2F2F2"), new Vector3D(-0.42, -0.72, -0.55)));
+                lights.Children.Add(new DirectionalLight((Color)ColorConverter.ConvertFromString("#9E9E9E"), new Vector3D(0.58, 0.40, 0.71)));
+                lights.Children.Add(new DirectionalLight((Color)ColorConverter.ConvertFromString("#484848"), new Vector3D(0.0, 0.65, -0.75)));
+            }
+            else
+            {
+                lights.Children.Add(new AmbientLight((Color)ColorConverter.ConvertFromString("#5A5A5A")));
+                lights.Children.Add(new DirectionalLight((Color)ColorConverter.ConvertFromString("#D8D8D8"), new Vector3D(-0.45, -0.65, -0.60)));
+                lights.Children.Add(new DirectionalLight((Color)ColorConverter.ConvertFromString("#888888"), new Vector3D(0.55, 0.45, 0.70)));
+            }
+            LightsVisual.Content = lights;
+        }
+
         private GeometryModel3D? BuildCylinderModel(Point3D p1, Point3D p2, double radius, Material material)
+            => BuildOrientedMeshModel(p1, p2, radius, _unitCylinderMesh, material);
+
+        private GeometryModel3D? BuildOrientedMeshModel(Point3D p1, Point3D p2, double radius, MeshGeometry3D unitMesh, Material material)
         {
             Vector3D v = p2 - p1;
             double len = v.Length;
@@ -670,7 +764,7 @@ namespace PyCalphadSuite.Desktop.Controls
             }
 
             tx.Children.Add(new TranslateTransform3D(p1.X, p1.Y, p1.Z));
-            return new GeometryModel3D(_unitCylinderMesh, material) { Transform = tx };
+            return new GeometryModel3D(unitMesh, material) { Transform = tx };
         }
 
         private void UpdateCamera()
@@ -1014,11 +1108,11 @@ namespace PyCalphadSuite.Desktop.Controls
                 if (BtnToggleAtomLabels != null)
                 {
                     BtnToggleAtomLabels.IsChecked = isEnabled;
-                    BtnToggleAtomLabels.Content = isEnabled ? "Element Labels: ON" : "Element Labels: OFF";
+                    BtnToggleAtomLabels.Content = isEnabled ? "Labels: ON" : "Labels: OFF";
                     BtnToggleAtomLabels.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(
-                        isEnabled ? (_isDarkTheme ? "#1E3A8A" : "#EFF6FF") : (_isDarkTheme ? "#2D2D30" : "#F8FAFC")));
+                        isEnabled ? (_isDarkTheme ? "#334155" : "#F1F5F9") : (_isDarkTheme ? "#2D2D30" : "#FFFFFF")));
                     BtnToggleAtomLabels.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(
-                        isEnabled ? (_isDarkTheme ? "#DBEAFE" : "#1E3A8A") : (_isDarkTheme ? "#CBD5E1" : "#475569")));
+                        isEnabled ? (_isDarkTheme ? "#F8FAFC" : "#0F172A") : (_isDarkTheme ? "#CBD5E1" : "#475569")));
                 }
             }
             finally
@@ -1264,6 +1358,41 @@ namespace PyCalphadSuite.Desktop.Controls
                 mesh.Positions.Add(new Point3D(x, 0.0, z));
                 mesh.Normals.Add(normal);
                 mesh.Positions.Add(new Point3D(x, 1.0, z));
+                mesh.Normals.Add(normal);
+            }
+
+            for (int i = 0; i < segments; i++)
+            {
+                int b0 = i * 2;
+                int t0 = b0 + 1;
+                int b1 = b0 + 2;
+                int t1 = b0 + 3;
+
+                mesh.TriangleIndices.Add(b0);
+                mesh.TriangleIndices.Add(t0);
+                mesh.TriangleIndices.Add(b1);
+
+                mesh.TriangleIndices.Add(b1);
+                mesh.TriangleIndices.Add(t0);
+                mesh.TriangleIndices.Add(t1);
+            }
+            mesh.Freeze();
+            return mesh;
+        }
+
+        private static MeshGeometry3D BuildUnitFrustumMesh(int segments, double rBottom, double rTop)
+        {
+            var mesh = new MeshGeometry3D();
+            for (int i = 0; i <= segments; i++)
+            {
+                double angle = i * 2.0 * Math.PI / segments;
+                double cx = Math.Cos(angle);
+                double cz = Math.Sin(angle);
+                var normal = new Vector3D(cx, 0.25, cz);
+                normal.Normalize();
+                mesh.Positions.Add(new Point3D(rBottom * cx, 0.0, rBottom * cz));
+                mesh.Normals.Add(normal);
+                mesh.Positions.Add(new Point3D(rTop * cx, 1.0, rTop * cz));
                 mesh.Normals.Add(normal);
             }
 

@@ -16,6 +16,13 @@ Features:
 import math
 from typing import Dict, List, Any, Optional
 
+from pycalphad_app.core.alloy_economics import (
+    atomic_to_weight_fractions,
+    compute_raw_alloy_cost,
+    estimate_benchmark_cost,
+    recommend_cost_optimization,
+)
+
 class ApplicationDatabase:
     NEUTRON_CROSS_SECTIONS = {
         "Zr": 0.185, "Al": 0.231, "Si": 0.171, "Mg": 0.063, "C": 0.0035,
@@ -345,6 +352,8 @@ class ApplicationScorer:
         e_gpa = float(mech.get("YoungsModulus_GPa", 200.0))
 
         c_dict = {el: at_fractions[i] for i, el in enumerate(elements)}
+        wt_dict = atomic_to_weight_fractions(c_dict)
+        raw_cost_kg, _ = compute_raw_alloy_cost(wt_dict, prefer_ferro=True)
         cr_at = c_dict.get("Cr", 0.0) * 100.0
         mo_at = c_dict.get("Mo", 0.0) * 100.0
         pren = cr_at + 3.3 * mo_at
@@ -596,6 +605,17 @@ class ApplicationScorer:
                 else:
                     tier = "Unsuitable"
 
+            alloy_cost_kg, savings_pct, cost_rec = recommend_cost_optimization(
+                elements=elements,
+                at_comp=c_dict,
+                wt_comp=wt_dict,
+                thermo=thermo,
+                mech=mech,
+                app_id=app_id,
+                raw_cost_kg=raw_cost_kg,
+            )
+            bench_cost_kg = estimate_benchmark_cost(bench, raw_cost_kg)
+
             scored_list.append({
                 "id": app_id,
                 "name": name,
@@ -605,7 +625,11 @@ class ApplicationScorer:
                 "bottleneck": bottleneck,
                 "advice": advice,
                 "benchmark": bench,
-                "git_reference": git_ref
+                "git_reference": git_ref,
+                "alloy_cost_usd_kg": alloy_cost_kg,
+                "benchmark_cost_usd_kg": bench_cost_kg,
+                "cost_savings_pct": savings_pct,
+                "cost_recommendation": cost_rec,
             })
 
         scored_list.sort(key=lambda x: x["score"], reverse=True)

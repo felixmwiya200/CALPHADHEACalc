@@ -505,6 +505,12 @@ namespace PyCalphadSuite.Core.Models
 
         [JsonPropertyName("scores")]
         public List<double> Scores { get; set; } = new();
+
+        [JsonPropertyName("route_costs_usd_kg")]
+        public List<double> RouteCostsUsdKg { get; set; } = new();
+
+        [JsonPropertyName("raw_alloy_cost_usd_kg")]
+        public double RawAlloyCostUsdKg { get; set; }
     }
 
     public class DftSublatticeDto
@@ -652,6 +658,18 @@ namespace PyCalphadSuite.Core.Models
 
         [JsonPropertyName("advice")]
         public string Advice { get; set; } = string.Empty;
+
+        [JsonPropertyName("alloy_cost_usd_kg")]
+        public double AlloyCostUsdKg { get; set; }
+
+        [JsonPropertyName("benchmark_cost_usd_kg")]
+        public double BenchmarkCostUsdKg { get; set; }
+
+        [JsonPropertyName("cost_savings_pct")]
+        public double CostSavingsPct { get; set; }
+
+        [JsonPropertyName("cost_recommendation")]
+        public string CostRecommendation { get; set; } = string.Empty;
     }
 
     public class ValidationRowDto
