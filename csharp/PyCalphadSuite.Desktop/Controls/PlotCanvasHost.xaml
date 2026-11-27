@@ -74,8 +74,8 @@
                 </StackPanel>
 
                 <!-- Live Coordinate Tracker Badge -->
-                <Border x:Name="CoordsBadge" DockPanel.Dock="Right" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center" Margin="6,0,0,0">
-                    <TextBlock x:Name="TxtCursorCoords" Text="X: --   Y: --" FontFamily="Consolas, Cascadia Code, Courier New" FontSize="11" Foreground="#0F172A"/>
+                <Border x:Name="CoordsBadge" DockPanel.Dock="Right" Background="#E5E7EB" BorderBrush="#9CA3AF" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center" Margin="6,0,0,0">
+                    <TextBlock x:Name="TxtCursorCoords" Text="X: --   Y: --" FontFamily="Consolas, Cascadia Code, Courier New" FontSize="11" Foreground="#000000"/>
                 </Border>
             </DockPanel>
         </Border>

@@ -162,10 +162,10 @@ namespace PyCalphadSuite.Desktop.Controls
                 TxtHeaderSummary.Foreground = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#0284C7"));
                 if (CoordsBadge != null)
                 {
-                    CoordsBadge.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#F1F5F9"));
-                    CoordsBadge.BorderBrush = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#CBD5E1"));
+                    CoordsBadge.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#E5E7EB"));
+                    CoordsBadge.BorderBrush = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#9CA3AF"));
                 }
-                TxtCursorCoords.Foreground = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#0284C7"));
+                TxtCursorCoords.Foreground = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#000000"));
 
                 var btnBg = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#F1F5F9"));
                 var btnFg = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#0F172A"));
