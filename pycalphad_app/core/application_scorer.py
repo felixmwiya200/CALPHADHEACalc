@@ -398,7 +398,7 @@ class ApplicationScorer:
             # 2. Continuous utility scoring
             if veto:
                 score = 15.0
-                tier = "Unsuitable (Vetoed)"
+                tier = "Vetoed"
                 bottleneck = veto_reason
                 advice = "Reformulate alloy to remove prohibited elements or increase refractory balance."
             else:
@@ -576,7 +576,7 @@ class ApplicationScorer:
                     ferro = sum(c_dict.get(el, 0.0) for el in ["Fe", "Co", "Ni", "Mn", "Cr"])
                     if ferro > 0.001:
                         score = 15.0
-                        tier = "Unsuitable (Vetoed)"
+                        tier = "Vetoed"
                         bottleneck = f"Ferromagnetic atoms ({ferro*100:.1f} at%) destroy Cooper pair coherence."
                         advice = "Purify alloy to eliminate all 3d transition ferromagnetic elements."
                     else:
@@ -597,11 +597,11 @@ class ApplicationScorer:
 
                 score = round(max(10.0, min(99.0, score)), 1)
                 if score >= 85.0:
-                    tier = "Prime Candidate (Optimal Match)"
+                    tier = "Prime"
                 elif score >= 70.0:
-                    tier = "Viable Candidate"
+                    tier = "Viable"
                 elif score >= 50.0:
-                    tier = "Conditional Candidate"
+                    tier = "Conditional"
                 else:
                     tier = "Unsuitable"
 

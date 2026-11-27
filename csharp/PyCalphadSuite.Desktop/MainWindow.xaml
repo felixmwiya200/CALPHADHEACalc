@@ -1172,7 +1172,7 @@
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Score (%)" Binding="{Binding Score, StringFormat={}{0:F1}}" Width="74"/>
-                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="155" MinWidth="120">
+                                        <DataGridTextColumn Header="Tier" Binding="{Binding Tier}" Width="95" MinWidth="80">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="TextWrapping" Value="NoWrap"/>
