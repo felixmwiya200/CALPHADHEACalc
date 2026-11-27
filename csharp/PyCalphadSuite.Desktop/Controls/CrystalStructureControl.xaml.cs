@@ -531,8 +531,8 @@ namespace PyCalphadSuite.Desktop.Controls
             string scaleMode = (CmbScaleMode.SelectedItem is ComboBoxItem sItem ? sItem.Tag?.ToString() : null) ?? "metallic";
             UpdateLightingForView(studioView);
 
-            // 1. Optional slip plane polygon (Crystal Lattice view only)
-            if (!studioView && ChkSlipPlane.IsChecked == true && ph.SlipPlanePolygon.Count >= 3)
+            // 1. Optional slip plane polygon
+            if (ChkSlipPlane.IsChecked == true && ph.SlipPlanePolygon.Count >= 3)
             {
                 var slipMesh = new MeshGeometry3D();
                 foreach (var pt in ph.SlipPlanePolygon)
@@ -550,8 +550,8 @@ namespace PyCalphadSuite.Desktop.Controls
                 group.Children.Add(slipModel);
             }
 
-            // 2. Unit-cell wireframe cage & axes triad (Crystal Lattice view only)
-            if (!studioView && ChkUnitCellBox.IsChecked == true && ph.UnitCellBox != null)
+            // 2. Unit-cell wireframe cage & axes triad
+            if (ChkUnitCellBox.IsChecked == true && ph.UnitCellBox != null)
             {
                 var cageMat = new DiffuseMaterial(new SolidColorBrush(_isDarkTheme
                     ? Color.FromRgb(180, 195, 215)
