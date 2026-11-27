@@ -1798,16 +1798,6 @@ namespace PyCalphadSuite.Desktop
                 double solKinK = kinPd.KineticSolvusK > 0 ? kinPd.KineticSolvusK : (kinPd.EquilibriumSolvusK - kinPd.GibbsThomsonShiftC);
                 double dispKinT = ConvTemp(solKinK);
 
-                var vKinSolvus = plot.Add.VerticalLine(dispKinT);
-                vKinSolvus.LineStyle.Pattern = LinePattern.Dotted;
-                vKinSolvus.Color = ScottPlot.Color.FromHex("#7C3AED");
-                vKinSolvus.LineWidth = 2.0f;
-
-                var lblKin = plot.Add.Text($"PBM Solvus ({kinPd.PhaseName}: ΔT=-{kinPd.GibbsThomsonShiftC:F0}°C)", dispKinT, 0.72);
-                lblKin.LabelFontSize = 9.0f;
-                lblKin.LabelBold = true;
-                lblKin.LabelFontColor = ScottPlot.Color.FromHex("#7C3AED");
-
                 if (kinPd.TemperatureSweepC != null && kinPd.TemperatureSweepC.Count > 0 &&
                     kinPd.KineticPhaseFractionFastCool != null && kinPd.KineticPhaseFractionFastCool.Count == kinPd.TemperatureSweepC.Count)
                 {
