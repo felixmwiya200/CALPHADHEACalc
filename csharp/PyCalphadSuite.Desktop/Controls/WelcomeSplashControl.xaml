@@ -7,10 +7,10 @@
             <Border Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="10" Padding="28,24" Margin="0,0,0,22">
                 <StackPanel>
                     <TextBlock Text="Computational Thermodynamics &amp; Multi-Physics Alloy CAE" Foreground="#000000" FontWeight="Bold" FontSize="22" Margin="0,0,0,6"/>
-                    <TextBlock Text="Select a metallurgical database system below or explore the 118-element IUPAC Periodic Table to begin Gibbs energy minimization, Scheil solidification, thermophysical transport, and FEA card export." Foreground="#000000" FontSize="12.5" TextWrapping="Wrap"/>
+                    <TextBlock Text="Select a metallurgical database system below or explore the 118-element IUPAC Periodic Table to begin Gibbs energy minimization, Scheil solidification, thermophysical transport, and FEA card export." Foreground="#000000" FontSize="12.5" TextWrapping="Wrap" Visibility="Collapsed"/>
                     <WrapPanel Margin="0,16,0,0">
                         <Button x:Name="BtnSelectModal" Content="Browse Material Types &amp; Databases..." Click="BtnSelectModal_Click" Padding="14,7" Margin="0,0,10,0" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="Bold"/>
-                        <Button x:Name="BtnPeriodic" Content="Interactive Periodic Table (118)" Click="BtnPeriodic_Click" Padding="14,7" Margin="0,0,10,0" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="Bold"/>
+                        <Button x:Name="BtnPeriodic" Content="Periodic table" Click="BtnPeriodic_Click" Padding="14,7" Margin="0,0,10,0" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="Bold"/>
                         <Button x:Name="BtnLitHea" Content="Literature HEA Repository" Click="BtnLitHea_Click" Padding="14,7" Background="#FFFFFF" Foreground="#000000" BorderBrush="#CBD5E1" BorderThickness="1" FontWeight="SemiBold"/>
                     </WrapPanel>
                 </StackPanel>
@@ -22,7 +22,7 @@
                 <!-- Cards dynamically populated from IPC DatabaseCatalogResult -->
             </UniformGrid>
 
-            <TextBlock Text="Lead Materials Developers: Felix Mwiya &amp; Prof. (Dr.) Sheela Singh  •  CALPHAD XOC Platform 2026" Foreground="#000000" FontSize="11" HorizontalAlignment="Center" Margin="0,20,0,6"/>
+            <TextBlock Text="Lead Materials Developers: Felix Mwiya &amp; Prof. (Dr.) Sheela Singh  •  CALPHAD XOC Platform 2026" Foreground="#000000" FontSize="11" HorizontalAlignment="Center" Margin="0,20,0,6" Visibility="Collapsed"/>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

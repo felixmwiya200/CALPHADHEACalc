@@ -55,7 +55,7 @@ namespace PyCalphadSuite.Desktop
 
         private double _currentStepT = 300.0;
         private int _stepIndex = 0;
-        private string _currentTheme = "Grey";
+        private string _currentTheme = "Light";
         private bool _isDarkTheme => _currentTheme == "Dark";
         private bool _isCelsiusDisplay = false;
         private bool _isUpdatingTempUnit = false;
